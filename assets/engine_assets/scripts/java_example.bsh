@@ -1,0 +1,18 @@
+import org.jgine.system.systems.transform.TransformSystem;
+import org.jgine.system.systems.collision.Collision;
+
+void onEnable() { 
+	
+}
+
+void onDisable() { 
+	
+}
+
+void update() { 
+	//print(entity.getSystem(TransformSystem.class));
+}
+
+void onCollision(Collision collision) { 
+	print("collision");
+}
