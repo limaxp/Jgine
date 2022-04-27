@@ -6,25 +6,28 @@ import java.util.Collection;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.memory.Allocator;
 import org.jgine.misc.utils.memory.MemoryHelper;
+import org.jgine.misc.utils.memory.Pointer;
 import org.jgine.misc.utils.reflection.Reflection;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
+import org.jgine.system.SystemObjectPointer;
 import org.jgine.system.SystemScene;
 import org.lwjgl.system.MemoryUtil;
 
 public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
 		extends SystemScene<T1, T2> implements AutoCloseable {
 
-	protected final ByteBuffer buffer;
-	protected final int objectSize;
+	protected int objectSize;
+	protected ByteBuffer buffer;
+	protected int bufferSize;
+	protected int size;
 
 	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene);
 		objectSize = MemoryHelper.sizeOf(Reflection.newInstance(clazz));
-		buffer = MemoryUtil.memAlloc(objectSize * ListSystemScene.GROW_SIZE);
-		MemoryUtil.memSet(buffer, 0);
+		bufferSize = ListSystemScene.GROW_SIZE;
+		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}
 
 	@Override
@@ -34,14 +37,21 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 
 	@Override
 	public T2 addObject(Entity entity, T2 object) {
-		long address = MemoryUtil.memAddress(buffer);
+		if (size == bufferSize)
+			ensureCapacity(size + 1);
+		long address = MemoryUtil.memAddress(buffer) + (size++ * objectSize);
 		MemoryHelper.copyMemory(object, address, objectSize);
+//		entity.system = new SystemObjectPointer<T2>(object);
 		return object;
 	}
 
 	@Override
 	@Nullable
 	public T2 removeObject(T2 object) {
+		int index = 0;
+		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
+		MemoryUtil.memSet(address, 0, objectSize);
+		// TODO rearange list
 		return object;
 	}
 
@@ -51,6 +61,18 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	public T2 getObject(int index) {
-		return MemoryUtil.memGlobalRefToObject(index);
+		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
+		return new Pointer<T2>().address(address).data;
+	}
+
+	protected void ensureCapacity(int minCapacity) {
+		if (minCapacity > bufferSize)
+			resize(Math.max(bufferSize * 2, minCapacity));
+	}
+
+	protected void resize(int size) {
+		ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
+		buffer = newBuffer.put(0, buffer, 0, objectSize * bufferSize);
+		bufferSize = size;
 	}
 }

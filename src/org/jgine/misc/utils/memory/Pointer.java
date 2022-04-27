@@ -19,12 +19,17 @@ public class Pointer<T> {
 
 	public T data;
 
+	public Pointer() {
+		data = null;
+	}
+
 	public Pointer(T data) {
 		this.data = data;
 	}
 
-	public void address(long address) {
+	public Pointer<T> address(long address) {
 		MemoryHelper.UNSAFE.putLong(this, POINTER_OFFSET, address);
+		return this;
 	}
 
 	public long address() {

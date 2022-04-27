@@ -36,8 +36,8 @@ public class CameraInputHandler extends InputHandler {
 	@Override
 	protected void setEntity(Entity entity) {
 		super.setEntity(entity);
-		physicObject = entity.getSystem(entity.scene.getSystem(PhysicSystem.class));
-		cam = entity.getSystem(entity.scene.getSystem(CameraSystem.class));
+		physicObject = entity.getSystem(PhysicSystem.class);
+		cam = entity.getSystem(CameraSystem.class);
 	}
 
 	@Override
@@ -64,8 +64,7 @@ public class CameraInputHandler extends InputHandler {
 				physicObject.addVelocity(Vector3f.mult(cam.getLeft(), 0.1f));
 			if (Input.isKeyPressed(KEY_MOVE_RIGHT))
 				physicObject.addVelocity(Vector3f.mult(cam.getRight(), 0.1f));
-		}
-		else {
+		} else {
 			GamepadState state = Input.getGamepadState(inputSlot);
 			float rightX = state.axes(Key.GAMEPAD_AXIS_RIGHT_X);
 			float rightY = state.axes(Key.GAMEPAD_AXIS_RIGHT_Y);

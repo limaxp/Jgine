@@ -26,8 +26,8 @@ public class TransformInputHandler extends InputHandler {
 	@Override
 	protected void setEntity(Entity entity) {
 		super.setEntity(entity);
-		transform = entity.getSystem(entity.scene.getSystem(TransformSystem.class));
-		physicObject = entity.getSystem(entity.scene.getSystem(PhysicSystem.class));
+		transform = entity.getSystem(TransformSystem.class);
+		physicObject = entity.getSystem(PhysicSystem.class);
 	}
 
 	@Override

@@ -202,8 +202,10 @@ public class FastArrayList<E> extends AbstractList<E> implements List<E> {
 			clone.array = (E[]) array.clone();
 			clone.size = size;
 			return clone;
-		} catch (CloneNotSupportedException e) {}
-		return null;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
