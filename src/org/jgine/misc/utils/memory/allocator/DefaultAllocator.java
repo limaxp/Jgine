@@ -2,7 +2,7 @@ package org.jgine.misc.utils.memory.allocator;
 
 import org.jgine.misc.utils.memory.Allocator;
 import org.jgine.misc.utils.memory.MemoryBlock;
-import org.jgine.misc.utils.memory.UnsafeHelper;
+import org.jgine.misc.utils.memory.MemoryHelper;
 
 @SuppressWarnings("restriction")
 public class DefaultAllocator extends Allocator {
@@ -10,11 +10,12 @@ public class DefaultAllocator extends Allocator {
 	// public static final int alignment = platformAlligment;
 
 	@Override
-	public void close() {}
+	public void close() {
+	}
 
 	@Override
 	public MemoryBlock alloc(long size) {
-		return new MemoryBlock(UnsafeHelper.UNSAFE.allocateMemory(size), size);
+		return new MemoryBlock(MemoryHelper.UNSAFE.allocateMemory(size), size);
 	}
 
 	@Override
@@ -24,7 +25,7 @@ public class DefaultAllocator extends Allocator {
 
 	@Override
 	public void dealloc(MemoryBlock block) {
-		UnsafeHelper.UNSAFE.freeMemory(block.address);
+		MemoryHelper.UNSAFE.freeMemory(block.address);
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class DefaultAllocator extends Allocator {
 	@Override
 	public boolean expand(MemoryBlock block, long delta) {
 		long newSize = block.size + delta;
-		block.address = UnsafeHelper.UNSAFE.reallocateMemory(block.address, newSize);
+		block.address = MemoryHelper.UNSAFE.reallocateMemory(block.address, newSize);
 		block.size = newSize;
 		return true;
 	}
@@ -48,7 +49,7 @@ public class DefaultAllocator extends Allocator {
 			block.size = 0;
 			return;
 		}
-		block.address = UnsafeHelper.UNSAFE.reallocateMemory(block.address, size);
+		block.address = MemoryHelper.UNSAFE.reallocateMemory(block.address, size);
 		block.size = size;
 	}
 

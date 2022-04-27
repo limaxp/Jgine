@@ -3,7 +3,7 @@ package org.jgine.core.manager;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import org.jgine.misc.utils.memory.UnsafeHelper;
+import org.jgine.misc.utils.memory.MemoryHelper;
 import org.lwjgl.system.MemoryUtil;
 
 public class PlatformManager {
@@ -30,7 +30,7 @@ public class PlatformManager {
 
 	@SuppressWarnings("restriction")
 	public static long getPageSize() {
-		return UnsafeHelper.UNSAFE.pageSize();
+		return MemoryHelper.UNSAFE.pageSize();
 	}
 
 	public static long getCacheLineSize() {

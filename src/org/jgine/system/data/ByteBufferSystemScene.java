@@ -7,7 +7,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.memory.Allocator;
 import org.jgine.misc.utils.memory.MemoryBlock;
-import org.jgine.misc.utils.memory.UnsafeHelper;
+import org.jgine.misc.utils.memory.MemoryHelper;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
@@ -15,10 +15,10 @@ import org.jgine.system.SystemScene;
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
-public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject> extends
-		SystemScene<T1, T2> implements AutoCloseable {
+public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
+		extends SystemScene<T1, T2> implements AutoCloseable {
 
-	private static final Unsafe unsafe = UnsafeHelper.UNSAFE;
+	private static final Unsafe unsafe = MemoryHelper.UNSAFE;
 
 	private final Allocator allocator;
 	private MemoryBlock block;

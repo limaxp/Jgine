@@ -10,7 +10,7 @@ public class Pointer<T> {
 	static {
 		long offset = 0;
 		try {
-			offset = UnsafeHelper.UNSAFE.objectFieldOffset(Pointer.class.getDeclaredField("data"));
+			offset = MemoryHelper.UNSAFE.objectFieldOffset(Pointer.class.getDeclaredField("data"));
 		} catch (NoSuchFieldException | SecurityException e) {
 			Logger.err("Pointer: Error on pointerOffset reflection!", e);
 		}
@@ -24,10 +24,10 @@ public class Pointer<T> {
 	}
 
 	public void address(long address) {
-		UnsafeHelper.UNSAFE.putLong(this, POINTER_OFFSET, address);
+		MemoryHelper.UNSAFE.putLong(this, POINTER_OFFSET, address);
 	}
 
 	public long address() {
-		return UnsafeHelper.UNSAFE.getLong(this, POINTER_OFFSET);
+		return MemoryHelper.UNSAFE.getLong(this, POINTER_OFFSET);
 	}
 }

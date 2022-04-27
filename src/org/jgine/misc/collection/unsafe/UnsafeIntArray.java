@@ -2,7 +2,7 @@ package org.jgine.misc.collection.unsafe;
 
 import org.jgine.misc.utils.memory.Allocator;
 import org.jgine.misc.utils.memory.MemoryBlock;
-import org.jgine.misc.utils.memory.UnsafeHelper;
+import org.jgine.misc.utils.memory.MemoryHelper;
 
 @SuppressWarnings("restriction")
 public class UnsafeIntArray implements AutoCloseable {
@@ -20,7 +20,7 @@ public class UnsafeIntArray implements AutoCloseable {
 		this.length = size;
 		long allocSize = size * Integer.BYTES;
 		address = allocator.alloc(allocSize).address;
-		UnsafeHelper.UNSAFE.setMemory(address, allocSize, (byte) 0);
+		MemoryHelper.UNSAFE.setMemory(address, allocSize, (byte) 0);
 	}
 
 	@Override
@@ -29,17 +29,17 @@ public class UnsafeIntArray implements AutoCloseable {
 	}
 
 	public final void setInt(long index, int value) {
-		UnsafeHelper.UNSAFE.putInt(address + (index * Integer.BYTES), value);
+		MemoryHelper.UNSAFE.putInt(address + (index * Integer.BYTES), value);
 	}
 
 	public final int getInt(long index) {
-		return UnsafeHelper.UNSAFE.getInt(address + (index * Integer.BYTES));
+		return MemoryHelper.UNSAFE.getInt(address + (index * Integer.BYTES));
 	}
 
 	public final void setIntArray(long index, int[] value) {
 		index = address + (index * Integer.BYTES);
 		for (int i = 0; i < value.length; i++) {
-			UnsafeHelper.UNSAFE.putInt(index, value[i]);
+			MemoryHelper.UNSAFE.putInt(index, value[i]);
 			index += Integer.BYTES;
 		}
 	}
@@ -48,7 +48,7 @@ public class UnsafeIntArray implements AutoCloseable {
 		int[] array = new int[size];
 		index = address + (index * Integer.BYTES);
 		for (int i = 0; i < size; i++) {
-			array[i] = UnsafeHelper.UNSAFE.getInt(index);
+			array[i] = MemoryHelper.UNSAFE.getInt(index);
 			index += Integer.BYTES;
 		}
 		return array;
