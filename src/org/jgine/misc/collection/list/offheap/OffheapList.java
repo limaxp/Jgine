@@ -21,7 +21,7 @@ public class OffheapList<E> implements AutoCloseable {
 	}
 
 	public OffheapList(Class<E> clazz, int capacity) {
-		objectSize = MemoryHelper.sizeOf(Reflection.newInstance(clazz));
+		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
 		bufferSize = capacity;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}

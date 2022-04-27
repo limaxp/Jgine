@@ -1,29 +1,15 @@
 package org.jgine.misc.utils.memory;
 
-import java.lang.reflect.Field;
-
-import org.jgine.misc.utils.logger.Logger;
-
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
 public final class MemoryHelper {
 
-	static final Unsafe UNSAFE;
+	static final Unsafe UNSAFE = getUnsafeInstance();
 
-	static {
-		try {
-			final Field field = Unsafe.class.getDeclaredField("theUnsafe");
-			field.setAccessible(true);
-			UNSAFE = (Unsafe) field.get(null);
-		} catch (Exception e) {
-			Logger.err("UnsafeHelper: Error an unsafe field reflection! Shutting down runtime!", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static int sizeOf(Object object) {
-		return (int) UNSAFE.getAddress(normalize(UNSAFE.getInt(object, 4L)) + 12L);
+	// TODO broken!
+	public static long sizeOf(Object object) {
+		return UNSAFE.getAddress(normalize(UNSAFE.getInt(object, 4L)) + 12L);
 	}
 
 	public static long normalize(int value) {
@@ -62,5 +48,25 @@ public final class MemoryHelper {
 
 	public static int getPageSize() {
 		return UNSAFE.pageSize();
+	}
+
+	private static sun.misc.Unsafe getUnsafeInstance() {
+		java.lang.reflect.Field[] fields = sun.misc.Unsafe.class.getDeclaredFields();
+		for (java.lang.reflect.Field field : fields) {
+			if (!field.getType().equals(sun.misc.Unsafe.class))
+				continue;
+
+			int modifiers = field.getModifiers();
+			if (!(java.lang.reflect.Modifier.isStatic(modifiers) && java.lang.reflect.Modifier.isFinal(modifiers)))
+				continue;
+
+			try {
+				field.setAccessible(true);
+				return (sun.misc.Unsafe) field.get(null);
+			} catch (Exception ignored) {
+			}
+			break;
+		}
+		throw new UnsupportedOperationException("Jgine requires sun.misc.Unsafe to be available.");
 	}
 }

@@ -11,7 +11,6 @@ import org.jgine.misc.utils.memory.Pointer;
 import org.jgine.misc.utils.reflection.Reflection;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
-import org.jgine.system.SystemObjectPointer;
 import org.jgine.system.SystemScene;
 import org.lwjgl.system.MemoryUtil;
 
@@ -25,7 +24,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 
 	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene);
-		objectSize = MemoryHelper.sizeOf(Reflection.newInstance(clazz));
+		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
 		bufferSize = ListSystemScene.GROW_SIZE;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}
