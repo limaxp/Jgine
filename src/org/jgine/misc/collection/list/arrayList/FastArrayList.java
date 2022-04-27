@@ -67,6 +67,7 @@ public class FastArrayList<E> extends AbstractList<E> implements List<E> {
 		return true;
 	}
 
+	@Override
 	public int insert(E element) {
 		if (size == array.length)
 			ensureCapacity(size + 1);

@@ -28,9 +28,8 @@ public class PlatformManager {
 		return Runtime.getRuntime().availableProcessors();
 	}
 
-	@SuppressWarnings("restriction")
 	public static long getPageSize() {
-		return MemoryHelper.UNSAFE.pageSize();
+		return MemoryHelper.getPageSize();
 	}
 
 	public static long getCacheLineSize() {

@@ -74,6 +74,16 @@ public class Reflection {
 		}
 	}
 
+	public static <T> T newInstance(Class<T> clazz) {
+		try {
+			return ReflectionUtils.getDeclaredConstructor(clazz).newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			Logger.err("Reflection: Error on creating new instance for class '" + clazz.getName() + "'", e);
+			return null;
+		}
+	}
+
 	public static <T> T newInstance(Constructor<T> constructor, Object... args) {
 		try {
 			return constructor.newInstance(args);
@@ -84,8 +94,7 @@ public class Reflection {
 		}
 	}
 
-	public static MethodHandle unreflectMethod(Class<?> clazz, String name,
-			Class<?>... parameterTypes) {
+	public static MethodHandle unreflectMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		try {
 			return ReflectionUtils.unreflectMethod(clazz, name, parameterTypes);
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException e) {
