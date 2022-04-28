@@ -1,29 +1,34 @@
 package org.jgine.misc.collection.list.offheap;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
-import org.jgine.misc.utils.memory.MemoryHelper;
-import org.jgine.misc.utils.memory.Pointer;
-import org.jgine.misc.utils.reflection.Reflection;
+import org.jgine.misc.utils.Reflection;
+import org.jgine.misc.utils.SizeOf;
 import org.lwjgl.system.MemoryUtil;
 
-public class OffheapList<E> implements AutoCloseable {
+public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 
 	protected static final int DEFAULT_CAPACITY = 10;
 
+	protected Class<E> clazz;
 	protected int objectSize;
 	protected ByteBuffer buffer;
 	protected int bufferSize;
 	protected int size;
+	protected E[] pointer;
 
 	public OffheapList(Class<E> clazz) {
 		this(clazz, DEFAULT_CAPACITY);
 	}
 
+	@SuppressWarnings("unchecked")
 	public OffheapList(Class<E> clazz, int capacity) {
-		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
+		this.clazz = clazz;
+		this.objectSize = SizeOf.sizeOf(clazz);
 		bufferSize = capacity;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
+		pointer = (E[]) Array.newInstance(clazz, bufferSize);
 	}
 
 	@Override
@@ -31,34 +36,46 @@ public class OffheapList<E> implements AutoCloseable {
 		MemoryUtil.memFree(buffer);
 	}
 
-	public long add(E element) {
+	public int add(E element) {
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
-		long address = MemoryUtil.memAddress(buffer) + (size++ * objectSize);
-		MemoryHelper.copyMemory(element, address, objectSize);
-		return address;
+		set(size, element);
+		return size++;
 	}
 
-	public long set(int index, E element) {
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		MemoryHelper.copyMemory(element, address, objectSize);
-		return address;
+	public E remove(int index) {
+		E element = pointer[index];
+		if (element == null)
+			return null;
+
+		set(index, pointer[--size]);
+		pointer[size] = null;
+		return element;
 	}
 
-	public long remove(int index) {
+	protected void set(int index, E element) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		MemoryUtil.memSet(address, 0, objectSize);
-		// TODO rearange list
-		return address;
+		element.address = address;
+		element.save(buffer);
+		pointer[index] = element;
 	}
 
 	public E get(int index) {
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		return new Pointer<E>().address(address).data;
+		E element = pointer[index];
+		if (element == null) {
+			long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
+			element = Reflection.newInstance(clazz);
+			element.address = address;
+			pointer[index] = element;
+		}
+		return element;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void clear() {
 		size = 0;
+		// TODO change!
+		pointer = (E[]) Array.newInstance(clazz, bufferSize);
 	}
 
 	public int size() {
@@ -79,6 +96,7 @@ public class OffheapList<E> implements AutoCloseable {
 			clone.buffer.put(0, buffer, 0, objectSize * size);
 			clone.bufferSize = bufferSize;
 			clone.size = size;
+			clone.pointer = (E[]) pointer.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -95,6 +113,10 @@ public class OffheapList<E> implements AutoCloseable {
 		ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
 		buffer = newBuffer.put(0, buffer, 0, objectSize * bufferSize);
 		bufferSize = size;
+		@SuppressWarnings("unchecked")
+		E[] newArray = (E[]) Array.newInstance(clazz, size);
+		System.arraycopy(pointer, 0, newArray, 0, this.size);
+		pointer = newArray;
 	}
 
 	public void trimToSize() {
@@ -102,6 +124,10 @@ public class OffheapList<E> implements AutoCloseable {
 			ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
 			buffer = newBuffer.put(0, buffer, 0, objectSize * size);
 			bufferSize = size;
+			@SuppressWarnings("unchecked")
+			E[] newArray = (E[]) Array.newInstance(clazz, size);
+			System.arraycopy(pointer, 0, newArray, 0, size);
+			pointer = newArray;
 		}
 	}
 }

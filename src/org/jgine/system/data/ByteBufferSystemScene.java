@@ -7,8 +7,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.memory.MemoryHelper;
-import org.jgine.misc.utils.memory.Pointer;
-import org.jgine.misc.utils.reflection.Reflection;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
@@ -24,7 +22,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 
 	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene);
-		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
+//		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
 		bufferSize = ListSystemScene.GROW_SIZE;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}
@@ -39,7 +37,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
 		long address = MemoryUtil.memAddress(buffer) + (size++ * objectSize);
-		MemoryHelper.copyMemory(object, address, objectSize);
+		MemoryHelper.copyArray(object, address, objectSize);
 //		entity.system = new SystemObjectPointer<T2>(object);
 		return object;
 	}
@@ -61,7 +59,8 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 
 	public T2 getObject(int index) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		return new Pointer<T2>().address(address).data;
+//		return new Pointer<T2>().address(address).data;
+		return null;
 	}
 
 	protected void ensureCapacity(int minCapacity) {

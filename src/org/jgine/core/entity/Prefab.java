@@ -10,8 +10,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.utils.Reflection;
 import org.jgine.misc.utils.loader.PrefabLoader;
-import org.jgine.misc.utils.reflection.Reflection;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 

@@ -7,8 +7,6 @@ import java.util.Locale;
 
 public class Options {
 
-	// TODO implement NO_UNSAFE, FORCE_UNSAFE
-
 	/**
 	 * Whether certain debugging checks should be made.
 	 */
@@ -18,17 +16,6 @@ public class Options {
 	 * Whether the engine systems update synchron or asynchron.
 	 */
 	public static final boolean SYNCHRONIZED = a("jgine.synchronized", false).getBoolean();
-
-	/**
-	 * Whether <i>not</i> to use sun.misc.Unsafe when copying memory with MemUtil.
-	 */
-	public static final boolean NO_UNSAFE = a("jgine.nounsafe", false).getBoolean();
-
-	/**
-	 * Whether to <i>force</i> the use of sun.misc.Unsafe when copying memory with
-	 * MemUtil.
-	 */
-	public static final boolean FORCE_UNSAFE = a("jgine.forceUnsafe", false).getBoolean();
 
 	/**
 	 * Whether fast approximations of some java.lang.Math operations should be used.
@@ -48,18 +35,18 @@ public class Options {
 	public static final int SIN_LOOKUP_BITS = a("jgine.sinLookup.bits", 14).getInt();
 
 	/**
-	 * Whether to use a {@link NumberFormat} producing scientific notation output
-	 * when formatting matrix, vector and quaternion components to strings.
-	 */
-	public static final Option USE_NUMER_FORMAT = a("jgine.format.active", true);
-
-	/**
 	 * Whether to try using java.lang.Math.fma() in most matrix/vector/quaternion
 	 * operations if it is available. If the CPU does <i>not</i> support it, it will
 	 * be a lot slower than `a*b+c` and potentially generate a lot of memory
 	 * allocations for the emulation with `java.util.BigDecimal`, though.
 	 */
 	public static final boolean USE_MATH_FMA = a("jgine.useMathFma", false).getBoolean();
+
+	/**
+	 * Whether to use a {@link NumberFormat} producing scientific notation output
+	 * when formatting matrix, vector and quaternion components to strings.
+	 */
+	public static final Option USE_NUMER_FORMAT = a("jgine.format.active", true);
 
 	/**
 	 * Determines the number of decimal digits produced in the formatted numbers.
@@ -73,6 +60,8 @@ public class Options {
 	public static final NumberFormat NUMBER_FORMAT = decimalFormat();
 
 	public static final Option MAX_SOUNDS = a("jgine.maxSounds", 512);
+
+	public static final boolean USE_COMPRESSED_OOPS = a("UseCompressedOops", false).getBoolean();
 
 	public static Option a(String property, boolean defaultValue) {
 		Object value = OptionFile.getData(property, defaultValue);
@@ -128,8 +117,7 @@ public class Options {
 			char[] prec = new char[NUMBER_FORMAT_DECIMALS.getInt()];
 			Arrays.fill(prec, '0');
 			df = new DecimalFormat(" 0." + new String(prec) + "E0;-");
-		}
-		else {
+		} else {
 			df = NumberFormat.getNumberInstance(Locale.ENGLISH);
 			df.setGroupingUsed(false);
 		}

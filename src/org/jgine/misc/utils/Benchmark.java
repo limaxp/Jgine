@@ -22,6 +22,18 @@ public class Benchmark {
 		get(identifier).stopTimer();
 	}
 
+	public static void clear(Object identifier) {
+		get(identifier).clear();
+	}
+
+	public static long benchmark(Runnable func) {
+		BenchmarkData benchmark = new BenchmarkData();
+		benchmark.startTimer();
+		func.run();
+		benchmark.stopTimer();
+		return benchmark.getTime();
+	}
+
 	public static class BenchmarkData {
 
 		private long startTime;
@@ -46,6 +58,13 @@ public class Benchmark {
 			time += deltaTime;
 			size++;
 			startTime = 0;
+		}
+
+		public void clear() {
+			size = 0;
+			time = 0;
+			best = Long.MAX_VALUE;
+			worst = 0;
 		}
 
 		public long getTime() {

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.utils.reflection.Reflection;
+import org.jgine.misc.utils.Reflection;
 import org.jgine.misc.utils.script.EventManager;
 import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.EngineSystem;
