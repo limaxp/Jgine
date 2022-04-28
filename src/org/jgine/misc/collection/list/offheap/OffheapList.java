@@ -55,8 +55,7 @@ public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 
 	protected void set(int index, E element) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		element.address = address;
-		element.save(buffer);
+		element.writeAddress(address);
 		pointer[index] = element;
 	}
 
@@ -65,7 +64,7 @@ public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 		if (element == null) {
 			long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 			element = Reflection.newInstance(clazz);
-			element.address = address;
+			element.setAddress(address);
 			pointer[index] = element;
 		}
 		return element;

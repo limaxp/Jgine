@@ -1,44 +1,55 @@
 package org.jgine.misc.collection.list.offheap;
 
-import java.nio.ByteBuffer;
-
 import org.jgine.misc.utils.memory.MemoryHelper;
 
 public abstract class OffheapObject {
 
-	long address;
+	private long address;
+
+	public OffheapObject(int size) {
+		address = MemoryHelper.allocateMemory(29);
+	}
+
+	public abstract void set(long address);
+
+	public void writeAddress(long address) {
+		set(address);
+		this.address = address;
+	}
+
+	public void setAddress(long address) {
+		this.address = address;
+	}
 
 	public long getAddress() {
 		return address;
 	}
 
-	public abstract void save(ByteBuffer buffer);
-
-	protected void putByte(int offset, byte value) {
+	protected void setByte(int offset, byte value) {
 		MemoryHelper.putByte(address + offset, value);
 	}
 
-	protected void putChar(int offset, char value) {
+	protected void setChar(int offset, char value) {
 		MemoryHelper.putChar(address + offset, value);
 	}
 
-	protected void putShort(int offset, short value) {
+	protected void setShort(int offset, short value) {
 		MemoryHelper.putShort(address + offset, value);
 	}
 
-	protected void putInt(int offset, int value) {
+	protected void setInt(int offset, int value) {
 		MemoryHelper.putInt(address + offset, value);
 	}
 
-	protected void putLong(int offset, long value) {
+	protected void setLong(int offset, long value) {
 		MemoryHelper.putLong(address + offset, value);
 	}
 
-	protected void putFloat(int offset, float value) {
+	protected void setFloat(int offset, float value) {
 		MemoryHelper.putFloat(address + offset, value);
 	}
 
-	protected void putDouble(int offset, double value) {
+	protected void setDouble(int offset, double value) {
 		MemoryHelper.putDouble(address + offset, value);
 	}
 
@@ -68,5 +79,61 @@ public abstract class OffheapObject {
 
 	protected double getDouble(int offset) {
 		return MemoryHelper.getDouble(address + offset);
+	}
+
+	protected static void setByte_(long address, byte value) {
+		MemoryHelper.putByte(address, value);
+	}
+
+	protected static void setChar_(long address, char value) {
+		MemoryHelper.putChar(address, value);
+	}
+
+	protected static void setShort_(long address, short value) {
+		MemoryHelper.putShort(address, value);
+	}
+
+	protected static void setInt_(long address, int value) {
+		MemoryHelper.putInt(address, value);
+	}
+
+	protected static void setLong_(long address, long value) {
+		MemoryHelper.putLong(address, value);
+	}
+
+	protected static void setFloat_(long address, float value) {
+		MemoryHelper.putFloat(address, value);
+	}
+
+	protected static void setDouble_(long address, double value) {
+		MemoryHelper.putDouble(address, value);
+	}
+
+	protected static byte getByte_(long address) {
+		return MemoryHelper.getByte(address);
+	}
+
+	protected static char getChar_(long address) {
+		return MemoryHelper.getChar(address);
+	}
+
+	protected static short getShort_(long address) {
+		return MemoryHelper.getShort(address);
+	}
+
+	protected static int getInt_(long address) {
+		return MemoryHelper.getInt(address);
+	}
+
+	protected static long getLong_(long address) {
+		return MemoryHelper.getLong(address);
+	}
+
+	protected static float getFloat_(long address) {
+		return MemoryHelper.getFloat(address);
+	}
+
+	protected static double getDouble_(long address) {
+		return MemoryHelper.getDouble(address);
 	}
 }
