@@ -6,6 +6,10 @@ public abstract class OffheapObject {
 
 	private long address;
 
+	public OffheapObject(long address) {
+		this.address = address;
+	}
+
 	public OffheapObject(int size) {
 		address = MemoryHelper.allocateMemory(29);
 	}
