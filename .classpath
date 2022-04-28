@@ -6,6 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="assets"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lwjgl"/>
 	<classpathentry kind="lib" path="C:/Programming/Game/libraries/snakeyaml-1.25.jar"/>
@@ -15,5 +16,6 @@
 	<classpathentry kind="lib" path="C:/Programming/Game/libraries/luaj-3.0.1/lib/luaj-jse-3.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Programming/Game/libraries/bsh-2.1.0.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.jdt.annotation_2.2.600.v20200408-1511.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

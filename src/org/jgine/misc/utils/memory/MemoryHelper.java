@@ -1,7 +1,5 @@
 package org.jgine.misc.utils.memory;
 
-import org.lwjgl.system.MemoryUtil;
-
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
@@ -61,32 +59,60 @@ public final class MemoryHelper {
 		UNSAFE.copyMemory(src, scrOffset, dest, destOffset, bytes);
 	}
 
-	public static void putByte(long adress, byte value) {
-		UNSAFE.putByte(adress, value);
+	public static void putByte(long address, byte value) {
+		UNSAFE.putByte(address, value);
 	}
 
-	public static void putChar(long adress, char value) {
-		UNSAFE.putChar(adress, value);
+	public static void putChar(long address, char value) {
+		UNSAFE.putChar(address, value);
 	}
 
-	public static void putShort(long adress, short value) {
-		UNSAFE.putShort(adress, value);
+	public static void putShort(long address, short value) {
+		UNSAFE.putShort(address, value);
 	}
 
-	public static void putInt(long adress, int value) {
-		UNSAFE.putInt(adress, value);
+	public static void putInt(long address, int value) {
+		UNSAFE.putInt(address, value);
 	}
 
-	public static void putLong(long adress, long value) {
-		UNSAFE.putLong(adress, value);
+	public static void putLong(long address, long value) {
+		UNSAFE.putLong(address, value);
 	}
 
-	public static void putFloat(long adress, float value) {
-		UNSAFE.putFloat(adress, value);
+	public static void putFloat(long address, float value) {
+		UNSAFE.putFloat(address, value);
 	}
 
-	public static void putDouble(long adress, double value) {
-		UNSAFE.putDouble(adress, value);
+	public static void putDouble(long address, double value) {
+		UNSAFE.putDouble(address, value);
+	}
+
+	public static byte getByte(long address) {
+		return UNSAFE.getByte(address);
+	}
+
+	public static char getChar(long address) {
+		return UNSAFE.getChar(address);
+	}
+
+	public static short getShort(long address) {
+		return UNSAFE.getShort(address);
+	}
+
+	public static int getInt(long address) {
+		return UNSAFE.getInt(address);
+	}
+
+	public static long getLong(long address) {
+		return UNSAFE.getLong(address);
+	}
+
+	public static float getFloat(long address) {
+		return UNSAFE.getFloat(address);
+	}
+
+	public static double getDouble(long address) {
+		return UNSAFE.getDouble(address);
 	}
 
 	public static int getPageSize() {
