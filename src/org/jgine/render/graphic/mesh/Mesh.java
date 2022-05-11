@@ -24,7 +24,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.memory.BufferHelper;
+import org.jgine.misc.utils.BufferHelper;
 import org.jgine.render.graphic.material.Material;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;

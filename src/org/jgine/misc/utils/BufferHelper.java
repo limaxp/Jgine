@@ -1,4 +1,4 @@
-package org.jgine.misc.utils.memory;
+package org.jgine.misc.utils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

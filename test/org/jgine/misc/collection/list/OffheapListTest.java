@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.jgine.misc.collection.list.offheap.OffheapList;
 import org.jgine.misc.collection.list.offheap.OffheapObject;
 import org.junit.jupiter.api.Test;
+import org.lwjgl.system.MemoryUtil;
 
 public class OffheapListTest {
 
@@ -12,7 +13,6 @@ public class OffheapListTest {
 	void whenAddingElements_ThenContainsThoseElements() {
 		try (OffheapList<TestOffheapObject> offheapList = new OffheapList<TestOffheapObject>(TestOffheapObject.class)) {
 			byte b = (byte) 155;
-			char c = 'h';
 			short s = 22000;
 			int i = 1000000;
 			long l = 100000000000L;
@@ -20,7 +20,6 @@ public class OffheapListTest {
 			double d = 33.3333333333333;
 			TestOffheapObject in = new TestOffheapObject();
 			in.setB(b);
-			in.setC(c);
 			in.setS(s);
 			in.setI(i);
 			in.setL(l);
@@ -28,7 +27,6 @@ public class OffheapListTest {
 			in.setD(d);
 
 			assertEquals(in.getB(), b);
-			assertEquals(in.getC(), c);
 			assertEquals(in.getS(), s);
 			assertEquals(in.getI(), i);
 			assertEquals(in.getL(), l);
@@ -41,7 +39,6 @@ public class OffheapListTest {
 			assertEquals(out, in);
 
 			assertEquals(out.getB(), b);
-			assertEquals(out.getC(), c);
 			assertEquals(out.getS(), s);
 			assertEquals(out.getI(), i);
 			assertEquals(out.getL(), l);
@@ -49,7 +46,6 @@ public class OffheapListTest {
 			assertEquals(out.getD(), d);
 
 			assertEquals(out.getB(), in.getB());
-			assertEquals(out.getC(), in.getC());
 			assertEquals(out.getS(), in.getS());
 			assertEquals(out.getI(), in.getI());
 			assertEquals(out.getL(), in.getL());
@@ -60,14 +56,29 @@ public class OffheapListTest {
 
 	public static class TestOffheapObject extends OffheapObject {
 
+		private long address;
+
+		public TestOffheapObject(long address) {
+			this.address = address;
+		}
+
 		public TestOffheapObject() {
-			super(29);
+			address = MemoryUtil.nmemAlloc(29);
 		}
 
 		@Override
-		public void set(long address) {
+		public void setAddress(long address) {
+			this.address = address;
+		}
+
+		@Override
+		public long getAddress() {
+			return address;
+		}
+
+		@Override
+		public void write(long address) {
 			setByte_(address + 0, getB());
-			setChar_(address + 1, getC());
 			setShort_(address + 3, getS());
 			setInt_(address + 5, getI());
 			setLong_(address + 9, getL());
@@ -77,10 +88,6 @@ public class OffheapListTest {
 
 		public void setB(byte b) {
 			setByte(0, b);
-		}
-
-		public void setC(char c) {
-			setChar(1, c);
 		}
 
 		public void setS(short s) {
@@ -105,10 +112,6 @@ public class OffheapListTest {
 
 		public byte getB() {
 			return getByte(0);
-		}
-
-		public char getC() {
-			return getChar(1);
 		}
 
 		public short getS() {

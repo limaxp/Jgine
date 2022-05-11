@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.memory.MemoryHelper;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
@@ -37,7 +36,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
 		long address = MemoryUtil.memAddress(buffer) + (size++ * objectSize);
-		MemoryHelper.copyArray(object, address, objectSize);
+//		MemoryHelper.copyArray(object, address, objectSize);
 //		entity.system = new SystemObjectPointer<T2>(object);
 		return object;
 	}

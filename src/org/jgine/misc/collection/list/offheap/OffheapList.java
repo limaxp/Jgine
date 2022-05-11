@@ -55,7 +55,8 @@ public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 
 	protected void set(int index, E element) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		element.writeAddress(address);
+		element.write(address);
+		element.setAddress(address);
 		pointer[index] = element;
 	}
 

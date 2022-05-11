@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.nio.FloatBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.memory.BufferHelper;
+import org.jgine.misc.utils.BufferHelper;
 
 public class BaseMesh implements AutoCloseable {
 

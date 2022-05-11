@@ -21,7 +21,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.memory.BufferHelper;
+import org.jgine.misc.utils.BufferHelper;
 import org.lwjgl.BufferUtils;
 
 public class Mesh2D implements AutoCloseable {

@@ -22,7 +22,7 @@ import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.memory.BufferHelper;
+import org.jgine.misc.utils.BufferHelper;
 import org.lwjgl.BufferUtils;
 
 public class BillboardParticle implements AutoCloseable {
