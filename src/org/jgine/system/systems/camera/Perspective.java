@@ -1,4 +1,4 @@
-package org.jgine.system.systems.camera.perspective;
+package org.jgine.system.systems.camera;
 
 import java.util.Map;
 

@@ -7,8 +7,6 @@ import org.jgine.core.manager.ServiceManager;
 import org.jgine.misc.other.Property;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
-import org.jgine.system.systems.camera.perspective.Orthographic;
-import org.jgine.system.systems.camera.perspective.Perspective;
 
 public class CameraSystem extends EngineSystem {
 

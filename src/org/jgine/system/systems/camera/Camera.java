@@ -4,8 +4,6 @@ import org.jgine.core.manager.ServiceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.camera.perspective.Orthographic;
-import org.jgine.system.systems.camera.perspective.Perspective;
 import org.jgine.system.systems.transform.Transform;
 
 /**
@@ -54,6 +52,8 @@ public class Camera implements SystemObject {
 		this.perspective = perspective;
 		perspectiveMatrix = Matrix.asPerspective(perspective.fov, perspective.width, perspective.height,
 				perspective.zNear, perspective.zFar);
+//		perspectiveMatrix = new Matrix();
+//		perspectiveMatrix.setPerspective(perspective.fov, perspective.width / perspective.height, perspective.zNear, perspective.zFar, false);
 		setPerspective();
 	}
 
@@ -69,6 +69,9 @@ public class Camera implements SystemObject {
 		this.orthographic = orthographic;
 		orthographicMatrix = Matrix.asOrthographic(orthographic.left, orthographic.right, orthographic.bottom,
 				orthographic.top, orthographic.zNear, orthographic.zFar);
+//		orthographicMatrix = new Matrix();
+//		orthographicMatrix.setOrthographic(orthographic.left, orthographic.right, orthographic.bottom,
+//			orthographic.top, orthographic.zNear, orthographic.zFar, true);
 		setOrthographic();
 	}
 
@@ -78,14 +81,6 @@ public class Camera implements SystemObject {
 
 	public Orthographic getOrthographic() {
 		return orthographic;
-	}
-
-	public final Vector3f getLeft() {
-		return Vector3f.cross(forward, up);
-	}
-
-	public final Vector3f getRight() {
-		return Vector3f.cross(up, forward);
 	}
 
 	public final void rotateX(float angle) {
@@ -133,6 +128,14 @@ public class Camera implements SystemObject {
 
 	public Vector3f getUp() {
 		return up;
+	}
+
+	public final Vector3f getLeft() {
+		return Vector3f.cross(forward, up);
+	}
+
+	public final Vector3f getRight() {
+		return Vector3f.cross(up, forward);
 	}
 
 	public void setMainCamera() {

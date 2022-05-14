@@ -2,7 +2,7 @@ package org.jgine.render;
 
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.perspective.Perspective;
+import org.jgine.system.systems.camera.Perspective;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.graphic.GraphicObject;
