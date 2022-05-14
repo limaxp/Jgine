@@ -54,6 +54,8 @@ public abstract class Engine {
 		OpenGL.init();
 		SoundManager.init();
 		gameLoop = createGameLoop();
+		gameLoop.setUpdateFunction(this::update);
+		gameLoop.setRenderFunction(this::render);
 	}
 
 	private final void terminate() {
@@ -71,15 +73,17 @@ public abstract class Engine {
 	}
 
 	protected GameLoop createGameLoop() {
-		return new FixedTickGameLoop(this, 20);
+		return new FixedTickGameLoop(20);
+	}
+
+	public final GameLoop getGameLoop() {
+		return gameLoop;
 	}
 
 	public final void start() {
 		resume();
 		while (checkStatus()) {
-			OpenGL.clearFrameBuffer();
 			gameLoop.run();
-			window.swapBuffers();
 			GLFWHelper.pollGLFWEvents();
 			Input.update();
 		}
@@ -94,9 +98,10 @@ public abstract class Engine {
 		return !isShuttingDown();
 	}
 
-	public void onUpdate() {}
+	public void onUpdate() {
+	}
 
-	public final void update() {
+	private final void update() {
 		if (isPaused())
 			return;
 		updateScenes();
@@ -116,8 +121,7 @@ public abstract class Engine {
 						scene.getSystem(system).update();
 					UpdateManager.distributeChanges();
 				}
-			}
-			else {
+			} else {
 				for (SystemScene<?, ?> systemScene : scene.getSystems()) {
 					systemScene.update();
 					UpdateManager.distributeChanges();
@@ -126,15 +130,24 @@ public abstract class Engine {
 		}
 	}
 
-	public final void render() {
+	public void onRender() {
+	}
+
+	private final void render() {
+		OpenGL.clearFrameBuffer();
+		renderScenes();
+		window.swapBuffers();
+		onRender();
+	}
+
+	private final void renderScenes() {
 		for (Scene scene : scenes) {
 			if (scene.hasRenderOrder()) {
 				UpdateOrder renderOrder = scene.getRenderOrder();
 				for (int i = 0; i < renderOrder.size(); i++)
 					for (EngineSystem system : renderOrder.get(i))
 						scene.getSystem(system).render();
-			}
-			else {
+			} else {
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
 					systemScene.render();
 			}

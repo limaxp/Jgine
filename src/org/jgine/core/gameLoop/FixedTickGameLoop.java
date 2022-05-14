@@ -1,21 +1,18 @@
 package org.jgine.core.gameLoop;
 
-import org.jgine.core.Engine;
-
 public class FixedTickGameLoop extends GameLoop {
 
 	/**
 	 * in millisecond (ms)
 	 */
-	public final int tickTime;
+	protected int tickTime;
 	protected double previousTime;
 	protected double lag;
 	protected double frameTime;
 	protected int frames;
 	protected int fps;
 
-	public FixedTickGameLoop(Engine engine, int tickTime) {
-		super(engine);
+	public FixedTickGameLoop(int tickTime) {
 		this.tickTime = tickTime;
 		previousTime = System.nanoTime() / 1000000.0;
 	}
@@ -45,5 +42,13 @@ public class FixedTickGameLoop extends GameLoop {
 	@Override
 	public int getFps() {
 		return fps;
+	}
+
+	public void setTickTime(int tickTime) {
+		this.tickTime = tickTime;
+	}
+
+	public int getTickTime() {
+		return tickTime;
 	}
 }

@@ -1,22 +1,40 @@
 package org.jgine.core.gameLoop;
 
-import org.jgine.core.Engine;
-
 public abstract class GameLoop implements Runnable {
 
-	public final Engine engine;
+	private static Runnable NULL = new Runnable() {
 
-	public GameLoop(Engine engine) {
-		this.engine = engine;
-	}
+		@Override
+		public void run() {
+		}
+	};
+
+	private Runnable updateFunction = NULL;
+	private Runnable renderFunction = NULL;
 
 	public abstract int getFps();
 
 	public final void update() {
-		engine.update();
+		updateFunction.run();
 	}
 
 	public final void render() {
-		engine.render();
+		renderFunction.run();
+	}
+
+	public final void setUpdateFunction(Runnable updateFunction) {
+		this.updateFunction = updateFunction;
+	}
+
+	public final Runnable getUpdateFunction() {
+		return updateFunction;
+	}
+
+	public final void setRenderFunction(Runnable renderFunction) {
+		this.renderFunction = renderFunction;
+	}
+
+	public final Runnable getRenderFunction() {
+		return renderFunction;
 	}
 }
