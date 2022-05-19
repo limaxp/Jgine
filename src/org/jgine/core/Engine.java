@@ -11,8 +11,11 @@ import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.core.manager.UpdateManager;
+import org.jgine.core.window.DisplayManager;
+import org.jgine.core.window.Window;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.utils.options.OptionFile;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.render.OpenGL;
@@ -47,10 +50,9 @@ public abstract class Engine {
 		sceneMap = new ConcurrentHashMap<String, Scene>();
 		scenes = new IdentityArrayList<Scene>();
 		GLFWHelper.init();
-		// Dimension screenDimension = PlatformManager.getScreenResolution();
-		// window = new Window(name, screenDimension.width, screenDimension.height,
-		// false);
-		window = new Window(name, 640, 480, false);
+		DisplayManager.init();
+		window = new Window(name, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), false);
+		Input.setWindow(window);
 		OpenGL.init();
 		SoundManager.init();
 		gameLoop = createGameLoop();

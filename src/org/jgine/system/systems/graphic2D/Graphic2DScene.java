@@ -46,8 +46,8 @@ public class Graphic2DScene extends ListSystemScene<Graphic2DSystem, Graphic2DOb
 		for (; index < size; index++) {
 			Graphic2DObject object = objects[index];
 			// TODO use collider
-			if (frustumCulling.containsPoint(object.transform.getPosition()))
-				renderQueue.add(object);
+//			if (frustumCulling.containsPoint(object.transform.getPosition()))
+			renderQueue.add(object);
 		}
 	}
 

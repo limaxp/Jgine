@@ -1,4 +1,4 @@
-package org.jgine.core;
+package org.jgine.core.window;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_AUTO_ICONIFY;
@@ -39,10 +39,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowAttrib;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwHideWindow;
 import static org.lwjgl.glfw.GLFW.glfwIconifyWindow;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
@@ -71,10 +70,14 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
 import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.math.vector.Vector2i;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.OpenGL;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
@@ -83,7 +86,6 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -126,14 +128,13 @@ public class Window {
 	private boolean isFullScreen;
 	private boolean isFocused;
 
-	Window(String title, int width, int height, boolean isFullScreen) {
+	public Window(String title, int width, int height, boolean isFullScreen) {
 		this.title = title;
-		this.width = width;
-		this.height = height;
+		this.width = 800;
+		this.height = 600;
 		this.isFullScreen = isFullScreen;
 		this.isFocused = true;
 		create();
-		Input.setWindow(this);
 	}
 
 	protected void create() {
@@ -143,16 +144,17 @@ public class Window {
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-		if (isFullScreen)
-			id = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), 0);
-		else
-			id = glfwCreateWindow(width, height, title, 0, 0);
 
+		Display display = DisplayManager.getDisplay(Options.MONITOR.getInt());
+		if (isFullScreen) {
+			id = glfwCreateWindow(width, height, title, display.getId(), 0);
+		} else {
+			id = glfwCreateWindow(width, height, title, 0, 0);
+			center(display);
+		}
 		if (id == 0)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor()); // Get the resolution of the primary monitor
-		glfwSetWindowPos(id, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2); // Center the window
 		glfwMakeContextCurrent(id); // Make the OpenGL context current
 		show();
 		glfwSetWindowSizeCallback(id, this::resizeCallback);
@@ -181,6 +183,23 @@ public class Window {
 		glfwSetWindowTitle(id, title);
 	}
 
+	public void setPosition(Vector2i vec) {
+		glfwSetWindowPos(id, vec.x, vec.y);
+	}
+
+	public void setPosition(int x, int y) {
+		glfwSetWindowPos(id, x, y);
+	}
+
+	public Vector2i getPosition() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer x = stack.mallocInt(1);
+			IntBuffer y = stack.mallocInt(1);
+			glfwGetWindowPos(id, x, y);
+			return new Vector2i(x.get(0), y.get(0));
+		}
+	}
+
 	public void minimize() {
 		glfwIconifyWindow(id);
 	}
@@ -197,8 +216,12 @@ public class Window {
 		glfwShowWindow(id);
 	}
 
-	public long getMonitor() {
-		return glfwGetWindowMonitor(id);
+	@Nullable
+	public Display getDisplay() {
+		long monitor = glfwGetWindowMonitor(id);
+		if (monitor <= 0)
+			return null;
+		return new Display(monitor);
 	}
 
 	public void toggleFullScreen() {
@@ -209,15 +232,27 @@ public class Window {
 	}
 
 	public void setFullScreen() {
-		glfwSetWindowMonitor(id, glfwGetPrimaryMonitor(), 0, 0, width, height, 0);
+		glfwSetWindowMonitor(id, DisplayManager.getDisplay(getPosition()).getId(), 0, 0, width, height, 0);
 		isFullScreen = true;
 	}
 
 	public void setWindowed() {
-		glfwSetWindowMonitor(id, 0, 0, 0, width, height, 0);
+		Display display = getDisplay();
+		if (display == null)
+			return;
+		Vector2i displayPos = display.getVirtualPosition();
+		glfwSetWindowMonitor(id, 0, displayPos.x, displayPos.y, width, height, 0);
 		isFullScreen = false;
-		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(id, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
+		center();
+	}
+
+	public void center() {
+		center(DisplayManager.getDisplay(getPosition()));
+	}
+
+	public void center(Display display) {
+		Vector2i displayPos = display.getVirtualPosition();
+		setPosition(displayPos.x + (display.getWidth() - width) / 2, displayPos.y + (display.getHeight() - height) / 2);
 	}
 
 	public void hideCursor() {
@@ -407,7 +442,8 @@ public class Window {
 	 * @author Max
 	 */
 	@FunctionalInterface
-	public static interface KeyCallback extends GLFWKeyCallbackI {}
+	public static interface KeyCallback extends GLFWKeyCallbackI {
+	}
 
 	/**
 	 * scanCode is platform dependent but safe to save to disk!
@@ -415,17 +451,22 @@ public class Window {
 	 * @author Max
 	 */
 	@FunctionalInterface
-	public static interface CharCallback extends GLFWCharCallbackI {}
+	public static interface CharCallback extends GLFWCharCallbackI {
+	}
 
 	@FunctionalInterface
-	public static interface CursorPosCallback extends GLFWCursorPosCallbackI {}
+	public static interface CursorPosCallback extends GLFWCursorPosCallbackI {
+	}
 
 	@FunctionalInterface
-	public static interface MouseButtonCallback extends GLFWMouseButtonCallbackI {}
+	public static interface MouseButtonCallback extends GLFWMouseButtonCallbackI {
+	}
 
 	@FunctionalInterface
-	public static interface CursorEnterCallback extends GLFWCursorEnterCallbackI {}
+	public static interface CursorEnterCallback extends GLFWCursorEnterCallbackI {
+	}
 
 	@FunctionalInterface
-	public static interface ScrollCallback extends GLFWScrollCallbackI {}
+	public static interface ScrollCallback extends GLFWScrollCallbackI {
+	}
 }

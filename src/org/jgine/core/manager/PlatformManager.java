@@ -1,8 +1,5 @@
 package org.jgine.core.manager;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import org.lwjgl.system.MemoryUtil;
 
 public class PlatformManager {
@@ -45,9 +42,5 @@ public class PlatformManager {
 
 	public static long getMaxMemory() {
 		return Runtime.getRuntime().maxMemory();
-	}
-
-	public static Dimension getScreenResolution() {
-		return Toolkit.getDefaultToolkit().getScreenSize();
 	}
 }

@@ -5,6 +5,8 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.jgine.core.window.DisplayManager;
+
 public class Options {
 
 	/**
@@ -59,7 +61,15 @@ public class Options {
 	 */
 	public static final NumberFormat NUMBER_FORMAT = decimalFormat();
 
-	public static final Option MAX_SOUNDS = a("jgine.maxSounds", 512);
+	public static final Option MAX_SOUNDS = a("jgine.sound.maxSounds", 512);
+
+	public static final Option RESOLUTION_X = a("jgine.graphic.resolution.x",
+			DisplayManager.getPrimaryDisplay().getWidth());
+
+	public static final Option RESOLUTION_Y = a("jgine.graphic.resolution.y",
+			DisplayManager.getPrimaryDisplay().getHeight());
+
+	public static final Option MONITOR = a("jgine.graphic.monitor", 0);
 
 	public static final boolean USE_COMPRESSED_OOPS = a("UseCompressedOops", false).getBoolean();
 
