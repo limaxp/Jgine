@@ -64,6 +64,6 @@ void main() {
   	  	textX = -uv.x / textureColums + (tileText.x + 1) / textureColums;
     else 
     	textX = uv.x / textureColums + tileText.x / textureColums;
-    float textY = uv.y / textureRows + tileText.y / textureColums;
+    float textY = uv.y / textureRows + tileText.y / textureRows;
     textCoord = vec2(textX, textY);
 }

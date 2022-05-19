@@ -56,6 +56,7 @@ public class Mesh implements AutoCloseable {
 		public static final int LINES = GL_LINES;
 		public static final int LINE_STRIP = GL_LINE_STRIP;
 		public static final int LINE_LOOP = GL_LINE_LOOP;
+		public static final int POINTS = GL_POINTS;
 	}
 
 	public Mesh(AIMesh mesh) {

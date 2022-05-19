@@ -1,6 +1,15 @@
 package org.jgine.core.manager;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +26,10 @@ import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.Model;
 import org.jgine.sound.SoundBuffer;
 
-public class ResourceManager { 
-	
-	// TODO should be able to dynamic load resources if used and free resources if not!
+public class ResourceManager {
+
+	// TODO should be able to dynamic load resources if used and free resources if
+	// not!
 	// TODO should be able to cache used TrueTypeFont stuff!
 
 	private static final Map<String, Model> MODEL_MAP = new HashMap<String, Model>();
@@ -45,8 +55,7 @@ public class ResourceManager {
 					Logger.warn("ResourceManager: Model name conflict '" + name + "'");
 					MODEL_MAP.put(name, old);
 					model.close();
-				}
-				else
+				} else
 					models.put(name, model);
 			}
 		}
@@ -60,8 +69,7 @@ public class ResourceManager {
 					Logger.warn("ResourceManager: Texture name conflict '" + name + "'");
 					TEXTURE_MAP.put(name, old);
 					texture.close();
-				}
-				else
+				} else
 					textures.put(name, texture);
 			}
 		}
@@ -73,14 +81,14 @@ public class ResourceManager {
 				if (old != null) {
 					Logger.warn("ResourceManager: Shader name conflict '" + name + "'");
 					SHADER_MAP.put(name, old);
-				}
-				else
+				} else
 					shaders.put(name, shader);
 			}
 		}
 
 		@Override
-		public void prefabCallback(String name, @Nullable Prefab prefab) {}
+		public void prefabCallback(String name, @Nullable Prefab prefab) {
+		}
 
 		@Override
 		public void soundCallback(String name, @Nullable SoundBuffer sound) {
@@ -90,8 +98,7 @@ public class ResourceManager {
 					Logger.warn("ResourceManager: Sound name conflict '" + name + "'");
 					SOUND_MAP.put(name, old);
 					sound.close();
-				}
-				else
+				} else
 					sounds.put(name, sound);
 			}
 		}
@@ -103,8 +110,7 @@ public class ResourceManager {
 				if (old != null) {
 					Logger.warn("ResourceManager: Script name conflict '" + name + "'");
 					SCRIPT_MAP.put(name, old);
-				}
-				else
+				} else
 					scripts.put(name, script);
 			}
 		}
@@ -239,5 +245,28 @@ public class ResourceManager {
 			for (Material material : waiting)
 				material.setTexture(texture);
 		}
+	}
+
+	public static Path getResourcePath(String name) {
+		try {
+			return getResourcePath_(name);
+		} catch (URISyntaxException | IOException e) {
+			Logger.err("ResourceManager: Error on getting resource path!", e);
+			return null;
+		}
+	}
+
+	public static Path getResourcePath_(String name) throws URISyntaxException, IOException {
+		URI uri = Thread.currentThread().getContextClassLoader().getResource(name).toURI();
+		if (uri.getScheme().equals("jar"))
+			try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap())) {
+				return fileSystem.getPath(name);
+			}
+		else
+			return Paths.get(uri);
+	}
+
+	public static InputStream getResourceInputStream(String name) {
+		return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
 	}
 }
