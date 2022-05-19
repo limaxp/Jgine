@@ -130,8 +130,8 @@ public class Window {
 
 	public Window(String title, int width, int height, boolean isFullScreen) {
 		this.title = title;
-		this.width = 800;
-		this.height = 600;
+		this.width = width;
+		this.height = height;
 		this.isFullScreen = isFullScreen;
 		this.isFocused = true;
 		create();
