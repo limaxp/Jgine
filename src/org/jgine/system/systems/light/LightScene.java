@@ -24,6 +24,14 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
+	public void initObject(Entity entity, Light object) {
+	}
+
+	@Override
 	public Light addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			pointLights.add((PointLight) object);
@@ -48,5 +56,13 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 
 	public List<DirectionalLight> getDirectionalLights() {
 		return Collections.unmodifiableList(directionalLights);
+	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void render() {
 	}
 }

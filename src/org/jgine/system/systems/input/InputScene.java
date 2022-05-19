@@ -11,6 +11,10 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
 	public void initObject(Entity entity, InputHandler object) {
 		object.setEntity(entity);
 	}
@@ -19,5 +23,9 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	public void update() {
 		for (int i = 0; i < size; i++)
 			objects[i].checkInput();
+	}
+
+	@Override
+	public void render() {
 	}
 }

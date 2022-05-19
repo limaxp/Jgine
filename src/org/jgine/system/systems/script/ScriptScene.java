@@ -13,6 +13,10 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
 	public void initObject(Entity entity, ScriptObject object) {
 		object.put("entity", entity);
 		object.script.onEnable();
@@ -34,5 +38,9 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 		size = index + size;
 		for (; index < size; index++)
 			objects[index].script.update();
+	}
+
+	@Override
+	public void render() {
 	}
 }

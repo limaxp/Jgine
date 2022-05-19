@@ -16,9 +16,9 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 		this.scene = scene;
 	}
 
-	public void free() {}
+	public abstract void free();
 
-	public void initObject(Entity entity, T2 object) {}
+	public abstract void initObject(Entity entity, T2 object);
 
 	public abstract T2 addObject(Entity entity, T2 object);
 
@@ -32,16 +32,17 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract Collection<T2> getObjects();
 
-	public void update() {}
+	public abstract void update();
 
-	public void render() {}
+	public abstract void render();
 
 	@SuppressWarnings("unchecked")
 	public final void parentUpdate_(Entity entity, SystemObject object) {
 		parentUpdate(entity, (T2) object);
 	}
 
-	public void parentUpdate(Entity entity, T2 object) {}
+	public void parentUpdate(Entity entity, T2 object) {
+	}
 
 	@Override
 	public boolean equals(Object obj) {

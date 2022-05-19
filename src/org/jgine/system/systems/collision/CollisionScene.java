@@ -22,6 +22,10 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
 	public void initObject(Entity entity, Collider object) {
 		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
 	}

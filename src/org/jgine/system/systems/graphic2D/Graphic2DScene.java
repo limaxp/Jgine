@@ -24,6 +24,10 @@ public class Graphic2DScene extends ListSystemScene<Graphic2DSystem, Graphic2DOb
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
 	public void initObject(Entity entity, Graphic2DObject object) {
 		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
 	}

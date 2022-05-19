@@ -13,8 +13,8 @@ import org.jgine.system.systems.transform.TransformSystem;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
-	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> entity.getSystem(this).setPosition(
-			(Vector3f) pos);
+	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> entity.getSystem(this)
+			.setPosition((Vector3f) pos);
 
 	private float gravity;
 	private float airResistance;
@@ -55,8 +55,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 				object.x += object.velX;
 				object.velX *= airResistance;
 				update = true;
-			}
-			else
+			} else
 				object.velX = 0;
 			object.motX = 0;
 
@@ -67,8 +66,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 				object.y += object.velY;
 				object.velY *= airResistance;
 				update = true;
-			}
-			else
+			} else
 				object.velY = 0;
 			object.motY = 0;
 
@@ -77,14 +75,17 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 				object.z += object.velZ;
 				object.velZ *= airResistance;
 				update = true;
-			}
-			else
+			} else
 				object.velZ = 0;
 			object.motZ = 0;
 
 			if (update)
 				UpdateManager.update(scene, "position", entities[index], new Vector3f(object.x, object.y, object.z));
 		}
+	}
+
+	@Override
+	public void render() {
 	}
 
 	public void setGravity(float gravity) {

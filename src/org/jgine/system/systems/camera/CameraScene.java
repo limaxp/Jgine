@@ -12,9 +12,21 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
+	public void free() {
+	}
+
+	@Override
 	public void initObject(Entity entity, Camera object) {
 		if (system.getCamera() == null)
 			system.setCamera(object);
 		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void render() {
 	}
 }
