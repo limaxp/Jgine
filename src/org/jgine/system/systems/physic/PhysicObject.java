@@ -11,6 +11,16 @@ public class PhysicObject implements SystemObject {
 	protected float velX, velY, velZ;
 	protected float motX, motY, motZ;
 
+	final void setPosition(Vector3f vector) {
+		x = vector.x;
+		y = vector.y;
+		z = vector.z;
+	}
+
+	public final Vector3f getPosition() {
+		return new Vector3f(x, y, z);
+	}
+
 	public final void setVelocity(Vector3f vector) {
 		velX = vector.x;
 		velY = vector.y;
@@ -36,16 +46,6 @@ public class PhysicObject implements SystemObject {
 	public final void addVelocity(Vector2f vector) {
 		motX += vector.x;
 		motY += vector.y;
-	}
-
-	final void setPosition(Vector3f vector) {
-		x += vector.x;
-		y += vector.y;
-		z += vector.z;
-	}
-
-	public final Vector3f getPosition() {
-		return new Vector3f(x, y, z);
 	}
 
 	public final Vector3f getVelocity() {
