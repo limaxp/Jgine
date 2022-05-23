@@ -87,6 +87,9 @@ public class Mesh implements AutoCloseable {
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(vbo);
 		glDeleteBuffers(ibo);
+		vao = 0;
+		vbo = 0;
+		ibo = 0;
 	}
 
 	public final void render() {

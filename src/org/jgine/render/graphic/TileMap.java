@@ -111,6 +111,9 @@ public class TileMap implements AutoCloseable {
 			glDeleteVertexArrays(vao);
 			glDeleteBuffers(vbo);
 			glDeleteBuffers(databo);
+			vao = 0;
+			vbo = 0;
+			databo = 0;
 		}
 
 		public final void render() {

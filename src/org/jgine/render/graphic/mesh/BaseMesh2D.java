@@ -53,6 +53,8 @@ public class BaseMesh2D implements AutoCloseable {
 	public final void close() {
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(vbo);
+		vao = 0;
+		vbo = 0;
 	}
 
 	public final void render() {

@@ -35,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.FastMath;
 import org.jgine.render.graphic.material.TextureAnimationHandler.AnimationFrame;
 import org.lwjgl.BufferUtils;
@@ -67,11 +68,13 @@ public class Texture implements AutoCloseable {
 	private int rows;
 	private AnimationFrame[] animation;
 
-	public Texture() {}
+	public Texture() {
+	}
 
 	@Override
 	public final void close() {
 		glDeleteBuffers(id);
+		id = 0;
 	}
 
 	public final void load(BufferedImage image) {
@@ -106,19 +109,19 @@ public class Texture implements AutoCloseable {
 		setDefaultParameter();
 	}
 
-	public final void load(ByteBuffer data, int width, int height, int format) {
+	public final void load(@Nullable ByteBuffer data, int width, int height, int format) {
 		load(data, width, height, 1, 1, format, format);
 	}
 
-	public final void load(ByteBuffer data, int width, int height, int internalformat, int format) {
+	public final void load(@Nullable ByteBuffer data, int width, int height, int internalformat, int format) {
 		load(data, width, height, 1, 1, internalformat, format);
 	}
 
-	public final void load(ByteBuffer data, int width, int height, int colums, int rows, int format) {
+	public final void load(@Nullable ByteBuffer data, int width, int height, int colums, int rows, int format) {
 		load(data, width, height, colums, rows, format, format);
 	}
 
-	public final void load(ByteBuffer data, int width, int height, int colums, int rows, int internalformat,
+	public final void load(@Nullable ByteBuffer data, int width, int height, int colums, int rows, int internalformat,
 			int format) {
 		close();
 		id = glGenTextures();
@@ -250,8 +253,7 @@ public class Texture implements AutoCloseable {
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2 - (image.width & 1));
 			}
 			format = GL_RGB;
-		}
-		else {
+		} else {
 			premultiplyAlpha(image);
 			format = GL_RGBA;
 		}
@@ -267,19 +269,14 @@ public class Texture implements AutoCloseable {
 			int output_h = Math.max(1, input_h >> 1);
 
 			ByteBuffer output_pixels = memAlloc(output_w * output_h * image.components);
-			stbir_resize_uint8_generic(
-					input_pixels, input_w, input_h, input_w * image.components,
-					output_pixels, output_w, output_h, output_w * image.components,
-					image.components, image.components == 4 ? 3 : STBIR_ALPHA_CHANNEL_NONE,
-					STBIR_FLAG_ALPHA_PREMULTIPLIED,
-					STBIR_EDGE_CLAMP,
-					STBIR_FILTER_MITCHELL,
-					STBIR_COLORSPACE_SRGB);
+			stbir_resize_uint8_generic(input_pixels, input_w, input_h, input_w * image.components, output_pixels,
+					output_w, output_h, output_w * image.components, image.components,
+					image.components == 4 ? 3 : STBIR_ALPHA_CHANNEL_NONE, STBIR_FLAG_ALPHA_PREMULTIPLIED,
+					STBIR_EDGE_CLAMP, STBIR_FILTER_MITCHELL, STBIR_COLORSPACE_SRGB);
 
 			if (mipmapLevel == 0) {
 				stbi_image_free(image.data);
-			}
-			else {
+			} else {
 				memFree(input_pixels);
 			}
 
@@ -292,8 +289,7 @@ public class Texture implements AutoCloseable {
 		}
 		if (mipmapLevel == 0) {
 			stbi_image_free(image.data);
-		}
-		else {
+		} else {
 			memFree(input_pixels);
 		}
 	}

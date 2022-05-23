@@ -82,6 +82,8 @@ public class BillboardParticle implements AutoCloseable {
 	public final void close() {
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(posbo);
+		vao = 0;
+		posbo = 0;
 	}
 
 	public final void render() {
