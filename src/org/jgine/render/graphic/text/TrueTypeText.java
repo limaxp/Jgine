@@ -1,7 +1,6 @@
 package org.jgine.render.graphic.text;
 
 import static org.lwjgl.opengl.GL11.GL_RED;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL33.GL_TEXTURE_SWIZZLE_RGBA;
@@ -48,7 +47,7 @@ public class TrueTypeText extends Text implements AutoCloseable {
 
 		Texture texture = new Texture();
 		texture.load(bitmap, BITMAP_W, BITMAP_H, GL11.GL_RED);
-		texture.setParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_ZERO, GL_ZERO, GL_ZERO, GL_RED });
+		texture.setParameteriv(GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_ZERO, GL_ZERO, GL_ZERO, GL_RED });
 		material.setTexture(texture);
 		return cdata;
 	}
@@ -81,8 +80,7 @@ public class TrueTypeText extends Text implements AutoCloseable {
 					y.put(0, lineY = y.get(0) + (font.ascent - font.descent + font.lineGap) * scale);
 					x.put(0, 0.0f);
 					continue;
-				}
-				else if (cp < 32 || 128 <= cp) {
+				} else if (cp < 32 || 128 <= cp) {
 					continue;
 				}
 
@@ -94,10 +92,8 @@ public class TrueTypeText extends Text implements AutoCloseable {
 					x.put(0, x.get(0) + stbtt_GetCodepointKernAdvance(font.info, cp, pCodePoint.get(0)) * scale);
 				}
 
-				float x0 = scale(cpX, q.x0(), factorX),
-						x1 = scale(cpX, q.x1(), factorX),
-						y0 = scale(lineY, -q.y1(), factorY),
-						y1 = scale(lineY, -q.y0(), factorY);
+				float x0 = scale(cpX, q.x0(), factorX), x1 = scale(cpX, q.x1(), factorX),
+						y0 = scale(lineY, -q.y1(), factorY), y1 = scale(lineY, -q.y0(), factorY);
 
 				// Left Top vertex
 				positions.add(x0);

@@ -1,6 +1,12 @@
 package org.jgine.render.graphic.material;
 
+import static org.lwjgl.opengl.GL11.GL_CLAMP;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_NEAREST_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NEAREST_MIPMAP_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
@@ -20,6 +26,7 @@ import static org.lwjgl.opengl.GL11.glTexParameterf;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL11.glTexParameteriv;
 import static org.lwjgl.opengl.GL11.glTexSubImage2D;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImageResize.STBIR_ALPHA_CHANNEL_NONE;
@@ -43,6 +50,22 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
 public class Texture implements AutoCloseable {
+
+	// Some filters, included here for convenience
+	public static final int LINEAR = GL_LINEAR;
+	public static final int NEAREST = GL_NEAREST;
+	public static final int LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR;
+	public static final int LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST;
+	public static final int NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST;
+	public static final int NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR;
+
+	// Some wrap modes, included here for convenience
+	public static final int CLAMP = GL_CLAMP;
+	public static final int CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
+	public static final int REPEAT = GL_REPEAT;
+
+	public static final int DEFAULT_FILTER = NEAREST;
+	public static final int DEFAULT_WRAP = REPEAT;
 
 	public static final Texture NONE;
 
@@ -135,27 +158,39 @@ public class Texture implements AutoCloseable {
 	}
 
 	private final void setDefaultParameter() {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_LINEAR
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		setWrap(DEFAULT_WRAP);
+		setFilter(DEFAULT_FILTER);
 		// glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
-	public final void setParameteri(int target, int parameter, int value) {
-		glTexParameteri(target, parameter, value);
+	public void setFilter(int filter) {
+		setFilter(filter, filter);
 	}
 
-	public final void setParameterf(int target, int parameter, int value) {
-		glTexParameterf(target, parameter, value);
+	public void setFilter(int minFilter, int magFilter) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 	}
 
-	public final void setParameteriv(int target, int parameter, int... values) {
-		glTexParameteriv(target, parameter, values);
+	public void setWrap(int wrap) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 	}
 
-	public final void setParameteriv(int target, int parameter, IntBuffer values) {
-		glTexParameteriv(target, parameter, values);
+	public final void setParameteri(int parameter, int value) {
+		glTexParameteri(GL_TEXTURE_2D, parameter, value);
+	}
+
+	public final void setParameterf(int parameter, int value) {
+		glTexParameterf(GL_TEXTURE_2D, parameter, value);
+	}
+
+	public final void setParameteriv(int parameter, int... values) {
+		glTexParameteriv(GL_TEXTURE_2D, parameter, values);
+	}
+
+	public final void setParameteriv(int parameter, IntBuffer values) {
+		glTexParameteriv(GL_TEXTURE_2D, parameter, values);
 	}
 
 	public final void bind() {
@@ -166,13 +201,6 @@ public class Texture implements AutoCloseable {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	/**
-	 * Must be bind to update!
-	 * 
-	 * @param xOffset
-	 * @param yOffset
-	 * @param buffer
-	 */
 	public final void update(int xOffset, int yOffset, ByteBuffer buffer) {
 		glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	}
