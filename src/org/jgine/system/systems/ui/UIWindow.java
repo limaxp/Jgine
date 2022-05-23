@@ -33,6 +33,10 @@ public class UIWindow extends UIObject {
 	public UIWindow(int scale, boolean moveAble) {
 		this(scale, scale, moveAble);
 	}
+	
+	public UIWindow(int width, int height) {
+		this(width, height, false);
+	}
 
 	public UIWindow(int width, int height, boolean moveAble) {
 		childs = new UnorderedIdentityArrayList<UIObject>();
@@ -62,32 +66,31 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
-	protected void free() {}
+	protected void free() {
+	}
 
 	@Override
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
-		UIRenderer.renderLine(getTransform(),
-				new float[] {
-						-1, -1, 0,
-						1, -1, 0,
-						1, 1, 0,
-						-1, 1, 0
-				},
+		UIRenderer.renderLine(getTransform(), new float[] { -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0 },
 				new Material(borderColor), true);
 	}
 
 	@Override
-	public void onFocus() {}
+	public void onFocus() {
+	}
 
 	@Override
-	public void onDefocus() {}
+	public void onDefocus() {
+	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {}
+	public void onClick(int mouseX, int mouseY) {
+	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {}
+	public void onRelease(int mouseX, int mouseY) {
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -110,8 +113,7 @@ public class UIWindow extends UIObject {
 						uiObjectType = UIObjectTypes.get((String) type);
 						if (uiObjectType == null)
 							uiObjectType = UIObjectTypes.LABEL;
-					}
-					else
+					} else
 						uiObjectType = UIObjectTypes.LABEL;
 					UIObject uiObject = uiObjectType.get();
 					uiObject.load(childData);
@@ -122,7 +124,7 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
-	public UIObjectType<?> getType() {
+	public UIObjectType<? extends UIWindow> getType() {
 		return UIObjectTypes.WINDOW;
 	}
 

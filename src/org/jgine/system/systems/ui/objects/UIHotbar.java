@@ -19,10 +19,11 @@ public class UIHotbar extends UIObject {
 	private DragTask dragTask;
 
 	public UIHotbar() {
-		thickness = 50;
-		setPos(0, RASTER_SIZE - thickness);
-		setScale(RASTER_SIZE, thickness);
+		this(50);
+	}
 
+	public UIHotbar(int thickness) {
+		setThickness(thickness);
 		background = new Material(new Vector4f(1, 1, 1, 0.4f));
 	}
 
@@ -35,10 +36,12 @@ public class UIHotbar extends UIObject {
 	}
 
 	@Override
-	protected void create(Entity entity) {}
+	protected void create(Entity entity) {
+	}
 
 	@Override
-	protected void free() {}
+	protected void free() {
+	}
 
 	@Override
 	public void render() {
@@ -46,10 +49,12 @@ public class UIHotbar extends UIObject {
 	}
 
 	@Override
-	public void onFocus() {}
+	public void onFocus() {
+	}
 
 	@Override
-	public void onDefocus() {}
+	public void onDefocus() {
+	}
 
 	@Override
 	public void onClick(int mouseX, int mouseY) {
@@ -69,7 +74,7 @@ public class UIHotbar extends UIObject {
 	}
 
 	@Override
-	public UIObjectType<?> getType() {
+	public UIObjectType<? extends UIHotbar> getType() {
 		return UIObjectTypes.HOTBAR;
 	}
 
@@ -83,6 +88,8 @@ public class UIHotbar extends UIObject {
 
 	public void setThickness(int thickness) {
 		this.thickness = thickness;
+		setPos(0, RASTER_SIZE - thickness);
+		setScale(RASTER_SIZE, thickness);
 	}
 
 	public int getThickness() {

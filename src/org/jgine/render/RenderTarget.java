@@ -64,6 +64,8 @@ public class RenderTarget implements AutoCloseable {
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			Logger.warn("RenderTarget: Error creating FrameBuffer!");
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	@Override
