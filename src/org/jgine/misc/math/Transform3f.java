@@ -56,7 +56,13 @@ public class Transform3f implements Cloneable {
 		matrix.rotationXYZ(rotation.x, rotation.y, rotation.z);
 		matrix.scaleLocal(scale); // return new Matrix().scaling(scale).mult(matrix);
 		return matrix;
+	}
 
+	public static Matrix calculateMatrix(Matrix matrix, Vector3f position, Vector3f scale) {
+		matrix.clear();
+		matrix.setPosition(position);
+		matrix.scaleLocal(scale);
+		return matrix;
 	}
 
 	public final Matrix getMatrix() {

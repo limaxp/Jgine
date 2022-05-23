@@ -94,7 +94,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	protected Matrix calculateTransform() {
 		transform = Transform3f.calculateMatrix(transform,
 				new Vector3f(-1 + ((x + width * 0.5f) * BASE_SCALE_x2), -1 + ((y + height * 0.5f) * BASE_SCALE_x2), 0),
-				Vector3f.NULL, new Vector3f(width * BASE_SCALE, height * BASE_SCALE, 0));
+				new Vector3f(width * BASE_SCALE, height * BASE_SCALE, 0));
 		if (hasWindow())
 			transform.mult(window.getTransform());
 		return transform;
