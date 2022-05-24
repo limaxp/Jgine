@@ -35,6 +35,6 @@ public class TextureShader extends Shader {
 		setUniform2f(uniform_textureOffsets, textXOffset, textYOffset);
 		setUniformi(uniform_textureColums, colums);
 		setUniformi(uniform_textureRows, rows);
-		setUniform4f(uniform_baseColor, material.color);
+		setUniformColor(uniform_baseColor, material.color);
 	}
 }

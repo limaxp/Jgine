@@ -21,6 +21,6 @@ public class CircleShader extends Shader {
 	@Override
 	public void setMaterial(Material material) {
 		setUniformi(uniform_uTexture, 0);
-		setUniform3f(uniform_color, material.color);
+		setUniformColor(uniform_color, material.color);
 	}
 }

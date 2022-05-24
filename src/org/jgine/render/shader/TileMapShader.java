@@ -27,6 +27,6 @@ public class TileMapShader extends Shader {
 		setUniformi(uniform_uTexture, 0);
 		setUniformi(uniform_textureColums, texture.getColums());
 		setUniformi(uniform_textureRows, texture.getRows());
-		setUniform4f(uniform_color, material.color);
+		setUniformColor(uniform_color, material.color);
 	}
 }

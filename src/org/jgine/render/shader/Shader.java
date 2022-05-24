@@ -25,8 +25,8 @@ import static org.lwjgl.opengl.GL20.glUniform3f;
 import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
-import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.*;
 
 import java.nio.FloatBuffer;
 
@@ -36,6 +36,7 @@ import org.jgine.misc.math.rotation.Quaternionf;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.graphic.material.Material;
 import org.lwjgl.system.MemoryStack;
@@ -45,10 +46,12 @@ public abstract class Shader {
 	public static final Shader NULL = new Shader() {
 
 		@Override
-		public void setTransform(Matrix matrix, Matrix projectionMatrix) {}
+		public void setTransform(Matrix matrix, Matrix projectionMatrix) {
+		}
 
 		@Override
-		public void setMaterial(Material material) {}
+		public void setMaterial(Material material) {
+		}
 	};
 
 	public final String name;
@@ -88,7 +91,8 @@ public abstract class Shader {
 		glUseProgram(program);
 	}
 
-	public final void unbind() {}
+	public final void unbind() {
+	}
 
 	public final int addUniform(String uniform) {
 		int uniformLoc = glGetUniformLocation(program, uniform);
@@ -115,8 +119,12 @@ public abstract class Shader {
 		glUniform2f(uniform, f1, f2);
 	}
 
-	public final void setUniform2f(int uniform, float[] vector) {
-		glUniform2f(uniform, vector[0], vector[1]);
+	public final void setUniform2f(int uniform, float[] arr) {
+		glUniform2fv(uniform, arr);
+	}
+
+	public final void setUniform2f(int uniform, FloatBuffer buffer) {
+		glUniform2fv(uniform, buffer);
 	}
 
 	public final void setUniform3f(int uniform, Vector3f vector) {
@@ -127,8 +135,12 @@ public abstract class Shader {
 		glUniform3f(uniform, f1, f2, f3);
 	}
 
-	public final void setUniform3f(int uniform, float[] vector) {
-		glUniform3f(uniform, vector[0], vector[1], vector[2]);
+	public final void setUniform3f(int uniform, float[] arr) {
+		glUniform3fv(uniform, arr);
+	}
+
+	public final void setUniform3f(int uniform, FloatBuffer buffer) {
+		glUniform3fv(uniform, buffer);
 	}
 
 	public final void setUniform4f(int uniform, Vector4f vector) {
@@ -143,19 +155,29 @@ public abstract class Shader {
 		glUniform4f(uniform, f1, f2, f3, f4);
 	}
 
-	public final void setUniform4f(int uniform, float[] quaternion) {
-		glUniform4f(uniform, quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+	public final void setUniform4f(int uniform, float[] arr) {
+		glUniform4fv(uniform, arr);
+	}
+
+	public final void setUniform4f(int uniform, FloatBuffer buffer) {
+		glUniform4fv(uniform, buffer);
+	}
+
+	public final void setUniformColor(int uniform, int color) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = Color.toFloatBuffer(stack.mallocFloat(4), color);
+			buffer.flip();
+			glUniform4fv(uniform, buffer);
+		}
 	}
 
 	public final void setUniformMatrix(int uniform, float[] matrix) {
 		glUniformMatrix4fv(uniform, true, matrix);
 	}
 
-	public final void setUniformMatrix(int uniform,
-			float m00, float m01, float m02, float m03,
-			float m10, float m11, float m12, float m13,
-			float m20, float m21, float m22, float m23,
-			float m30, float m31, float m32, float m33) {
+	public final void setUniformMatrix(int uniform, float m00, float m01, float m02, float m03, float m10, float m11,
+			float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32,
+			float m33) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer buffer = stack.mallocFloat(16);
 			buffer.put(m00);

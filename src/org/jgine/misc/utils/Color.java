@@ -1,5 +1,7 @@
 package org.jgine.misc.utils;
 
+import java.nio.FloatBuffer;
+
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector3i;
 import org.jgine.misc.math.vector.Vector4f;
@@ -28,15 +30,15 @@ public class Color {
 	public static final int MAGENTA = rgb(255, 0, 255);
 
 	public static int rgb(byte r, byte g, byte b) {
-		return 0xff000000 | r << 16 | g << 8 | b << 0;
+		return 0xff000000 | r << 16 | g << 8 | b;
 	}
 
 	public static int rgba(byte r, byte g, byte b, byte a) {
-		return 0x00000000 | a << 24 | r << 16 | g << 8 | b << 0;
+		return 0x00000000 | a << 24 | r << 16 | g << 8 | b;
 	}
 
 	public static int rgb(int r, int g, int b) {
-		return 0xff000000 | r << 16 | g << 8 | b << 0;
+		return 0xff000000 | r << 16 | g << 8 | b;
 	}
 
 	public static int rgb(Vector3i vec) {
@@ -44,7 +46,7 @@ public class Color {
 	}
 
 	public static int rgba(int r, int g, int b, int a) {
-		return 0x00000000 | a << 24 | r << 16 | g << 8 | b << 0;
+		return 0x00000000 | a << 24 | r << 16 | g << 8 | b;
 	}
 
 	public static int rgba(Vector4i vec) {
@@ -52,7 +54,7 @@ public class Color {
 	}
 
 	public static int rgb(float r, float g, float b) {
-		return 0xff000000 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255) << 0;
+		return 0xff000000 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255);
 	}
 
 	public static int rgb(Vector3f vec) {
@@ -60,7 +62,7 @@ public class Color {
 	}
 
 	public static int rgba(float r, float g, float b, float a) {
-		return 0x00000000 | (int) (a * 255) << 24 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255) << 0;
+		return 0x00000000 | (int) (a * 255) << 24 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255);
 	}
 
 	public static int rgba(Vector4f vec) {
@@ -72,7 +74,10 @@ public class Color {
 	}
 
 	public static int alpha(int color) {
-		return (color & 0xff000000) >> 24;
+		int a = (color & 0xff000000) >> 24;
+		if (a < 0)
+			a += 256;
+		return a;
 	}
 
 	public static int red(int color) {
@@ -92,6 +97,15 @@ public class Color {
 	}
 
 	public static Vector4f toVector(int color) {
-		return new Vector4f(red(color) / 255, green(color) / 255, blue(color) / 255, alpha(color) / 255);
+		return new Vector4f((float) red(color) / 255, (float) green(color) / 255, (float) blue(color) / 255,
+				(float) alpha(color) / 255);
+	}
+
+	public static FloatBuffer toFloatBuffer(FloatBuffer buffer, int color) {
+		buffer.put((float) red(color) / 255);
+		buffer.put((float) green(color) / 255);
+		buffer.put((float) blue(color) / 255);
+		buffer.put((float) alpha(color) / 255);
+		return buffer;
 	}
 }
