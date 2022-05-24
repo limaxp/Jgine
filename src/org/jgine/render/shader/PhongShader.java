@@ -2,8 +2,8 @@ package org.jgine.render.shader;
 
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.light.Attenuation;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
@@ -64,7 +64,7 @@ public class PhongShader extends Shader {
 
 	@Override
 	public void setMaterial(Material material) {
-		Texture texture = material.getTexture();
+		ITexture texture = material.getTexture();
 		setUniformi(uniform_uTexture, 0);
 		int col = material.getTexturePosition() % texture.getColums();
 		int row = material.getTexturePosition() / texture.getColums();

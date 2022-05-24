@@ -28,7 +28,7 @@ public class Material implements Cloneable {
 	public Vector4f ambientColor;
 	public Vector4f diffuseColor;
 	public Vector4f specularColor;
-	private Texture texture = Texture.NONE;
+	private ITexture texture = Texture.NONE;
 	// this here makes every entity to move at same time
 	private TextureAnimationHandler animationHandler = TextureAnimationHandler.NONE;
 	private int texturePos = 1;
@@ -45,50 +45,48 @@ public class Material implements Cloneable {
 		this.color = color;
 	}
 
-	public Material(Texture texture) {
+	public Material(ITexture texture) {
 		this.color = Vector4f.FULL;
 		setTexture(texture);
 	}
 
-	public Material(Vector3f color, Texture texture) {
+	public Material(Vector3f color, ITexture texture) {
 		this.color = new Vector4f(color);
 		setTexture(texture);
 	}
 
-	public Material(Vector4f color, Texture texture) {
+	public Material(Vector4f color, ITexture texture) {
 		this.color = color;
 		setTexture(texture);
 	}
 
-	public Material(AIMaterial material) {
+	public Material load(AIMaterial material) {
 		this.color = Vector4f.FULL;
 		AIString path = AIString.calloc();
-		Assimp.aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null,
-				null, null);
+		Assimp.aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null,
+				null);
 		String texturePath = path.dataString();
 		if (texturePath != null && texturePath.length() > 0)
 			texture = ResourceManager.getTexture(texturePath, this);
 
 		AIColor4D mAmbientColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT,
-				aiTextureType_NONE, 0, mAmbientColor) != 0) {
+		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, mAmbientColor) != 0) {
 			throw new IllegalStateException(aiGetErrorString());
 		}
 		ambientColor = new Vector4f(mAmbientColor.r(), mAmbientColor.g(), mAmbientColor.b(), mAmbientColor.a());
 
 		AIColor4D mDiffuseColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE,
-				aiTextureType_NONE, 0, mDiffuseColor) != 0) {
+		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, mDiffuseColor) != 0) {
 			throw new IllegalStateException(aiGetErrorString());
 		}
 		diffuseColor = new Vector4f(mDiffuseColor.r(), mDiffuseColor.g(), mDiffuseColor.b(), mDiffuseColor.a());
 
 		AIColor4D mSpecularColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR,
-				aiTextureType_NONE, 0, mSpecularColor) != 0) {
+		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, mSpecularColor) != 0) {
 			throw new IllegalStateException(aiGetErrorString());
 		}
 		specularColor = new Vector4f(mSpecularColor.r(), mSpecularColor.g(), mSpecularColor.b(), mSpecularColor.a());
+		return this;
 	}
 
 	@Override
@@ -141,13 +139,13 @@ public class Material implements Cloneable {
 		specularColor = material.specularColor;
 	}
 
-	public final void setTexture(Texture texture) {
+	public final void setTexture(ITexture texture) {
 		this.texture = texture;
 		this.animationHandler = texture.createAnimationHandler();
 		texturePos = 1;
 	}
 
-	public final Texture getTexture() {
+	public final ITexture getTexture() {
 		return texture;
 	}
 

@@ -45,12 +45,6 @@ public class Renderer2D extends Renderer {
 		PLANE_MESH.render();
 	}
 
-	public static void renderQuadFlipped(Matrix transform, Material material) {
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		material.bind(shader);
-		PLANE_MESH_FLIPPED.render();
-	}
-
 	public static void renderLine(Matrix transform, Vector3f start, Vector3f end, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);

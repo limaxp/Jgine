@@ -30,7 +30,7 @@ public class Model extends UnorderedIdentityArrayList<Mesh> implements AutoClose
 		PointerBuffer materialsBuffer = scene.mMaterials();
 		List<Material> materials = new ArrayList<>();
 		for (int i = 0; i < materialCount; ++i)
-			materials.add(new Material(AIMaterial.create(materialsBuffer.get(i))));
+			materials.add(new Material().load(AIMaterial.create(materialsBuffer.get(i))));
 
 		int meshCount = scene.mNumMeshes();
 		PointerBuffer meshesBuffer = scene.mMeshes();

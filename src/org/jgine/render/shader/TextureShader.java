@@ -1,8 +1,8 @@
 package org.jgine.render.shader;
 
 import org.jgine.misc.math.Matrix;
+import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
 
 public class TextureShader extends Shader {
 
@@ -24,15 +24,17 @@ public class TextureShader extends Shader {
 
 	@Override
 	public void setMaterial(Material material) {
-		Texture texture = material.getTexture();
+		ITexture texture = material.getTexture();
 		setUniformi(uniform_uTexture, 0);
-		int col = material.getTexturePosition() % texture.getColums();
-		int row = material.getTexturePosition() / texture.getColums();
-		float textXOffset = (float) col / texture.getColums();
-		float textYOffset = (float) row / texture.getRows();
+		int colums = texture.getColums();
+		int rows = texture.getRows();
+		int colum = material.getTexturePosition() % colums;
+		int row = material.getTexturePosition() / colums;
+		float textXOffset = (float) colum / colums;
+		float textYOffset = (float) row / rows;
 		setUniform2f(uniform_textureOffsets, textXOffset, textYOffset);
-		setUniformi(uniform_textureColums, texture.getColums());
-		setUniformi(uniform_textureRows, texture.getRows());
+		setUniformi(uniform_textureColums, colums);
+		setUniformi(uniform_textureRows, rows);
 		setUniform4f(uniform_color, material.color);
 	}
 }

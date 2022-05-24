@@ -23,19 +23,20 @@ import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import org.jgine.core.Engine;
 import org.jgine.core.window.Window;
 import org.jgine.misc.utils.logger.Logger;
+import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Texture;
 
-public class RenderTarget implements AutoCloseable {
+public class RenderTarget implements ITexture, AutoCloseable {
 
 	public static final RenderTarget NONE = new RenderTarget() {
 
 		@Override
-		public void bind() {
-			super.unbind();
+		public void begin() {
+			super.end();
 		}
 
 		@Override
-		public void unbind() {
+		public void end() {
 		}
 	};
 
@@ -64,7 +65,7 @@ public class RenderTarget implements AutoCloseable {
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			Logger.warn("RenderTarget: Error creating FrameBuffer!");
-		
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -76,12 +77,12 @@ public class RenderTarget implements AutoCloseable {
 		fbo = 0;
 	}
 
-	public void bind() {
+	public void begin() {
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glViewport(0, 0, texture.getWidth(), texture.getHeight());
 	}
 
-	public void unbind() {
+	public void end() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Window window = Engine.getInstance().getWindow();
 		glViewport(0, 0, window.getWidth(), window.getHeight());
@@ -89,5 +90,35 @@ public class RenderTarget implements AutoCloseable {
 
 	public final Texture getTexture() {
 		return texture;
+	}
+
+	@Override
+	public int getWidth() {
+		return texture.getWidth();
+	}
+
+	@Override
+	public int getHeight() {
+		return texture.getHeight();
+	}
+
+	@Override
+	public int getColums() {
+		return texture.getColums();
+	}
+
+	@Override
+	public int getRows() {
+		return -texture.getRows();
+	}
+
+	@Override
+	public void bind() {
+		texture.bind();
+	}
+
+	@Override
+	public void unbind() {
+		texture.unbind();
 	}
 }

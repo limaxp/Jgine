@@ -49,7 +49,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
-public class Texture implements AutoCloseable {
+public class Texture implements ITexture, AutoCloseable {
 
 	// Some filters, included here for convenience
 	public static final int LINEAR = GL_LINEAR;
@@ -193,10 +193,12 @@ public class Texture implements AutoCloseable {
 		glTexParameteriv(GL_TEXTURE_2D, parameter, values);
 	}
 
+	@Override
 	public final void bind() {
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
 
+	@Override
 	public final void unbind() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -218,6 +220,7 @@ public class Texture implements AutoCloseable {
 		this.colums = colums;
 	}
 
+	@Override
 	public final int getColums() {
 		return colums;
 	}
@@ -226,14 +229,17 @@ public class Texture implements AutoCloseable {
 		this.rows = rows;
 	}
 
+	@Override
 	public final int getRows() {
 		return rows;
 	}
 
+	@Override
 	public final int getWidth() {
 		return width;
 	}
 
+	@Override
 	public final int getHeight() {
 		return height;
 	}
@@ -246,6 +252,7 @@ public class Texture implements AutoCloseable {
 		return animation;
 	}
 
+	@Override
 	public final TextureAnimationHandler createAnimationHandler() {
 		if (animation == null)
 			return TextureAnimationHandler.NONE;

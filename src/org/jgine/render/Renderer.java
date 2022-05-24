@@ -35,16 +35,11 @@ public class Renderer {
 	protected static RenderTarget renderTarget = RenderTarget.NONE;
 
 	protected static final BaseMesh2D PLANE_MESH;
-	protected static final BaseMesh2D PLANE_MESH_FLIPPED;
 	protected static final Mesh CUBE_MESH;
 
 	static {
 		PLANE_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
 		PLANE_MESH.setMode(MeshMode.TRIANGLE_STRIP);
-
-		PLANE_MESH_FLIPPED = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 },
-				new float[] { 0, 1, 1, 1, 0, 0, 1, 0 });
-		PLANE_MESH_FLIPPED.setMode(MeshMode.TRIANGLE_STRIP);
 
 		CUBE_MESH = new Mesh(
 				new float[] { 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1 },
@@ -108,12 +103,6 @@ public class Renderer {
 		PLANE_MESH.render();
 	}
 
-	public static void renderQuadFlipped(Matrix transform, Material material) {
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		material.bind(shader);
-		PLANE_MESH_FLIPPED.render();
-	}
-
 	public static void renderCube(Matrix transform, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
@@ -163,9 +152,9 @@ public class Renderer {
 
 	public static void setRenderTarget(RenderTarget renderTarget) {
 		if (Renderer.renderTarget != renderTarget) {
-			Renderer.renderTarget.unbind();
+			Renderer.renderTarget.end();
 			Renderer.renderTarget = renderTarget;
-			renderTarget.bind();
+			renderTarget.begin();
 		}
 	}
 
