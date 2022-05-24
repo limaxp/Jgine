@@ -109,7 +109,7 @@ public class RenderTarget implements ITexture, AutoCloseable {
 
 	@Override
 	public int getRows() {
-		return -texture.getRows();
+		return -texture.getRows(); // minus to flip upside down!
 	}
 
 	@Override

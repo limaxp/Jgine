@@ -10,7 +10,7 @@ public class TileMapShader extends Shader {
 	public final int uniform_uTexture = addUniform("uTexture");
 	public final int uniform_textureColums = addUniform("textureColums");
 	public final int uniform_textureRows = addUniform("textureRows");
-	public final int uniform_color = addUniform("color");
+	public final int uniform_color = addUniform("baseColor");
 
 	public TileMapShader(String name) {
 		super(name);

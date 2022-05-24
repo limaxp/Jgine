@@ -11,7 +11,7 @@ public class TextureShader extends Shader {
 	public final int uniform_textureOffsets = addUniform("textureOffsets");
 	public final int uniform_textureColums = addUniform("textureColums");
 	public final int uniform_textureRows = addUniform("textureRows");
-	public final int uniform_color = addUniform("color");
+	public final int uniform_baseColor = addUniform("baseColor");
 
 	public TextureShader(String name) {
 		super(name);
@@ -35,6 +35,6 @@ public class TextureShader extends Shader {
 		setUniform2f(uniform_textureOffsets, textXOffset, textYOffset);
 		setUniformi(uniform_textureColums, colums);
 		setUniformi(uniform_textureRows, rows);
-		setUniform4f(uniform_color, material.color);
+		setUniform4f(uniform_baseColor, material.color);
 	}
 }

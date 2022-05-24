@@ -2,23 +2,16 @@ package org.jgine.render.shader;
 
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.light.Attenuation;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
 
-public class PhongShader extends Shader {
+public class PhongShader extends TextureShader {
 
 	public static final int MAX_POINT_LIGHTS = 4;
 
 	public final int uniform_transform = addUniform("transform");
-	public final int uniform_transformProjected = addUniform("transformProjected");
-	public final int uniform_uTexture = addUniform("uTexture");
-	public final int uniform_textureOffsets = addUniform("textureOffsets");
-	public final int uniform_textureColums = addUniform("textureColums");
-	public final int uniform_textureRows = addUniform("textureRows");
-	public final int uniform_baseColor = addUniform("baseColor");
 	public final int uniform_ambientLight = addUniform("ambientLight");
 	public final int uniform_camPos = addUniform("camPos");
 	public final int uniform_specularIntensity = addUniform("specularIntensity");
@@ -64,16 +57,7 @@ public class PhongShader extends Shader {
 
 	@Override
 	public void setMaterial(Material material) {
-		ITexture texture = material.getTexture();
-		setUniformi(uniform_uTexture, 0);
-		int col = material.getTexturePosition() % texture.getColums();
-		int row = material.getTexturePosition() / texture.getColums();
-		float textXOffset = (float) col / texture.getColums();
-		float textYOffset = (float) row / texture.getRows();
-		setUniform2f(uniform_textureOffsets, textXOffset, textYOffset);
-		setUniformi(uniform_textureColums, texture.getColums());
-		setUniformi(uniform_textureRows, texture.getRows());
-		setUniform4f(uniform_baseColor, material.color);
+		super.setMaterial(material);
 		setUniformf(uniform_specularIntensity, material.specularIntesity);
 		setUniformf(uniform_specularPower, material.specularPower);
 	}

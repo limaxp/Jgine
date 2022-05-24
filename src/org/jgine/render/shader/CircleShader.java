@@ -7,7 +7,7 @@ public class CircleShader extends Shader {
 
 	public final int uniform_transformProjected = addUniform("transformProjected");
 	public final int uniform_uTexture = addUniform("uTexture");
-	public final int uniform_color = addUniform("color");
+	public final int uniform_color = addUniform("baseColor");
 
 	public CircleShader(String name) {
 		super(name);

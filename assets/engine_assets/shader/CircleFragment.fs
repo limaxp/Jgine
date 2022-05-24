@@ -5,7 +5,7 @@ in vec2 textCoord;
 
 out vec4 fragColor;
 
-uniform vec3 color;
+uniform vec3 baseColor;
 uniform sampler2D uTexture;
 
 void main() {
