@@ -51,8 +51,8 @@ public class PhongShader extends TextureShader {
 
 	@Override
 	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
-		setUniformMatrix(uniform_transform, matrix);
-		setUniformMatrix(uniform_transformProjected, projectionMatrix);
+		setUniformMatrix4f(uniform_transform, matrix);
+		setUniformMatrix4f(uniform_transformProjected, projectionMatrix);
 	}
 
 	@Override

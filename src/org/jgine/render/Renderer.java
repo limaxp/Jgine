@@ -1,5 +1,6 @@
 package org.jgine.render;
 
+import org.jgine.core.Engine;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.graphic.TileMap;
@@ -15,12 +16,18 @@ import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
 import org.jgine.render.shader.PhongShader;
+import org.jgine.render.shader.PostProcessShader;
 import org.jgine.render.shader.Shader;
 import org.jgine.render.shader.TextureShader;
 import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.system.systems.transform.Transform;
 
 public class Renderer {
+
+	static {
+		OpenGL.init();
+	}
 
 	public static final Shader BASIC_SHADER = new BasicShader("Basic");
 	public static final Shader TEXTURE_SHADER = new TextureShader("Texture");
@@ -29,6 +36,7 @@ public class Renderer {
 	public static final Shader TILE_MAP_SHADER = new TileMapShader("TileMap");
 	// TODO fix circle shader!
 	// public static final Shader CIRCLE_SHADER = new CircleShader("Circle");
+	public static final Shader POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
@@ -47,9 +55,32 @@ public class Renderer {
 						5, 6, 7, 6, 5, });
 	}
 
-	public static void free() {
+	public static void init() {
+	}
+
+	public static void terminate() {
 		PLANE_MESH.close();
+		CUBE_MESH.close();
 		BillboardParticle.free();
+
+		OpenGL.terminate();
+	}
+
+	public static void begin() {
+		OpenGL.clearFrameBuffer();
+	}
+
+	public static void end() {
+		if (renderTarget != RenderTarget.NONE) {
+			RenderTarget temp = renderTarget;
+			setRenderTarget(RenderTarget.NONE);
+			setShader(UIRenderer.POST_PROCESS_SHADER);
+			UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.FULL),
+					new Material(temp));
+			setRenderTarget(temp);
+		}
+
+		Engine.getInstance().getWindow().swapBuffers();
 	}
 
 	public static void render(Matrix transform, Model model) {

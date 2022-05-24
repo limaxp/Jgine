@@ -15,7 +15,7 @@ public class CircleShader extends Shader {
 
 	@Override
 	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
-		setUniformMatrix(uniform_transformProjected, projectionMatrix);
+		setUniformMatrix4f(uniform_transformProjected, projectionMatrix);
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import org.jgine.misc.utils.options.OptionFile;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
-import org.jgine.render.OpenGL;
 import org.jgine.render.Renderer;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
@@ -53,7 +52,7 @@ public abstract class Engine {
 		DisplayManager.init();
 		window = new Window(name, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), false);
 		Input.setWindow(window);
-		OpenGL.init();
+		Renderer.init();
 		SoundManager.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
@@ -65,8 +64,7 @@ public abstract class Engine {
 			scene.free();
 		TaskExecutor.shutdown();
 		ResourceManager.free();
-		Renderer.free();
-		OpenGL.terminate();
+		Renderer.terminate();
 		SoundManager.terminate();
 		window.delete();
 		GLFWHelper.terminate();
@@ -100,8 +98,7 @@ public abstract class Engine {
 		return !isShuttingDown();
 	}
 
-	public void onUpdate() {
-	}
+	public abstract void onUpdate();
 
 	private final void update() {
 		if (isPaused())
@@ -132,13 +129,12 @@ public abstract class Engine {
 		}
 	}
 
-	public void onRender() {
-	}
+	public abstract void onRender();
 
 	private final void render() {
-		OpenGL.clearFrameBuffer();
+		Renderer.begin();
 		renderScenes();
-		window.swapBuffers();
+		Renderer.end();
 		onRender();
 	}
 
