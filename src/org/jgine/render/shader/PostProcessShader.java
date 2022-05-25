@@ -26,7 +26,7 @@ public class PostProcessShader extends Shader {
 	public final int uniform_uTexture = addUniform("uTexture");
 	public final int uniform_baseColor = addUniform("baseColor");
 	public final int uniform_offsets = addUniform("offsets");
-	public final int uniform_kernel_size = addUniform("kernelSize");
+	public final int uniform_kernelSize = addUniform("kernelSize");
 	public final int[] uniform_kernel = addUniforms("kernel", MAX_KERNELS);
 
 	private List<float[]> kernel;
@@ -46,7 +46,7 @@ public class PostProcessShader extends Shader {
 		if (changedKernel) {
 			changedKernel = false;
 			int kernelSize = FastMath.min(this.kernel.size(), MAX_KERNELS);
-			setUniformi(uniform_kernel_size, kernelSize);
+			setUniformi(uniform_kernelSize, kernelSize);
 			for (int i = 0; i < kernelSize; i++)
 				setUniformMatrix3f(uniform_kernel[i], kernel.get(i));
 		}

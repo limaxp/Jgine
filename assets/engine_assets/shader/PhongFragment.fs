@@ -1,7 +1,7 @@
 #version 330
 
 
-const int MAX_POINT_LIGHTS = 4;
+const int MAX_POINT_LIGHTS = 8;
 
 
 struct BaseLight {
@@ -43,6 +43,7 @@ uniform float specularIntensity;
 uniform float specularPower;
 
 uniform DirectionalLight directionalLight;
+uniform int pointLightSize;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 
@@ -104,7 +105,7 @@ void main() {
 	vec3 normal = normalize(normal);
 	totalLight += calcDirectionalLight(directionalLight, normal);
 	
-	for(int i = 0; i < MAX_POINT_LIGHTS; i++) 
+	for(int i = 0; i < pointLightSize; i++) 
 		//if(pointLights[i].base.intensity > 0)
 			totalLight += calcPointLight(pointLights[i], normal);
 	

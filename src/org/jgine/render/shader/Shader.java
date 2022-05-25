@@ -115,13 +115,6 @@ public abstract class Shader {
 		glUseProgram(0);
 	}
 
-	public final int[] addUniforms(String uniform, int size) {
-		int[] result = new int[size];
-		for (int i = 0; i < size; i++)
-			result[i] = addUniform(uniform + '[' + i + ']');
-		return result;
-	}
-
 	public final int addUniform(String uniform) {
 		int uniformLoc = glGetUniformLocation(program, uniform);
 		if (uniformLoc == -1) {
@@ -129,6 +122,25 @@ public abstract class Shader {
 			System.exit(1);
 		}
 		return uniformLoc;
+	}
+
+	public final int[] addUniforms(String uniform, int size) {
+		int[] result = new int[size];
+		for (int i = 0; i < size; i++)
+			result[i] = addUniform(uniform + '[' + i + ']');
+		return result;
+	}
+
+	public final int[][] addUniforms(String uniform, int size, String[] values) {
+		int[][] result = new int[size][];
+		for (int i = 0; i < size; i++) {
+			int[] sub = new int[values.length];
+			result[i] = sub;
+			String name = uniform + '[' + i + "].";
+			for (int j = 0; j < values.length; j++)
+				sub[j] = addUniform(name + values[j]);
+		}
+		return result;
 	}
 
 	public final void setUniformi(int uniform, int i) {
