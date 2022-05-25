@@ -1,12 +1,14 @@
 package org.jgine.system.systems.light;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.core.manager.UpdateManager;
+import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.render.Renderer;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
@@ -14,17 +16,22 @@ import org.jgine.system.data.ListSystemScene;
 
 public class LightScene extends ListSystemScene<LightSystem, Light> {
 
-	private final List<PointLight> pointLights;
-	private final List<DirectionalLight> directionalLights;
+	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> {
+		Light light = entity.getSystem(this);
+		if (light instanceof PointLight)
+			((PointLight) light).setPosition((Vector3f) pos);
+	};
 
 	public LightScene(LightSystem system, Scene scene) {
 		super(system, scene, Light.class);
-		pointLights = new UnorderedIdentityArrayList<PointLight>();
-		directionalLights = new UnorderedIdentityArrayList<DirectionalLight>();
+		UpdateManager.register(scene, "position", positionUpdate);
+		UpdateManager.register(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override
 	public void free() {
+		UpdateManager.unregister(scene, "position", positionUpdate);
+		UpdateManager.unregister(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override
@@ -34,9 +41,9 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	@Override
 	public Light addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
-			pointLights.add((PointLight) object);
+			Renderer.PHONG_SHADER.addPointLight((PointLight) object);
 		if (object instanceof DirectionalLight)
-			directionalLights.add((DirectionalLight) object);
+			;
 		return super.addObject(entity, object);
 	}
 
@@ -44,18 +51,14 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	@Nullable
 	public Light removeObject(Light object) {
 		if (object instanceof PointLight)
-			pointLights.remove(object);
+			Renderer.PHONG_SHADER.removePointLight((PointLight) object);
 		if (object instanceof DirectionalLight)
-			directionalLights.remove((DirectionalLight) object);
+			;
 		return super.removeObject(object);
 	}
 
 	public List<PointLight> getPointLights() {
-		return Collections.unmodifiableList(pointLights);
-	}
-
-	public List<DirectionalLight> getDirectionalLights() {
-		return Collections.unmodifiableList(directionalLights);
+		return Renderer.PHONG_SHADER.getPointLights();
 	}
 
 	@Override

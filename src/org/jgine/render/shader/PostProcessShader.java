@@ -1,5 +1,6 @@
 package org.jgine.render.shader;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
@@ -76,5 +77,9 @@ public class PostProcessShader extends Shader {
 	public void setKernel(List<float[]> kernel) {
 		this.kernel = kernel;
 		changedKernel = true;
+	}
+
+	public List<float[]> getKernel() {
+		return Collections.unmodifiableList(kernel);
 	}
 }

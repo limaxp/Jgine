@@ -1,5 +1,6 @@
 package org.jgine.render.shader;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
@@ -7,7 +8,6 @@ import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.light.Attenuation;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
 
@@ -42,22 +42,6 @@ public class PhongShader extends TextureShader {
 		directionalLight.setColor(new Vector3f(1f, 1f, 1f));
 		directionalLight.setIntensity(0.8f);
 		directionalLight.setDirection(new Vector3f(1f, 1f, -1f));
-
-		PointLight first = new PointLight();
-		addPointLight(first);
-		first.setColor(new Vector3f(1, 0.5f, 0));
-		first.setIntensity(0.8f);
-		first.setAttenuation(new Attenuation(0, 0, 1));
-		first.setPosition(new Vector3f(-3, 0, 4));
-		first.setRange(6);
-
-		PointLight second = new PointLight();
-		addPointLight(second);
-		second.setColor(new Vector3f(0, 0.5f, 1));
-		second.setIntensity(0.8f);
-		second.setAttenuation(new Attenuation(0, 0, 1));
-		second.setPosition(new Vector3f(3, 0, 4));
-		second.setRange(6);
 	}
 
 	@Override
@@ -131,5 +115,9 @@ public class PhongShader extends TextureShader {
 	public void removePointLight(PointLight pointLight) {
 		pointLights.remove(pointLight);
 		pointLight.setChanged();
+	}
+
+	public List<PointLight> getPointLights() {
+		return Collections.unmodifiableList(pointLights);
 	}
 }

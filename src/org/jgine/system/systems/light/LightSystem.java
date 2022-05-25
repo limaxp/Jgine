@@ -16,7 +16,16 @@ public class LightSystem extends EngineSystem {
 
 	@Override
 	public Light load(Map<String, Object> data) {
-		// Light object = new Light();
-		return null;
+		LightType<?> lightType;
+		Object type = data.get("type");
+		if (type != null && type instanceof String) {
+			lightType = LightTypes.get((String) type);
+			if (lightType == null)
+				lightType = LightTypes.POINT;
+		} else
+			lightType = LightTypes.POINT;
+		Light light = lightType.get();
+		light.load(data);
+		return light;
 	}
 }

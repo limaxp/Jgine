@@ -29,14 +29,14 @@ public class Renderer {
 		OpenGL.init();
 	}
 
-	public static final Shader BASIC_SHADER = new BasicShader("Basic");
-	public static final Shader TEXTURE_SHADER = new TextureShader("Texture");
-	public static final Shader PHONG_SHADER = new PhongShader("Phong");
-	public static final Shader PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
-	public static final Shader TILE_MAP_SHADER = new TileMapShader("TileMap");
+	public static final BasicShader BASIC_SHADER = new BasicShader("Basic");
+	public static final TextureShader TEXTURE_SHADER = new TextureShader("Texture");
+	public static final PhongShader PHONG_SHADER = new PhongShader("Phong");
+	public static final BillboardParticleShader PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
+	public static final TileMapShader TILE_MAP_SHADER = new TileMapShader("TileMap");
 	// TODO fix circle shader!
 	// public static final Shader CIRCLE_SHADER = new CircleShader("Circle");
-	public static final Shader POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
+	public static final PostProcessShader POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
