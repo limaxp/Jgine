@@ -2,7 +2,7 @@ package org.jgine.render.shader;
 
 import java.util.List;
 
-import org.jgine.misc.collection.list.arrayList.FastArrayList;
+import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
 import org.jgine.render.graphic.material.Material;
@@ -29,22 +29,27 @@ public class PostProcessShader extends Shader {
 	public final int uniform_kernel_size = addUniform("kernelSize");
 	public final int[] uniform_kernel = addUniforms("kernel", MAX_KERNELS);
 
-	public final List<float[]> kernel;
+	private List<float[]> kernel;
+	private boolean changedKernel = false;
 
 	public PostProcessShader(String name) {
 		super(name);
-		kernel = new FastArrayList<>(MAX_KERNELS);
+		kernel = new UnorderedArrayList<float[]>(MAX_KERNELS);
+
+		bind();
+		setUniform2f(uniform_offsets, OFFSETS);
 	}
 
 	@Override
 	public void bind() {
 		super.bind();
-		setUniform2f(uniform_offsets, OFFSETS);
-
-		int kernelSize = FastMath.min(kernel.size(), MAX_KERNELS);
-		setUniformi(uniform_kernel_size, kernelSize);
-		for (int i = 0; i < kernelSize; i++)
-			setUniformMatrix3f(uniform_kernel[i], kernel.get(i));
+		if (changedKernel) {
+			changedKernel = false;
+			int kernelSize = FastMath.min(this.kernel.size(), MAX_KERNELS);
+			setUniformi(uniform_kernel_size, kernelSize);
+			for (int i = 0; i < kernelSize; i++)
+				setUniformMatrix3f(uniform_kernel[i], kernel.get(i));
+		}
 	}
 
 	@Override
@@ -54,8 +59,22 @@ public class PostProcessShader extends Shader {
 
 	@Override
 	public void setMaterial(Material material) {
-//		ITexture texture = material.getTexture();
 		setUniformi(uniform_uTexture, 0);
 		setUniformColor(uniform_baseColor, material.color);
+	}
+
+	public void addKernel(float[] kernel) {
+		this.kernel.add(kernel);
+		changedKernel = true;
+	}
+
+	public void removeKernel(float[] kernel) {
+		this.kernel.remove(kernel);
+		changedKernel = true;
+	}
+
+	public void setKernel(List<float[]> kernel) {
+		this.kernel = kernel;
+		changedKernel = true;
 	}
 }

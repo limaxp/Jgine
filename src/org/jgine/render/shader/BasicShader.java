@@ -17,5 +17,6 @@ public class BasicShader extends Shader {
 	}
 
 	@Override
-	public void setMaterial(Material material) {}
+	public void setMaterial(Material material) {
+	}
 }
