@@ -8,7 +8,7 @@ public class PointLight extends Light {
 
 	private Attenuation attenuation = Attenuation.DEFAULT;
 	private Vector3f pos = Vector3f.NULL;
-	private float range = 1;
+	private float range = 1.0f;
 
 	@Override
 	public void load(Map<String, Object> data) {

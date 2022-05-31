@@ -3,6 +3,7 @@ package org.jgine.render.shader;
 import java.util.Collections;
 import java.util.List;
 
+import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
@@ -10,6 +11,7 @@ import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
+import org.jgine.system.systems.camera.CameraSystem;
 
 public class PhongShader extends TextureShader {
 
@@ -36,10 +38,9 @@ public class PhongShader extends TextureShader {
 		super(name);
 		pointLights = new UnorderedArrayList<PointLight>(MAX_POINT_LIGHTS);
 
-		setAmbientLight(new Vector3f(0.04f));
+		setAmbientLight(new Vector3f(0.0f));
 
 		directionalLight = new DirectionalLight();
-		directionalLight.setColor(new Vector3f(1f, 1f, 1f));
 		directionalLight.setIntensity(0.8f);
 		directionalLight.setDirection(new Vector3f(1f, 1f, -1f));
 	}
@@ -47,6 +48,9 @@ public class PhongShader extends TextureShader {
 	@Override
 	public void bind() {
 		super.bind();
+
+		setUniform3f(uniform_camPos,
+				((CameraSystem) SystemManager.get("camera")).getCamera().getTransform().getPosition());
 
 		if (changedAmbientLight) {
 			changedAmbientLight = false;

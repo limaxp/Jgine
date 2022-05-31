@@ -9,7 +9,7 @@ public abstract class Light implements SystemObject {
 
 	protected boolean hasChanged = true;
 	private Vector3f color = Vector3f.FULL;
-	private float intensity;
+	private float intensity = 1.0f;
 
 	public void load(Map<String, Object> data) {
 		Object color = data.get("color");
