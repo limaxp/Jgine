@@ -18,6 +18,7 @@ import org.jgine.misc.utils.options.OptionFile;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
+import org.jgine.net.ServerManager;
 import org.jgine.render.Renderer;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
@@ -57,6 +58,7 @@ public abstract class Engine {
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		gameLoop.setRenderFunction(this::render);
+		ServerManager.init();
 	}
 
 	private final void terminate() {
@@ -70,6 +72,7 @@ public abstract class Engine {
 		GLFWHelper.terminate();
 		OptionFile.save();
 		gameLoop = null;
+		ServerManager.terminate();
 	}
 
 	protected GameLoop createGameLoop() {
