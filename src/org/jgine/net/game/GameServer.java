@@ -12,10 +12,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
+import org.jgine.net.game.packet.PacketListener;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
@@ -23,19 +25,21 @@ import org.jgine.net.game.packet.packets.DisconnectPacket;
 public class GameServer implements Runnable {
 
 	private DatagramSocket socket;
-	private List<Player> player;
-	private Map<String, Player> nameMap;
 	private boolean isRunning;
+	private List<PacketListener> listener;
+	private List<PlayerConnection> player;
+	private Map<String, PlayerConnection> nameMap;
 
-	public GameServer() {
+	public GameServer(int port) {
 		try {
-			this.socket = new DatagramSocket(1331);
+			this.socket = new DatagramSocket(port);
 			this.socket.setSoTimeout(1000);
 		} catch (SocketException e) {
 			Logger.err("GameServer: Error creating socket!", e);
 		}
-		player = new ArrayList<Player>();
-		nameMap = new HashMap<String, Player>();
+		listener = new ArrayList<PacketListener>();
+		player = new ArrayList<PlayerConnection>();
+		nameMap = new HashMap<String, PlayerConnection>();
 	}
 
 	public void stop() {
@@ -60,36 +64,21 @@ public class GameServer implements Runnable {
 		socket.close();
 	}
 
-	private void parsePacket(byte[] data, InetAddress address, int port) {
+	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		int id = buffer.getInt();
-		Packet gamePacket = PacketManager.get(id);
+		T gamePacket = PacketManager.get(id);
 		gamePacket.read(buffer);
+
 		if (gamePacket instanceof ConnectPacket)
 			addConnection((ConnectPacket) gamePacket, address, port);
 		else if (gamePacket instanceof DisconnectPacket)
 			removeConnection((DisconnectPacket) gamePacket);
-	}
 
-	private void addConnection(ConnectPacket paket, InetAddress address, int port) {
-		Player player = getPlayer(paket.getName());
-		if (player != null) {
-			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
-			return;
-		}
-		player = new Player(address, port, paket.getName());
-		this.player.add(player);
-		nameMap.put(player.name, player);
-	}
-
-	private void removeConnection(DisconnectPacket paket) {
-		Player player = getPlayer(paket.getName());
-		if (player == null) {
-			Logger.warn("GameServer: Disconnect error! Player does not exist '" + paket.getName() + "'");
-			return;
-		}
-		player = nameMap.remove(paket.getName());
-		this.player.remove(player);
+		@SuppressWarnings("unchecked")
+		BiConsumer<PacketListener, T> function = (BiConsumer<PacketListener, T>) gamePacket.getFunction();
+		for (PacketListener currentListener : listener)
+			function.accept(currentListener, gamePacket);
 	}
 
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {
@@ -101,9 +90,21 @@ public class GameServer implements Runnable {
 		}
 	}
 
+	public void sendData(Packet packet, InetAddress ipAddress, int port) {
+		byte[] data = new byte[1024];
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		packet.write(buffer);
+		sendData(data, ipAddress, port);
+	}
+
 	public void sendToAllData(byte[] data) {
-		for (Player p : player)
+		for (PlayerConnection p : player)
 			sendData(data, p.address, p.port);
+	}
+
+	public void sendToAllData(Packet packet) {
+		for (PlayerConnection p : player)
+			sendData(packet, p.address, p.port);
 	}
 
 	public InetAddress getIp() {
@@ -114,12 +115,41 @@ public class GameServer implements Runnable {
 		return socket.getPort();
 	}
 
-	public List<Player> getPlayer() {
+	public void addListener(PacketListener listener) {
+		this.listener.add(listener);
+	}
+
+	public void removeListener(PacketListener listener) {
+		this.listener.remove(listener);
+	}
+
+	private void addConnection(ConnectPacket paket, InetAddress address, int port) {
+		PlayerConnection player = getPlayer(paket.getName());
+		if (player != null) {
+			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
+			return;
+		}
+		player = new PlayerConnection(address, port, paket.getName());
+		this.player.add(player);
+		nameMap.put(player.name, player);
+	}
+
+	private void removeConnection(DisconnectPacket paket) {
+		PlayerConnection player = getPlayer(paket.getName());
+		if (player == null) {
+			Logger.warn("GameServer: Disconnect error! Player does not exist '" + paket.getName() + "'");
+			return;
+		}
+		player = nameMap.remove(paket.getName());
+		this.player.remove(player);
+	}
+
+	public List<PlayerConnection> getPlayer() {
 		return Collections.unmodifiableList(player);
 	}
 
 	@Nullable
-	public Player getPlayer(String name) {
+	public PlayerConnection getPlayer(String name) {
 		return nameMap.get(name);
 	}
 }

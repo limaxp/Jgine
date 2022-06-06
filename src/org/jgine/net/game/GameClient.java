@@ -8,18 +8,24 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
+import org.jgine.net.game.packet.PacketListener;
 import org.jgine.net.game.packet.PacketManager;
 
 public class GameClient implements Runnable {
 
 	private InetAddress serverIpAddress;
+	private int serverPort;
 	private DatagramSocket socket;
 	private boolean isRunning;
+	private List<PacketListener> listener;
 
-	public GameClient(String serverIpAddress) {
+	public GameClient(String serverIpAddress, int serverPort) {
 		try {
 			this.serverIpAddress = InetAddress.getByName(serverIpAddress);
 			this.socket = new DatagramSocket();
@@ -29,6 +35,8 @@ public class GameClient implements Runnable {
 		} catch (SocketException e) {
 			Logger.err("GameClient: Error creating socket!", e);
 		}
+		this.serverPort = serverPort;
+		listener = new ArrayList<PacketListener>();
 	}
 
 	public void stop() {
@@ -53,15 +61,20 @@ public class GameClient implements Runnable {
 		socket.close();
 	}
 
-	private void parsePacket(byte[] data, InetAddress address, int port) {
+	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		int id = buffer.getInt();
-		Packet gamePacket = PacketManager.get(id);
+		T gamePacket = PacketManager.get(id);
 		gamePacket.read(buffer);
+
+		@SuppressWarnings("unchecked")
+		BiConsumer<PacketListener, T> function = (BiConsumer<PacketListener, T>) gamePacket.getFunction();
+		for (PacketListener currentListener : listener)
+			function.accept(currentListener, gamePacket);
 	}
 
 	public void sendData(byte[] data) {
-		DatagramPacket packet = new DatagramPacket(data, data.length, serverIpAddress, 1331);
+		DatagramPacket packet = new DatagramPacket(data, data.length, serverIpAddress, serverPort);
 		try {
 			socket.send(packet);
 		} catch (IOException e) {
@@ -69,8 +82,19 @@ public class GameClient implements Runnable {
 		}
 	}
 
+	public void sendData(Packet packet) {
+		byte[] data = new byte[1024];
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		packet.write(buffer);
+		sendData(data);
+	}
+
 	public InetAddress getServerIp() {
 		return serverIpAddress;
+	}
+
+	public int getServerPort() {
+		return serverPort;
 	}
 
 	public InetAddress getIp() {
@@ -79,5 +103,13 @@ public class GameClient implements Runnable {
 
 	public int getPort() {
 		return socket.getPort();
+	}
+
+	public void addListener(PacketListener listener) {
+		this.listener.add(listener);
+	}
+
+	public void removeListener(PacketListener listener) {
+		this.listener.remove(listener);
 	}
 }

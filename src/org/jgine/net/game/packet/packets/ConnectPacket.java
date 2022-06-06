@@ -1,8 +1,10 @@
 package org.jgine.net.game.packet.packets;
 
 import java.nio.ByteBuffer;
+import java.util.function.BiConsumer;
 
 import org.jgine.net.game.packet.Packet;
+import org.jgine.net.game.packet.PacketListener;
 
 public class ConnectPacket extends Packet {
 
@@ -28,7 +30,12 @@ public class ConnectPacket extends Packet {
 		buffer.putInt(name.length());
 		buffer.put(name.getBytes());
 	}
-	
+
+	@Override
+	public BiConsumer<PacketListener, ? extends ConnectPacket> getFunction() {
+		return PacketListener::on;
+	}
+
 	public String getName() {
 		return name;
 	}

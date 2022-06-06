@@ -3,6 +3,7 @@ package org.jgine.net.game.packet;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.jgine.net.game.packet.packets.ConnectPacket;
@@ -23,6 +24,12 @@ public class PacketManager {
 		@Override
 		public void write(ByteBuffer buffer) {
 			buffer.putInt(0);
+		}
+
+		@Override
+		public BiConsumer<PacketListener, Packet> getFunction() {
+			return (listener, packet) -> {
+			};
 		}
 	};
 
