@@ -2,6 +2,7 @@ package org.jgine.net.game.packet;
 
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
@@ -12,6 +13,8 @@ public interface ServerPacketListener {
 	public void onInvalid(Packet packet, PlayerConnection connection);
 
 	public void on(ConnectPacket packet, PlayerConnection connection);
+
+	public void on(ConnectResponsePacket packet, PlayerConnection connection);
 
 	public void on(DisconnectPacket packet, PlayerConnection connection);
 

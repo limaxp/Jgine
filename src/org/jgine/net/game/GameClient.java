@@ -16,6 +16,7 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
+import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 
 public class GameClient implements Runnable {
 
@@ -24,6 +25,7 @@ public class GameClient implements Runnable {
 	private DatagramSocket socket;
 	private boolean isRunning;
 	private List<ClientPacketListener> listener;
+	private int id;
 
 	public GameClient(String serverIpAddress, int serverPort) {
 		try {
@@ -37,6 +39,7 @@ public class GameClient implements Runnable {
 		}
 		this.serverPort = serverPort;
 		listener = new ArrayList<ClientPacketListener>();
+		id = -1;
 	}
 
 	public void stop() {
@@ -63,16 +66,22 @@ public class GameClient implements Runnable {
 
 	private <T extends Packet> void parsePacket(byte[] data) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
-		int id = buffer.getInt();
-		T gamePacket = PacketManager.get(id);
+		int paketId = buffer.getInt();
+		T gamePacket = PacketManager.get(paketId);
 		gamePacket.read(buffer);
 
-		BiConsumer<ClientPacketListener, T> function = PacketManager.getClientListenerFunction(id);
+		if (gamePacket instanceof ConnectResponsePacket) {
+			ConnectResponsePacket connectResponse = (ConnectResponsePacket) gamePacket;
+			if (connectResponse.isAccepted())
+				this.id = connectResponse.getId();
+		}
+
+		BiConsumer<ClientPacketListener, T> function = PacketManager.getClientListenerFunction(paketId);
 		for (ClientPacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket);
 	}
 
-	public void sendData(byte[] data) {
+	private void sendData(byte[] data) {
 		DatagramPacket packet = new DatagramPacket(data, data.length, serverIpAddress, serverPort);
 		try {
 			socket.send(packet);
@@ -84,6 +93,7 @@ public class GameClient implements Runnable {
 	public void sendData(Packet packet) {
 		byte[] data = new byte[1024];
 		ByteBuffer buffer = ByteBuffer.wrap(data);
+		buffer.putInt(this.id);
 		packet.write(buffer);
 		sendData(data);
 	}
@@ -102,6 +112,10 @@ public class GameClient implements Runnable {
 
 	public int getPort() {
 		return socket.getPort();
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public void addListener(ClientPacketListener listener) {

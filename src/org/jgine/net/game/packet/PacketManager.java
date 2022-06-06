@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.jgine.misc.utils.function.TriConsumer;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
@@ -39,18 +40,21 @@ public class PacketManager {
 	public static final int INVALID = register(0, () -> EMPTY_PACKET, ClientPacketListener::onInvalid,
 			ServerPacketListener::onInvalid);
 
-	public static final int CONNECT = register(1, ConnectPacket::new, ClientPacketListener::on,
+	public static final int PING = register(1, PingPacket::new, ClientPacketListener::on, ServerPacketListener::on);
+
+	public static final int CONNECT = register(2, ConnectPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int DISCONNECT = register(2, DisconnectPacket::new, ClientPacketListener::on,
+	public static final int CONNECT_RESPONSE = register(3, ConnectResponsePacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int PING = register(3, PingPacket::new, ClientPacketListener::on, ServerPacketListener::on);
-
-	public static final int POSITION = register(4, PositionPacket::new, ClientPacketListener::on,
+	public static final int DISCONNECT = register(4, DisconnectPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int SPAWN_PREFAB = register(5, SpawnPrefabPacket::new, ClientPacketListener::on,
+	public static final int POSITION = register(5, PositionPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
+
+	public static final int SPAWN_PREFAB = register(6, SpawnPrefabPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,

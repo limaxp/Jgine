@@ -1,5 +1,6 @@
 package org.jgine.net.game;
 
+import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
@@ -23,8 +24,7 @@ public class ConnectionManager {
 		new Thread(client).start();
 
 		client.sendData(new ConnectPacket("testName"));
-
-		client.sendData(new PingPacket());
+		Scheduler.runTaskLater(100, () -> client.sendData(new PingPacket()));
 	}
 
 	public static void terminate() {

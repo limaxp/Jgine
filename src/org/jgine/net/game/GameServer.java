@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.function.TriConsumer;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.ServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 
 public class GameServer implements Runnable {
@@ -29,6 +31,7 @@ public class GameServer implements Runnable {
 	private List<ServerPacketListener> listener;
 	private List<PlayerConnection> player;
 	private Map<String, PlayerConnection> nameMap;
+	private Map<Integer, PlayerConnection> idMap;
 
 	public GameServer(int port) {
 		try {
@@ -40,6 +43,7 @@ public class GameServer implements Runnable {
 		listener = new ArrayList<ServerPacketListener>();
 		player = new ArrayList<PlayerConnection>();
 		nameMap = new HashMap<String, PlayerConnection>();
+		idMap = new HashMap<Integer, PlayerConnection>();
 	}
 
 	public void stop() {
@@ -66,8 +70,9 @@ public class GameServer implements Runnable {
 
 	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
-		int id = buffer.getInt();
-		T gamePacket = PacketManager.get(id);
+		int playerId = buffer.getInt();
+		int paketId = buffer.getInt();
+		T gamePacket = PacketManager.get(paketId);
 		gamePacket.read(buffer);
 
 		PlayerConnection connection;
@@ -76,18 +81,15 @@ public class GameServer implements Runnable {
 		else if (gamePacket instanceof DisconnectPacket)
 			connection = removeConnection((DisconnectPacket) gamePacket);
 		else
-			connection = null; // TODO: search for player here!
+			connection = getPlayer(playerId);
 
-		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager.getServerListenerFunction(id);
+		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager
+				.getServerListenerFunction(paketId);
 		for (ServerPacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket, connection);
 	}
 
-	public void sendData(byte[] data, PlayerConnection connection) {
-		sendData(data, connection.address, connection.port);
-	}
-
-	public void sendData(byte[] data, InetAddress ipAddress, int port) {
+	private void sendData(byte[] data, InetAddress ipAddress, int port) {
 		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
 		try {
 			socket.send(packet);
@@ -107,12 +109,7 @@ public class GameServer implements Runnable {
 		sendData(data, ipAddress, port);
 	}
 
-	public void sendToAllData(byte[] data) {
-		for (PlayerConnection p : player)
-			sendData(data, p.address, p.port);
-	}
-
-	public void sendToAllData(Packet packet) {
+	public void sendDataToAll(Packet packet) {
 		for (PlayerConnection p : player)
 			sendData(packet, p.address, p.port);
 	}
@@ -139,9 +136,12 @@ public class GameServer implements Runnable {
 			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
 			return null;
 		}
-		player = new PlayerConnection(address, port, paket.getName());
+		int playerId = generateId();
+		player = new PlayerConnection(address, port, paket.getName(), playerId);
 		this.player.add(player);
 		nameMap.put(player.name, player);
+		idMap.put(player.id, player);
+		sendData(new ConnectResponsePacket(true, playerId), player);
 		return player;
 	}
 
@@ -152,8 +152,17 @@ public class GameServer implements Runnable {
 			return null;
 		}
 		player = nameMap.remove(paket.getName());
+		idMap.remove(player.id);
 		this.player.remove(player);
 		return player;
+	}
+
+	private int generateId() {
+		int id;
+		do {
+			id = FastMath.random(Integer.MAX_VALUE);
+		} while (getPlayer(id) != null);
+		return id;
 	}
 
 	public List<PlayerConnection> getPlayer() {
@@ -163,5 +172,10 @@ public class GameServer implements Runnable {
 	@Nullable
 	public PlayerConnection getPlayer(String name) {
 		return nameMap.get(name);
+	}
+
+	@Nullable
+	public PlayerConnection getPlayer(int id) {
+		return idMap.get(id);
 	}
 }
