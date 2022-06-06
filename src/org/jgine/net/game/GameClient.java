@@ -70,7 +70,7 @@ public class GameClient implements Runnable {
 		T gamePacket = PacketManager.get(paketId);
 		gamePacket.read(buffer);
 
-		if (gamePacket instanceof ConnectResponsePacket) {
+		if (paketId == PacketManager.CONNECT_RESPONSE) {
 			ConnectResponsePacket connectResponse = (ConnectResponsePacket) gamePacket;
 			if (connectResponse.isAccepted())
 				this.id = connectResponse.getId();

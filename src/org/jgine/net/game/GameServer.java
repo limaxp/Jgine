@@ -76,9 +76,9 @@ public class GameServer implements Runnable {
 		gamePacket.read(buffer);
 
 		PlayerConnection connection;
-		if (gamePacket instanceof ConnectPacket)
+		if (paketId == PacketManager.CONNECT)
 			connection = addConnection((ConnectPacket) gamePacket, address, port);
-		else if (gamePacket instanceof DisconnectPacket)
+		else if (paketId == PacketManager.DISCONNECT)
 			connection = removeConnection((DisconnectPacket) gamePacket);
 		else
 			connection = getPlayer(playerId);
