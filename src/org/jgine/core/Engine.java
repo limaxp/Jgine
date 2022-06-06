@@ -18,7 +18,7 @@ import org.jgine.misc.utils.options.OptionFile;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
-import org.jgine.net.ServerManager;
+import org.jgine.net.game.ServerManager;
 import org.jgine.render.Renderer;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;

@@ -1,12 +1,14 @@
-package org.jgine.net;
+package org.jgine.net.game.packet;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.jgine.net.packet.ConnectPacket;
-import org.jgine.net.packet.DisconnectPacket;
+import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.PositionPacket;
+import org.jgine.net.game.packet.packets.SpawnPacket;
 
 public class PacketManager {
 
@@ -29,6 +31,10 @@ public class PacketManager {
 	public static final int CONNECT = register(1, ConnectPacket::new);
 
 	public static final int DISCONNECT = register(2, DisconnectPacket::new);
+
+	public static final int POSITION = register(3, PositionPacket::new);
+
+	public static final int SPAWN = register(4, SpawnPacket::new);
 
 	public static int register(int id, Supplier<Packet> supplier) {
 		PACKET_MAP.put(id, supplier);

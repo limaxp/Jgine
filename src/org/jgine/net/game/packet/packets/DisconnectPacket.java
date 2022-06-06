@@ -1,8 +1,8 @@
-package org.jgine.net.packet;
+package org.jgine.net.game.packet.packets;
 
 import java.nio.ByteBuffer;
 
-import org.jgine.net.Packet;
+import org.jgine.net.game.packet.Packet;
 
 public class DisconnectPacket extends Packet {
 

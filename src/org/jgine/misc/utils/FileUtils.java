@@ -134,6 +134,12 @@ public class FileUtils {
 		return readBytes(file.getPath());
 	}
 
+	public static byte[] readBytes(InputStream is) throws IOException {
+		byte[] targetArray = new byte[is.available()];
+		is.read(targetArray);
+		return targetArray;
+	}
+
 	public static ByteBuffer readByteBuffer(String path) throws IOException {
 		return readByteBuffer(new File(path));
 	}
@@ -147,8 +153,7 @@ public class FileUtils {
 	}
 
 	public static ByteBuffer readByteBuffer(File file) throws IOException {
-		try (FileInputStream fis = new FileInputStream(file);
-				FileChannel fc = fis.getChannel();) {
+		try (FileInputStream fis = new FileInputStream(file); FileChannel fc = fis.getChannel();) {
 			return fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 		}
 	}
@@ -464,8 +469,7 @@ public class FileUtils {
 			buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 			fc.close();
 			fis.close();
-		}
-		else {
+		} else {
 			buffer = BufferUtils.createByteBuffer(bufferSize);
 			InputStream source = url.openStream();
 			if (source == null)
@@ -477,8 +481,8 @@ public class FileUtils {
 					if (bytes == -1)
 						break;
 					if (buffer.remaining() < bytes)
-						buffer = resizeBuffer(buffer, Math.max(buffer.capacity() * 2, buffer.capacity() - buffer
-								.remaining() + bytes));
+						buffer = resizeBuffer(buffer,
+								Math.max(buffer.capacity() * 2, buffer.capacity() - buffer.remaining() + bytes));
 					buffer.put(buf, 0, bytes);
 				}
 				buffer.flip();

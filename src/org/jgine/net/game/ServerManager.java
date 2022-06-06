@@ -1,9 +1,9 @@
-package org.jgine.net;
+package org.jgine.net.game;
 
 import java.nio.ByteBuffer;
 
-import org.jgine.net.packet.ConnectPacket;
-import org.jgine.net.packet.DisconnectPacket;
+import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.DisconnectPacket;
 
 public class ServerManager {
 
@@ -14,10 +14,10 @@ public class ServerManager {
 		boolean isServer = true;
 		if (isServer) {
 			server = new GameServer();
-			server.start();
+			new Thread(server).start();
 		}
 		client = new GameClient("localhost");
-		client.start();
+		new Thread(client).start();
 
 		ConnectPacket packet = new ConnectPacket("testName");
 		byte[] data = new byte[1024];
@@ -34,7 +34,7 @@ public class ServerManager {
 		client.sendData(data);
 
 		if (server != null)
-			server.close();
-		client.close();
+			server.stop();
+		client.stop();
 	}
 }

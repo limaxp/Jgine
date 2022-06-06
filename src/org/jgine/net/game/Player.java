@@ -1,4 +1,4 @@
-package org.jgine.net;
+package org.jgine.net.game;
 
 import java.net.InetAddress;
 

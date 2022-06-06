@@ -1,4 +1,4 @@
-package org.jgine.net;
+package org.jgine.net.game.packet;
 
 import java.nio.ByteBuffer;
 

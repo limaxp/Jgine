@@ -1,10 +1,11 @@
-package org.jgine.net;
+package org.jgine.net.game;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,41 +15,49 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.net.packet.ConnectPacket;
-import org.jgine.net.packet.DisconnectPacket;
+import org.jgine.net.game.packet.Packet;
+import org.jgine.net.game.packet.PacketManager;
+import org.jgine.net.game.packet.packets.ConnectPacket;
+import org.jgine.net.game.packet.packets.DisconnectPacket;
 
-public class GameServer extends Thread {
+public class GameServer implements Runnable {
 
 	private DatagramSocket socket;
 	private List<Player> player;
 	private Map<String, Player> nameMap;
+	private boolean isRunning;
 
 	public GameServer() {
 		try {
 			this.socket = new DatagramSocket(1331);
+			this.socket.setSoTimeout(1000);
 		} catch (SocketException e) {
-			Logger.err("Server: Error creating socket!", e);
+			Logger.err("GameServer: Error creating socket!", e);
 		}
 		player = new ArrayList<Player>();
 		nameMap = new HashMap<String, Player>();
 	}
 
-	public void close() {
-		socket.close();
+	public void stop() {
+		isRunning = false;
 	}
 
 	@Override
 	public void run() {
-		while (!socket.isClosed()) {
+		isRunning = true;
+		while (isRunning) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
 				socket.receive(packet);
+			} catch (SocketTimeoutException e) {
+				// ignore
 			} catch (IOException e) {
-				Logger.err("Server: Error listening for packets!", e);
+				Logger.err("GameServer: Error listening for packets!", e);
 			}
 			parsePacket(data, packet.getAddress(), packet.getPort());
 		}
+		socket.close();
 	}
 
 	private void parsePacket(byte[] data, InetAddress address, int port) {
@@ -65,7 +74,7 @@ public class GameServer extends Thread {
 	private void addConnection(ConnectPacket paket, InetAddress address, int port) {
 		Player player = getPlayer(paket.getName());
 		if (player != null) {
-			Logger.warn("Server: Connect error! Duplicate player name '" + paket.getName() + "'");
+			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
 			return;
 		}
 		player = new Player(address, port, paket.getName());
@@ -76,7 +85,7 @@ public class GameServer extends Thread {
 	private void removeConnection(DisconnectPacket paket) {
 		Player player = getPlayer(paket.getName());
 		if (player == null) {
-			Logger.warn("Server: Disconnect error! Player does not exist '" + paket.getName() + "'");
+			Logger.warn("GameServer: Disconnect error! Player does not exist '" + paket.getName() + "'");
 			return;
 		}
 		player = nameMap.remove(paket.getName());
@@ -88,7 +97,7 @@ public class GameServer extends Thread {
 		try {
 			socket.send(packet);
 		} catch (IOException e) {
-			Logger.err("Server: Error sending data!", e);
+			Logger.err("GameServer: Error sending data!", e);
 		}
 	}
 
