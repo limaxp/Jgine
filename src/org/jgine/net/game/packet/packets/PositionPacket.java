@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketListener;
+import org.jgine.net.game.packet.PacketManager;
 
 public class PositionPacket extends Packet {
 
@@ -15,7 +16,7 @@ public class PositionPacket extends Packet {
 
 	@Override
 	public void write(ByteBuffer buffer) {
-		buffer.putInt(3);
+		buffer.putInt(PacketManager.POSITION);
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketListener;
+import org.jgine.net.game.packet.PacketManager;
 
 public class ConnectPacket extends Packet {
 
@@ -26,7 +27,7 @@ public class ConnectPacket extends Packet {
 
 	@Override
 	public void write(ByteBuffer buffer) {
-		buffer.putInt(1);
+		buffer.putInt(PacketManager.CONNECT);
 		buffer.putInt(name.length());
 		buffer.put(name.getBytes());
 	}

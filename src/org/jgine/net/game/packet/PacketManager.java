@@ -23,7 +23,7 @@ public class PacketManager {
 
 		@Override
 		public void write(ByteBuffer buffer) {
-			buffer.putInt(0);
+			buffer.putInt(PacketManager.INVALID);
 		}
 
 		@Override

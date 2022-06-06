@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketListener;
+import org.jgine.net.game.packet.PacketManager;
 
 public class DisconnectPacket extends Packet {
 
@@ -26,7 +27,7 @@ public class DisconnectPacket extends Packet {
 
 	@Override
 	public void write(ByteBuffer buffer) {
-		buffer.putInt(2);
+		buffer.putInt(PacketManager.DISCONNECT);
 		buffer.putInt(name.length());
 		buffer.put(name.getBytes());
 	}
