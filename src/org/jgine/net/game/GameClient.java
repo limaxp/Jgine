@@ -16,7 +16,6 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketListener;
 import org.jgine.net.game.packet.PacketManager;
-import org.jgine.net.game.packet.packets.PingPacket;
 
 public class GameClient implements Runnable {
 
@@ -57,24 +56,18 @@ public class GameClient implements Runnable {
 			} catch (IOException e) {
 				Logger.err("GameClient: Error listening for packets!", e);
 			}
-			parsePacket(data, packet.getAddress(), packet.getPort());
+			parsePacket(data);
 		}
 		socket.close();
 	}
 
-	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {
+	private <T extends Packet> void parsePacket(byte[] data) {
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		int id = buffer.getInt();
 		T gamePacket = PacketManager.get(id);
 		gamePacket.read(buffer);
 
-		if (gamePacket instanceof PingPacket) {
-			long time = System.currentTimeMillis() - ((PingPacket) gamePacket).getTime();
-			Logger.log("GameClient: ping = " + time);
-		}
-
-		@SuppressWarnings("unchecked")
-		BiConsumer<PacketListener, T> function = (BiConsumer<PacketListener, T>) gamePacket.getFunction();
+		BiConsumer<PacketListener, T> function = PacketManager.getListenerFunction(id);
 		for (PacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket);
 	}

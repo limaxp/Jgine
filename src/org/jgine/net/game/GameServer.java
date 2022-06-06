@@ -78,8 +78,7 @@ public class GameServer implements Runnable {
 		else if (gamePacket instanceof PingPacket)
 			sendData((PingPacket) gamePacket, address, port);
 
-		@SuppressWarnings("unchecked")
-		BiConsumer<PacketListener, T> function = (BiConsumer<PacketListener, T>) gamePacket.getFunction();
+		BiConsumer<PacketListener, T> function = PacketManager.getListenerFunction(id);
 		for (PacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket);
 	}
