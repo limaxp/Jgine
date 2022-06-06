@@ -21,6 +21,7 @@ import org.jgine.net.game.packet.PacketListener;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.PingPacket;
 
 public class GameServer implements Runnable {
 
@@ -74,6 +75,8 @@ public class GameServer implements Runnable {
 			addConnection((ConnectPacket) gamePacket, address, port);
 		else if (gamePacket instanceof DisconnectPacket)
 			removeConnection((DisconnectPacket) gamePacket);
+		else if (gamePacket instanceof PingPacket)
+			sendData((PingPacket) gamePacket, address, port);
 
 		@SuppressWarnings("unchecked")
 		BiConsumer<PacketListener, T> function = (BiConsumer<PacketListener, T>) gamePacket.getFunction();

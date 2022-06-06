@@ -2,6 +2,7 @@ package org.jgine.net.game;
 
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.PingPacket;
 
 public class ServerManager {
 
@@ -18,6 +19,8 @@ public class ServerManager {
 		new Thread(client).start();
 
 		client.sendData(new ConnectPacket("testName"));
+		
+		client.sendData(new PingPacket());
 	}
 
 	public static void terminate() {

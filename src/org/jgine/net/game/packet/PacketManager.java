@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.SpawnPacket;
 
@@ -39,9 +40,11 @@ public class PacketManager {
 
 	public static final int DISCONNECT = register(2, DisconnectPacket::new);
 
-	public static final int POSITION = register(3, PositionPacket::new);
+	public static final int PING = register(3, PingPacket::new);
 
-	public static final int SPAWN = register(4, SpawnPacket::new);
+	public static final int POSITION = register(4, PositionPacket::new);
+
+	public static final int SPAWN = register(5, SpawnPacket::new);
 
 	public static int register(int id, Supplier<Packet> supplier) {
 		PACKET_MAP.put(id, supplier);
