@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.jgine.misc.utils.logger.Logger;
+import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
-import org.jgine.net.game.packet.PacketListener;
 import org.jgine.net.game.packet.PacketManager;
 
 public class GameClient implements Runnable {
@@ -23,7 +23,7 @@ public class GameClient implements Runnable {
 	private int serverPort;
 	private DatagramSocket socket;
 	private boolean isRunning;
-	private List<PacketListener> listener;
+	private List<ClientPacketListener> listener;
 
 	public GameClient(String serverIpAddress, int serverPort) {
 		try {
@@ -36,7 +36,7 @@ public class GameClient implements Runnable {
 			Logger.err("GameClient: Error creating socket!", e);
 		}
 		this.serverPort = serverPort;
-		listener = new ArrayList<PacketListener>();
+		listener = new ArrayList<ClientPacketListener>();
 	}
 
 	public void stop() {
@@ -67,8 +67,8 @@ public class GameClient implements Runnable {
 		T gamePacket = PacketManager.get(id);
 		gamePacket.read(buffer);
 
-		BiConsumer<PacketListener, T> function = PacketManager.getListenerFunction(id);
-		for (PacketListener currentListener : listener)
+		BiConsumer<ClientPacketListener, T> function = PacketManager.getClientListenerFunction(id);
+		for (ClientPacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket);
 	}
 
@@ -104,11 +104,11 @@ public class GameClient implements Runnable {
 		return socket.getPort();
 	}
 
-	public void addListener(PacketListener listener) {
+	public void addListener(ClientPacketListener listener) {
 		this.listener.add(listener);
 	}
 
-	public void removeListener(PacketListener listener) {
+	public void removeListener(ClientPacketListener listener) {
 		this.listener.remove(listener);
 	}
 }

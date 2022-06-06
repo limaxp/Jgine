@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import org.jgine.misc.utils.function.TriConsumer;
+import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
@@ -18,7 +20,9 @@ public class PacketManager {
 
 	private static final Map<Integer, Supplier<? extends Packet>> PACKET_MAP = new HashMap<Integer, Supplier<? extends Packet>>();
 	@SuppressWarnings("unchecked")
-	private static BiConsumer<PacketListener, ? extends Packet>[] LISTENER_LINK = new BiConsumer[MAX_PACKET_TYPES];
+	private static BiConsumer<ClientPacketListener, ? extends Packet>[] CLIENT_LISTENER_LINK = new BiConsumer[MAX_PACKET_TYPES];
+	@SuppressWarnings("unchecked")
+	private static TriConsumer<ServerPacketListener, ? extends Packet, PlayerConnection>[] SERVER_LISTENER_LINK = new TriConsumer[MAX_PACKET_TYPES];
 
 	private static final Packet EMPTY_PACKET = new Packet() {
 
@@ -32,28 +36,36 @@ public class PacketManager {
 		}
 	};
 
-	public static final int INVALID = register(0, () -> EMPTY_PACKET, PacketListener::onInvalid);
+	public static final int INVALID = register(0, () -> EMPTY_PACKET, ClientPacketListener::onInvalid,
+			ServerPacketListener::onInvalid);
 
-	public static final int CONNECT = register(1, ConnectPacket::new, PacketListener::on);
+	public static final int CONNECT = register(1, ConnectPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
 
-	public static final int DISCONNECT = register(2, DisconnectPacket::new, PacketListener::on);
+	public static final int DISCONNECT = register(2, DisconnectPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
 
-	public static final int PING = register(3, PingPacket::new, PacketListener::on);
+	public static final int PING = register(3, PingPacket::new, ClientPacketListener::on, ServerPacketListener::on);
 
-	public static final int POSITION = register(4, PositionPacket::new, PacketListener::on);
+	public static final int POSITION = register(4, PositionPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
 
-	public static final int SPAWN_PREFAB = register(5, SpawnPrefabPacket::new, PacketListener::on);
+	public static final int SPAWN_PREFAB = register(5, SpawnPrefabPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,
-			BiConsumer<PacketListener, T> function) {
+			BiConsumer<ClientPacketListener, T> clientFunction,
+			TriConsumer<ServerPacketListener, T, PlayerConnection> serverFunction) {
 		PACKET_MAP.put(id, supplier);
-		LISTENER_LINK[id] = function;
+		CLIENT_LISTENER_LINK[id] = clientFunction;
+		SERVER_LISTENER_LINK[id] = serverFunction;
 		return id;
 	}
 
 	public static void unregister(int id) {
 		PACKET_MAP.remove(id);
-		LISTENER_LINK[id] = null;
+		CLIENT_LISTENER_LINK[id] = null;
+		SERVER_LISTENER_LINK[id] = null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,7 +81,13 @@ public class PacketManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Packet> BiConsumer<PacketListener, T> getListenerFunction(int id) {
-		return (BiConsumer<PacketListener, T>) LISTENER_LINK[id];
+	public static <T extends Packet> BiConsumer<ClientPacketListener, T> getClientListenerFunction(int id) {
+		return (BiConsumer<ClientPacketListener, T>) CLIENT_LISTENER_LINK[id];
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Packet> TriConsumer<ServerPacketListener, T, PlayerConnection> getServerListenerFunction(
+			int id) {
+		return (TriConsumer<ServerPacketListener, T, PlayerConnection>) SERVER_LISTENER_LINK[id];
 	}
 }

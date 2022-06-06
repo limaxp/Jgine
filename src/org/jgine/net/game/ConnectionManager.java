@@ -1,12 +1,12 @@
 package org.jgine.net.game;
 
-import org.jgine.net.game.packet.listener.GameClientListener;
-import org.jgine.net.game.packet.listener.GameServerListener;
+import org.jgine.net.game.packet.listener.GameClientPacketListener;
+import org.jgine.net.game.packet.listener.GameServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 
-public class ServerManager {
+public class ConnectionManager {
 
 	private static GameServer server;
 	private static GameClient client;
@@ -15,11 +15,11 @@ public class ServerManager {
 		boolean isServer = true;
 		if (isServer) {
 			server = new GameServer(1331);
-			server.addListener(new GameServerListener());
+			server.addListener(new GameServerPacketListener());
 			new Thread(server).start();
 		}
 		client = new GameClient("localhost", 1331);
-		client.addListener(new GameClientListener());
+		client.addListener(new GameClientPacketListener());
 		new Thread(client).start();
 
 		client.sendData(new ConnectPacket("testName"));
@@ -33,5 +33,13 @@ public class ServerManager {
 		if (server != null)
 			server.stop();
 		client.stop();
+	}
+
+	public static GameServer getServer() {
+		return server;
+	}
+
+	public static GameClient getClient() {
+		return client;
 	}
 }

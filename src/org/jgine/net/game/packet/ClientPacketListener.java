@@ -6,7 +6,7 @@ import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
 
-public interface PacketListener {
+public interface ClientPacketListener {
 
 	public void onInvalid(Packet packet);
 
