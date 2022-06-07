@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.function.TriConsumer;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
@@ -136,12 +135,11 @@ public class GameServer implements Runnable {
 			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
 			return null;
 		}
-		int playerId = generateId();
-		player = new PlayerConnection(address, port, paket.getName(), playerId);
+		player = new PlayerConnection(address, port, paket.getName());
 		this.player.add(player);
 		nameMap.put(player.name, player);
 		idMap.put(player.id, player);
-		sendData(new ConnectResponsePacket(true, playerId), player);
+		sendData(new ConnectResponsePacket(true, player.id), player);
 		return player;
 	}
 
@@ -155,14 +153,6 @@ public class GameServer implements Runnable {
 		idMap.remove(player.id);
 		this.player.remove(player);
 		return player;
-	}
-
-	private int generateId() {
-		int id;
-		do {
-			id = FastMath.random(Integer.MAX_VALUE);
-		} while (getPlayer(id) != null);
-		return id;
 	}
 
 	public List<PlayerConnection> getPlayer() {

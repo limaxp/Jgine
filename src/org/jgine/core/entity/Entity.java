@@ -11,6 +11,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
+import org.jgine.misc.utils.IdGenerator;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
@@ -18,6 +19,9 @@ import org.jgine.system.SystemScene;
 
 public class Entity {
 
+	private static final IdGenerator idGenerator = new IdGenerator();
+
+	public final int id;
 	public final Scene scene;
 	private final ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject> systems;
 	private Prefab prefab;
@@ -26,6 +30,7 @@ public class Entity {
 	private boolean updateChilds;
 
 	public Entity(Scene scene) {
+		this.id = idGenerator.generate();
 		this.scene = scene;
 		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
