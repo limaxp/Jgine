@@ -41,6 +41,7 @@ public abstract class Engine {
 	private final Window window;
 	private GameLoop gameLoop;
 	private final Map<String, Scene> sceneMap;
+	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
 
 	public Engine(String name) {
@@ -48,6 +49,7 @@ public abstract class Engine {
 		this.name = name;
 		status = EngineStatus.STARTING;
 		sceneMap = new ConcurrentHashMap<String, Scene>();
+		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
 		GLFWHelper.init();
 		DisplayManager.init();
@@ -168,12 +170,14 @@ public abstract class Engine {
 	public final Scene createScene(String name) {
 		Scene scene = new Scene(name);
 		sceneMap.put(name, scene);
+		sceneIdMap.put(scene.id, scene);
 		Scheduler.runTaskSynchron(() -> scenes.add(scene));
 		return scene;
 	}
 
 	public final Scene deleteScene(String name) {
 		Scene scene = sceneMap.remove(name);
+		sceneIdMap.remove(scene.id);
 		Scheduler.runTaskSynchron(() -> {
 			scenes.remove(scene);
 			scene.free();
@@ -189,7 +193,11 @@ public abstract class Engine {
 		return sceneMap.get(name);
 	}
 
-	public final Scene getScene(int index) {
+	public final Scene getScene(int id) {
+		return sceneIdMap.get(id);
+	}
+
+	public final Scene getScenePerIndex(int index) {
 		return scenes.get(index);
 	}
 

@@ -16,6 +16,8 @@ import org.jgine.system.EngineSystem;
 public class PrefabLoader {
 
 	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>();
+	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>();
+
 	private static final Map<String, List<PrefabData>> STALLED_PARENTS_MAP = new HashMap<String, List<PrefabData>>();
 	private static final Map<String, List<PrefabData>> STALLED_CHILDS_MAP = new HashMap<String, List<PrefabData>>();
 
@@ -88,6 +90,7 @@ public class PrefabLoader {
 			prefab.setData((Map<String, Object>) prefabData);
 
 		NAME_MAP.put(prefab.name, prefab);
+		ID_MAP.put(prefab.id, prefab);
 		loadStalledParents(prefab.name);
 		loadStalledChilds(prefab.name);
 		return prefab;
@@ -128,6 +131,11 @@ public class PrefabLoader {
 	@Nullable
 	public static Prefab get(String name) {
 		return NAME_MAP.get(name);
+	}
+
+	@Nullable
+	public static Prefab get(int id) {
+		return ID_MAP.get(id);
 	}
 
 	private static final class PrefabData {

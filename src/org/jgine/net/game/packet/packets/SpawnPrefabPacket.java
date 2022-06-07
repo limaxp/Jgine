@@ -10,37 +10,34 @@ import org.jgine.net.game.packet.PacketManager;
 
 public class SpawnPrefabPacket extends Packet {
 
-	// TODO: prefab and scenes should get an id;
-
 	private Prefab prefab;
 	private Scene scene;
+	private float x;
+	private float y;
+	private float z;
 
 	public SpawnPrefabPacket() {
 	}
 
-	public SpawnPrefabPacket(Prefab prefab) {
+	public SpawnPrefabPacket(Prefab prefab, Scene scene, float x, float y, float z) {
 		this.prefab = prefab;
+		this.scene = scene;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
 	public void read(ByteBuffer buffer) {
-		byte[] prefabNameBytes = new byte[buffer.getInt()];
-		buffer.get(prefabNameBytes);
-		prefab = Prefab.get(new String(prefabNameBytes));
-
-		byte[] sceneNameBytes = new byte[buffer.getInt()];
-		buffer.get(sceneNameBytes);
-		scene = Engine.getInstance().getScene(new String(sceneNameBytes));
+		prefab = Prefab.get(buffer.getInt());
+		scene = Engine.getInstance().getScene(buffer.getInt());
 	}
 
 	@Override
 	public void write(ByteBuffer buffer) {
 		buffer.putInt(PacketManager.SPAWN_PREFAB);
-		buffer.putInt(prefab.name.length());
-		buffer.put(prefab.name.getBytes());
-
-		buffer.putInt(scene.name.length());
-		buffer.put(scene.name.getBytes());
+		buffer.putInt(prefab.id);
+		buffer.putInt(scene.id);
 	}
 
 	public Prefab getPrefab() {
@@ -49,5 +46,17 @@ public class SpawnPrefabPacket extends Packet {
 
 	public Scene getScene() {
 		return scene;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getZ() {
+		return z;
 	}
 }

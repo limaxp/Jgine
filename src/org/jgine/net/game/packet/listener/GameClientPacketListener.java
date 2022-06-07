@@ -48,5 +48,7 @@ public class GameClientPacketListener implements ClientPacketListener {
 	@Override
 	public void on(SpawnPrefabPacket packet) {
 		Entity entity = packet.getPrefab().create(packet.getScene());
+		Transform transform = entity.getSystem(TransformSystem.class);
+		transform.setPosition(new Vector3f(packet.getX(), packet.getY(), packet.getZ()));
 	}
 }

@@ -162,4 +162,9 @@ public class Prefab {
 	public static Prefab get(String name) {
 		return PrefabLoader.get(name);
 	}
+
+	@Nullable
+	public static Prefab get(int id) {
+		return PrefabLoader.get(id);
+	}
 }

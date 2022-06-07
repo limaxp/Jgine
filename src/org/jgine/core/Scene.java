@@ -23,6 +23,7 @@ import org.jgine.system.SystemScene;
 
 public class Scene {
 
+	public final int id;
 	public final String name;
 	private final Map<EngineSystem, SystemScene<?, ?>> systemMap;
 	private final Map<Class<? extends EngineSystem>, SystemScene<?, ?>> systemClassMap;
@@ -33,6 +34,7 @@ public class Scene {
 	private UpdateOrder renderOrder;
 
 	Scene(String name) {
+		this.id = name.hashCode();
 		this.name = name;
 		systemMap = new ConcurrentHashMap<EngineSystem, SystemScene<?, ?>>();
 		systemClassMap = new ConcurrentHashMap<Class<? extends EngineSystem>, SystemScene<?, ?>>();
