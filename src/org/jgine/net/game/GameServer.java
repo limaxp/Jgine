@@ -141,7 +141,7 @@ public class GameServer implements Runnable {
 		player = new PlayerConnection(address, port, paket.getName(), idGenerator.generate());
 		this.player.add(player);
 		nameMap.put(player.name, player);
-		idMap[player.id] = player;
+		idMap[IdGenerator.index(player.id)] = player;
 		sendData(new ConnectResponsePacket(true, player.id), player);
 		return player;
 	}
@@ -153,8 +153,7 @@ public class GameServer implements Runnable {
 			return null;
 		}
 		player = nameMap.remove(paket.getName());
-		idMap[player.id] = null;
-		idGenerator.free(player.id);
+		idMap[idGenerator.free(player.id)] = null;
 		this.player.remove(player);
 		return player;
 	}
