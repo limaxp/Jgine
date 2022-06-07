@@ -31,7 +31,9 @@ public class Entity {
 	private boolean updateChilds;
 
 	public Entity(Scene scene) {
-		this.id = ID_GENERATOR.generate();
+		synchronized (ID_GENERATOR) {
+			this.id = ID_GENERATOR.generate();
+		}
 		ID_MAP[IdGenerator.index(id)] = this;
 		this.scene = scene;
 		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
@@ -41,7 +43,11 @@ public class Entity {
 
 	public void delete() {
 		scene.removeEntity(this);
-		ID_MAP[ID_GENERATOR.free(id)] = null;
+		int idIndex;
+		synchronized (ID_GENERATOR) {
+			idIndex = ID_GENERATOR.free(id);
+		}
+		ID_MAP[idIndex] = null;
 	}
 
 	public boolean isAlive() {
