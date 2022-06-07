@@ -30,8 +30,7 @@ public class IdGenerator {
 		int index;
 		if (freeIndices.size() > MINIMUM_FREE_INDICES) {
 			index = freeIndices.poll();
-			int gen = generation[index] = (byte) (generation[index] + 1);
-			return id(index, gen);
+			return id(index, generation[index]);
 		} else {
 			generation[index = size++] = (byte) 0;
 			return index;
@@ -41,6 +40,7 @@ public class IdGenerator {
 	public int free(int id) {
 		int index = index(id);
 		freeIndices.add(index);
+		generation[index] = (byte) (generation[index] + 1);
 		return index;
 	}
 
