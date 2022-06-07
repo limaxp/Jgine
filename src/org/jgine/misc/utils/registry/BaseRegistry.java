@@ -1,24 +1,25 @@
 package org.jgine.misc.utils.registry;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
+import org.jgine.misc.collection.iterator.ArrayIterator;
 import org.jgine.misc.utils.logger.Logger;
 
 public class BaseRegistry<T> extends Registry<T> {
 
-	protected final IdentityArrayList<T> values;
+	protected final Object[] values;
+	protected int size;
 	protected final Map<Integer, T> idMap;
 	protected final Map<String, T> keyMap;
 
-	public BaseRegistry(String name) {
+	public BaseRegistry(String name, int size) {
 		super(name);
-		values = new IdentityArrayList<T>();
-		idMap = new HashMap<Integer, T>();
-		keyMap = new HashMap<String, T>();
+		values = new Object[size];
+		idMap = new HashMap<Integer, T>(size);
+		keyMap = new HashMap<String, T>(size);
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class BaseRegistry<T> extends Registry<T> {
 			Logger.log(name + " Registry: key collision! key = " + key + ", value = " + value);
 			return false;
 		}
-		values.add(value);
+		values[size++] = value;
 		idMap.put(id, value);
 		keyMap.put(key, value);
 		return true;
@@ -68,23 +69,26 @@ public class BaseRegistry<T> extends Registry<T> {
 		return idMap.getOrDefault(id, defaultValue);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T getByIndex(int index) {
-		return values.get(index);
+		return (T) values[index];
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<T> values() {
-		return values;
+	public void forEach(Consumer<? super T> action) {
+		for (int i = 0; i < size; i++)
+			action.accept((T) values[i]);
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return values().iterator();
+		return new ArrayIterator<T>(values);
 	}
 
 	@Override
 	public int size() {
-		return values.size();
+		return size;
 	}
 }

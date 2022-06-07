@@ -5,12 +5,10 @@ import java.util.NoSuchElementException;
 
 public class ArrayIterator<T> implements Iterator<T> {
 
-
-	private T[] array;
+	private Object[] array;
 	private int pos;
 
-
-	public ArrayIterator(T array[]) {
+	public ArrayIterator(Object[] array) {
 		this.array = array;
 		this.pos = 0;
 	}
@@ -20,9 +18,10 @@ public class ArrayIterator<T> implements Iterator<T> {
 		return pos < array.length;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T next() throws NoSuchElementException {
-		return array[pos++];
+		return (T) array[pos++];
 	}
 
 	@Override
