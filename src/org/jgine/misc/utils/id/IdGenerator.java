@@ -1,4 +1,4 @@
-package org.jgine.misc.utils;
+package org.jgine.misc.utils.id;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -38,12 +38,18 @@ public class IdGenerator {
 		}
 	}
 
-	public void free(int id) {
-		freeIndices.add(index(id));
+	public int free(int id) {
+		int index = index(id);
+		freeIndices.add(index);
+		return index;
 	}
 
 	public boolean isAlive(int id) {
 		return generation[index(id)] == generation(id);
+	}
+
+	public int getMaxId() {
+		return generation.length;
 	}
 
 	public static int id(int index, int generation) {

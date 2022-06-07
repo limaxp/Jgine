@@ -15,7 +15,7 @@ public class ConnectionManager {
 	public static void init() {
 		boolean isServer = true;
 		if (isServer) {
-			server = new GameServer(1331);
+			server = new GameServer(1331, 100);
 			server.addListener(new GameServerPacketListener());
 			new Thread(server).start();
 		}

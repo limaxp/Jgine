@@ -1,4 +1,4 @@
-package org.jgine.misc.utils;
+package org.jgine.misc.utils.id;
 
 import org.jgine.misc.math.FastMath;
 

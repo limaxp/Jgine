@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.function.TriConsumer;
+import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
@@ -30,9 +31,10 @@ public class GameServer implements Runnable {
 	private List<ServerPacketListener> listener;
 	private List<PlayerConnection> player;
 	private Map<String, PlayerConnection> nameMap;
-	private Map<Integer, PlayerConnection> idMap;
+	private final IdGenerator idGenerator;
+	private PlayerConnection[] idMap;
 
-	public GameServer(int port) {
+	public GameServer(int port, int maxConnections) {
 		try {
 			this.socket = new DatagramSocket(port);
 			this.socket.setSoTimeout(1000);
@@ -42,7 +44,8 @@ public class GameServer implements Runnable {
 		listener = new ArrayList<ServerPacketListener>();
 		player = new ArrayList<PlayerConnection>();
 		nameMap = new HashMap<String, PlayerConnection>();
-		idMap = new HashMap<Integer, PlayerConnection>();
+		idGenerator = new IdGenerator(maxConnections);
+		idMap = new PlayerConnection[maxConnections];
 	}
 
 	public void stop() {
@@ -135,10 +138,10 @@ public class GameServer implements Runnable {
 			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
 			return null;
 		}
-		player = new PlayerConnection(address, port, paket.getName());
+		player = new PlayerConnection(address, port, paket.getName(), idGenerator.generate());
 		this.player.add(player);
 		nameMap.put(player.name, player);
-		idMap.put(player.id, player);
+		idMap[player.id] = player;
 		sendData(new ConnectResponsePacket(true, player.id), player);
 		return player;
 	}
@@ -150,9 +153,9 @@ public class GameServer implements Runnable {
 			return null;
 		}
 		player = nameMap.remove(paket.getName());
-		idMap.remove(player.id);
+		idMap[player.id] = null;
+		idGenerator.free(player.id);
 		this.player.remove(player);
-		player.free();
 		return player;
 	}
 
@@ -167,6 +170,14 @@ public class GameServer implements Runnable {
 
 	@Nullable
 	public PlayerConnection getPlayer(int id) {
-		return idMap.get(id);
+		return idMap[id];
+	}
+
+	public int getMaxPlayer() {
+		return idMap.length;
+	}
+
+	public boolean isAlive(PlayerConnection connection) {
+		return idGenerator.isAlive(connection.id);
 	}
 }

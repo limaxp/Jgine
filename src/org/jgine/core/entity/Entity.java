@@ -11,7 +11,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
-import org.jgine.misc.utils.IdGenerator;
+import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
@@ -19,7 +19,8 @@ import org.jgine.system.SystemScene;
 
 public class Entity {
 
-	private static final IdGenerator idGenerator = new IdGenerator();
+	private static final IdGenerator ID_GENERATOR = new IdGenerator();
+	private static final Entity[] ID_MAP = new Entity[ID_GENERATOR.getMaxId()];
 
 	public final int id;
 	public final Scene scene;
@@ -30,7 +31,8 @@ public class Entity {
 	private boolean updateChilds;
 
 	public Entity(Scene scene) {
-		this.id = idGenerator.generate();
+		this.id = ID_GENERATOR.generate();
+		ID_MAP[IdGenerator.index(id)] = this;
 		this.scene = scene;
 		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
@@ -39,11 +41,11 @@ public class Entity {
 
 	public void delete() {
 		scene.removeEntity(this);
-		idGenerator.free(id);
+		ID_MAP[ID_GENERATOR.free(id)] = null;
 	}
 
 	public boolean isAlive() {
-		return idGenerator.isAlive(id);
+		return ID_GENERATOR.isAlive(id);
 	}
 
 	public final <T extends SystemObject> T addSystem(String system, T object) {
@@ -275,5 +277,10 @@ public class Entity {
 		}
 		for (Entity child : childs)
 			child.updateChilds();
+	}
+
+	@Nullable
+	public static Entity getById(int id) {
+		return ID_MAP[id];
 	}
 }
