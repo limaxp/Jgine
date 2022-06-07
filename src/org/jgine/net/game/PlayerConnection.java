@@ -19,4 +19,12 @@ public class PlayerConnection {
 		this.port = port;
 		this.name = name;
 	}
+
+	void free() {
+		idGenerator.free(id);
+	}
+
+	public boolean isAlive() {
+		return idGenerator.isAlive(id);
+	}
 }

@@ -39,6 +39,11 @@ public class Entity {
 
 	public void delete() {
 		scene.removeEntity(this);
+		idGenerator.free(id);
+	}
+
+	public boolean isAlive() {
+		return idGenerator.isAlive(id);
 	}
 
 	public final <T extends SystemObject> T addSystem(String system, T object) {

@@ -152,6 +152,7 @@ public class GameServer implements Runnable {
 		player = nameMap.remove(paket.getName());
 		idMap.remove(player.id);
 		this.player.remove(player);
+		player.free();
 		return player;
 	}
 
