@@ -16,6 +16,7 @@ import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
@@ -32,6 +33,7 @@ public class Scene {
 	private final Map<Object, List<BiConsumer<Entity, Object>>> recieverMap;
 	private UpdateOrder updateOrder;
 	private UpdateOrder renderOrder;
+	private SpacePartitioning<Entity> spacePartitioning;
 
 	Scene(String name) {
 		this.id = name.hashCode();
@@ -214,6 +216,14 @@ public class Scene {
 		return Collections.unmodifiableList(entities);
 	}
 
+	public final Entity getEntity(float x, float y, float z, Entity defaultValue) {
+		return spacePartitioning.get(x, y, z, defaultValue);
+	}
+
+	public final List<Entity> getEntitiesNear(float x, float y, float z, float range) {
+		return entities;
+	}
+
 	public final List<BiConsumer<Entity, Object>> getUpdateReciever(Object identifier) {
 		List<BiConsumer<Entity, Object>> reciever = recieverMap.get(identifier);
 		if (reciever == null)
@@ -249,5 +259,14 @@ public class Scene {
 
 	public boolean hasRenderOrder() {
 		return renderOrder != null;
+	}
+
+	public void setSpacePartitioning(SpacePartitioning<Entity> spacePartitioning) {
+		this.spacePartitioning = spacePartitioning;
+		
+	}
+
+	public SpacePartitioning<Entity> getSpacePartitioning() {
+		return spacePartitioning;
 	}
 }

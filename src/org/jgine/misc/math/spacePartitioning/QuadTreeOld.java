@@ -1,4 +1,4 @@
-package org.jgine.misc.math;
+package org.jgine.misc.math.spacePartitioning;
 
 import java.util.ArrayList;
 import java.util.Collection;
