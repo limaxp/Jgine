@@ -1,5 +1,6 @@
 package org.jgine.net.game;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
@@ -11,15 +12,15 @@ public class ConnectionManager {
 
 	private static GameServer server;
 	private static GameClient client;
+	private static boolean isServer = true;
 
 	public static void init() {
-		boolean isServer = true;
 		if (isServer) {
 			server = new GameServer(1331, 100);
 			server.addListener(new GameServerPacketListener());
 			new Thread(server).start();
 		}
-		client = new GameClient("localhost", 1331);
+		client = new GameClient("localhost", 1331, 100);
 		client.addListener(new GameClientPacketListener());
 		new Thread(client).start();
 
@@ -35,6 +36,7 @@ public class ConnectionManager {
 		client.stop();
 	}
 
+	@Nullable
 	public static GameServer getServer() {
 		return server;
 	}

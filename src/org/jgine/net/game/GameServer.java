@@ -23,6 +23,7 @@ import org.jgine.net.game.packet.ServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.PlayerListPacket;
 
 public class GameServer implements Runnable {
 
@@ -42,8 +43,8 @@ public class GameServer implements Runnable {
 			Logger.err("GameServer: Error creating socket!", e);
 		}
 		listener = new ArrayList<ServerPacketListener>();
-		player = new ArrayList<PlayerConnection>();
-		nameMap = new HashMap<String, PlayerConnection>();
+		player = new ArrayList<PlayerConnection>(maxConnections);
+		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
 		idGenerator = new IdGenerator(maxConnections);
 		idMap = new PlayerConnection[maxConnections];
 	}
@@ -143,6 +144,7 @@ public class GameServer implements Runnable {
 		nameMap.put(player.name, player);
 		idMap[IdGenerator.index(player.id)] = player;
 		sendData(new ConnectResponsePacket(true, player.id), player);
+		sendData(new PlayerListPacket(this.player), player);
 		return player;
 	}
 

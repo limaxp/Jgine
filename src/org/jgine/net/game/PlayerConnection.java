@@ -15,4 +15,9 @@ public class PlayerConnection {
 		this.port = port;
 		this.name = name;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " [name=" + name + ", id=" + id + ", address=" + address + ", port" + port + "]";
+	}
 }

@@ -30,5 +30,6 @@ public class GameServerPacketListener implements ServerPacketListener {
 
 	@Override
 	public void on(SpawnPrefabPacket packet, PlayerConnection connection) {
+		ConnectionManager.getServer().sendDataToAll(packet);
 	}
 }

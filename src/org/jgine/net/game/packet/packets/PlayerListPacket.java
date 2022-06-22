@@ -43,4 +43,8 @@ public class PlayerListPacket extends Packet {
 			buffer.put(player.name.getBytes());
 		}
 	}
+
+	public List<PlayerConnection> getPlayers() {
+		return players;
+	}
 }

@@ -9,14 +9,19 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
+import org.jgine.net.game.packet.packets.PlayerListPacket;
 
 public class GameClient implements Runnable {
 
@@ -26,8 +31,11 @@ public class GameClient implements Runnable {
 	private boolean isRunning;
 	private List<ClientPacketListener> listener;
 	private int id;
+	private List<PlayerConnection> player;
+	private Map<String, PlayerConnection> nameMap;
+	private PlayerConnection[] idMap;
 
-	public GameClient(String serverIpAddress, int serverPort) {
+	public GameClient(String serverIpAddress, int serverPort, int maxConnections) {
 		try {
 			this.serverIpAddress = InetAddress.getByName(serverIpAddress);
 			this.socket = new DatagramSocket();
@@ -40,6 +48,9 @@ public class GameClient implements Runnable {
 		this.serverPort = serverPort;
 		listener = new ArrayList<ClientPacketListener>();
 		id = -1;
+		player = new ArrayList<PlayerConnection>(maxConnections);
+		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
+		idMap = new PlayerConnection[maxConnections];
 	}
 
 	public void stop() {
@@ -71,9 +82,16 @@ public class GameClient implements Runnable {
 		gamePacket.read(buffer);
 
 		if (paketId == PacketManager.CONNECT_RESPONSE) {
-			ConnectResponsePacket connectResponse = (ConnectResponsePacket) gamePacket;
-			if (connectResponse.isAccepted())
-				this.id = connectResponse.getId();
+			ConnectResponsePacket connectResponsePacket = (ConnectResponsePacket) gamePacket;
+			if (connectResponsePacket.isAccepted())
+				this.id = connectResponsePacket.getId();
+		} else if (paketId == PacketManager.PLAYER_LIST) {
+			PlayerListPacket playerListPacket = (PlayerListPacket) gamePacket;
+			for (PlayerConnection p : playerListPacket.getPlayers()) {
+				player.add(p);
+				nameMap.put(p.name, p);
+				idMap[p.id] = p;
+			}
 		}
 
 		BiConsumer<ClientPacketListener, T> function = PacketManager.getClientListenerFunction(paketId);
@@ -124,5 +142,23 @@ public class GameClient implements Runnable {
 
 	public void removeListener(ClientPacketListener listener) {
 		this.listener.remove(listener);
+	}
+
+	public List<PlayerConnection> getPlayer() {
+		return Collections.unmodifiableList(player);
+	}
+
+	@Nullable
+	public PlayerConnection getPlayer(String name) {
+		return nameMap.get(name);
+	}
+
+	@Nullable
+	public PlayerConnection getPlayer(int id) {
+		return idMap[id];
+	}
+
+	public int getMaxPlayer() {
+		return idMap.length;
 	}
 }
