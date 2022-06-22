@@ -29,7 +29,8 @@ public class BillboardParticle implements AutoCloseable {
 
 	public static final int MAX_PARTICLES = 1000;
 
-	public static final Consumer<BillboardParticle> NULL_ANIMATION = (particle) -> {};
+	public static final Consumer<BillboardParticle> NULL_ANIMATION = (particle) -> {
+	};
 
 	public static final int VERTEX_SIZE = 2;
 	public static final int TEXT_CORD_SIZE = 2;
@@ -54,6 +55,7 @@ public class BillboardParticle implements AutoCloseable {
 	protected int posbo;
 	protected FloatBuffer posBuffer;
 	protected int size;
+	protected boolean changedPosition;
 	protected Consumer<BillboardParticle> animation = NULL_ANIMATION;
 
 	public BillboardParticle() {
@@ -87,6 +89,10 @@ public class BillboardParticle implements AutoCloseable {
 	}
 
 	public final void render() {
+		if (changedPosition) {
+			changedPosition = false;
+			updatePositions();
+		}
 		glBindVertexArray(vao);
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, size);
 		glBindVertexArray(0);
@@ -101,14 +107,14 @@ public class BillboardParticle implements AutoCloseable {
 		posBuffer.position(0);
 		posBuffer.put(positions);
 		posBuffer.flip();
-		updatePositions();
+		changedPosition = true;
 	}
 
 	public final void setPositions(FloatBuffer positions) {
 		posBuffer.position(0);
 		posBuffer.put(positions);
 		posBuffer.flip();
-		updatePositions();
+		changedPosition = true;
 	}
 
 	public final void setPositions(double[] vec3f, float size) {
@@ -120,7 +126,7 @@ public class BillboardParticle implements AutoCloseable {
 			posBuffer.put(size);
 		}
 		posBuffer.flip();
-		updatePositions();
+		changedPosition = true;
 	}
 
 	protected final void updatePositions() {
@@ -132,6 +138,7 @@ public class BillboardParticle implements AutoCloseable {
 
 	public final void setPosition(int index, float position) {
 		posBuffer.put(index, position);
+		changedPosition = true;
 	}
 
 	public final float getPosition(int index) {
