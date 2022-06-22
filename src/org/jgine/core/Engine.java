@@ -10,6 +10,7 @@ import org.jgine.core.gameLoop.GameLoop;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
+import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
@@ -121,8 +122,9 @@ public abstract class Engine {
 			if (scene.hasUpdateOrder()) {
 				UpdateOrder updateOrder = scene.getUpdateOrder();
 				for (int i = 0; i < updateOrder.size(); i++) {
-					for (EngineSystem system : updateOrder.get(i))
-						scene.getSystem(system).update();
+					List<EngineSystem> updateOrderSystems = updateOrder.get(i);
+					TaskManager.execute(updateOrderSystems.size(),
+							(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
 					UpdateManager.distributeChanges();
 				}
 			} else {

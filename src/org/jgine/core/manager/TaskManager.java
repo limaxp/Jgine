@@ -1,9 +1,11 @@
 package org.jgine.core.manager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
 
 import org.jgine.misc.utils.function.BiIntConsumer;
@@ -12,6 +14,32 @@ import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 
 public class TaskManager {
+
+	public static void execute(int size, Function<Integer, Runnable> funcSupplier) {
+		if (Options.SYNCHRONIZED) {
+			for (int i = 0; i < size; i++)
+				funcSupplier.apply(i).run();
+			return;
+		}
+
+		Future<?>[] tasks = new Future[size];
+		for (int i = 0; i < size; i++)
+			tasks[i] = TaskExecutor.submit(funcSupplier.apply(i));
+		waitTasks(tasks);
+	}
+
+	public static void execute(Collection<Runnable> functions) {
+		if (Options.SYNCHRONIZED) {
+			for (Runnable func : functions)
+				func.run();
+			return;
+		}
+		Future<?>[] tasks = new Future[functions.size()];
+		int i = 0;
+		for (Runnable func : functions)
+			tasks[i++] = TaskExecutor.submit(func);
+		waitTasks(tasks);
+	}
 
 	public static void execute(int size, BiIntConsumer func) {
 		if (Options.SYNCHRONIZED) {
@@ -69,12 +97,21 @@ public class TaskManager {
 		waitTasks(tasks);
 	}
 
-	private static void waitTasks(List<Future<?>> tasks) {
+	private static void waitTasks(Iterable<Future<?>> tasks) {
 		try {
 			for (Future<?> future : tasks)
 				future.get();
 		} catch (InterruptedException | ExecutionException e) {
-			Logger.err("TaskManager: Error on running tasks!", e);
+			Logger.err("TaskManager: Error on waiting for tasks!", e);
+		}
+	}
+
+	private static void waitTasks(Future<?>[] tasks) {
+		try {
+			for (Future<?> future : tasks)
+				future.get();
+		} catch (InterruptedException | ExecutionException e) {
+			Logger.err("TaskManager: Error on waiting for tasks!", e);
 		}
 	}
 }
