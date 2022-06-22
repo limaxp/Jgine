@@ -123,8 +123,11 @@ public abstract class Engine {
 				UpdateOrder updateOrder = scene.getUpdateOrder();
 				for (int i = 0; i < updateOrder.size(); i++) {
 					List<EngineSystem> updateOrderSystems = updateOrder.get(i);
-					TaskManager.execute(updateOrderSystems.size(),
-							(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
+					if (updateOrderSystems.size() == 1)
+						scene.getSystem(updateOrderSystems.get(0)).update();
+					else
+						TaskManager.execute(updateOrderSystems.size(),
+								(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
 					UpdateManager.distributeChanges();
 				}
 			} else {
