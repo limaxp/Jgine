@@ -89,7 +89,7 @@ public class BillboardParticle implements AutoCloseable {
 	}
 
 	public final void render() {
-		if (changedPosition) {
+		if (changedPosition) { // because openGL only single core 
 			changedPosition = false;
 			updatePositions();
 		}
