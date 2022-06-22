@@ -5,10 +5,9 @@ import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
-import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
-import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
+import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
 import org.jgine.system.systems.transform.Transform;
@@ -21,15 +20,11 @@ public class GameClientPacketListener implements ClientPacketListener {
 	}
 
 	@Override
-	public void on(ConnectPacket packet) {
-	}
-
-	@Override
 	public void on(ConnectResponsePacket packet) {
 	}
 
 	@Override
-	public void on(DisconnectPacket packet) {
+	public void on(PlayerListPacket packet) {
 	}
 
 	@Override

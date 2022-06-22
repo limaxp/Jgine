@@ -12,6 +12,7 @@ import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
+import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
 
@@ -42,20 +43,30 @@ public class PacketManager {
 
 	public static final int PING = register(1, PingPacket::new, ClientPacketListener::on, ServerPacketListener::on);
 
-	public static final int CONNECT = register(2, ConnectPacket::new, ClientPacketListener::on,
+	public static final int CONNECT = register(2, ConnectPacket::new, ServerPacketListener::on);
+
+	public static final int CONNECT_RESPONSE = register(3, ConnectResponsePacket::new, ClientPacketListener::on);
+
+	public static final int DISCONNECT = register(4, DisconnectPacket::new, ServerPacketListener::on);
+
+	public static final int PLAYER_LIST = register(5, PlayerListPacket::new, ClientPacketListener::on);
+
+	public static final int POSITION = register(6, PositionPacket::new, ClientPacketListener::on);
+
+	public static final int SPAWN_PREFAB = register(7, SpawnPrefabPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int CONNECT_RESPONSE = register(3, ConnectResponsePacket::new, ClientPacketListener::on,
-			ServerPacketListener::on);
+	public static <T extends Packet> int register(int id, Supplier<T> supplier,
+			BiConsumer<ClientPacketListener, T> clientFunction) {
+		return register(id, supplier, clientFunction, (spl, t, p) -> {
+		});
+	}
 
-	public static final int DISCONNECT = register(4, DisconnectPacket::new, ClientPacketListener::on,
-			ServerPacketListener::on);
-
-	public static final int POSITION = register(5, PositionPacket::new, ClientPacketListener::on,
-			ServerPacketListener::on);
-
-	public static final int SPAWN_PREFAB = register(6, SpawnPrefabPacket::new, ClientPacketListener::on,
-			ServerPacketListener::on);
+	public static <T extends Packet> int register(int id, Supplier<T> supplier,
+			TriConsumer<ServerPacketListener, T, PlayerConnection> serverFunction) {
+		return register(id, supplier, (cpl, t) -> {
+		}, serverFunction);
+	};
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,
 			BiConsumer<ClientPacketListener, T> clientFunction,
