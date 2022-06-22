@@ -33,7 +33,7 @@ public class ConnectionManager {
 	public static void terminate() {
 		client.sendData(new DisconnectPacket("testName"));
 
-		if (server != null)
+		if (isServer)
 			server.stop();
 		client.stop();
 	}
