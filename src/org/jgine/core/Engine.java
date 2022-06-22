@@ -181,14 +181,14 @@ public abstract class Engine {
 
 	public final boolean deleteScene(Scene scene) {
 		if (this.scene == scene)
-			return true;
+			return false;
 		sceneMap.remove(scene.name);
 		sceneIdMap.remove(scene.id);
 		Scheduler.runTaskSynchron(() -> {
 			scenes.remove(scene);
 			scene.free();
 		});
-		return false;
+		return true;
 	}
 
 	public final Collection<Scene> getScenes() {
