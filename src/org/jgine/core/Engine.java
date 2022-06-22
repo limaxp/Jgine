@@ -44,6 +44,7 @@ public abstract class Engine {
 	private final Map<String, Scene> sceneMap;
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
+	private Scene scene;
 
 	public Engine(String name) {
 		engine = this;
@@ -109,32 +110,30 @@ public abstract class Engine {
 	private final void update() {
 		if (isPaused())
 			return;
-		updateScenes();
+		updateScene();
 		ServiceManager.distributeChanges();
 		Scheduler.update();
 		SoundManager.update();
 		onUpdate();
 	}
 
-	private final void updateScenes() {
+	private final void updateScene() {
 		UpdateManager.distributeChanges();
-		for (Scene scene : scenes) {
-			if (scene.hasUpdateOrder()) {
-				UpdateOrder updateOrder = scene.getUpdateOrder();
-				for (int i = 0; i < updateOrder.size(); i++) {
-					List<EngineSystem> updateOrderSystems = updateOrder.get(i);
-					if (updateOrderSystems.size() == 1)
-						scene.getSystem(updateOrderSystems.get(0)).update();
-					else
-						TaskManager.execute(updateOrderSystems.size(),
-								(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
-					UpdateManager.distributeChanges();
-				}
-			} else {
-				for (SystemScene<?, ?> systemScene : scene.getSystems()) {
-					systemScene.update();
-					UpdateManager.distributeChanges();
-				}
+		if (scene.hasUpdateOrder()) {
+			UpdateOrder updateOrder = scene.getUpdateOrder();
+			for (int i = 0; i < updateOrder.size(); i++) {
+				List<EngineSystem> updateOrderSystems = updateOrder.get(i);
+				if (updateOrderSystems.size() == 1)
+					scene.getSystem(updateOrderSystems.get(0)).update();
+				else
+					TaskManager.execute(updateOrderSystems.size(),
+							(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
+				UpdateManager.distributeChanges();
+			}
+		} else {
+			for (SystemScene<?, ?> systemScene : scene.getSystems()) {
+				systemScene.update();
+				UpdateManager.distributeChanges();
 			}
 		}
 	}
@@ -143,22 +142,20 @@ public abstract class Engine {
 
 	private final void render() {
 		Renderer.begin();
-		renderScenes();
+		renderScene();
 		Renderer.end();
 		onRender();
 	}
 
-	private final void renderScenes() {
-		for (Scene scene : scenes) {
-			if (scene.hasRenderOrder()) {
-				UpdateOrder renderOrder = scene.getRenderOrder();
-				for (int i = 0; i < renderOrder.size(); i++)
-					for (EngineSystem system : renderOrder.get(i))
-						scene.getSystem(system).render();
-			} else {
-				for (SystemScene<?, ?> systemScene : scene.getSystems())
-					systemScene.render();
-			}
+	private final void renderScene() {
+		if (scene.hasRenderOrder()) {
+			UpdateOrder renderOrder = scene.getRenderOrder();
+			for (int i = 0; i < renderOrder.size(); i++)
+				for (EngineSystem system : renderOrder.get(i))
+					scene.getSystem(system).render();
+		} else {
+			for (SystemScene<?, ?> systemScene : scene.getSystems())
+				systemScene.render();
 		}
 	}
 
@@ -174,6 +171,8 @@ public abstract class Engine {
 
 	public final Scene createScene(String name) {
 		Scene scene = new Scene(name);
+		if (this.scene == null)
+			this.scene = scene;
 		sceneMap.put(name, scene);
 		sceneIdMap.put(scene.id, scene);
 		Scheduler.runTaskSynchron(() -> scenes.add(scene));
@@ -204,6 +203,14 @@ public abstract class Engine {
 
 	public final Scene getScenePerIndex(int index) {
 		return scenes.get(index);
+	}
+
+	public final Scene getScene() {
+		return scene;
+	}
+
+	public final void setScene(Scene scene) {
+		Scheduler.runTaskSynchron(() -> this.scene = scene);
 	}
 
 	public final int getFps() {
