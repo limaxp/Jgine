@@ -1,5 +1,7 @@
 package org.jgine.net.game;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
@@ -43,5 +45,19 @@ public class ConnectionManager {
 
 	public static GameClient getClient() {
 		return client;
+	}
+
+	public List<PlayerConnection> getPlayer() {
+		return isServer ? server.getPlayer() : client.getPlayer();
+	}
+
+	@Nullable
+	public PlayerConnection getPlayer(String name) {
+		return isServer ? server.getPlayer(name) : client.getPlayer(name);
+	}
+
+	@Nullable
+	public PlayerConnection getPlayer(int id) {
+		return isServer ? server.getPlayer(id) : client.getPlayer(id);
 	}
 }
