@@ -179,14 +179,16 @@ public abstract class Engine {
 		return scene;
 	}
 
-	public final Scene deleteScene(String name) {
-		Scene scene = sceneMap.remove(name);
+	public final boolean deleteScene(Scene scene) {
+		if (this.scene == scene)
+			return true;
+		sceneMap.remove(scene.name);
 		sceneIdMap.remove(scene.id);
 		Scheduler.runTaskSynchron(() -> {
 			scenes.remove(scene);
 			scene.free();
 		});
-		return scene;
+		return false;
 	}
 
 	public final Collection<Scene> getScenes() {
