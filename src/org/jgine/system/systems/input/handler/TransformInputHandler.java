@@ -3,6 +3,7 @@ package org.jgine.system.systems.input.handler;
 import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
+import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -31,7 +32,7 @@ public class TransformInputHandler extends InputHandler {
 	}
 
 	@Override
-	public void checkInput() {
+	public void checkInput(InputDevice inputDevice) {
 		Vector2f cursorPos = Input.getCursorPos();
 		if (cursorPos.x > lastMouseX)
 			transform.rotateY(0.015f);
@@ -45,22 +46,22 @@ public class TransformInputHandler extends InputHandler {
 		lastMouseX = cursorPos.x;
 		lastMouseY = cursorPos.y;
 
-		if (Input.isKeyPressed(Key.KEY_ESCAPE))
+		if (inputDevice.isKeyPressed(Key.KEY_ESCAPE))
 			Engine.getInstance().shutdown();
-		if (Input.isKeyPressed(Key.KEY_F12))
+		if (inputDevice.isKeyPressed(Key.KEY_F12))
 			Scheduler.runTaskSynchron(() -> Engine.getInstance().getWindow().toggleFullScreen());
 
-		if (Input.isKeyPressed(Key.KEY_W) || Input.isKeyPressed(Key.KEY_UP))
+		if (inputDevice.isKeyPressed(Key.KEY_W) || inputDevice.isKeyPressed(Key.KEY_UP))
 			physicObject.addVelocity(Vector3f.mult(transform.getLocalRotation(), 0.1f));
-		if (Input.isKeyPressed(Key.KEY_S) || Input.isKeyPressed(Key.KEY_DOWN))
+		if (inputDevice.isKeyPressed(Key.KEY_S) || inputDevice.isKeyPressed(Key.KEY_DOWN))
 			physicObject.addVelocity(Vector3f.mult(transform.getLocalRotation(), -0.1f));
-		if (Input.isKeyPressed(Key.KEY_A) || Input.isKeyPressed(Key.KEY_LEFT))
+		if (inputDevice.isKeyPressed(Key.KEY_A) || inputDevice.isKeyPressed(Key.KEY_LEFT))
 			physicObject.addVelocity(Vector3f.mult(Vector3f.getLeft(transform.getLocalRotation()), 0.1f));
-		if (Input.isKeyPressed(Key.KEY_D) || Input.isKeyPressed(Key.KEY_RIGHT))
+		if (inputDevice.isKeyPressed(Key.KEY_D) || inputDevice.isKeyPressed(Key.KEY_RIGHT))
 			physicObject.addVelocity(Vector3f.mult(Vector3f.getRight(transform.getLocalRotation()), 0.1f));
-		if (Input.isKeyPressed(Key.KEY_SPACE))
+		if (inputDevice.isKeyPressed(Key.KEY_SPACE))
 			physicObject.addVelocity(Vector3f.mult(Vector3f.UP, 0.1f));
-		if (Input.isKeyPressed(Key.KEY_LSHIFT))
+		if (inputDevice.isKeyPressed(Key.KEY_LSHIFT))
 			physicObject.addVelocity(Vector3f.mult(Vector3f.DOWN, 0.1f));
 	}
 

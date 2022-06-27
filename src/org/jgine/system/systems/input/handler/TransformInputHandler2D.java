@@ -2,7 +2,7 @@ package org.jgine.system.systems.input.handler;
 
 import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.input.Input;
+import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.scheduler.Scheduler;
@@ -23,19 +23,19 @@ public class TransformInputHandler2D extends InputHandler {
 	}
 
 	@Override
-	public void checkInput() {
-		if (Input.isKeyPressed(Key.KEY_ESCAPE))
+	public void checkInput(InputDevice inputDevice) {
+		if (inputDevice.isKeyPressed(Key.KEY_ESCAPE))
 			Engine.getInstance().shutdown();
-		if (Input.isKeyPressed(Key.KEY_F12))
+		if (inputDevice.isKeyPressed(Key.KEY_F12))
 			Scheduler.runTaskSynchron(() -> Engine.getInstance().getWindow().toggleFullScreen());
 
-		if (Input.isKeyPressed(Key.KEY_W) || Input.isKeyPressed(Key.KEY_UP))
+		if (inputDevice.isKeyPressed(Key.KEY_W) || inputDevice.isKeyPressed(Key.KEY_UP))
 			physicObject.addVelocity(Vector2f.mult(Vector2f.UP, 0.1f));
-		if (Input.isKeyPressed(Key.KEY_S) || Input.isKeyPressed(Key.KEY_DOWN))
+		if (inputDevice.isKeyPressed(Key.KEY_S) || inputDevice.isKeyPressed(Key.KEY_DOWN))
 			physicObject.addVelocity(Vector2f.mult(Vector2f.DOWN, 0.1f));
-		if (Input.isKeyPressed(Key.KEY_A) || Input.isKeyPressed(Key.KEY_LEFT))
+		if (inputDevice.isKeyPressed(Key.KEY_A) || inputDevice.isKeyPressed(Key.KEY_LEFT))
 			physicObject.addVelocity(Vector2f.mult(Vector2f.LEFT, 0.1f));
-		if (Input.isKeyPressed(Key.KEY_D) || Input.isKeyPressed(Key.KEY_RIGHT))
+		if (inputDevice.isKeyPressed(Key.KEY_D) || inputDevice.isKeyPressed(Key.KEY_RIGHT))
 			physicObject.addVelocity(Vector2f.mult(Vector2f.RIGHT, 0.1f));
 	}
 

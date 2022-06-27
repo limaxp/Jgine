@@ -49,14 +49,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetKeyScancode;
 
 public class Key {
 
-	public static class Action {
-
-		public static final int RELEASE = GLFW_RELEASE;
-		public static final int PRESS = GLFW_PRESS;
-		public static final int REPEAT = GLFW_REPEAT;
-	}
-
-	public final static int UNKNOWN = GLFW_KEY_UNKNOWN;
+	public static final int RELEASE = GLFW_RELEASE;
+	public static final int PRESS = GLFW_PRESS;
+	public static final int REPEAT = GLFW_REPEAT;
 
 	public final static char MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT;
 	public final static char MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
@@ -99,6 +94,9 @@ public class Key {
 	public final static char GAMEPAD_BUTTON_DPAD_DOWN = GLFW_GAMEPAD_BUTTON_DPAD_DOWN;
 	public final static char GAMEPAD_BUTTON_DPAD_LEFT = GLFW_GAMEPAD_BUTTON_DPAD_LEFT;
 	public final static char GAMEPAD_BUTTON_LAST = GLFW_GAMEPAD_BUTTON_LAST;
+
+	public final static int KEY_UNKNOWN = GLFW_KEY_UNKNOWN;
+	public final static char KEY_LAST = GLFW_KEY_LAST;
 
 	public final static char KEY_0 = 48;
 	public final static char KEY_1 = 49;
@@ -204,9 +202,6 @@ public class Key {
 	public final static char KEY_NUMPAD_MULTIPLY = 332;
 	public final static char KEY_NUMPAD_MINUS = 333;
 
-	public final static char KEY_LAST = GLFW_KEY_LAST;
-	public final static int KEY_UNKNOWN = GLFW_KEY_UNKNOWN;
-
 	public static int getScancode(int key) {
 		return glfwGetKeyScancode(key);
 	}
@@ -227,7 +222,8 @@ public class Key {
 	protected int keyboardAltKey;
 	protected int gamepadKey;
 
-	protected Key() {}
+	protected Key() {
+	}
 
 	public Key(int keyboardKey, int gamepadKey) {
 		this(keyboardKey, KEY_UNKNOWN, gamepadKey);

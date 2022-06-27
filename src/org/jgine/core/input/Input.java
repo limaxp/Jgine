@@ -1,163 +1,126 @@
 package org.jgine.core.input;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_LEFT_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_LEFT_UP;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_RIGHT_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_RIGHT_UP;
-import static org.lwjgl.glfw.GLFW.GLFW_HAT_UP;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_1;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_10;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_11;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_12;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_13;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_14;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_15;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_16;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_2;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_3;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_4;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_5;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_6;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_7;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_8;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_9;
-import static org.lwjgl.glfw.GLFW.glfwGetGamepadName;
-import static org.lwjgl.glfw.GLFW.glfwGetGamepadState;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickAxes;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickButtons;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickHats;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickUserPointer;
+import static org.lwjgl.glfw.GLFW.GLFW_CONNECTED;
+import static org.lwjgl.glfw.GLFW.GLFW_DISCONNECTED;
 import static org.lwjgl.glfw.GLFW.glfwJoystickIsGamepad;
 import static org.lwjgl.glfw.GLFW.glfwJoystickPresent;
 import static org.lwjgl.glfw.GLFW.glfwSetJoystickCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetJoystickUserPointer;
+import static org.lwjgl.glfw.GLFW.glfwUpdateGamepadMappings;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.input.device.Gamepad;
+import org.jgine.core.input.device.Joystick;
+import org.jgine.core.input.device.Keyboard;
+import org.jgine.core.input.device.Mouse;
 import org.jgine.core.window.Window;
-import org.jgine.core.window.Window.CharCallback;
-import org.jgine.core.window.Window.CursorEnterCallback;
-import org.jgine.core.window.Window.CursorPosCallback;
-import org.jgine.core.window.Window.KeyCallback;
-import org.jgine.core.window.Window.MouseButtonCallback;
-import org.jgine.core.window.Window.ScrollCallback;
 import org.jgine.misc.math.vector.Vector2f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWGamepadState;
+import org.jgine.misc.utils.FileUtils;
+import org.jgine.misc.utils.logger.Logger;
+import org.lwjgl.glfw.GLFWCharCallbackI;
+import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 import org.lwjgl.glfw.GLFWJoystickCallbackI;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
+import org.lwjgl.glfw.GLFWScrollCallbackI;
 
 public class Input {
 
-	public static class Slot {
-
-		public static final byte KEYBOARD = -1;
-		public static final byte GAMEPAD_1 = GLFW_JOYSTICK_1;
-		public static final byte GAMEPAD_2 = GLFW_JOYSTICK_2;
-		public static final byte GAMEPAD_3 = GLFW_JOYSTICK_3;
-		public static final byte GAMEPAD_4 = GLFW_JOYSTICK_4;
-		public static final byte GAMEPAD_5 = GLFW_JOYSTICK_5;
-		public static final byte GAMEPAD_6 = GLFW_JOYSTICK_6;
-		public static final byte GAMEPAD_7 = GLFW_JOYSTICK_7;
-		public static final byte GAMEPAD_8 = GLFW_JOYSTICK_8;
-		public static final byte GAMEPAD_9 = GLFW_JOYSTICK_9;
-		public static final byte GAMEPAD_10 = GLFW_JOYSTICK_10;
-		public static final byte GAMEPAD_11 = GLFW_JOYSTICK_11;
-		public static final byte GAMEPAD_12 = GLFW_JOYSTICK_12;
-		public static final byte GAMEPAD_13 = GLFW_JOYSTICK_13;
-		public static final byte GAMEPAD_14 = GLFW_JOYSTICK_14;
-		public static final byte GAMEPAD_15 = GLFW_JOYSTICK_15;
-		public static final byte GAMEPAD_16 = GLFW_JOYSTICK_16;
-		public static final byte GAMEPAD_LAST = GLFW_JOYSTICK_LAST;
-	}
-
-	public static class JoystickHats {
-
-		public static final int HAT_CENTERED = GLFW_HAT_CENTERED;
-		public static final int HAT_UP = GLFW_HAT_UP;
-		public static final int HAT_RIGHT = GLFW_HAT_RIGHT;
-		public static final int HAT_DOWN = GLFW_HAT_DOWN;
-		public static final int HAT_LEFT = GLFW_HAT_LEFT;
-		public static final int HAT_RIGHT_UP = GLFW_HAT_RIGHT_UP;
-		public static final int HAT_RIGHT_DOWN = GLFW_HAT_RIGHT_DOWN;
-		public static final int HAT_LEFT_UP = GLFW_HAT_LEFT_UP;
-		public static final int HAT_LEFT_DOWN = GLFW_HAT_LEFT_DOWN;
-	}
-
 	private static Window window;
-	private static GamepadState[] gamepadStates;
+	private static final List<InputDevice> INPUT_DEVICES;
+	private static final Joystick[] JOYSTICKS;
 
 	static {
-		gamepadStates = new GamepadState[Slot.GAMEPAD_LAST];
-		for (int i = 0; i < Slot.GAMEPAD_LAST; i++)
-			gamepadStates[i] = new GamepadState(BufferUtils.createByteBuffer(GamepadState.SIZEOF));
+		INPUT_DEVICES = new ArrayList<InputDevice>();
+		INPUT_DEVICES.add(new Mouse());
+		INPUT_DEVICES.add(new Keyboard());
+
+		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_LAST];
+		for (int i = 0; i < Gamepad.Slot.GAMEPAD_LAST; i++)
+			if (hasJoystick(i))
+				registerJoystick(i);
+
+		setJoystickCallback((slot, event) -> {
+			if (event == GLFW_CONNECTED)
+				registerJoystick(slot);
+			else if (event == GLFW_DISCONNECTED)
+				unregisterJoystick(slot);
+		});
+
+		updateGamepadMapping(Input.class.getResourceAsStream("gamecontrollerdb.txt"));
+	}
+
+	public static void updateGamepadMapping(InputStream stream) {
+		ByteBuffer buffer;
+		try {
+			buffer = FileUtils.readByteBuffer(stream);
+		} catch (IOException e) {
+			Logger.err("Input: Error loading gamepad mapping!", e);
+			return;
+		}
+		buffer.put((byte) 0);
+		buffer.flip();
+		glfwUpdateGamepadMappings(buffer);
+	}
+
+	private static Joystick registerJoystick(int slot) {
+		Joystick device;
+		if (isGamepad(slot))
+			device = new Gamepad(slot);
+		else
+			device = new Joystick(slot);
+		INPUT_DEVICES.add(device);
+		JOYSTICKS[slot] = device;
+		return device;
+	}
+
+	private static Joystick unregisterJoystick(int slot) {
+		Joystick device = JOYSTICKS[slot];
+		INPUT_DEVICES.remove(device);
+		JOYSTICKS[slot] = null;
+		return device;
+	}
+
+	public static void update() {
+		for (InputDevice device : INPUT_DEVICES)
+			device.update();
+	}
+
+	public static List<InputDevice> getDevices() {
+		return Collections.unmodifiableList(INPUT_DEVICES);
+	}
+
+	public static Mouse getMouse() {
+		return (Mouse) INPUT_DEVICES.get(0);
+	}
+
+	public static Keyboard getKeyboard() {
+		return (Keyboard) INPUT_DEVICES.get(1);
+	}
+
+	@Nullable
+	public static Joystick getJoystick(int slot) {
+		return JOYSTICKS[slot];
+	}
+
+	@Nullable
+	public static Gamepad getGamepad(int slot) {
+		return (Gamepad) JOYSTICKS[slot];
 	}
 
 	public static void setWindow(Window window) {
 		Input.window = window;
 	}
 
-	public static void update() {
-		for (int i = 0; i < Slot.GAMEPAD_LAST; i++) {
-			if (hasGamepad(i))
-				glfwGetGamepadState(i, gamepadStates[i]);
-		}
-	}
-
-	public static boolean isKeyPressed(byte inputSlot, Key key) {
-		if (inputSlot == Slot.KEYBOARD)
-			return isKeyPressed(key);
-		else if (key.gamepadKey != Key.UNKNOWN)
-			return isGamepadPressed(inputSlot, key.gamepadKey);
-		return false;
-	}
-
-	public static boolean isKeyReleased(byte inputSlot, Key key) {
-		if (inputSlot == Slot.KEYBOARD)
-			return isKeyReleased(key);
-		else if (key.gamepadKey != Key.UNKNOWN)
-			return isGamepadReleased(inputSlot, key.gamepadKey);
-		return false;
-	}
-
-	public static boolean isKeyPressed(Key key) {
-		return (key.keyboardKey != Key.UNKNOWN && isKeyPressed(key.keyboardKey)) ||
-				(key.keyboardAltKey != Key.UNKNOWN && isKeyPressed(key.keyboardAltKey));
-	}
-
-	public static boolean isKeyReleased(Key key) {
-		return (key.keyboardKey != Key.UNKNOWN && isKeyReleased(key.keyboardKey)) ||
-				(key.keyboardAltKey != Key.UNKNOWN && isKeyReleased(key.keyboardAltKey));
-	}
-
-	public static boolean isKeyPressed(int key) {
-		return window.getKey(key) == GLFW.GLFW_PRESS;
-	}
-
-	public static boolean isKeyReleased(int key) {
-		return window.getKey(key) == GLFW.GLFW_RELEASE;
-	}
-
-	public static boolean isGamepadPressed(byte inputSlot, int key) {
-		return getGamepadState(inputSlot).buttons(key) == 1;
-	}
-
-	public static boolean isGamepadReleased(byte inputSlot, int key) {
-		return getGamepadState(inputSlot).buttons(key) == 0;
-	}
-
-	public static boolean isMousePressed(int key) {
-		return window.getMouseButton(key) == GLFW.GLFW_PRESS;
-	}
-
-	public static boolean isMouseReleased(int key) {
-		return window.getMouseButton(key) == GLFW.GLFW_RELEASE;
+	public static Window getWindow() {
+		return window;
 	}
 
 	public static void setCursorPos(double x, double y) {
@@ -232,81 +195,43 @@ public class Input {
 		window.toggleLockKeyMods();
 	}
 
-	public static void setKeyCallback(KeyCallback callback) {
+	public static boolean hasJoystick(int slot) {
+		return glfwJoystickPresent(slot);
+	}
+
+	public static boolean hasGamepad(int slot) {
+		return hasJoystick(slot) && isGamepad(slot);
+	}
+
+	public static boolean isGamepad(int slot) {
+		return glfwJoystickIsGamepad(slot);
+	}
+
+	public static void setKeyCallback(GLFWKeyCallbackI callback) {
 		window.setKeyCallback(callback);
 	}
 
-	public static void setCharCallback(CharCallback callback) {
+	public static void setCharCallback(GLFWCharCallbackI callback) {
 		window.setCharCallback(callback);
 	}
 
-	public static void setCursorPosCallback(CursorPosCallback callback) {
+	public static void setCursorPosCallback(GLFWCursorPosCallbackI callback) {
 		window.setCursorPosCallback(callback);
 	}
 
-	public static void setMouseButtonCallback(MouseButtonCallback callback) {
+	public static void setMouseButtonCallback(GLFWMouseButtonCallbackI callback) {
 		window.setMouseButtonCallback(callback);
 	}
 
-	public void setCursorEnterCallback(CursorEnterCallback callback) {
+	public static void setCursorEnterCallback(GLFWCursorEnterCallbackI callback) {
 		window.setCursorEnterCallback(callback);
 	}
 
-	public void setScrollCallback(ScrollCallback callback) {
+	public static void setScrollCallback(GLFWScrollCallbackI callback) {
 		window.setScrollCallback(callback);
 	}
 
-	public static boolean hasJoystick(int index) {
-		return glfwJoystickPresent(index);
-	}
-
-	public static boolean hasGamepad(int index) {
-		return glfwJoystickIsGamepad(index);
-	}
-
-	public static String getJoystickName(int index) {
-		return glfwGetJoystickName(index);
-	}
-
-	public static String getGamepadName(int index) {
-		return glfwGetGamepadName(index);
-	}
-
-	public static GamepadState getGamepadState(int index) {
-		return gamepadStates[index];
-	}
-
-	public static FloatBuffer getJoystickAxes(int index) {
-		return glfwGetJoystickAxes(index);
-	}
-
-	public static ByteBuffer getJoystickButtons(int index) {
-		return glfwGetJoystickButtons(index);
-	}
-
-	public static ByteBuffer getJoystickHats(int index) {
-		return glfwGetJoystickHats(index);
-	}
-
-	public static void setJoystickUserPointer(int index, long pointer) {
-		glfwSetJoystickUserPointer(index, pointer);
-	}
-
-	public static long getJoystickUserPointer(int index) {
-		return glfwGetJoystickUserPointer(index);
-	}
-
-	public static void setJoystickCallback(JoyStickCallback callback) {
+	public static void setJoystickCallback(GLFWJoystickCallbackI callback) {
 		glfwSetJoystickCallback(callback);
-	}
-
-	@FunctionalInterface
-	public static interface JoyStickCallback extends GLFWJoystickCallbackI {}
-
-	public static class GamepadState extends GLFWGamepadState {
-
-		public GamepadState(ByteBuffer container) {
-			super(container);
-		}
 	}
 }

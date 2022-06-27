@@ -401,27 +401,37 @@ public class Window {
 		glfwSetWindowIcon(id, images);
 	}
 
-	public void setKeyCallback(KeyCallback callback) {
+	/**
+	 * scanCode is platform dependent but safe to save to disk!
+	 * 
+	 * @author Max
+	 */
+	public void setKeyCallback(GLFWKeyCallbackI callback) {
 		glfwSetKeyCallback(id, callback);
 	}
 
-	public void setCharCallback(CharCallback callback) {
+	/**
+	 * scanCode is platform dependent but safe to save to disk!
+	 * 
+	 * @author Max
+	 */
+	public void setCharCallback(GLFWCharCallbackI callback) {
 		glfwSetCharCallback(id, callback);
 	}
 
-	public void setCursorPosCallback(CursorPosCallback callback) {
+	public void setCursorPosCallback(GLFWCursorPosCallbackI callback) {
 		glfwSetCursorPosCallback(id, callback);
 	}
 
-	public void setMouseButtonCallback(MouseButtonCallback callback) {
+	public void setMouseButtonCallback(GLFWMouseButtonCallbackI callback) {
 		glfwSetMouseButtonCallback(id, callback);
 	}
 
-	public void setCursorEnterCallback(CursorEnterCallback callback) {
+	public void setCursorEnterCallback(GLFWCursorEnterCallbackI callback) {
 		glfwSetCursorEnterCallback(id, callback);
 	}
 
-	public void setScrollCallback(ScrollCallback callback) {
+	public void setScrollCallback(GLFWScrollCallbackI callback) {
 		glfwSetScrollCallback(id, callback);
 	}
 
@@ -434,39 +444,5 @@ public class Window {
 		this.isFocused = isFocused;
 		if (isFocused)
 			Input.setWindow(this);
-	}
-
-	/**
-	 * scanCode is platform dependent but safe to save to disk!
-	 * 
-	 * @author Max
-	 */
-	@FunctionalInterface
-	public static interface KeyCallback extends GLFWKeyCallbackI {
-	}
-
-	/**
-	 * scanCode is platform dependent but safe to save to disk!
-	 * 
-	 * @author Max
-	 */
-	@FunctionalInterface
-	public static interface CharCallback extends GLFWCharCallbackI {
-	}
-
-	@FunctionalInterface
-	public static interface CursorPosCallback extends GLFWCursorPosCallbackI {
-	}
-
-	@FunctionalInterface
-	public static interface MouseButtonCallback extends GLFWMouseButtonCallbackI {
-	}
-
-	@FunctionalInterface
-	public static interface CursorEnterCallback extends GLFWCursorEnterCallbackI {
-	}
-
-	@FunctionalInterface
-	public static interface ScrollCallback extends GLFWScrollCallbackI {
 	}
 }

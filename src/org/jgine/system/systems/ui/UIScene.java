@@ -61,15 +61,14 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		for (int i = 0; i < size; i++)
 			hoverCheck(objects[i], mouseX, mouseY);
 
-		if (Input.isMousePressed(Key.MOUSE_1)) {
+		if (Input.getMouse().isKeyPressed(Key.MOUSE_1)) {
 			if (clickedObject == null) {
 				for (int i = 0; i < size; i++) {
 					if (insideCheck(objects[i], mouseX, mouseY))
 						clickedObject = clickCheck(objects[i], mouseX, mouseY);
 				}
 			}
-		}
-		else if (clickedObject != null) {
+		} else if (clickedObject != null) {
 			clickedObject.onRelease(mouseX, mouseY);
 			clickedObject = null;
 		}
@@ -109,8 +108,7 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 				object.isFocused = true;
 				object.onFocus();
 			}
-		}
-		else if (object.isFocused) {
+		} else if (object.isFocused) {
 			object.isFocused = false;
 			object.onDefocus();
 		}
@@ -130,14 +128,12 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 						child.isFocused = true;
 						child.onFocus();
 					}
-				}
-				else if (child.isFocused) {
+				} else if (child.isFocused) {
 					child.isFocused = false;
 					child.onDefocus();
 				}
 			}
-		}
-		else if (window.isFocused) {
+		} else if (window.isFocused) {
 			window.isFocused = false;
 			window.onDefocus();
 			for (UIObject child : window.getChilds()) {
@@ -150,8 +146,8 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	}
 
 	private static boolean insideCheck(UIObject object, int mouseX, int mouseY) {
-		return mouseX >= object.getX() && mouseX <= object.getX() + object.getWidth()
-				&& mouseY >= object.getY() && mouseY <= object.getY() + object.getHeight();
+		return mouseX >= object.getX() && mouseX <= object.getX() + object.getWidth() && mouseY >= object.getY()
+				&& mouseY <= object.getY() + object.getHeight();
 	}
 
 	@Override
