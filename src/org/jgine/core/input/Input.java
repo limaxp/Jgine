@@ -35,12 +35,14 @@ public class Input {
 
 	private static Window window;
 	private static final List<InputDevice> INPUT_DEVICES;
+	private static final Mouse MOUSE;
+	private static final Keyboard KEYBOARD;
 	private static final Joystick[] JOYSTICKS;
 
 	static {
 		INPUT_DEVICES = new ArrayList<InputDevice>();
-		INPUT_DEVICES.add(new Mouse());
-		INPUT_DEVICES.add(new Keyboard());
+		INPUT_DEVICES.add(MOUSE = new Mouse());
+		INPUT_DEVICES.add(KEYBOARD = new Keyboard());
 
 		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_LAST];
 		for (int i = 0; i < Gamepad.Slot.GAMEPAD_LAST; i++)
@@ -98,11 +100,11 @@ public class Input {
 	}
 
 	public static Mouse getMouse() {
-		return (Mouse) INPUT_DEVICES.get(0);
+		return MOUSE;
 	}
 
 	public static Keyboard getKeyboard() {
-		return (Keyboard) INPUT_DEVICES.get(1);
+		return KEYBOARD;
 	}
 
 	@Nullable
