@@ -215,6 +215,10 @@ public abstract class Engine {
 		Scheduler.runTaskSynchron(() -> this.scene = scene);
 	}
 
+	public final void setScene(int index) {
+		setScene(getScenePerIndex(index));
+	}
+
 	public final int getFps() {
 		return gameLoop.getFps();
 	}

@@ -23,7 +23,8 @@ public class Keyboard implements InputDevice {
 
 	@Override
 	public boolean isKeyReleased(Key key) {
-		return isKeyReleased(key.getKeyboardKey()) || isKeyReleased(key.getKeyboardAltKey());
+		return isKeyReleased(key.getKeyboardKey())
+				|| (key.getKeyboardAltKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getKeyboardAltKey()));
 	}
 
 	@Override

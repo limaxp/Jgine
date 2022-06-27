@@ -87,7 +87,7 @@ public class Joystick implements InputDevice {
 
 	@Override
 	public boolean isKeyPressed(Key key) {
-		return isKeyPressed(key.getGamepadKey());
+		return key.getGamepadKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getGamepadKey());
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class Joystick implements InputDevice {
 
 	@Override
 	public boolean isKeyReleased(Key key) {
-		return isKeyReleased(key.getGamepadKey());
+		return key.getGamepadKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getGamepadKey());
 	}
 
 	@Override

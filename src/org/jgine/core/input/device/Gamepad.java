@@ -4,6 +4,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetGamepadName;
 import static org.lwjgl.glfw.GLFW.glfwGetGamepadState;
 
 import org.jgine.core.input.Key;
+import org.jgine.misc.math.vector.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWGamepadState;
 
@@ -41,12 +42,20 @@ public class Gamepad extends Joystick {
 		return true;
 	}
 
+	public Vector2f getAxisLeft() {
+		return new Vector2f(getAxisLeftX(), getAxisLeftY());
+	}
+
 	public float getAxisLeftX() {
 		return gamepadState.axes(Key.GAMEPAD_AXIS_LEFT_X);
 	}
 
 	public float getAxisLeftY() {
 		return gamepadState.axes(Key.GAMEPAD_AXIS_LEFT_Y);
+	}
+
+	public Vector2f getAxisRight() {
+		return new Vector2f(getAxisRightX(), getAxisRightY());
 	}
 
 	public float getAxisRightX() {
