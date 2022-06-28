@@ -4,10 +4,16 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
-public class Keyboard implements InputDevice {
+public class Keyboard extends InputDevice {
+
+	public Keyboard() {
+		super(Key.KEY_LAST + 1);
+	}
 
 	@Override
-	public void update() {
+	public void poll() {
+		for (int pressedKey : getPressedKeys())
+			repeat(pressedKey);
 	}
 
 	@Override

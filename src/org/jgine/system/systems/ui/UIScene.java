@@ -61,7 +61,7 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		for (int i = 0; i < size; i++)
 			hoverCheck(objects[i], mouseX, mouseY);
 
-		if (Input.getMouse().isKeyPressed(Key.MOUSE_1)) {
+		if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_1)) {
 			if (clickedObject == null) {
 				for (int i = 0; i < size; i++) {
 					if (insideCheck(objects[i], mouseX, mouseY))

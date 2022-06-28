@@ -20,6 +20,7 @@ import org.jgine.core.input.device.Joystick;
 import org.jgine.core.input.device.Keyboard;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.core.window.Window;
+import org.jgine.misc.collection.list.IntList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
@@ -90,9 +91,20 @@ public class Input {
 		return device;
 	}
 
-	public static void update() {
+	public static void poll() {
 		for (InputDevice device : INPUT_DEVICES)
-			device.update();
+			device.poll();
+	}
+
+	public static void update() {
+		for (InputDevice device : INPUT_DEVICES) {
+			IntList pressedKeys = device.getPressedKeys();
+			for (int i = pressedKeys.size() - 1; i >= 0; i--) {
+				int pressedKey = pressedKeys.getInt(i);
+				if (!device.isPressedIntern(pressedKey))
+					pressedKeys.remove(pressedKeys.indexOf(pressedKey));
+			}
+		}
 	}
 
 	public static List<InputDevice> getDevices() {
@@ -119,6 +131,20 @@ public class Input {
 
 	public static void setWindow(Window window) {
 		Input.window = window;
+
+		setKeyCallback((win, key, scanCode, action, mods) -> {
+			if (action == Key.PRESS)
+				((InputDevice) KEYBOARD).press(key);
+			else if (action == Key.RELEASE)
+				((InputDevice) KEYBOARD).release(key);
+		});
+
+		setMouseButtonCallback((win, button, action, mods) -> {
+			if (action == Key.PRESS)
+				((InputDevice) MOUSE).press(button);
+			else if (action == Key.RELEASE)
+				((InputDevice) MOUSE).release(button);
+		});
 	}
 
 	public static Window getWindow() {

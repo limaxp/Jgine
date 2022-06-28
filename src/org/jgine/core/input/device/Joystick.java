@@ -39,7 +39,7 @@ import java.nio.FloatBuffer;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
-public class Joystick implements InputDevice {
+public class Joystick extends InputDevice {
 
 	public static class Hats {
 
@@ -78,11 +78,16 @@ public class Joystick implements InputDevice {
 	public final int slot;
 
 	public Joystick(int slot) {
+		this(0, slot);
+	}
+
+	protected Joystick(int maxKeys, int slot) {
+		super(maxKeys);
 		this.slot = slot;
 	}
 
 	@Override
-	public void update() {
+	public void poll() {
 	}
 
 	@Override

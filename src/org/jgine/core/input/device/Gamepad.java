@@ -13,13 +13,39 @@ public class Gamepad extends Joystick {
 	private GLFWGamepadState gamepadState;
 
 	public Gamepad(int slot) {
-		super(slot);
+		super(Key.GAMEPAD_BUTTON_LAST + 1, slot);
 		gamepadState = new GLFWGamepadState(BufferUtils.createByteBuffer(GLFWGamepadState.SIZEOF));
 	}
 
 	@Override
-	public void update() {
+	public void poll() {
 		glfwGetGamepadState(slot, gamepadState);
+		check(Key.GAMEPAD_BUTTON_CROSS);
+		check(Key.GAMEPAD_BUTTON_CIRCLE);
+		check(Key.GAMEPAD_BUTTON_SQUARE);
+		check(Key.GAMEPAD_BUTTON_TRIANGLE);
+		check(Key.GAMEPAD_BUTTON_LEFT_BUMPER);
+		check(Key.GAMEPAD_BUTTON_RIGHT_BUMPER);
+		check(Key.GAMEPAD_BUTTON_BACK);
+		check(Key.GAMEPAD_BUTTON_START);
+		check(Key.GAMEPAD_BUTTON_GUIDE);
+		check(Key.GAMEPAD_BUTTON_LEFT_THUMB);
+		check(Key.GAMEPAD_BUTTON_RIGHT_THUMB);
+		check(Key.GAMEPAD_BUTTON_DPAD_UP);
+		check(Key.GAMEPAD_BUTTON_DPAD_RIGHT);
+		check(Key.GAMEPAD_BUTTON_DPAD_DOWN);
+		check(Key.GAMEPAD_BUTTON_DPAD_LEFT);
+	}
+
+	private void check(int key) {
+		boolean isPressed = isPressedIntern(key);
+		if (gamepadState.buttons(key) == 1)
+			if (isPressed)
+				repeat(key);
+			else
+				press(key);
+		else if (isPressed)
+			release(key);
 	}
 
 	@Override
@@ -64,5 +90,13 @@ public class Gamepad extends Joystick {
 
 	public float getAxisRightY() {
 		return gamepadState.axes(Key.GAMEPAD_AXIS_RIGHT_Y);
+	}
+
+	public float getTriggerLeft() {
+		return gamepadState.axes(Key.GAMEPAD_AXIS_LEFT_TRIGGER);
+	}
+
+	public float getTriggerRight() {
+		return gamepadState.axes(Key.GAMEPAD_AXIS_RIGHT_TRIGGER);
 	}
 }

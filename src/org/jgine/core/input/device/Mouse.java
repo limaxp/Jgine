@@ -4,10 +4,16 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
-public class Mouse implements InputDevice {
+public class Mouse extends InputDevice {
+
+	public Mouse() {
+		super(Key.MOUSE_BUTTON_LAST + 1);
+	}
 
 	@Override
-	public void update() {
+	public void poll() {
+		for (int pressedKey : getPressedKeys())
+			repeat(pressedKey);
 	}
 
 	@Override

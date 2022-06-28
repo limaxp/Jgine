@@ -92,7 +92,7 @@ public abstract class Engine {
 		while (checkStatus()) {
 			gameLoop.run();
 			GLFWHelper.pollGLFWEvents();
-			Input.update();
+			Input.poll();
 		}
 		terminate();
 	}
@@ -113,6 +113,7 @@ public abstract class Engine {
 		updateScene();
 		ServiceManager.distributeChanges();
 		Scheduler.update();
+		Input.update();
 		SoundManager.update();
 		onUpdate();
 	}

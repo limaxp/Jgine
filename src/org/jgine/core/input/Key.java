@@ -53,18 +53,18 @@ public class Key {
 	public static final int PRESS = GLFW_PRESS;
 	public static final int REPEAT = GLFW_REPEAT;
 
-	public final static char MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT;
-	public final static char MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
-	public final static char MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
-	public final static char MOUSE_1 = GLFW_MOUSE_BUTTON_1;
-	public final static char MOUSE_2 = GLFW_MOUSE_BUTTON_2;
-	public final static char MOUSE_3 = GLFW_MOUSE_BUTTON_3;
-	public final static char MOUSE_4 = GLFW_MOUSE_BUTTON_4;
-	public final static char MOUSE_5 = GLFW_MOUSE_BUTTON_5;
-	public final static char MOUSE_6 = GLFW_MOUSE_BUTTON_6;
-	public final static char MOUSE_7 = GLFW_MOUSE_BUTTON_7;
-	public final static char MOUSE_8 = GLFW_MOUSE_BUTTON_8;
-	public final static char MOUSE_LAST = GLFW_MOUSE_BUTTON_LAST;
+	public final static char MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
+	public final static char MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
+	public final static char MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
+	public final static char MOUSE_BUTTON_1 = GLFW_MOUSE_BUTTON_1;
+	public final static char MOUSE_BUTTON_2 = GLFW_MOUSE_BUTTON_2;
+	public final static char MOUSE_BUTTON_3 = GLFW_MOUSE_BUTTON_3;
+	public final static char MOUSE_BUTTON_4 = GLFW_MOUSE_BUTTON_4;
+	public final static char MOUSE_BUTTON_5 = GLFW_MOUSE_BUTTON_5;
+	public final static char MOUSE_BUTTON_6 = GLFW_MOUSE_BUTTON_6;
+	public final static char MOUSE_BUTTON_7 = GLFW_MOUSE_BUTTON_7;
+	public final static char MOUSE_BUTTON_8 = GLFW_MOUSE_BUTTON_8;
+	public final static char MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST;
 
 	public final static char GAMEPAD_AXIS_LEFT_X = GLFW_GAMEPAD_AXIS_LEFT_X;
 	public final static char GAMEPAD_AXIS_LEFT_Y = GLFW_GAMEPAD_AXIS_LEFT_Y;
@@ -211,7 +211,7 @@ public class Key {
 	}
 
 	public static String getNamePerScancode(int scancode) {
-		return glfwGetKeyName(GLFW_KEY_UNKNOWN, scancode);
+		return glfwGetKeyName(KEY_UNKNOWN, scancode);
 	}
 
 	public static String getName(int key, int scancode) {
