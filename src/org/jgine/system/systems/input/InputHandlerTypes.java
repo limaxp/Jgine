@@ -9,6 +9,8 @@ import org.jgine.system.systems.input.handler.TransformInputHandler2D;
 
 public class InputHandlerTypes {
 
+	public static final InputHandlerType<InputHandler> UNKNOWN = a("unknown", InputHandler::new);
+
 	public static final InputHandlerType<TransformInputHandler> TRANSFORM = a("transform", TransformInputHandler::new);
 
 	public static final InputHandlerType<CameraInputHandler> CAMERA = a("camera", CameraInputHandler::new);

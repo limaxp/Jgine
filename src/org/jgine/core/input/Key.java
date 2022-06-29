@@ -220,18 +220,16 @@ public class Key {
 
 	protected int keyboardKey;
 	protected int keyboardAltKey;
+	protected int mouseKey;
 	protected int gamepadKey;
 
 	protected Key() {
 	}
 
-	public Key(int keyboardKey, int gamepadKey) {
-		this(keyboardKey, KEY_UNKNOWN, gamepadKey);
-	}
-
-	public Key(int keyboardKey, int keyboardAltKey, int gamepadKey) {
+	public Key(int keyboardKey, int keyboardAltKey, int mouseKey, int gamepadKey) {
 		this.keyboardKey = keyboardKey;
 		this.keyboardAltKey = keyboardAltKey;
+		this.mouseKey = mouseKey;
 		this.gamepadKey = gamepadKey;
 	}
 
@@ -249,6 +247,14 @@ public class Key {
 
 	public int getKeyboardAltKey() {
 		return keyboardAltKey;
+	}
+
+	public void setMouseKey(int mouseKey) {
+		this.mouseKey = mouseKey;
+	}
+
+	public int getMouseKey() {
+		return mouseKey;
 	}
 
 	public void setGamepadKey(int key) {

@@ -33,6 +33,9 @@ public class TransformInputHandler extends InputHandler {
 
 	@Override
 	public void checkInput(InputDevice inputDevice) {
+		if (!inputDevice.isKeyboard())
+			return;
+
 		Vector2f cursorPos = Input.getCursorPos();
 		if (cursorPos.x > lastMouseX)
 			transform.rotateY(0.015f);

@@ -18,7 +18,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyPressed(Key key) {
-		return isKeyPressed(key.getKeyboardKey());
+		return key.getMouseKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getMouseKey());
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyReleased(Key key) {
-		return isKeyReleased(key.getKeyboardKey());
+		return key.getMouseKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getMouseKey());
 	}
 
 	@Override

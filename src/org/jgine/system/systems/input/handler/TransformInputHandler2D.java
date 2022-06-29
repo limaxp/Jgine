@@ -24,6 +24,9 @@ public class TransformInputHandler2D extends InputHandler {
 
 	@Override
 	public void checkInput(InputDevice inputDevice) {
+		if (!inputDevice.isKeyboard())
+			return;
+
 		if (inputDevice.isKeyPressed(Key.KEY_ESCAPE))
 			Engine.getInstance().shutdown();
 		if (inputDevice.isKeyPressed(Key.KEY_F12))

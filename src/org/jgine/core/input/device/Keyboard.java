@@ -18,7 +18,7 @@ public class Keyboard extends InputDevice {
 
 	@Override
 	public boolean isKeyPressed(Key key) {
-		return isKeyPressed(key.getKeyboardKey())
+		return (key.getKeyboardKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getKeyboardKey()))
 				|| (key.getKeyboardAltKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getKeyboardAltKey()));
 	}
 
@@ -29,7 +29,7 @@ public class Keyboard extends InputDevice {
 
 	@Override
 	public boolean isKeyReleased(Key key) {
-		return isKeyReleased(key.getKeyboardKey())
+		return (key.getKeyboardKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getKeyboardKey()))
 				|| (key.getKeyboardAltKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getKeyboardAltKey()));
 	}
 

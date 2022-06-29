@@ -13,24 +13,35 @@ import org.jgine.core.input.device.Gamepad;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.system.SystemObject;
 
-public abstract class InputHandler implements SystemObject {
+public class InputHandler implements SystemObject {
 
 	private Entity entity;
 	protected InputDevice[] inputDevices;
-	private Map<Integer, Runnable>[] keyMaps;
+	private final Map<Integer, Runnable> keyboardMap;
+	private final Map<Integer, Runnable> mouseMap;
+	private final Map<Integer, Runnable> gamepadMap;
+
 	private Consumer<Vector2f> mouseMove = (pos) -> {
 	};
 	private Consumer<Vector2f> gamepadLeftStickMove = (pos) -> {
 	};
 	private Consumer<Vector2f> gamepadRightStickMove = (pos) -> {
 	};
+	private Consumer<Float> gamepadLeftTriggerMove = (value) -> {
+	};
+	private Consumer<Float> gamepadRightTriggerMove = (value) -> {
+	};
 
-	protected InputHandler() {
+	public InputHandler() {
 		Gamepad gamepad = Input.getGamepad(Gamepad.Slot.GAMEPAD_1);
 		if (gamepad != null)
 			setInputDevice(new InputDevice[] { Input.getMouse(), Input.getKeyboard(), gamepad });
 		else
 			setInputDevice(new InputDevice[] { Input.getMouse(), Input.getKeyboard() });
+
+		keyboardMap = new HashMap<Integer, Runnable>();
+		mouseMap = new HashMap<Integer, Runnable>();
+		gamepadMap = new HashMap<Integer, Runnable>();
 	}
 
 	public final void checkInput() {
@@ -41,25 +52,30 @@ public abstract class InputHandler implements SystemObject {
 	public void checkInput(InputDevice inputDevice) {
 		if (inputDevice.isMouse()) {
 			mouseMove.accept(Input.getCursorPos());
+			checkKeys(inputDevice, mouseMap);
 
 		} else if (inputDevice.isGamepad()) {
 			Gamepad gamepad = (Gamepad) inputDevice;
 			gamepadLeftStickMove.accept(gamepad.getAxisLeft());
 			gamepadRightStickMove.accept(gamepad.getAxisRight());
-		}
+			gamepadLeftTriggerMove.accept(gamepad.getTriggerLeft());
+			gamepadRightTriggerMove.accept(gamepad.getTriggerRight());
+			checkKeys(inputDevice, gamepadMap);
 
-		for (int i = 0; i < inputDevices.length; i++) {
-			if (inputDevices[i] == inputDevice) {
-				Map<Integer, Runnable> keyMap = keyMaps[i];
-				for (int pressedKey : inputDevice.getPressedKeys())
-					keyMap.getOrDefault(pressedKey, () -> {
-					}).run();
-				break;
-			}
+		} else if (inputDevice.isKeyboard()) {
+			checkKeys(inputDevice, keyboardMap);
 		}
 	}
 
-	public abstract InputHandlerType<?> getType();
+	protected final void checkKeys(InputDevice inputDevice, Map<Integer, Runnable> map) {
+		for (int pressedKey : inputDevice.getPressedKeys())
+			map.getOrDefault(pressedKey, () -> {
+			}).run();
+	}
+
+	public InputHandlerType<?> getType() {
+		return InputHandlerTypes.UNKNOWN;
+	}
 
 	protected void setEntity(Entity entity) {
 		this.entity = entity;
@@ -69,12 +85,8 @@ public abstract class InputHandler implements SystemObject {
 		return entity;
 	}
 
-	@SuppressWarnings("unchecked")
 	public final void setInputDevice(InputDevice[] inputDevices) {
 		this.inputDevices = inputDevices;
-		keyMaps = new HashMap[inputDevices.length];
-		for (int i = 0; i < inputDevices.length; i++)
-			keyMaps[i] = new HashMap<Integer, Runnable>();
 	}
 
 	public final InputDevice[] getInputDevices() {
@@ -83,76 +95,67 @@ public abstract class InputHandler implements SystemObject {
 
 	public final void setKey(Key key, Runnable func) {
 		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					keyMaps[i].put(keyboardKey, func);
-		}
+		if (keyboardKey != Key.KEY_UNKNOWN)
+			keyboardMap.put(keyboardKey, func);
 
 		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					keyMaps[i].put(keyboardAltKey, func);
-		}
+		if (keyboardAltKey != Key.KEY_UNKNOWN)
+			keyboardMap.put(keyboardAltKey, func);
+
+		int mouseKey = key.getMouseKey();
+		if (mouseKey != Key.KEY_UNKNOWN)
+			mouseMap.put(mouseKey, func);
 
 		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isGamepad())
-					keyMaps[i].put(gamepadKey, func);
-		}
+		if (gamepadKey != Key.KEY_UNKNOWN)
+			gamepadMap.put(gamepadKey, func);
 	}
 
 	@Nullable
 	public final Runnable removeKey(Key key) {
 		Runnable result = null;
 		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					result = keyMaps[i].remove(keyboardKey);
-		}
+		if (keyboardKey != Key.KEY_UNKNOWN)
+			result = keyboardMap.remove(keyboardKey);
 
 		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					result = keyMaps[i].remove(keyboardAltKey);
-		}
+		if (keyboardAltKey != Key.KEY_UNKNOWN)
+			result = keyboardMap.remove(keyboardAltKey);
+
+		int mouseKey = key.getMouseKey();
+		if (mouseKey != Key.KEY_UNKNOWN)
+			result = mouseMap.remove(mouseKey);
 
 		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isGamepad())
-					result = keyMaps[i].remove(gamepadKey);
-		}
+		if (gamepadKey != Key.KEY_UNKNOWN)
+			result = gamepadMap.remove(gamepadKey);
 		return result;
 	}
 
 	@Nullable
 	public final Runnable getKey(InputDevice inputDevice, Key key) {
 		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					return keyMaps[i].get(keyboardKey);
-		}
+		if (keyboardKey != Key.KEY_UNKNOWN)
+			return keyboardMap.get(keyboardKey);
 
 		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isKeyboard())
-					return keyMaps[i].get(keyboardAltKey);
-		}
+		if (keyboardAltKey != Key.KEY_UNKNOWN)
+			return keyboardMap.get(keyboardAltKey);
+
+		int mouseKey = key.getMouseKey();
+		if (mouseKey != Key.KEY_UNKNOWN)
+			return mouseMap.get(mouseKey);
 
 		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN) {
-			for (int i = 0; i < inputDevices.length; i++)
-				if (inputDevices[i].isGamepad())
-					return keyMaps[i].get(gamepadKey);
-		}
+		if (gamepadKey != Key.KEY_UNKNOWN)
+			return gamepadMap.get(gamepadKey);
 		return null;
+	}
+
+	public final void clearKeys() {
+		keyboardMap.clear();
+		mouseMap.clear();
+		gamepadMap.clear();
 	}
 
 	public final void setMouseMove(Consumer<Vector2f> mouseMove) {

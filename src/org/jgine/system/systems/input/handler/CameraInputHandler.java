@@ -17,14 +17,18 @@ import org.jgine.system.systems.physic.PhysicSystem;
 
 public class CameraInputHandler extends InputHandler {
 
-	public static final Key KEY_MOVE_FORWARD = new Key(Key.KEY_W, Key.KEY_UP, Key.KEY_UNKNOWN);
-	public static final Key KEY_MOVE_BACK = new Key(Key.KEY_S, Key.KEY_DOWN, Key.KEY_UNKNOWN);
-	public static final Key KEY_MOVE_LEFT = new Key(Key.KEY_A, Key.KEY_LEFT, Key.KEY_UNKNOWN);
-	public static final Key KEY_MOVE_RIGHT = new Key(Key.KEY_D, Key.KEY_RIGHT, Key.KEY_UNKNOWN);
-	public static final Key KEY_MOVE_UP = new Key(Key.KEY_SPACE, Key.KEY_RCONTROL, Key.GAMEPAD_BUTTON_CROSS);
-	public static final Key KEY_MOVE_DOWN = new Key(Key.KEY_LSHIFT, Key.KEY_RSHIFT, Key.GAMEPAD_BUTTON_CIRCLE);
-	public static final Key KEY_CLOSE_GAME = new Key(Key.KEY_ESCAPE, Key.GAMEPAD_BUTTON_START);
-	public static final Key KEY_FULLSCREEN = new Key(Key.KEY_F12, Key.GAMEPAD_BUTTON_BACK);
+	public static final Key KEY_MOVE_FORWARD = new Key(Key.KEY_W, Key.KEY_UP, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN);
+	public static final Key KEY_MOVE_BACK = new Key(Key.KEY_S, Key.KEY_DOWN, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN);
+	public static final Key KEY_MOVE_LEFT = new Key(Key.KEY_A, Key.KEY_LEFT, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN);
+	public static final Key KEY_MOVE_RIGHT = new Key(Key.KEY_D, Key.KEY_RIGHT, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN);
+	public static final Key KEY_MOVE_UP = new Key(Key.KEY_SPACE, Key.KEY_RCONTROL, Key.KEY_UNKNOWN,
+			Key.GAMEPAD_BUTTON_CROSS);
+	public static final Key KEY_MOVE_DOWN = new Key(Key.KEY_LSHIFT, Key.KEY_RSHIFT, Key.KEY_UNKNOWN,
+			Key.GAMEPAD_BUTTON_CIRCLE);
+	public static final Key KEY_CLOSE_GAME = new Key(Key.KEY_ESCAPE, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN,
+			Key.GAMEPAD_BUTTON_START);
+	public static final Key KEY_FULLSCREEN = new Key(Key.KEY_F12, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN,
+			Key.GAMEPAD_BUTTON_BACK);
 
 	public static final float ROTATION_SPEED = 0.005f;
 	public static final float MOVEMENT_SPEED = 0.1f;
