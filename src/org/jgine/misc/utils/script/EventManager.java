@@ -10,7 +10,7 @@ import org.jgine.system.systems.script.ScriptObject;
 
 public class EventManager {
 
-	private static Function<Entity, ScriptObject[]> scriptSupplier;
+	private static Function<Entity, ScriptObject[]> scriptSupplier = (entity) -> null;
 
 	public static void setScriptSupplier(Function<Entity, ScriptObject[]> supplier) {
 		scriptSupplier = supplier;
