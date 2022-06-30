@@ -6,13 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.list.arrayList.FastArrayList;
 
 public class ArrayListHashMap<K, V> extends HashMap<K, List<V>> {
 
 	private static final long serialVersionUID = 8092867687056028336L;
 
-	public ArrayListHashMap() {}
+	public ArrayListHashMap() {
+	}
 
 	public ArrayListHashMap(int initialCapacity) {
 		super(initialCapacity);
@@ -39,6 +41,7 @@ public class ArrayListHashMap<K, V> extends HashMap<K, List<V>> {
 		get(key).addAll(values);
 	}
 
+	@Nullable
 	public K rem(V value) {
 		for (Entry<K, List<V>> entry : entrySet()) {
 			List<V> list = entry.getValue();
@@ -79,7 +82,11 @@ public class ArrayListHashMap<K, V> extends HashMap<K, List<V>> {
 		return list;
 	}
 
+	@Nullable
 	public V get(K key, int index) {
-		return get(key).get(index);
+		List<V> list = get(key);
+		if (list == null)
+			return null;
+		return list.get(index);
 	}
 }

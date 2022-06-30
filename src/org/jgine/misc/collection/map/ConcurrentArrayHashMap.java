@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 public class ConcurrentArrayHashMap<K, V> extends ConcurrentHashMap<K, V[]> {
 
 	private static final long serialVersionUID = -5503312499439801666L;
 
-	public ConcurrentArrayHashMap() {}
+	public ConcurrentArrayHashMap() {
+	}
 
 	public ConcurrentArrayHashMap(int initialCapacity) {
 		super(initialCapacity);
@@ -32,8 +35,7 @@ public class ConcurrentArrayHashMap<K, V> extends ConcurrentHashMap<K, V[]> {
 			if (array == null) {
 				array = (V[]) Array.newInstance(value.getClass(), 1);
 				array[0] = value;
-			}
-			else {
+			} else {
 				int size = array.length;
 				array = Arrays.copyOf(array, size + 1);
 				array[size] = value;
@@ -74,6 +76,7 @@ public class ConcurrentArrayHashMap<K, V> extends ConcurrentHashMap<K, V[]> {
 		put(key, array);
 	}
 
+	@Nullable
 	public K rem(V value) {
 		K key = null;
 		V[] array = null;
@@ -174,9 +177,13 @@ public class ConcurrentArrayHashMap<K, V> extends ConcurrentHashMap<K, V[]> {
 			put(key, array);
 	}
 
+	@Nullable
 	public V get(K key, int index) {
 		synchronized (this) {
-			return get(key)[index];
+			V[] array = get(key);
+			if (array == null)
+				return null;
+			return array[index];
 		}
 	}
 }

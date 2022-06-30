@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 public class ArrayHashMap<K, V> extends HashMap<K, V[]> {
 
 	private static final long serialVersionUID = 8092867687056028336L;
 
-	public ArrayHashMap() {}
+	public ArrayHashMap() {
+	}
 
 	public ArrayHashMap(int initialCapacity) {
 		super(initialCapacity);
@@ -30,8 +33,7 @@ public class ArrayHashMap<K, V> extends HashMap<K, V[]> {
 		if (array == null) {
 			array = (V[]) Array.newInstance(value.getClass(), 1);
 			array[0] = value;
-		}
-		else {
+		} else {
 			int size = array.length;
 			array = Arrays.copyOf(array, size + 1);
 			array[size] = value;
@@ -65,6 +67,7 @@ public class ArrayHashMap<K, V> extends HashMap<K, V[]> {
 		put(key, array);
 	}
 
+	@Nullable
 	public K rem(V value) {
 		for (Entry<K, V[]> entry : entrySet()) {
 			V[] array = entry.getValue();
@@ -142,7 +145,11 @@ public class ArrayHashMap<K, V> extends HashMap<K, V[]> {
 			put(key, array);
 	}
 
+	@Nullable
 	public V get(K key, int index) {
-		return get(key)[index];
+		V[] array = get(key);
+		if (array == null)
+			return null;
+		return array[index];
 	}
 }

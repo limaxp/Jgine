@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.list.arrayList.FastArrayList;
 
 public class ConcurrentArrayListHashMap<K, V> extends ConcurrentHashMap<K, List<V>> {
 
 	private static final long serialVersionUID = 4184018242529988778L;
 
-	public ConcurrentArrayListHashMap() {}
+	public ConcurrentArrayListHashMap() {
+	}
 
 	public ConcurrentArrayListHashMap(int initialCapacity) {
 		super(initialCapacity);
@@ -40,6 +42,7 @@ public class ConcurrentArrayListHashMap<K, V> extends ConcurrentHashMap<K, List<
 		get(key).addAll(values);
 	}
 
+	@Nullable
 	public K rem(V value) {
 		K key = null;
 		synchronized (this) {
@@ -87,7 +90,11 @@ public class ConcurrentArrayListHashMap<K, V> extends ConcurrentHashMap<K, List<
 		return list;
 	}
 
+	@Nullable
 	public V get(K key, int index) {
-		return get(key).get(index);
+		List<V> list = get(key);
+		if (list == null)
+			return null;
+		return list.get(index);
 	}
 }
