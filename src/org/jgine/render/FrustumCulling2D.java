@@ -10,11 +10,13 @@ public class FrustumCulling2D {
 	private AxisAlignedBoundingQuad collider;
 
 	public boolean containsCollider(Collider collider) {
-		return this.collider.checkCollision(collider);
+//		return this.collider.checkCollision(collider);
+		return true;
 	}
 
 	public boolean containsPoint(Vector3f vec) {
-		return collider.containsPoint(vec);
+//		return collider.containsPoint(vec);
+		return true;
 	}
 
 	public void applyCamera(Camera camera) {
@@ -25,6 +27,6 @@ public class FrustumCulling2D {
 		// x2 = (position.x + 1) + delta;
 		// y1 = (position.y - 1) - delta;
 		// y2 = (position.y + 1) + delta;
-		collider = new AxisAlignedBoundingQuad(camera.getTransform(), 60, 20);
+//		collider = new AxisAlignedBoundingQuad(camera.getTransform(), 60, 20);
 	}
 }

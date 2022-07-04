@@ -21,7 +21,6 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	@Override
 	public void initObject(Entity entity, Collider object) {
-		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
 		Renderer.setCamera(camera);
 		for (int i = 0; i < size; i++)
-			objects[i].render();
+			objects[i].render(entities[i].getSystem(TransformSystem.class));
 
 		Renderer.disableDepthTest();
 		Renderer.disableWireframeMode();

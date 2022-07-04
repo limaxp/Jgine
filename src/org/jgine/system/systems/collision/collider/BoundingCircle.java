@@ -2,6 +2,7 @@ package org.jgine.system.systems.collision.collider;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
@@ -9,6 +10,7 @@ import org.jgine.render.Renderer2D;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.system.systems.collision.CollisionChecks2D;
 import org.jgine.system.systems.transform.Transform;
 
@@ -22,31 +24,41 @@ public class BoundingCircle extends Collider {
 
 	public float r;
 
-	public BoundingCircle() {}
+	public BoundingCircle() {
+	}
 
 	public BoundingCircle(float r) {
 		this.r = r;
 	}
 
-	public BoundingCircle(Transform transform, float r) {
-		super(transform);
-		this.r = r;
+	@Override
+	public boolean containsPoint(Vector3f pos, Vector3f point) {
+		return Vector3f.distance(pos, point) < r * r;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f point) {
-		return Vector3f.distance(transform.getPosition(), point) < r * r;
-	}
-
-	@Override
-	public boolean checkCollision(Collider other) {
+	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof BoundingCircle)
-			return CollisionChecks2D.BoundingCirclevsBoundingCircle(this, (BoundingCircle) other);
+			return CollisionChecks2D.checkBoundingCirclevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.AxisAlignedBoundingBoxvsBoundingCircle((AxisAlignedBoundingQuad) other, this);
+			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
+					(AxisAlignedBoundingQuad) other, pos, this);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.PlanevsBoundingCircle((LineCollider) other, this);
+			return CollisionChecks2D.checkPlanevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (other instanceof BoundingCircle)
+			return CollisionChecks2D.resolveBoundingCirclevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+		else if (other instanceof AxisAlignedBoundingQuad)
+			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
+					(AxisAlignedBoundingQuad) other, pos, this);
+		else if (other instanceof LineCollider)
+			return CollisionChecks2D.resolvePlanevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
+		return null;
 	}
 
 	@Override
@@ -67,8 +79,8 @@ public class BoundingCircle extends Collider {
 	}
 
 	@Override
-	public void render() {
-		Renderer2D.render(Transform.calculateMatrix(new Matrix(), transform.getPosition(), Vector3f.NULL, new Vector3f(r)),
+	public void render(Vector3f pos) {
+		Renderer2D.render(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
 				ResourceManager.getModel("ball"));
 	}
 }

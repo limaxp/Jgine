@@ -2,6 +2,7 @@ package org.jgine.system.systems.collision.collider;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer;
@@ -9,6 +10,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.transform.Transform;
 
@@ -24,13 +26,8 @@ public class PlaneCollider extends Collider {
 		this.normal = normal;
 	}
 
-	public PlaneCollider(Transform transform, Vector3f normal) {
-		super(transform);
-		this.normal = normal;
-	}
-
 	@Override
-	public boolean containsPoint(Vector3f point) {
+	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return distance(point) > 0 ? true : false;
 	}
 
@@ -40,16 +37,23 @@ public class PlaneCollider extends Collider {
 	}
 
 	@Override
-	public boolean checkCollision(Collider other) {
+	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof PlaneCollider)
-			return CollisionChecks.PlanevsPlane(this, (PlaneCollider) other);
+			return CollisionChecks.checkPlanevsPlane(pos, this, otherPos, (PlaneCollider) other);
 		else if (other instanceof BoundingSphere)
-			return CollisionChecks.PlanevsBoundingSphere(this, (BoundingSphere) other);
+			return CollisionChecks.checkPlanevsBoundingSphere(pos, this, otherPos, (BoundingSphere) other);
 		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.PlanevsAxisAlignedBoundingBox(this, (AxisAlignedBoundingBox) other);
+			return CollisionChecks.checkPlanevsAxisAlignedBoundingBox(pos, this, otherPos,
+					(AxisAlignedBoundingBox) other);
 		else if (other instanceof BoundingCylinder)
-			return CollisionChecks.BoundingCylindervsPlane((BoundingCylinder) other, this);
+			return CollisionChecks.checkBoundingCylindervsPlane(otherPos, (BoundingCylinder) other, pos, this);
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		return null;
 	}
 
 	@Override
@@ -63,8 +67,8 @@ public class PlaneCollider extends Collider {
 		if (normal != null && normal instanceof Map) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> normalMap = (Map<String, Object>) normal;
-			this.normal = new Vector3f((float) normalMap.getOrDefault("x", 0), (float) normalMap.getOrDefault(
-					"y", 0), (float) normalMap.getOrDefault("z", 0));
+			this.normal = new Vector3f((float) normalMap.getOrDefault("x", 0), (float) normalMap.getOrDefault("y", 0),
+					(float) normalMap.getOrDefault("z", 0));
 		}
 	}
 
@@ -74,8 +78,8 @@ public class PlaneCollider extends Collider {
 	}
 
 	@Override
-	public void render() {
-		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), transform.getPosition(), normal, new Vector3f(Float.MAX_VALUE)),
+	public void render(Vector3f pos) {
+		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, normal, new Vector3f(Float.MAX_VALUE)),
 				new Material());
 	}
 }

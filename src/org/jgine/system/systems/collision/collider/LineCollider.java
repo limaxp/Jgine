@@ -2,6 +2,7 @@ package org.jgine.system.systems.collision.collider;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -10,6 +11,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.system.systems.collision.CollisionChecks2D;
 import org.jgine.system.systems.transform.Transform;
 
@@ -25,13 +27,8 @@ public class LineCollider extends Collider {
 		this.normal = normal;
 	}
 
-	public LineCollider(Transform transform, Vector2f normal) {
-		super(transform);
-		this.normal = normal;
-	}
-
 	@Override
-	public boolean containsPoint(Vector3f point) {
+	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return distance(point) > 0 ? true : false;
 	}
 
@@ -41,14 +38,28 @@ public class LineCollider extends Collider {
 	}
 
 	@Override
-	public boolean checkCollision(Collider other) {
+	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
-			return CollisionChecks2D.PlanevsPlane(this, (LineCollider) other);
+			return CollisionChecks2D.checkPlanevsPlane(pos, this, otherPos, (LineCollider) other);
 		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.PlanevsBoundingCircle(this, (BoundingCircle) other);
+			return CollisionChecks2D.checkPlanevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.PlanevsAxisAlignedBoundingBox(this, (AxisAlignedBoundingQuad) other);
+			return CollisionChecks2D.checkPlanevsAxisAlignedBoundingQuad(pos, this, otherPos,
+					(AxisAlignedBoundingQuad) other);
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (other instanceof LineCollider)
+			return CollisionChecks2D.resolvePlanevsPlane(pos, this, otherPos, (LineCollider) other);
+		else if (other instanceof BoundingCircle)
+			return CollisionChecks2D.resolvePlanevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+		else if (other instanceof AxisAlignedBoundingQuad)
+			return CollisionChecks2D.resolvePlanevsAxisAlignedBoundingQuad(pos, this, otherPos,
+					(AxisAlignedBoundingQuad) other);
+		return null;
 	}
 
 	@Override
@@ -62,8 +73,7 @@ public class LineCollider extends Collider {
 		if (normal != null && normal instanceof Map) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> normalMap = (Map<String, Object>) normal;
-			this.normal = new Vector2f((float) normalMap.getOrDefault("x", 0), (float) normalMap.getOrDefault(
-					"y", 0));
+			this.normal = new Vector2f((float) normalMap.getOrDefault("x", 0), (float) normalMap.getOrDefault("y", 0));
 		}
 	}
 
@@ -73,9 +83,10 @@ public class LineCollider extends Collider {
 	}
 
 	@Override
-	public void render() {
+	public void render(Vector3f pos) {
 		// TODO render line here!
-		Renderer2D.renderQuad(Transform.calculateMatrix(new Matrix(), transform.getPosition(), new Vector3f(normal), new Vector3f(
-				Float.MAX_VALUE)), new Material());
+		Renderer2D.renderQuad(
+				Transform.calculateMatrix(new Matrix(), pos, new Vector3f(normal), new Vector3f(Float.MAX_VALUE)),
+				new Material());
 	}
 }

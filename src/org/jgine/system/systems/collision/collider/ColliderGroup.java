@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.Collision;
 
 public class ColliderGroup extends Collider {
 
@@ -35,23 +37,35 @@ public class ColliderGroup extends Collider {
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f point) {
-		if (!bounds.containsPoint(point))
+	public boolean containsPoint(Vector3f pos, Vector3f point) {
+		if (!bounds.containsPoint(pos, point))
 			return false;
 		for (Collider collider : collider)
-			if (collider.containsPoint(point))
+			if (collider.containsPoint(pos, point))
 				return true;
 		return false;
 	}
 
 	@Override
-	public boolean checkCollision(Collider other) {
-		if (!bounds.checkCollision(other))
+	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (!bounds.checkCollision(pos, other, otherPos))
 			return false;
 		for (Collider collider : collider)
-			if (collider.checkCollision(other))
+			if (collider.checkCollision(pos, other, otherPos))
 				return true;
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		Collision collsion = null;
+		if ((collsion = bounds.resolveCollision(pos, other, otherPos)) != null)
+			return collsion;
+		for (Collider collider : collider)
+			if ((collsion = collider.resolveCollision(pos, other, otherPos)) != null)
+				return collsion;
+		return collsion;
 	}
 
 	@Override
@@ -70,8 +84,8 @@ public class ColliderGroup extends Collider {
 	}
 
 	@Override
-	public void render() {
+	public void render(Vector3f pos) {
 		for (Collider collider : collider)
-			collider.render();
+			collider.render(pos);
 	}
 }

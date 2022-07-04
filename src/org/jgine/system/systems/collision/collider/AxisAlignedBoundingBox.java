@@ -2,6 +2,7 @@ package org.jgine.system.systems.collision.collider;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer;
@@ -9,6 +10,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.transform.Transform;
 
@@ -25,7 +27,8 @@ public class AxisAlignedBoundingBox extends Collider {
 	public float h;
 	public float d;
 
-	public AxisAlignedBoundingBox() {}
+	public AxisAlignedBoundingBox() {
+	}
 
 	public AxisAlignedBoundingBox(float w, float h, float d) {
 		this.w = w;
@@ -33,33 +36,32 @@ public class AxisAlignedBoundingBox extends Collider {
 		this.d = d;
 	}
 
-	public AxisAlignedBoundingBox(Transform transform, float w, float h, float d) {
-		super(transform);
-		this.w = w;
-		this.h = h;
-		this.d = d;
+	@Override
+	public boolean containsPoint(Vector3f pos, Vector3f point) {
+		return (point.x >= (pos.x - this.w / 2) && point.x <= (pos.x + this.w / 2)) && (point.y >= (pos.y - this.h)
+				&& point.y <= (pos.y + this.h) && (point.z >= (pos.z - this.d) && point.z <= (pos.z + this.d)));
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f point) {
-		Vector3f pos = transform.getPosition();
-		return (point.x >= (pos.x - this.w / 2) && point.x <= (pos.x + this.w / 2))
-				&& (point.y >= (pos.y - this.h) && point.y <= (pos.y + this.h)
-						&& (point.z >= (pos.z - this.d) && point.z <= (pos.z + this.d)));
-	}
-
-	@Override
-	public boolean checkCollision(Collider other) {
+	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.AxisAlignedBoundingBoxvsAxisAlignedBoundingBox(this,
+			return CollisionChecks.checkAxisAlignedBoundingBoxvsAxisAlignedBoundingBox(pos, this, otherPos,
 					(AxisAlignedBoundingBox) other);
 		else if (other instanceof BoundingSphere)
-			return CollisionChecks.AxisAlignedBoundingBoxvsBoundingSphere(this, (BoundingSphere) other);
+			return CollisionChecks.checkAxisAlignedBoundingBoxvsBoundingSphere(pos, this, otherPos,
+					(BoundingSphere) other);
 		else if (other instanceof PlaneCollider)
-			return CollisionChecks.PlanevsAxisAlignedBoundingBox((PlaneCollider) other, this);
+			return CollisionChecks.checkPlanevsAxisAlignedBoundingBox(otherPos, (PlaneCollider) other, pos, this);
 		else if (other instanceof BoundingCylinder)
-			return CollisionChecks.BoundingCylindervsAxisAlignedBoundingBox((BoundingCylinder) other, this);
+			return CollisionChecks.checkBoundingCylindervsAxisAlignedBoundingBox(otherPos, (BoundingCylinder) other,
+					pos, this);
 		return false;
+	}
+
+	@Nullable
+	@Override
+	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		return null;
 	}
 
 	@Override
@@ -86,8 +88,8 @@ public class AxisAlignedBoundingBox extends Collider {
 	}
 
 	@Override
-	public void render() {
-		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), transform.getPosition(), Vector3f.NULL, new Vector3f(w, h, d)),
+	public void render(Vector3f pos) {
+		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(w, h, d)),
 				new Material());
 	}
 }

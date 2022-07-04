@@ -8,55 +8,76 @@ import org.jgine.system.systems.collision.collider.PlaneCollider;
 
 public class CollisionChecks {
 
-	public static boolean AxisAlignedBoundingBoxvsAxisAlignedBoundingBox(AxisAlignedBoundingBox a,
-			AxisAlignedBoundingBox b) {
-		Vector3f center = a.transform.getPosition();
-		Vector3f otherCenter = b.transform.getPosition();
-		if (((center.x - a.w / 2) <= (otherCenter.x + b.w / 2)
-				&& (center.x + a.w / 2) >= (otherCenter.x - b.w / 2))
-				&& ((center.y - a.h / 2) <= (otherCenter.y + b.h / 2)
-						&& (center.y + a.h / 2) >= (otherCenter.y - b.h / 2))
-				&& ((center.z - a.d / 2) <= (otherCenter.z + b.d / 2)
-						&& (center.z + a.d / 2) >= (otherCenter.z - b.d / 2)))
+	public static boolean checkAxisAlignedBoundingBoxvsAxisAlignedBoundingBox(Vector3f pos1, AxisAlignedBoundingBox a,
+			Vector3f pos2, AxisAlignedBoundingBox b) {
+		return checkAxisAlignedBoundingBoxvsAxisAlignedBoundingBox(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z,
+				b);
+	}
+
+	public static boolean checkAxisAlignedBoundingBoxvsAxisAlignedBoundingBox(float x1, float y1, float z1,
+			AxisAlignedBoundingBox a, float x2, float y2, float z2, AxisAlignedBoundingBox b) {
+		if (((x1 - a.w / 2) <= (x2 + b.w / 2) && (x1 + a.w / 2) >= (x2 - b.w / 2))
+				&& ((y1 - a.h / 2) <= (y2 + b.h / 2) && (y1 + a.h / 2) >= (y2 - b.h / 2))
+				&& ((z1 - a.d / 2) <= (z2 + b.d / 2) && (z1 + a.d / 2) >= (z2 - b.d / 2)))
 			return true;
 		return false;
 	}
 
-	public static boolean BoundingSpherevsBoundingSphere(BoundingSphere a, BoundingSphere b) {
-		Vector3f center = a.transform.getPosition();
-		Vector3f otherCenter = b.transform.getPosition();
-		double distance = (center.x - otherCenter.x) * (center.x - otherCenter.x)
-				+ (center.y - otherCenter.y) * (center.y - otherCenter.y)
-				+ (center.z - otherCenter.z) * (center.z - otherCenter.z);
+	public static boolean checkBoundingSpherevsBoundingSphere(Vector3f pos1, BoundingSphere a, Vector3f pos2,
+			BoundingSphere b) {
+		return checkBoundingSpherevsBoundingSphere(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkBoundingSpherevsBoundingSphere(float x1, float y1, float z1, BoundingSphere a, float x2,
+			float y2, float z2, BoundingSphere b) {
+		double distance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2);
 		return distance < (a.r + b.r) * (a.r + b.r);
 	}
 
-	public static boolean AxisAlignedBoundingBoxvsBoundingSphere(AxisAlignedBoundingBox a,
-			BoundingSphere b) {
-		Vector3f center = b.transform.getPosition();
-		Vector3f otherCenter = a.transform.getPosition();
-		double x = Math.max((otherCenter.x - a.w / 2), Math.min(center.x, (otherCenter.x + a.w / 2)));
-		double y = Math.max((otherCenter.y - a.h / 2), Math.min(center.y, (otherCenter.y + a.h / 2)));
-		double z = Math.max((otherCenter.z - a.d / 2), Math.min(center.z, (otherCenter.z + a.d / 2)));
-		double distance = (x - center.x) * (x - center.x) + (y - center.y) * (y - center.y) + (z
-				- center.z) * (z - center.z);
+	public static boolean checkAxisAlignedBoundingBoxvsBoundingSphere(Vector3f pos1, AxisAlignedBoundingBox a,
+			Vector3f pos2, BoundingSphere b) {
+		return checkAxisAlignedBoundingBoxvsBoundingSphere(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkAxisAlignedBoundingBoxvsBoundingSphere(float x1, float y1, float z1,
+			AxisAlignedBoundingBox a, float x2, float y2, float z2, BoundingSphere b) {
+		double x = Math.max((x2 - a.w / 2), Math.min(x1, (x2 + a.w / 2)));
+		double y = Math.max((y2 - a.h / 2), Math.min(y1, (y2 + a.h / 2)));
+		double z = Math.max((z2 - a.d / 2), Math.min(z1, (z2 + a.d / 2)));
+		double distance = (x - x1) * (x - x1) + (y - y1) * (y - y1) + (z - z1) * (z - z1);
 		return distance < b.r * b.r;
 	}
 
-	public static boolean PlanevsPlane(PlaneCollider a, PlaneCollider b) {
+	public static boolean checkPlanevsPlane(Vector3f pos1, PlaneCollider a, Vector3f pos2, PlaneCollider b) {
+		return checkPlanevsPlane(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkPlanevsPlane(float x1, float y1, float z1, PlaneCollider a, float x2, float y2, float z2,
+			PlaneCollider b) {
 		// TODO Auto-generated method stub
 		// a.transform.pos.distance(vec)
 		return false;
 	}
 
-	public static boolean PlanevsAxisAlignedBoundingBox(PlaneCollider a, AxisAlignedBoundingBox b) {
+	public static boolean checkPlanevsAxisAlignedBoundingBox(Vector3f pos1, PlaneCollider a, Vector3f pos2,
+			AxisAlignedBoundingBox b) {
+		return checkPlanevsAxisAlignedBoundingBox(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkPlanevsAxisAlignedBoundingBox(float x1, float y1, float z1, PlaneCollider a, float x2,
+			float y2, float z2, AxisAlignedBoundingBox b) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public static boolean PlanevsBoundingSphere(PlaneCollider a, BoundingSphere b) {
+	public static boolean checkPlanevsBoundingSphere(Vector3f pos1, PlaneCollider a, Vector3f pos2, BoundingSphere b) {
+		return checkPlanevsBoundingSphere(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkPlanevsBoundingSphere(float x1, float y1, float z1, PlaneCollider a, float x2, float y2,
+			float z2, BoundingSphere b) {
 		// TODO this is wrong!
-		double distance = Vector3f.distance(a.transform.getPosition(), b.transform.getPosition());
+		double distance = Vector3f.distance(x1, y1, z1, x2, y2, z2);
 		if (distance < -b.r)
 			return false;
 		else if (distance <= b.r)
@@ -64,22 +85,46 @@ public class CollisionChecks {
 		return false;
 	}
 
-	public static boolean BoundingCylindervsBoundingCylinder(BoundingCylinder a, BoundingSphere b) {
+	public static boolean checkBoundingCylindervsBoundingCylinder(Vector3f pos1, BoundingCylinder a, Vector3f pos2,
+			BoundingSphere b) {
+		return checkBoundingCylindervsBoundingCylinder(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkBoundingCylindervsBoundingCylinder(float x1, float y1, float z1, BoundingCylinder a,
+			float x2, float y2, float z2, BoundingSphere b) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public static boolean BoundingCylindervsBoundingSphere(BoundingCylinder a, BoundingSphere b) {
+	public static boolean checkBoundingCylindervsBoundingSphere(Vector3f pos1, BoundingCylinder a, Vector3f pos2,
+			BoundingSphere b) {
+		return checkBoundingCylindervsBoundingSphere(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkBoundingCylindervsBoundingSphere(float x1, float y1, float z1, BoundingCylinder a,
+			float x2, float y2, float z2, BoundingSphere b) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public static boolean BoundingCylindervsAxisAlignedBoundingBox(BoundingCylinder a, AxisAlignedBoundingBox b) {
+	public static boolean checkBoundingCylindervsAxisAlignedBoundingBox(Vector3f pos1, BoundingCylinder a,
+			Vector3f pos2, AxisAlignedBoundingBox b) {
+		return checkBoundingCylindervsAxisAlignedBoundingBox(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkBoundingCylindervsAxisAlignedBoundingBox(float x1, float y1, float z1,
+			BoundingCylinder a, float x2, float y2, float z2, AxisAlignedBoundingBox b) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public static boolean BoundingCylindervsPlane(BoundingCylinder a, PlaneCollider b) {
+	public static boolean checkBoundingCylindervsPlane(Vector3f pos1, BoundingCylinder a, Vector3f pos2,
+			PlaneCollider b) {
+		return checkBoundingCylindervsPlane(pos1.x, pos1.y, pos1.z, a, pos2.x, pos2.y, pos2.z, b);
+	}
+
+	public static boolean checkBoundingCylindervsPlane(float x1, float y1, float z1, BoundingCylinder a, float x2,
+			float y2, float z2, PlaneCollider b) {
 		// TODO Auto-generated method stub
 		return false;
 	}

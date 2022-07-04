@@ -6,7 +6,6 @@ import org.jgine.system.systems.camera.Perspective;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.graphic.GraphicObject;
-import org.jgine.system.systems.transform.Transform;
 
 public class FrustumCulling {
 
@@ -24,7 +23,7 @@ public class FrustumCulling {
 	public FrustumCulling() {
 		planes = new PlaneCollider[SIZE];
 		for (int i = 0; i < SIZE; i++)
-			planes[i] = new PlaneCollider(new Transform(), Vector3f.NULL);
+			planes[i] = new PlaneCollider(Vector3f.NULL);
 	}
 
 	public boolean contains(GraphicObject graphicObject) {
@@ -42,8 +41,8 @@ public class FrustumCulling {
 
 	public boolean containsCollider(Collider collider) {
 		for (int i = 0; i < SIZE; i++) {
-			if (!planes[i].checkCollision(collider))
-				return true;
+//			if (!planes[i].checkCollision(collider))
+//				return true;
 		}
 		return false;
 
@@ -51,8 +50,8 @@ public class FrustumCulling {
 
 	public boolean containsPoint(Vector3f point) {
 		for (int i = 0; i < SIZE; i++) {
-			if (!planes[i].containsPoint(point))
-				return false;
+//			if (!planes[i].containsPoint(point))
+//				return false;
 		}
 		return true;
 	}
@@ -145,7 +144,7 @@ public class FrustumCulling {
 	// planes[FARP].set3Points(ftr, ftl, fbl);
 
 	private static void setPlane(PlaneCollider plane, Vector3f pos, Vector3f normal) {
-		plane.getTransform().setPositionNoUpdate(pos);
+//		plane.getTransform().setPositionNoUpdate(pos);
 		plane.normal = normal;
 	}
 }

@@ -2,9 +2,9 @@ package org.jgine.system.systems.collision;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.transform.Transform;
 
 /**
  * Represents the default Collider
@@ -16,31 +16,30 @@ public abstract class Collider implements SystemObject, Cloneable {
 	public static final Collider NULL = new Collider() {
 
 		@Override
-		public boolean containsPoint(Vector3f point) {
+		public boolean containsPoint(Vector3f pos, Vector3f point) {
 			return false;
 		}
 
 		@Override
-		public boolean checkCollision(Collider collider) {
+		public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 			return false;
 		}
 
+		@Nullable
 		@Override
-		public void render() {}
+		public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+			return null;
+		}
+
+		@Override
+		public void render(Vector3f pos) {
+		}
 
 		@Override
 		public ColliderType<?> getType() {
 			return ColliderTypes.NONE;
 		}
 	};
-
-	protected Transform transform;
-
-	protected Collider() {}
-
-	protected Collider(Transform transform) {
-		this.transform = transform;
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -58,17 +57,17 @@ public abstract class Collider implements SystemObject, Cloneable {
 		}
 	}
 
-	public abstract boolean containsPoint(Vector3f point);
+	public abstract boolean containsPoint(Vector3f pos, Vector3f point);
 
-	public abstract boolean checkCollision(Collider collider);
+	public abstract boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos);
 
-	public void load(Map<String, Object> data) {}
+	@Nullable
+	public abstract Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos);
+
+	public void load(Map<String, Object> data) {
+	}
 
 	public abstract ColliderType<?> getType();
 
-	public abstract void render();
-
-	public Transform getTransform() {
-		return transform;
-	}
+	public abstract void render(Vector3f pos);
 }
