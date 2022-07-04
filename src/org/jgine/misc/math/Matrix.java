@@ -325,7 +325,7 @@ public class Matrix implements Cloneable {
 	 * @return
 	 */
 	public Vector3f getScaling() {
-		return new Vector3f(m30, m31, m32);
+		return new Vector3f(m00, m11, m22);
 	}
 
 	/**

@@ -175,7 +175,7 @@ public class Vector2f {
 		return dx * dx + dy * dy;
 	}
 
-	public static float length(Vector3f vec) {
+	public static float length(Vector2f vec) {
 		return FastMath.sqrt(lengthSquared(vec));
 	}
 
@@ -183,7 +183,7 @@ public class Vector2f {
 		return FastMath.sqrt(lengthSquared(x, y));
 	}
 
-	public static float lengthSquared(Vector3f vec) {
+	public static float lengthSquared(Vector2f vec) {
 		return vec.x * vec.x + vec.y * vec.y;
 	}
 

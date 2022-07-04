@@ -31,7 +31,7 @@ public class CameraInputHandler extends InputHandler {
 			Key.GAMEPAD_BUTTON_BACK);
 
 	public static final float ROTATION_SPEED = 0.005f;
-	public static final float MOVEMENT_SPEED = 0.1f;
+	public static final float MOVEMENT_SPEED = 1000.0f;
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private PhysicObject physicObject;
@@ -53,31 +53,30 @@ public class CameraInputHandler extends InputHandler {
 			lastCursorPosition = cursorPosition;
 		});
 
-		setGamepadLeftStickMove((pos) -> {
-			if (pos.x < -GAMEPAD_LEWAY)
-				physicObject.addVelocity(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED));
-			else if (pos.x > GAMEPAD_LEWAY)
-				physicObject.addVelocity(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED));
-			if (pos.y < -GAMEPAD_LEWAY)
-				physicObject.addVelocity(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED));
-			else if (pos.y > GAMEPAD_LEWAY)
-				physicObject.addVelocity(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED));
-		});
-
 		setGamepadRightStickMove((pos) -> {
 			camera.rotateY(pos.x * ROTATION_SPEED * 10);
 			camera.rotateX(pos.y * ROTATION_SPEED * 10);
 		});
 
-		setKey(KEY_MOVE_FORWARD, () -> physicObject.addVelocity(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_BACK, () -> physicObject.addVelocity(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_LEFT, () -> physicObject.addVelocity(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_RIGHT, () -> physicObject.addVelocity(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_UP, () -> physicObject.addVelocity(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_DOWN, () -> physicObject.addVelocity(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
-		setKey(KEY_CLOSE_GAME, () -> Engine.getInstance().shutdown());
-		setKey(KEY_FULLSCREEN,
-				() -> Scheduler.runTaskSynchron(() -> Engine.getInstance().getWindow().toggleFullScreen()));
+		setGamepadLeftStickMove((pos) -> {
+			if (pos.x < -GAMEPAD_LEWAY)
+				physicObject.accelerate(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED));
+			else if (pos.x > GAMEPAD_LEWAY)
+				physicObject.accelerate(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED));
+			if (pos.y < -GAMEPAD_LEWAY)
+				physicObject.accelerate(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED));
+			else if (pos.y > GAMEPAD_LEWAY)
+				physicObject.accelerate(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED));
+		});
+
+		setKey(KEY_MOVE_FORWARD, () -> physicObject.accelerate(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_BACK, () -> physicObject.accelerate(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_RIGHT, () -> physicObject.accelerate(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
+		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
+		setKey(KEY_FULLSCREEN, () -> Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleFullScreen));
 	}
 
 	@Override

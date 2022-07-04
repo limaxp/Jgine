@@ -10,8 +10,8 @@ import org.jgine.system.EngineSystem;
 
 public class PhysicSystem extends EngineSystem {
 
-	private float gravity = 0.01f;
-	private float airResistance = 0.9f;
+	private float gravity = -1000.0f;
+	private float airResistanceFactor = 0.99f;
 
 	public PhysicSystem() {
 		ServiceManager.register("gravity", new Property<Float>() {
@@ -26,16 +26,16 @@ public class PhysicSystem extends EngineSystem {
 				return gravity;
 			}
 		});
-		ServiceManager.register("airResistance", new Property<Float>() {
+		ServiceManager.register("airResistanceFactor", new Property<Float>() {
 
 			@Override
 			public void setValue(Float obj) {
-				airResistance = obj;
+				airResistanceFactor = obj;
 			}
 
 			@Override
 			public Float getValue() {
-				return airResistance;
+				return airResistanceFactor;
 			}
 		});
 	}
@@ -49,25 +49,16 @@ public class PhysicSystem extends EngineSystem {
 	public PhysicObject load(Map<String, Object> data) {
 		PhysicObject object = new PhysicObject();
 		Object hasGravity = data.get("hasGravity");
-		if (hasGravity != null && hasGravity instanceof Boolean) 
+		if (hasGravity != null && hasGravity instanceof Boolean)
 			object.hasGravity = (boolean) hasGravity;
-		
-		Object velocity = data.get("velocity");
-		if (velocity != null && velocity instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> velocityMap = (Map<String, Object>) velocity;
-			object.setVelocity(new Vector3f(((Number) velocityMap.getOrDefault("x", 0)).floatValue(),
-					((Number) velocityMap.getOrDefault(
-							"y", 0)).floatValue(), ((Number) velocityMap.getOrDefault("z", 0)).floatValue()));
-		}
+
 		Object acceleration = data.get("acceleration");
 		if (acceleration != null && acceleration instanceof Map) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> accelerationMap = (Map<String, Object>) acceleration;
-			object.addVelocity(new Vector3f(((Number) accelerationMap.getOrDefault("x", 0)).floatValue(),
-					((Number) accelerationMap
-							.getOrDefault("y", 0)).floatValue(), ((Number) accelerationMap.getOrDefault("z", 0))
-									.floatValue()));
+			object.accelerate(new Vector3f(((Number) accelerationMap.getOrDefault("x", 0)).floatValue(),
+					((Number) accelerationMap.getOrDefault("y", 0)).floatValue(),
+					((Number) accelerationMap.getOrDefault("z", 0)).floatValue()));
 		}
 		return object;
 	}
@@ -80,11 +71,11 @@ public class PhysicSystem extends EngineSystem {
 		return gravity;
 	}
 
-	public void setAirResistance(float airResistance) {
-		this.airResistance = airResistance;
+	public void setAirResistanceFactor(float airResistanceFactor) {
+		this.airResistanceFactor = airResistanceFactor;
 	}
 
-	public float getAirResistance() {
-		return airResistance;
+	public float getAirResistanceFactor() {
+		return airResistanceFactor;
 	}
 }
