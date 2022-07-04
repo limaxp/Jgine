@@ -14,11 +14,11 @@ public class TransformScene extends ListSystemScene<TransformSystem, Transform> 
 	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> entity.getSystem(this)
 			.setPositionNoUpdate((Vector3f) pos);
 
-	private final BiConsumer<Entity, Object> scaleUpdate = (entity, scale) -> entity.getSystem(this).setScale(
-			(Vector3f) scale);
+	private final BiConsumer<Entity, Object> scaleUpdate = (entity, scale) -> entity.getSystem(this)
+			.setScale((Vector3f) scale);
 
-	private final BiConsumer<Entity, Object> rotationUpdate = (entity, rotation) -> entity.getSystem(this).setRotation(
-			(Vector3f) rotation);
+	private final BiConsumer<Entity, Object> rotationUpdate = (entity, rotation) -> entity.getSystem(this)
+			.setRotation((Vector3f) rotation);
 
 	public TransformScene(TransformSystem system, Scene scene) {
 		super(system, scene, Transform.class);
@@ -37,6 +37,7 @@ public class TransformScene extends ListSystemScene<TransformSystem, Transform> 
 	@Override
 	public void initObject(Entity entity, Transform object) {
 		object.setEntity(entity);
+		object.calculateMatrix();
 	}
 
 	@Override
@@ -52,7 +53,8 @@ public class TransformScene extends ListSystemScene<TransformSystem, Transform> 
 	}
 
 	@Override
-	public void render() {}
+	public void render() {
+	}
 
 	@Override
 	public void parentUpdate(Entity parent, Transform object) {

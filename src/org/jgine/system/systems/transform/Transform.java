@@ -52,6 +52,7 @@ public class Transform extends Transform3f implements SystemObject {
 	}
 
 	void setEntity(Entity entity) {
+		setHasChanged();
 		this.entity = entity;
 	}
 
