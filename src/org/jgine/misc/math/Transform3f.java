@@ -28,7 +28,7 @@ public class Transform3f implements Cloneable {
 		this.rotation = rotation;
 		this.scale = scale;
 		matrix = new Matrix();
-		hasChanged = true;
+		matrix = calculateMatrix(matrix, position, rotation, scale);
 	}
 
 	@Override
