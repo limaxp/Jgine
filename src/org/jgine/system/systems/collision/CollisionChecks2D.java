@@ -43,8 +43,7 @@ public class CollisionChecks2D {
 	}
 
 	public static boolean checkLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
-		// TODO Auto-generated method stub
-		return false;
+		return Vector2f.cross(a.normal.x, b.normal.x, a.normal.y, b.normal.y) != 0;
 	}
 
 	public static boolean checkLinevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
@@ -141,7 +140,13 @@ public class CollisionChecks2D {
 
 	@Nullable
 	public static Collision resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
-		// TODO Auto-generated method stub
+		// TODO check line resolve! dist as overlap also seems false!
+		float dist = Vector2f.cross(a.normal.x, b.normal.x, a.normal.y, b.normal.y);
+		if (dist != 0) {
+			float axisX = a.normal.x - b.normal.x;
+			float axisY = a.normal.y - b.normal.y;
+			return new Collision(a, b, axisX, axisY, x2, y2, dist, dist);
+		}
 		return null;
 	}
 
