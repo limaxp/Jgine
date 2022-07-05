@@ -62,7 +62,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		subDt = dt / subSteps;
 
 		for (int i = 0; i < subSteps; i++) {
-			TaskManager.execute(size, this::applyConstraint);
+//			TaskManager.execute(size, this::applyConstraint);
 			TaskManager.execute(size, this::solveCollisions);
 			TaskManager.execute(size, this::updatePositions);
 		}
@@ -252,13 +252,10 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			return null;
 
 		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		if (collision.overlapX < collision.overlapY) {
-			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-			object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
-		} else {
-			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
-			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		}
+		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+		object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
+		object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
+		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
 		return collision;
 	}
 }

@@ -154,11 +154,9 @@ public class CollisionChecks2D {
 	@Nullable
 	public static Collision resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
 			AxisAlignedBoundingQuad b) {
-		// TODO seems to not work after being completely on wrong side
 		float distX = (x2 - x1) * a.normal.x;
 		float distY = (y2 - y1) * a.normal.y;
 		if (distX < b.w && distY < b.h) {
-//			System.out.println(distX + "    " + distY);
 			float deltaX = b.w - distX;
 			float deltaY = b.h - distY;
 			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
