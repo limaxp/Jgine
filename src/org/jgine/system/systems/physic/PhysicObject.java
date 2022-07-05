@@ -10,6 +10,7 @@ public class PhysicObject implements SystemObject {
 	private static final float SLOP_VALUE = 0.01f;
 
 	public boolean hasGravity = true;
+	public float stiffness = 0.5f;
 	float x, y, z;
 	private float oldX, oldY, oldZ;
 	private float motX, motY, motZ;

@@ -76,13 +76,8 @@ public class CollisionChecks {
 
 	public static boolean checkPlanevsBoundingSphere(float x1, float y1, float z1, PlaneCollider a, float x2, float y2,
 			float z2, BoundingSphere b) {
-		// TODO this is wrong!
-		double distance = Vector3f.distance(x1, y1, z1, x2, y2, z2);
-		if (distance < -b.r)
-			return false;
-		else if (distance <= b.r)
-			return true;
-		return false;
+		float dist = Vector3f.dot(a.normal.x, a.normal.y, a.normal.z, x2 - x1, y2 - y1, z2 - z1);
+		return dist < b.r ? true : false;
 	}
 
 	public static boolean checkBoundingCylindervsBoundingCylinder(Vector3f pos1, BoundingCylinder a, Vector3f pos2,

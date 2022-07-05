@@ -49,7 +49,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsBoundingCircle(pos, this, otherPos,
 					(BoundingCircle) other);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.checkPlanevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks2D.checkLinevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
 		return false;
 	}
 
@@ -63,7 +63,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(pos, this, otherPos,
 					(BoundingCircle) other);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.resolvePlanevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
 		return null;
 	}
 

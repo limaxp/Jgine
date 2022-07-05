@@ -44,7 +44,7 @@ public class BoundingCircle extends Collider {
 			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
 					(AxisAlignedBoundingQuad) other, pos, this);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.checkPlanevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks2D.checkLinevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
 		return false;
 	}
 
@@ -57,7 +57,7 @@ public class BoundingCircle extends Collider {
 			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
 					(AxisAlignedBoundingQuad) other, pos, this);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.resolvePlanevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks2D.resolveLinevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
 		return null;
 	}
 

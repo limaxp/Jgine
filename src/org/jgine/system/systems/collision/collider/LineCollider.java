@@ -29,22 +29,22 @@ public class LineCollider extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return distance(point) > 0 ? true : false;
+		return distance(pos, point) > 0 ? true : false;
 	}
 
-	private double distance(Vector2f point) {
-		// Distance = (A*x0+B*y0+D)
-		return normal.x * point.x + normal.y * point.y;
+	public float distance(Vector2f pos, Vector2f point) {
+		Vector2f sub = Vector2f.sub(point, pos);
+		return Vector2f.dot(normal, sub);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
-			return CollisionChecks2D.checkPlanevsPlane(pos, this, otherPos, (LineCollider) other);
+			return CollisionChecks2D.checkLinevsLine(pos, this, otherPos, (LineCollider) other);
 		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.checkPlanevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+			return CollisionChecks2D.checkLinevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.checkPlanevsAxisAlignedBoundingQuad(pos, this, otherPos,
+			return CollisionChecks2D.checkLinevsAxisAlignedBoundingQuad(pos, this, otherPos,
 					(AxisAlignedBoundingQuad) other);
 		return false;
 	}
@@ -53,11 +53,11 @@ public class LineCollider extends Collider {
 	@Override
 	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
-			return CollisionChecks2D.resolvePlanevsPlane(pos, this, otherPos, (LineCollider) other);
+			return CollisionChecks2D.resolveLinevsLine(pos, this, otherPos, (LineCollider) other);
 		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.resolvePlanevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+			return CollisionChecks2D.resolveLinevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.resolvePlanevsAxisAlignedBoundingQuad(pos, this, otherPos,
+			return CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(pos, this, otherPos,
 					(AxisAlignedBoundingQuad) other);
 		return null;
 	}

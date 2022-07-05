@@ -15,10 +15,7 @@ public class CollisionChecks2D {
 
 	public static boolean checkAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(float x1, float y1,
 			AxisAlignedBoundingQuad a, float x2, float y2, AxisAlignedBoundingQuad b) {
-		if (((x1 - a.w / 2) <= (x2 + b.w / 2) && (x1 + a.w / 2) >= (x2 - b.w / 2))
-				&& ((y1 - a.h / 2) <= (y2 + b.h / 2) && (y1 + a.h / 2) >= (y2 - b.h / 2)))
-			return true;
-		return false;
+		return (x1 - x2) * (x1 - x2) < (a.w + b.w) * (a.w + b.w) && (y1 - y2) * (y1 - y2) < (a.h + b.h) * (a.h + b.h);
 	}
 
 	public static boolean checkBoundingCirclevsBoundingCircle(Vector2f pos1, BoundingCircle a, Vector2f pos2,
@@ -28,8 +25,7 @@ public class CollisionChecks2D {
 
 	public static boolean checkBoundingCirclevsBoundingCircle(float x1, float y1, BoundingCircle a, float x2, float y2,
 			BoundingCircle b) {
-		float distance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-		return distance < (a.r + b.r) * (a.r + b.r);
+		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < (a.r + b.r) * (a.r + b.r);
 	}
 
 	public static boolean checkAxisAlignedBoundingQuadvsBoundingCircle(Vector2f pos1, AxisAlignedBoundingQuad a,
@@ -39,40 +35,35 @@ public class CollisionChecks2D {
 
 	public static boolean checkAxisAlignedBoundingQuadvsBoundingCircle(float x1, float y1, AxisAlignedBoundingQuad a,
 			float x2, float y2, BoundingCircle b) {
-		float x = Math.max((x1 - a.w / 2), Math.min(x2, (x1 + a.w / 2)));
-		float y = Math.max((y1 - a.h / 2), Math.min(y2, (y1 + a.h / 2)));
-		float distance = (x - x2) * (x - x2) + (y - y2) * (y - y2);
-		return distance < b.r * b.r;
+		return (x1 - x2) * (x1 - x2) < (a.w + b.r) * (a.w + b.r) && (y1 - y2) * (y1 - y2) < (a.h + b.r) * (a.h + b.r);
 	}
 
-	public static boolean checkPlanevsPlane(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
-		return checkPlanevsPlane(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+	public static boolean checkLinevsLine(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
+		return checkLinevsLine(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
-	public static boolean checkPlanevsPlane(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
+	public static boolean checkLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public static boolean checkPlanevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
+	public static boolean checkLinevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
 			AxisAlignedBoundingQuad b) {
-		return checkPlanevsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+		return checkLinevsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
-	public static boolean checkPlanevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
+	public static boolean checkLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
 			AxisAlignedBoundingQuad b) {
-		// TODO Auto-generated method stub
-		return false;
+		return (x2 - x1) * a.normal.x < b.w && (y2 - y1) * a.normal.y < b.h;
 	}
 
-	public static boolean checkPlanevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2, BoundingCircle b) {
-		return checkPlanevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+	public static boolean checkLinevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2, BoundingCircle b) {
+		return checkLinevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
-	public static boolean checkPlanevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
+	public static boolean checkLinevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
 			BoundingCircle b) {
-		// TODO Auto-generated method stub
-		return false;
+		return Vector2f.dot(x2 - x1, y2 - y1, a.normal.x, a.normal.y) < b.r;
 	}
 
 	@Nullable
@@ -84,12 +75,13 @@ public class CollisionChecks2D {
 	@Nullable
 	public static Collision resolveBoundingCirclevsBoundingCircle(float x1, float y1, BoundingCircle a, float x2,
 			float y2, BoundingCircle b) {
-		Vector2f collisionAxis = Vector2f.sub(x1, y1, x2, y2);
-		float dist = Vector2f.length(collisionAxis);
+		float axisX = x1 - x2;
+		float axisY = y1 - y2;
+		float dist = Vector2f.length(axisX, axisY);
 		float minDist = a.r + b.r;
 		if (dist < minDist) {
 			float delta = minDist - dist;
-			return new Collision(collisionAxis, new Vector2f(x1, y1), new Vector2f(delta), a, b);
+			return new Collision(a, b, axisX, axisY, x1, y1, delta, delta);
 		}
 		return null;
 	}
@@ -103,16 +95,17 @@ public class CollisionChecks2D {
 	@Nullable
 	public static Collision resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(float x1, float y1,
 			AxisAlignedBoundingQuad a, float x2, float y2, AxisAlignedBoundingQuad b) {
-		Vector2f collisionAxis = Vector2f.sub(x1, y1, x2, y2);
-		float distX = Math.abs(collisionAxis.x);
+		float axisX = x1 - x2;
+		float axisY = y1 - y2;
+		float distX = Math.abs(axisX);
+		float distY = Math.abs(axisY);
 		float minDistX = a.w + b.w;
-		float distY = Math.abs(collisionAxis.y);
 		float minDistY = a.h + b.h;
 
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(collisionAxis, new Vector2f(x1, y1), new Vector2f(deltaX, deltaY), a, b);
+			return new Collision(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
 		}
 		return null;
 	}
@@ -126,56 +119,67 @@ public class CollisionChecks2D {
 	@Nullable
 	public static Collision resolveAxisAlignedBoundingQuadvsBoundingCircle(float x1, float y1,
 			AxisAlignedBoundingQuad a, float x2, float y2, BoundingCircle b) {
-		Vector2f collisionAxis = Vector2f.sub(x1, y1, x2, y2);
-		float distX = Math.abs(collisionAxis.x);
+		float axisX = x1 - x2;
+		float axisY = y1 - y2;
+		float distX = Math.abs(axisX);
+		float distY = Math.abs(axisY);
 		float minDistX = a.w + b.r;
-		float distY = Math.abs(collisionAxis.y);
 		float minDistY = a.h + b.r;
 
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(collisionAxis, new Vector2f(x1, y1), new Vector2f(deltaX, deltaY), a, b);
+			return new Collision(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsPlane(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
-		return resolvePlanevsPlane(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+	public static Collision resolveLinevsLine(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
+		return resolveLinevsLine(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsPlane(float x1, float y1, LineCollider a, float x2, float y2,
-			LineCollider b) {
+	public static Collision resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
+	public static Collision resolveLinevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
 			AxisAlignedBoundingQuad b) {
-		return resolvePlanevsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+		return resolveLinevsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2,
-			float y2, AxisAlignedBoundingQuad b) {
-		// TODO Auto-generated method stub
+	public static Collision resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
+			AxisAlignedBoundingQuad b) {
+		// TODO seems to not work after being completely on wrong side
+		float distX = (x2 - x1) * a.normal.x;
+		float distY = (y2 - y1) * a.normal.y;
+		if (distX < b.w && distY < b.h) {
+//			System.out.println(distX + "    " + distY);
+			float deltaX = b.w - distX;
+			float deltaY = b.h - distY;
+			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
+		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2,
+	public static Collision resolveLinevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2,
 			BoundingCircle b) {
-		return resolvePlanevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+		return resolveLinevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
+	public static Collision resolveLinevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
 			BoundingCircle b) {
-		// TODO Auto-generated method stub
+		float dist = Vector2f.dot(x2 - x1, y2 - y1, a.normal.x, a.normal.y);
+		if (dist < b.r) {
+			float delta = b.r - dist;
+			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, delta, delta);
+		}
 		return null;
 	}
-
 }

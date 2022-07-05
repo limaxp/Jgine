@@ -18,6 +18,7 @@ import org.jgine.system.systems.collision.CollisionScene;
 import org.jgine.system.systems.collision.CollisionSystem;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
+import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.transform.Transform;
 import org.jgine.system.systems.transform.TransformSystem;
@@ -78,7 +79,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	private void applyConstraint(int index, int size) {
 		Vector3f pos = new Vector3f(0, 0, 0);
-		float radius = 400.0f;
+		float radius = 600.0f;
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];
@@ -152,6 +153,23 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		else if (collider1 instanceof BoundingCircle && collider2 instanceof AxisAlignedBoundingQuad)
 			collision = resolveAxisAlignedBoundingQuadvsBoundingCircle(object2, (AxisAlignedBoundingQuad) collider2,
 					object1, (BoundingCircle) collider1);
+
+		else if (collider1 instanceof LineCollider && collider2 instanceof BoundingCircle)
+			collision = resolveLinevsBoundingCircle(object1, (LineCollider) collider1, object2,
+					(BoundingCircle) collider2);
+
+		else if (collider1 instanceof BoundingCircle && collider2 instanceof LineCollider)
+			collision = resolveLinevsBoundingCircle(object2, (LineCollider) collider2, object1,
+					(BoundingCircle) collider1);
+
+		else if (collider1 instanceof LineCollider && collider2 instanceof AxisAlignedBoundingQuad)
+			collision = resolveLinevsAxisAlignedBoundingQuad(object1, (LineCollider) collider1, object2,
+					(AxisAlignedBoundingQuad) collider2);
+
+		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof LineCollider)
+			collision = resolveLinevsAxisAlignedBoundingQuad(object2, (LineCollider) collider2, object1,
+					(AxisAlignedBoundingQuad) collider1);
+
 		return collision;
 	}
 
@@ -163,11 +181,11 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		if (collision == null)
 			return null;
 
-		Vector2f axisNormal = Vector2f.normalize(collision.collisionAxis);
-		object1.x += 0.5f * collision.overlap.x * axisNormal.x;
-		object1.y += 0.5f * collision.overlap.x * axisNormal.y;
-		object2.x -= 0.5f * collision.overlap.y * axisNormal.x;
-		object2.y -= 0.5f * collision.overlap.y * axisNormal.y;
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+		object1.y += object1.stiffness * collision.overlapX * axisNormal.y;
+		object2.x -= object2.stiffness * collision.overlapY * axisNormal.x;
+		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
 		return collision;
 	}
 
@@ -179,13 +197,13 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		if (collision == null)
 			return null;
 
-		Vector2f axisNormal = Vector2f.normalize(collision.collisionAxis);
-		if (collision.overlap.x < collision.overlap.y) {
-			object1.x += 0.5f * collision.overlap.x * axisNormal.x;
-			object2.x -= 0.5f * collision.overlap.x * axisNormal.x;
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		if (collision.overlapX < collision.overlapY) {
+			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+			object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
 		} else {
-			object1.y += 0.5f * collision.overlap.y * axisNormal.y;
-			object2.y -= 0.5f * collision.overlap.y * axisNormal.y;
+			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
+			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
 		}
 		return collision;
 	}
@@ -198,15 +216,49 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		if (collision == null)
 			return null;
 
-		Vector2f axisNormal = Vector2f.normalize(collision.collisionAxis);
-		if (collision.overlap.x < collision.overlap.y) {
-			object1.x += 0.5f * collision.overlap.x * axisNormal.x;
-			object2.x -= 0.5f * collision.overlap.x * axisNormal.x;
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		if (collision.overlapX < collision.overlapY) {
+			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+			object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
 		} else {
-			object1.y += 0.5f * collision.overlap.y * axisNormal.y;
-			object2.y -= 0.5f * collision.overlap.y * axisNormal.y;
+			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
+			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
 		}
 		return collision;
 	}
 
+	@Nullable
+	private static Collision resolveLinevsBoundingCircle(PhysicObject object1, LineCollider collider1,
+			PhysicObject object2, BoundingCircle collider2) {
+		Collision collision = CollisionChecks2D.resolveLinevsBoundingCircle(object1.x, object1.y, collider1, object2.x,
+				object2.y, collider2);
+		if (collision == null)
+			return null;
+
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+		object1.y += object1.stiffness * collision.overlapX * axisNormal.y;
+		object2.x -= object2.stiffness * collision.overlapY * axisNormal.x;
+		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
+		return collision;
+	}
+
+	@Nullable
+	private static Collision resolveLinevsAxisAlignedBoundingQuad(PhysicObject object1, LineCollider collider1,
+			PhysicObject object2, AxisAlignedBoundingQuad collider2) {
+		Collision collision = CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(object1.x, object1.y, collider1,
+				object2.x, object2.y, collider2);
+		if (collision == null)
+			return null;
+
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		if (collision.overlapX < collision.overlapY) {
+			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+			object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
+		} else {
+			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
+			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
+		}
+		return collision;
+	}
 }
