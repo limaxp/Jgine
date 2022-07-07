@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.other.Property;
 import org.jgine.system.EngineSystem;
 
@@ -52,13 +51,17 @@ public class PhysicSystem extends EngineSystem {
 		if (hasGravity != null && hasGravity instanceof Boolean)
 			object.hasGravity = (boolean) hasGravity;
 
+		Object stiffness = data.get("stiffness");
+		if (stiffness != null && stiffness instanceof Number)
+			object.stiffness = ((Number) hasGravity).floatValue();
+
 		Object acceleration = data.get("acceleration");
 		if (acceleration != null && acceleration instanceof Map) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> accelerationMap = (Map<String, Object>) acceleration;
-			object.accelerate(new Vector3f(((Number) accelerationMap.getOrDefault("x", 0)).floatValue(),
+			object.accelerate(((Number) accelerationMap.getOrDefault("x", 0)).floatValue(),
 					((Number) accelerationMap.getOrDefault("y", 0)).floatValue(),
-					((Number) accelerationMap.getOrDefault("z", 0)).floatValue()));
+					((Number) accelerationMap.getOrDefault("z", 0)).floatValue());
 		}
 		return object;
 	}

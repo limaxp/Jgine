@@ -1,8 +1,8 @@
 package org.jgine.system.systems.graphic2D;
 
+import org.jgine.core.entity.Transform;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.transform.Transform;
 
 public class Graphic2DObject implements SystemObject, Cloneable{
 

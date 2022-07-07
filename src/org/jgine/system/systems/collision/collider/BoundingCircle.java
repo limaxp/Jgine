@@ -3,6 +3,7 @@ package org.jgine.system.systems.collision.collider;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
@@ -12,7 +13,6 @@ import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.Collision;
 import org.jgine.system.systems.collision.CollisionChecks2D;
-import org.jgine.system.systems.transform.Transform;
 
 /**
  * Represents an BoundingSphere for 3D with float precision. An BoundingSphere

@@ -89,6 +89,10 @@ public class PrefabLoader {
 		if (prefabData != null && prefabData instanceof Map)
 			prefab.setData((Map<String, Object>) prefabData);
 
+		Object transformData = data.get("transform");
+		if (transformData != null && transformData instanceof Map)
+			prefab.transform.load((Map<String, Object>) transformData);
+
 		NAME_MAP.put(prefab.name, prefab);
 		ID_MAP.put(prefab.id, prefab);
 		loadStalledParents(prefab.name);

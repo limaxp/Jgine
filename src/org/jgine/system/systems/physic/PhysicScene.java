@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
+import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector2f;
@@ -20,13 +21,14 @@ import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.script.IScript;
-import org.jgine.system.systems.transform.Transform;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
-	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> entity.getSystem(this)
-			.setPosition((Vector3f) pos);
+	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> {
+		PhysicObject physic = entity.getSystem(this);
+		if (physic != null)
+			physic.setPosition((Vector3f) pos);
+	};
 
 	private float gravity;
 	private float airResistanceFactor;
@@ -35,17 +37,17 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		super(system, scene, PhysicObject.class);
 		this.gravity = system.getGravity();
 		this.airResistanceFactor = system.getAirResistanceFactor();
-		UpdateManager.register(scene, "physicPosition", positionUpdate);
+		UpdateManager.register(scene, "transformPosition", positionUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, "physicPosition", positionUpdate);
+		UpdateManager.unregister(scene, "transformPosition", positionUpdate);
 	}
 
 	@Override
 	public void initObject(Entity entity, PhysicObject object) {
-		Transform transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+		Transform transform = entity.transform;
 		Vector3f pos = transform.getPosition();
 		object.setPosition(pos);
 	}
@@ -72,8 +74,11 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];
-			if (object.updatePosition(subDt, gravity, airResistanceFactor))
-				UpdateManager.update(scene, "position", entities[index], new Vector3f(object.x, object.y, object.z));
+			if (object.updatePosition(subDt, gravity, airResistanceFactor)) {
+				Entity entity = entities[index];
+				entity.transform.setPositionIntern(object.x, object.y, object.z);
+				UpdateManager.update(entity, "physicPosition", new Vector3f(object.x, object.y, object.z));
+			}
 		}
 	}
 

@@ -10,6 +10,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Reflection;
 import org.jgine.misc.utils.loader.PrefabLoader;
 import org.jgine.system.EngineSystem;
@@ -19,6 +20,7 @@ public class Prefab {
 
 	public final String name;
 	public final int id;
+	public final TransformData transform;
 	private final List<EngineSystem> systems;
 	private final List<SystemObject> objects;
 	private final Map<Object, Object> data;
@@ -31,6 +33,7 @@ public class Prefab {
 		objects = new IdentityArrayList<SystemObject>();
 		data = new HashMap<Object, Object>();
 		childs = new UnorderedIdentityArrayList<Prefab>();
+		transform = new TransformData();
 	}
 
 	public final void set(EngineSystem system, SystemObject object) {
@@ -136,7 +139,29 @@ public class Prefab {
 	}
 
 	public final Entity create(Scene scene) {
-		Entity entity = new Entity(scene);
+		return create_(scene, new Entity(scene, transform));
+	}
+
+	public final Entity create(Scene scene, Vector3f position) {
+		return create_(scene, new Entity(scene, position.x, position.y, position.z, transform.rotX, transform.rotY,
+				transform.rotZ, transform.scaleX, transform.scaleY, transform.scaleZ));
+	}
+
+	public final Entity create(Scene scene, Vector3f position, Vector3f rotation, Vector3f scale) {
+		return create_(scene, new Entity(scene, position, rotation, scale));
+	}
+
+	public final Entity create(Scene scene, float posX, float posY, float posZ) {
+		return create_(scene, new Entity(scene, posX, posY, posZ, transform.rotX, transform.rotY, transform.rotZ,
+				transform.scaleX, transform.scaleY, transform.scaleZ));
+	}
+
+	public final Entity create(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
+			float scaleX, float scaleY, float scaleZ) {
+		return create_(scene, new Entity(scene, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ));
+	}
+
+	private final Entity create_(Scene scene, Entity entity) {
 		entity.setPrefab(this);
 		for (int i = 0; i < systems.size(); i++)
 			entity.addSystem(systems.get(i), objects.get(i).copy());

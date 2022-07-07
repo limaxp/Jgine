@@ -31,7 +31,7 @@ public class CameraInputHandler extends InputHandler {
 			Key.GAMEPAD_BUTTON_BACK);
 
 	public static final float ROTATION_SPEED = 0.005f;
-	public static final float MOVEMENT_SPEED = 1000.0f;
+	public static final float MOVEMENT_SPEED = 2000.0f;
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private PhysicObject physicObject;

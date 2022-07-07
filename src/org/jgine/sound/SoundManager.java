@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector3f;
@@ -54,7 +55,6 @@ import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.physic.PhysicSystem;
-import org.jgine.system.systems.transform.Transform;
 import org.lwjgl.openal.ALUtil;
 import org.lwjgl.openal.EnumerateAllExt;
 import org.lwjgl.system.MemoryUtil;
@@ -207,8 +207,7 @@ public class SoundManager {
 		filters.put("High-pass", AL_FILTER_HIGHPASS);
 		filters.put("Band-pass", AL_FILTER_BANDPASS);
 
-		return filters.entrySet().stream()
-				.filter(entry -> EFXUtil.isFilterSupported(entry.getValue()));
+		return filters.entrySet().stream().filter(entry -> EFXUtil.isFilterSupported(entry.getValue()));
 	}
 
 	public static Stream<Entry<String, Integer>> getSupportedEffects() {
@@ -227,8 +226,7 @@ public class SoundManager {
 		effects.put("Compressor", AL_EFFECT_COMPRESSOR);
 		effects.put("Equalizer", AL_EFFECT_EQUALIZER);
 
-		return effects.entrySet().stream()
-				.filter(e -> EFXUtil.isEffectSupported(e.getValue()));
+		return effects.entrySet().stream().filter(e -> EFXUtil.isEffectSupported(e.getValue()));
 	}
 
 	public static void setDistanceModel(int parameter) {

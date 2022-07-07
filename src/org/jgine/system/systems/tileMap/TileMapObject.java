@@ -1,11 +1,11 @@
 package org.jgine.system.systems.tileMap;
 
+import org.jgine.core.entity.Transform;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.transform.Transform;
 
 public class TileMapObject extends TileMap implements SystemObject {
 

@@ -13,7 +13,6 @@ import org.jgine.render.Renderer2D;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class Graphic2DScene extends ListSystemScene<Graphic2DSystem, Graphic2DObject> {
 
@@ -29,7 +28,7 @@ public class Graphic2DScene extends ListSystemScene<Graphic2DSystem, Graphic2DOb
 
 	@Override
 	public void initObject(Entity entity, Graphic2DObject object) {
-		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+		object.transform = entity.transform;
 	}
 
 	@Override

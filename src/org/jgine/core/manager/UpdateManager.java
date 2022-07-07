@@ -65,10 +65,11 @@ public class UpdateManager {
 		scene.getUpdateReciever(identifier).remove(func);
 	}
 
-	public static void unregister(Scene scene) {}
+	public static void unregister(Scene scene) {
+	}
 
-	public static void update(Scene scene, Object identifier, Entity entity, Object value) {
-		THREAD_LIST.get().add(new Update(scene, identifier, entity, value));
+	public static void update(Entity entity, Object identifier, Object value) {
+		THREAD_LIST.get().add(new Update(entity, identifier, value));
 	}
 
 	public final List<BiConsumer<Entity, Object>> getReciever(Scene scene, Object identifier) {
@@ -81,20 +82,18 @@ public class UpdateManager {
 
 	public static class Update {
 
-		public final Scene scene;
-		public final Object identifier;
 		public final Entity entity;
+		public final Object identifier;
 		public final Object value;
 
-		public Update(Scene scene, Object identifier, Entity entity, Object value) {
-			this.scene = scene;
-			this.identifier = identifier;
+		public Update(Entity entity, Object identifier, Object value) {
 			this.entity = entity;
+			this.identifier = identifier;
 			this.value = value;
 		}
 
 		public final void update() {
-			for (BiConsumer<Entity, Object> reciever : scene.getUpdateReciever(identifier))
+			for (BiConsumer<Entity, Object> reciever : entity.scene.getUpdateReciever(identifier))
 				reciever.accept(entity, value);
 		}
 	}

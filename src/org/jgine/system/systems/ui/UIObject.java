@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
+import org.jgine.core.entity.Transform;
 import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.Transform3f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
 
@@ -92,7 +92,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	protected Matrix calculateTransform() {
-		transform = Transform3f.calculateMatrix(transform,
+		transform = Transform.calculateMatrix(transform,
 				new Vector3f(-1 + ((x + width * 0.5f) * BASE_SCALE_x2), -1 + ((y + height * 0.5f) * BASE_SCALE_x2), 0),
 				new Vector3f(width * BASE_SCALE, height * BASE_SCALE, 0));
 		if (hasWindow())

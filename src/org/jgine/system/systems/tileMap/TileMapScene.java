@@ -8,7 +8,6 @@ import org.jgine.render.Renderer2D;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class TileMapScene extends EntityListSystemScene<TileMapSystem, TileMapObject> {
 
@@ -22,7 +21,7 @@ public class TileMapScene extends EntityListSystemScene<TileMapSystem, TileMapOb
 
 	@Override
 	public void initObject(Entity entity, TileMapObject object) {
-		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+		object.transform = entity.transform;
 	}
 
 	@Override

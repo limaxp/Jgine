@@ -2,6 +2,7 @@ package org.jgine.system.systems.input.handler;
 
 import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
+import org.jgine.core.entity.Transform;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;
@@ -12,8 +13,6 @@ import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.physic.PhysicSystem;
-import org.jgine.system.systems.transform.Transform;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class TransformInputHandler extends InputHandler {
 
@@ -31,7 +30,7 @@ public class TransformInputHandler extends InputHandler {
 			Key.GAMEPAD_BUTTON_BACK);
 
 	public static final float ROTATION_SPEED = 0.005f;
-	public static final float MOVEMENT_SPEED = 1000.0f;
+	public static final float MOVEMENT_SPEED = 2000.0f;
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private Transform transform;
@@ -41,7 +40,7 @@ public class TransformInputHandler extends InputHandler {
 	@Override
 	protected void setEntity(Entity entity) {
 		super.setEntity(entity);
-		transform = entity.getSystem(TransformSystem.class);
+		transform = entity.transform;
 		physicObject = entity.getSystem(PhysicSystem.class);
 		lastCursorPosition = Input.getCursorPos();
 

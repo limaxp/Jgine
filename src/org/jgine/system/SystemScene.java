@@ -36,14 +36,6 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract void render();
 
-	@SuppressWarnings("unchecked")
-	public final void parentUpdate_(Entity entity, SystemObject object) {
-		parentUpdate(entity, (T2) object);
-	}
-
-	public void parentUpdate(Entity entity, T2 object) {
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		return this == obj;

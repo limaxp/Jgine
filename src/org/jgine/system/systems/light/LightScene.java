@@ -24,14 +24,14 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 
 	public LightScene(LightSystem system, Scene scene) {
 		super(system, scene, Light.class);
-		UpdateManager.register(scene, "position", positionUpdate);
-//		UpdateManager.register(scene, "physicPosition", positionUpdate);
+		UpdateManager.register(scene, "transformPosition", positionUpdate);
+		UpdateManager.register(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, "position", positionUpdate);
-//		UpdateManager.unregister(scene, "physicPosition", positionUpdate);
+		UpdateManager.unregister(scene, "transformPosition", positionUpdate);
+		UpdateManager.unregister(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override

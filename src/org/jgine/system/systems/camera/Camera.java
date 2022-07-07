@@ -1,10 +1,10 @@
 package org.jgine.system.systems.camera;
 
+import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.transform.Transform;
 
 /**
  * Represents a 3D Camera

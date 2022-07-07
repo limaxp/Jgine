@@ -7,7 +7,6 @@ import org.jgine.render.Renderer;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
@@ -38,7 +37,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
 		Renderer.setCamera(camera);
 		for (int i = 0; i < size; i++)
-			objects[i].render(entities[i].getSystem(TransformSystem.class));
+			objects[i].render(entities[i].transform.getPosition());
 
 		Renderer.disableDepthTest();
 		Renderer.disableWireframeMode();

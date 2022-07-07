@@ -11,6 +11,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
@@ -24,6 +25,7 @@ public class Entity {
 
 	public final int id;
 	public final Scene scene;
+	public final Transform transform;
 	private final ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject> systems;
 	private Prefab prefab;
 	private Entity parent;
@@ -31,6 +33,28 @@ public class Entity {
 	private boolean updateChilds;
 
 	public Entity(Scene scene) {
+		this(scene, Vector3f.NULL, Vector3f.NULL, Vector3f.FULL);
+	}
+
+	public Entity(Scene scene, TransformData transform) {
+		this(scene, transform.posX, transform.posY, transform.posZ, transform.rotX, transform.rotY, transform.rotZ,
+				transform.scaleX, transform.scaleY, transform.scaleZ);
+	}
+
+	public Entity(Scene scene, Vector3f position) {
+		this(scene, position, Vector3f.NULL, Vector3f.FULL);
+	}
+
+	public Entity(Scene scene, Vector3f position, Vector3f rotation, Vector3f scale) {
+		this(scene, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale.x, scale.y, scale.z);
+	}
+
+	public Entity(Scene scene, float posX, float posY, float posZ) {
+		this(scene, posX, posY, posZ, 0, 0, 0, 1, 1, 1);
+	}
+
+	public Entity(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX,
+			float scaleY, float scaleZ) {
 		synchronized (ID_GENERATOR) {
 			this.id = ID_GENERATOR.generate();
 		}
@@ -38,11 +62,13 @@ public class Entity {
 		this.scene = scene;
 		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
+		transform = new Transform(this, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 		scene.addEntity(this);
 	}
 
 	public void delete() {
 		scene.removeEntity(this);
+		transform.setEntity(null);
 		int idIndex;
 		synchronized (ID_GENERATOR) {
 			idIndex = ID_GENERATOR.free(id);
@@ -273,12 +299,7 @@ public class Entity {
 			updateChilds = true;
 			Scheduler.runTaskSynchron(() -> {
 				updateChilds = false;
-				for (Entry<SystemScene<?, ?>, SystemObject[]> entry : systems.entrySet()) {
-					SystemScene<?, ?> system = entry.getKey();
-					SystemObject[] objects = entry.getValue();
-					for (int i = 0; i < objects.length; i++)
-						system.parentUpdate_(this, objects[i]);
-				}
+				transform.setHasChanged();
 			});
 		}
 		for (Entity child : childs)

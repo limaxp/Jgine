@@ -9,7 +9,6 @@ import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObject> {
 
@@ -25,7 +24,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 
 	@Override
 	public void initObject(Entity entity, ParticleObject object) {
-		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+		object.transform = entity.transform;
 	}
 
 	@Override

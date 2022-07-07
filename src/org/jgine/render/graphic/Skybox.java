@@ -1,15 +1,14 @@
 package org.jgine.render.graphic;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import org.jgine.core.Scene;
-import org.jgine.misc.math.Transform3f;
-import org.jgine.render.Renderer;
+import org.jgine.core.entity.Transform;
+import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.graphic.material.Material;
 
 public class Skybox {
 
-	public final Transform3f transform = new Transform3f();
+	private Matrix matrix = Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.NULL, Vector3f.FULL);
 	public Material material;
 
 	public void render(Scene scene) {

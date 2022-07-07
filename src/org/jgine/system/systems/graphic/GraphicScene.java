@@ -12,7 +12,6 @@ import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
-import org.jgine.system.systems.transform.TransformSystem;
 
 public class GraphicScene extends ListSystemScene<GraphicSystem, GraphicObject> {
 
@@ -28,7 +27,7 @@ public class GraphicScene extends ListSystemScene<GraphicSystem, GraphicObject> 
 
 	@Override
 	public void initObject(Entity entity, GraphicObject object) {
-		object.transform = entity.getSystem(scene.getSystem(TransformSystem.class));
+		object.transform = entity.transform;
 	}
 
 	@Override
