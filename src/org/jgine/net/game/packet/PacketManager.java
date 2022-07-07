@@ -51,20 +51,21 @@ public class PacketManager {
 
 	public static final int PLAYER_LIST = register(5, PlayerListPacket::new, ClientPacketListener::on);
 
-	public static final int POSITION = register(6, PositionPacket::new, ClientPacketListener::on);
+	public static final int POSITION = register(6, PositionPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
 
 	public static final int SPAWN_PREFAB = register(7, SpawnPrefabPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,
 			BiConsumer<ClientPacketListener, T> clientFunction) {
-		return register(id, supplier, clientFunction, (spl, t, p) -> {
+		return register(id, supplier, clientFunction, (cpl, t, p) -> {
 		});
 	}
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,
 			TriConsumer<ServerPacketListener, T, PlayerConnection> serverFunction) {
-		return register(id, supplier, (cpl, t) -> {
+		return register(id, supplier, (spl, t) -> {
 		}, serverFunction);
 	};
 

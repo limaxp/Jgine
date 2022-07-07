@@ -38,6 +38,12 @@ public class ConnectionManager {
 		client.stop();
 	}
 
+	public static void update() {
+		if (isServer)
+			server.update();
+		client.update();
+	}
+
 	@Nullable
 	public static GameServer getServer() {
 		return server;

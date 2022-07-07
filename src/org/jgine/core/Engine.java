@@ -110,6 +110,7 @@ public abstract class Engine {
 	private final void update() {
 		if (isPaused())
 			return;
+		ConnectionManager.update();
 		updateScene();
 		ServiceManager.distributeChanges();
 		Scheduler.update();

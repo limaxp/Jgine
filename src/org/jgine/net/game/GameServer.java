@@ -29,11 +29,11 @@ public class GameServer implements Runnable {
 
 	private DatagramSocket socket;
 	private boolean isRunning;
-	private List<ServerPacketListener> listener;
-	private List<PlayerConnection> player;
-	private Map<String, PlayerConnection> nameMap;
+	private final List<ServerPacketListener> listener;
+	private final List<PlayerConnection> player;
+	private final Map<String, PlayerConnection> nameMap;
 	private final IdGenerator idGenerator;
-	private PlayerConnection[] idMap;
+	private final PlayerConnection[] idMap;
 
 	public GameServer(int port, int maxConnections) {
 		try {
@@ -69,6 +69,9 @@ public class GameServer implements Runnable {
 			parsePacket(data, packet.getAddress(), packet.getPort());
 		}
 		socket.close();
+	}
+
+	public void update() {
 	}
 
 	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {

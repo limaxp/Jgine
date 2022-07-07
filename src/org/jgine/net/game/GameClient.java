@@ -22,6 +22,7 @@ import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
+import org.jgine.net.game.packet.packets.PositionPacket;
 
 public class GameClient implements Runnable {
 
@@ -29,11 +30,11 @@ public class GameClient implements Runnable {
 	private int serverPort;
 	private DatagramSocket socket;
 	private boolean isRunning;
-	private List<ClientPacketListener> listener;
+	private final List<ClientPacketListener> listener;
 	private int id;
-	private List<PlayerConnection> player;
-	private Map<String, PlayerConnection> nameMap;
-	private PlayerConnection[] idMap;
+	private final List<PlayerConnection> player;
+	private final Map<String, PlayerConnection> nameMap;
+	private final PlayerConnection[] idMap;
 
 	public GameClient(String serverIpAddress, int serverPort, int maxConnections) {
 		try {
@@ -73,6 +74,10 @@ public class GameClient implements Runnable {
 			parsePacket(data);
 		}
 		socket.close();
+	}
+
+	public void update() {
+		sendData(new PositionPacket(0, 0, 0, 0));
 	}
 
 	private <T extends Packet> void parsePacket(byte[] data) {
