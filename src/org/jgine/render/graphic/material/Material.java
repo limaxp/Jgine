@@ -16,12 +16,13 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.shader.Shader;
+import org.jgine.system.SystemObject;
 import org.lwjgl.assimp.AIColor4D;
 import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIString;
 import org.lwjgl.assimp.Assimp;
 
-public class Material implements Cloneable {
+public class Material implements SystemObject, Cloneable {
 
 	public int color;
 	public float specularIntesity;
@@ -99,26 +100,6 @@ public class Material implements Cloneable {
 		return this;
 	}
 
-	@Override
-	public Material clone() {
-		Material obj;
-		try {
-			obj = (Material) super.clone();
-			obj.color = color;
-			obj.specularIntesity = specularIntesity;
-			obj.specularPower = specularPower;
-			obj.ambientColor = ambientColor;
-			obj.diffuseColor = diffuseColor;
-			obj.specularColor = specularColor;
-			obj.texture = texture;
-			obj.texturePos = texturePos;
-			return obj;
-		} catch (CloneNotSupportedException e) {
-			Logger.err("Material: Error on clone!", e);
-			return null;
-		}
-	}
-
 	public final void bind(Shader shader) {
 		texturePos = animationHandler.getTexturePosition();
 		texture.bind();
@@ -161,5 +142,31 @@ public class Material implements Cloneable {
 
 	public int getTexturePosition() {
 		return texturePos;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
+	}
+
+	@Override
+	public Material clone() {
+		Material obj;
+		try {
+			obj = (Material) super.clone();
+			obj.color = color;
+			obj.specularIntesity = specularIntesity;
+			obj.specularPower = specularPower;
+			obj.ambientColor = ambientColor;
+			obj.diffuseColor = diffuseColor;
+			obj.specularColor = specularColor;
+			obj.texture = texture;
+			obj.texturePos = texturePos;
+			return obj;
+		} catch (CloneNotSupportedException e) {
+			Logger.err("Material: Error on clone!", e);
+			return null;
+		}
 	}
 }

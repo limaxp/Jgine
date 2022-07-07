@@ -8,14 +8,16 @@ import java.util.List;
 
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.system.SystemObject;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 
-public class Model extends UnorderedIdentityArrayList<Mesh> implements AutoCloseable {
+public class Model extends UnorderedIdentityArrayList<Mesh> implements SystemObject, AutoCloseable {
 
-	public Model() {}
+	public Model() {
+	}
 
 	public Model(Collection<? extends Mesh> meshes) {
 		super(meshes);

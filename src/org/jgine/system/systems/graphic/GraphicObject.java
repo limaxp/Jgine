@@ -1,12 +1,10 @@
 package org.jgine.system.systems.graphic;
 
-import org.jgine.core.entity.Transform;
 import org.jgine.render.graphic.mesh.Model;
 import org.jgine.system.SystemObject;
 
 public class GraphicObject implements SystemObject, Cloneable {
 
-	protected Transform transform;
 	protected Model model;
 
 	@SuppressWarnings("unchecked")
@@ -23,10 +21,6 @@ public class GraphicObject implements SystemObject, Cloneable {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public Transform getTransform() {
-		return transform;
 	}
 
 	public void setModel(Model model) {

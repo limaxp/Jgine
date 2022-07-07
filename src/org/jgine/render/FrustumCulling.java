@@ -34,8 +34,8 @@ public class FrustumCulling {
 		// else if (containsCollider(graphicObject.components.collider.get(0)))
 		// graphicObject.render(renderEngine);
 
-		if (containsPoint(graphicObject.getTransform().getPosition()))
-			return true;
+//		if (containsPoint(graphicObject.getTransform().getPosition()))
+//			return true;
 		return false;
 	}
 
