@@ -1,6 +1,5 @@
 package org.jgine.system.systems.tileMap;
 
-import org.jgine.core.entity.Transform;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
@@ -9,7 +8,6 @@ import org.jgine.system.SystemObject;
 
 public class TileMapObject extends TileMap implements SystemObject {
 
-	protected Transform transform;
 	protected Material material;
 
 	public TileMapObject(TileMapData data, Texture texture) {
@@ -33,10 +31,6 @@ public class TileMapObject extends TileMap implements SystemObject {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public Transform getTransform() {
-		return transform;
 	}
 
 	public Material getMaterial() {

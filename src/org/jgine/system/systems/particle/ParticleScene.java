@@ -6,11 +6,11 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
 
-public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObject> {
+public class ParticleScene extends TransformListSystemScene<ParticleSystem, ParticleObject> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
 		super(system, scene, ParticleObject.class);
@@ -24,7 +24,6 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 
 	@Override
 	public void initObject(Entity entity, ParticleObject object) {
-		object.transform = entity.transform;
 	}
 
 	@Override
@@ -58,7 +57,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 		for (int i = 0; i < size; i++) {
 			ParticleObject object = objects[i];
 			if (object.isActive())
-				Renderer.render(object.transform.getMatrix(), object, object.material);
+				Renderer.render(transforms[i].getMatrix(), object, object.material);
 		}
 
 		Renderer.disableDepthTest();

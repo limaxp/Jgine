@@ -1,13 +1,11 @@
 package org.jgine.system.systems.particle;
 
-import org.jgine.core.entity.Transform;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.system.SystemObject;
 
 public class ParticleObject extends BillboardParticle implements SystemObject {
 
-	protected Transform transform;
 	protected Material material;
 	protected boolean isActive = true;
 
@@ -31,10 +29,6 @@ public class ParticleObject extends BillboardParticle implements SystemObject {
 
 	public boolean isActive() {
 		return isActive;
-	}
-
-	public Transform getTransform() {
-		return transform;
 	}
 
 	public Material setMaterial(Material material) {
