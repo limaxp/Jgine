@@ -12,7 +12,6 @@ import org.jgine.misc.math.vector.Vector3f;
 public class Transform implements Cloneable {
 
 	private Entity entity;
-	protected boolean hasChanged;
 	protected float posX;
 	protected float posY;
 	protected float posZ;
@@ -45,16 +44,11 @@ public class Transform implements Cloneable {
 	}
 
 	public final void calculateMatrix() {
-		hasChanged = false;
-		matrix = calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		if (entity.hasParent()) {
-			Transform parentTransform = entity.getParent().transform;
-			matrix.mult(parentTransform.getMatrix());
-		}
-		for (Entity child : entity.getChilds()) {
-			Transform childTransform = child.transform;
-			childTransform.setHasChanged(); // TODO this might stall update for 1 tick!
-		}
+		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
+		if (entity.hasParent())
+			matrix.mult(entity.getParent().transform.getMatrix());
+		for (Entity child : entity.getChilds())
+			child.transform.calculateMatrix();
 	}
 
 	public static Matrix calculateMatrix(Matrix matrix, Vector3f position, Vector3f rotation, Vector3f scale) {
@@ -84,8 +78,6 @@ public class Transform implements Cloneable {
 	}
 
 	public final Matrix getMatrix() {
-		if (hasChanged)
-			calculateMatrix();
 		return matrix;
 	}
 
@@ -94,23 +86,18 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setPosition(float x, float y, float z) {
-		setHasChanged();
-		posX = x;
-		posY = y;
-		posZ = z;
+		setPositionIntern(x, y, z);
 		UpdateManager.update(entity, "transformPosition", new Vector3f(posX, posY, posZ));
 	}
 
 	public final void setPositionIntern(float x, float y, float z) {
-		setHasChanged();
 		posX = x;
 		posY = y;
 		posZ = z;
+		calculateMatrix();
 	}
 
 	public final Vector3f getPosition() {
-		if (hasChanged)
-			calculateMatrix();
 		return matrix.getPosition();
 	}
 
@@ -123,16 +110,14 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setRotation(float x, float y, float z) {
-		setHasChanged();
 		rotX = x;
 		rotY = y;
 		rotZ = z;
+		calculateMatrix();
 	}
 
 	public final Vector3f getRotation() {
 		// TODO implement this
-		if (hasChanged)
-			calculateMatrix();
 		return matrix.getRotation();
 	}
 
@@ -149,28 +134,18 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setScale(float x, float y, float z) {
-		setHasChanged();
 		scaleX = x;
 		scaleY = y;
 		scaleZ = z;
+		calculateMatrix();
 	}
 
 	public final Vector3f getScale() {
-		if (hasChanged)
-			calculateMatrix();
 		return matrix.getScale();
 	}
 
 	public final Vector3f getLocalScale() {
 		return new Vector3f(scaleX, scaleY, scaleZ);
-	}
-
-	public final void setHasChanged() {
-		this.hasChanged = true;
-	}
-
-	public final boolean hasChanged() {
-		return hasChanged;
 	}
 
 	public final void rotateX(float angle) {
@@ -184,9 +159,8 @@ public class Transform implements Cloneable {
 		setRotation(Vector3f.normalize(Vector3f.rotate(rotation, angle, Vector3f.Y_AXIS)));
 	}
 
-	final void setEntity(Entity entity) {
-		setHasChanged();
-		this.entity = entity;
+	final void cleanupEntity() {
+		this.entity = null;
 	}
 
 	public final Entity getEntity() {
@@ -195,8 +169,8 @@ public class Transform implements Cloneable {
 
 	@Override
 	public final String toString() {
-		return super.toString() + " position: " + posX + "," + posY + "," + posZ + " rotation: " + rotX + "," + rotY
-				+ "," + rotZ + " scale: " + scaleX + "," + scaleY + "," + scaleZ;
+		return super.toString() + "[pos: " + posX + "," + posY + "," + posZ + " rot: " + rotX + "," + rotY + "," + rotZ
+				+ " scale: " + scaleX + "," + scaleY + "," + scaleZ + "]";
 	}
 
 	@Override
@@ -204,7 +178,7 @@ public class Transform implements Cloneable {
 		try {
 			Transform obj = (Transform) super.clone();
 			obj.matrix = new Matrix();
-			obj.hasChanged = true;
+			obj.calculateMatrix();
 			return obj;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

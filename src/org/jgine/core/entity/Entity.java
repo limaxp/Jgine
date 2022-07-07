@@ -30,7 +30,6 @@ public class Entity {
 	private Prefab prefab;
 	private Entity parent;
 	private List<Entity> childs;
-	private boolean updateChilds;
 
 	public Entity(Scene scene) {
 		this(scene, Vector3f.NULL, Vector3f.NULL, Vector3f.FULL);
@@ -68,7 +67,7 @@ public class Entity {
 
 	public void delete() {
 		scene.removeEntity(this);
-		transform.setEntity(null);
+		transform.cleanupEntity();
 		int idIndex;
 		synchronized (ID_GENERATOR) {
 			idIndex = ID_GENERATOR.free(id);
@@ -231,7 +230,7 @@ public class Entity {
 		this.parent = parent;
 		if (parent != null)
 			parent.childs.add(this);
-		updateChilds();
+		updateChild();
 	}
 
 	@Nullable
@@ -252,13 +251,13 @@ public class Entity {
 			child.parent.childs.remove(this);
 		child.parent = this;
 		childs.add(child);
-		child.updateChilds();
+		child.updateChild();
 	}
 
 	public final void removeChild(Entity child) {
 		child.parent = null;
 		childs.remove(child);
-		child.updateChilds();
+		child.updateChild();
 	}
 
 	public final void isChild(Entity child) {
@@ -278,7 +277,7 @@ public class Entity {
 	public final void clearChilds() {
 		for (Entity child : childs) {
 			child.parent = null;
-			child.updateChilds();
+			child.updateChild();
 		}
 		childs.clear();
 	}
@@ -294,16 +293,8 @@ public class Entity {
 		return Collections.unmodifiableList(childs);
 	}
 
-	private final void updateChilds() {
-		if (!updateChilds) {
-			updateChilds = true;
-			Scheduler.runTaskSynchron(() -> {
-				updateChilds = false;
-				transform.setHasChanged();
-			});
-		}
-		for (Entity child : childs)
-			child.updateChilds();
+	private final void updateChild() {
+		transform.calculateMatrix();
 	}
 
 	@Nullable
