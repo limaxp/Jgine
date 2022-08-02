@@ -5,6 +5,7 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.systems.input.InputHandler;
 import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.input.InputHandlerTypes;
@@ -29,6 +30,7 @@ public class TransformInputHandler2D extends InputHandler {
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private PhysicObject physicObject;
+	private long cooldown;
 
 	@Override
 	protected void setEntity(Entity entity) {
@@ -47,7 +49,12 @@ public class TransformInputHandler2D extends InputHandler {
 		});
 
 		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		setKey(KEY_FULLSCREEN, Engine.getInstance().getWindow()::toggleFullScreen);
+		setKey(KEY_FULLSCREEN, () -> {
+			if (System.currentTimeMillis() - cooldown > 1000) {
+				cooldown = System.currentTimeMillis();
+				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleFullScreen);
+			}
+		});
 
 		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector2f.mult(Vector2f.UP, MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector2f.mult(Vector2f.DOWN, MOVEMENT_SPEED)));

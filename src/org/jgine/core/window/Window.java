@@ -2,6 +2,7 @@ package org.jgine.core.window;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_AUTO_ICONIFY;
+import static org.lwjgl.glfw.GLFW.GLFW_BLUE_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_CLIENT_API;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_CREATION_API;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_NO_ERROR;
@@ -19,6 +20,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_FLOATING;
 import static org.lwjgl.glfw.GLFW.GLFW_FOCUSED;
 import static org.lwjgl.glfw.GLFW.GLFW_FOCUS_ON_SHOW;
+import static org.lwjgl.glfw.GLFW.GLFW_GREEN_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_HOVERED;
 import static org.lwjgl.glfw.GLFW.GLFW_ICONIFIED;
 import static org.lwjgl.glfw.GLFW.GLFW_LOCK_KEY_MODS;
@@ -27,6 +29,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_DEBUG_CONTEXT;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_RAW_MOUSE_MOTION;
+import static org.lwjgl.glfw.GLFW.GLFW_RED_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_REFRESH_RATE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_STICKY_KEYS;
 import static org.lwjgl.glfw.GLFW.GLFW_STICKY_MOUSE_BUTTONS;
@@ -40,6 +44,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowAttrib;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowFrameSize;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowMonitor;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwHideWindow;
@@ -77,6 +82,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
+import org.jgine.misc.math.vector.Vector4i;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.OpenGL;
 import org.lwjgl.glfw.GLFWCharCallbackI;
@@ -121,23 +127,31 @@ public class Window {
 		public static final int CONTEXT_ROBUSTNESS = GLFW_CONTEXT_ROBUSTNESS;
 	}
 
-	private long id;
+	public static class Mode {
+
+		public static final int WINDOWED = 0;
+		public static final int FULLSCREEN = 1;
+		public static final int BORDERLESS = 2;
+	}
+
+	public final long id;
 	private String title;
 	private int width;
 	private int height;
-	private boolean isFullScreen;
+	private int mode;
 	private boolean isFocused;
 
-	public Window(String title, int width, int height, boolean isFullScreen) {
+	public Window(String title) {
+		this(title, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), Options.WINDOW_MODE.getInt());
+	}
+
+	public Window(String title, int width, int height, int mode) {
 		this.title = title;
 		this.width = width;
 		this.height = height;
-		this.isFullScreen = isFullScreen;
+		this.mode = mode;
 		this.isFocused = true;
-		create();
-	}
 
-	protected void create() {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OpenGL.VERSION_MAJOR);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OpenGL.VERSION_MINOR);
 		// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -146,11 +160,20 @@ public class Window {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		Display display = DisplayManager.getDisplay(Options.MONITOR.getInt());
-		if (isFullScreen) {
-			id = glfwCreateWindow(width, height, title, display.getId(), 0);
+		System.out.println(display);
+		glfwWindowHint(GLFW_RED_BITS, display.getRedBits());
+		glfwWindowHint(GLFW_GREEN_BITS, display.getGreenBits());
+		glfwWindowHint(GLFW_BLUE_BITS, display.getBlueBits());
+		glfwWindowHint(GLFW_REFRESH_RATE, display.getRefreshRate());
+
+		if (mode == Mode.BORDERLESS)
+			glfwWindowHint(Attribute.DECORATED, GLFW_FALSE); // borderless
+
+		if (mode == Mode.FULLSCREEN) {
+			id = glfwCreateWindow(width, height, title, display.id, 0);
 		} else {
 			id = glfwCreateWindow(width, height, title, 0, 0);
-			center(display);
+			setWindowed(display);
 		}
 		if (id == 0)
 			throw new RuntimeException("Failed to create the GLFW window");
@@ -181,6 +204,10 @@ public class Window {
 	public void setTitle(@NonNull String title) {
 		this.title = title;
 		glfwSetWindowTitle(id, title);
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public void setPosition(Vector2i vec) {
@@ -224,26 +251,69 @@ public class Window {
 		return new Display(monitor);
 	}
 
+	public void toggleMode() {
+		if (isFullScreen())
+			setWindowed();
+		else if (isWindowed())
+			setBorderless();
+		else
+			setFullScreen();
+	}
+
 	public void toggleFullScreen() {
-		if (isFullScreen)
+		if (isFullScreen())
 			setWindowed();
 		else
 			setFullScreen();
 	}
 
+	public void toggleBorderless() {
+		if (isBorderless())
+			setWindowed();
+		else
+			setBorderless();
+	}
+
 	public void setFullScreen() {
-		glfwSetWindowMonitor(id, DisplayManager.getDisplay(getPosition()).getId(), 0, 0, width, height, 0);
-		isFullScreen = true;
+		if (!isFullScreen()) {
+			mode = Mode.FULLSCREEN;
+			Display display = DisplayManager.getDisplay(getPosition());
+			glfwSetWindowMonitor(id, display.id, 0, 0, width, height, 0);
+			display.update();
+		}
+	}
+
+	public boolean isFullScreen() {
+		return mode == Mode.FULLSCREEN;
 	}
 
 	public void setWindowed() {
-		Display display = getDisplay();
-		if (display == null)
-			return;
-		Vector2i displayPos = display.getVirtualPosition();
-		glfwSetWindowMonitor(id, 0, displayPos.x, displayPos.y, width, height, 0);
-		isFullScreen = false;
-		center();
+		if (isFullScreen())
+			setWindowed(getDisplay());
+		mode = Mode.WINDOWED;
+		setAttribute(Attribute.DECORATED, 1);
+	}
+
+	private void setWindowed(Display display) {
+		glfwSetWindowMonitor(id, 0, 0, 0, width, height, 0);
+		display.update();
+		center(display);
+	}
+
+	public boolean isWindowed() {
+		return mode == Mode.WINDOWED;
+	}
+
+	public void setBorderless() {
+		// TODO center window right!
+		if (isFullScreen())
+			setWindowed(getDisplay());
+		mode = Mode.BORDERLESS;
+		setAttribute(Attribute.DECORATED, 0);
+	}
+
+	public boolean isBorderless() {
+		return mode == Mode.BORDERLESS;
 	}
 
 	public void center() {
@@ -252,7 +322,9 @@ public class Window {
 
 	public void center(Display display) {
 		Vector2i displayPos = display.getVirtualPosition();
-		setPosition(displayPos.x + (display.getWidth() - width) / 2, displayPos.y + (display.getHeight() - height) / 2);
+		Vector4i framePosistions = getFrameSize();
+		setPosition(displayPos.x + (display.getWidth() - width) / 2,
+				displayPos.y + framePosistions.y + (display.getHeight() - height) / 2);
 	}
 
 	public void hideCursor() {
@@ -377,10 +449,6 @@ public class Window {
 		return glfwGetWindowAttrib(id, attribute);
 	}
 
-	public long getId() {
-		return id;
-	}
-
 	public int getWidth() {
 		return width;
 	}
@@ -389,16 +457,23 @@ public class Window {
 		return height;
 	}
 
-	public boolean isFullScreen() {
-		return isFullScreen;
-	}
-
 	public boolean isFocused() {
 		return isFocused;
 	}
 
 	public void setIcon(GLFWImage.Buffer images) {
 		glfwSetWindowIcon(id, images);
+	}
+
+	public Vector4i getFrameSize() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer left = stack.mallocInt(1);
+			IntBuffer top = stack.mallocInt(1);
+			IntBuffer right = stack.mallocInt(1);
+			IntBuffer bottom = stack.mallocInt(1);
+			glfwGetWindowFrameSize(id, left, top, right, bottom);
+			return new Vector4i(left.get(0), top.get(0), right.get(0), bottom.get(0));
+		}
 	}
 
 	/**

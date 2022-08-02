@@ -36,6 +36,7 @@ public class TransformInputHandler extends InputHandler {
 	private Transform transform;
 	private PhysicObject physicObject;
 	private Vector2f lastCursorPosition;
+	private long cooldown;
 
 	@Override
 	protected void setEntity(Entity entity) {
@@ -79,7 +80,12 @@ public class TransformInputHandler extends InputHandler {
 		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
 		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		setKey(KEY_FULLSCREEN, () -> Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleFullScreen));
+		setKey(KEY_FULLSCREEN, () -> {
+			if (System.currentTimeMillis() - cooldown > 1000) {
+				cooldown = System.currentTimeMillis();
+				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleFullScreen);
+			}
+		});
 	}
 
 	@Override

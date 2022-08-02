@@ -126,7 +126,10 @@ public class Input {
 
 	@Nullable
 	public static Gamepad getGamepad(int slot) {
-		return (Gamepad) JOYSTICKS[slot];
+		Joystick joystick = JOYSTICKS[slot];
+		if (joystick instanceof Gamepad)
+			return (Gamepad) joystick;
+		return null;
 	}
 
 	public static void setWindow(Window window) {

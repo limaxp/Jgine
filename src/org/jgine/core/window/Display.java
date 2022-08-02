@@ -23,16 +23,16 @@ import org.lwjgl.system.MemoryStack;
 
 public class Display {
 
-	private final long id;
-	private final GLFWVidMode vidMode;
+	public final long id;
+	private GLFWVidMode vidMode;
 
-	public Display(long id) {
+	Display(long id) {
 		this.id = id;
 		vidMode = glfwGetVideoMode(id);
 	}
 
-	public long getId() {
-		return id;
+	public void update() {
+		vidMode = glfwGetVideoMode(id);
 	}
 
 	public int getWidth() {

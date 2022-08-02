@@ -16,7 +16,6 @@ import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.utils.options.OptionFile;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.net.game.ConnectionManager;
@@ -55,7 +54,7 @@ public abstract class Engine {
 		scenes = new IdentityArrayList<Scene>();
 		GLFWHelper.init();
 		DisplayManager.init();
-		window = new Window(name, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), false);
+		window = new Window(name);
 		Input.setWindow(window);
 		Renderer.init();
 		SoundManager.init();
