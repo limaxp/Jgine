@@ -1,6 +1,7 @@
 package org.jgine.misc.math.vector;
 
 import org.jgine.misc.math.FastMath;
+import org.jgine.misc.math.Matrix;
 
 /*
  * The MIT License
@@ -141,6 +142,17 @@ public class Vector4f extends Vector3f {
 		return new Vector4f(x * d, y * d, z * d, w * d);
 	}
 
+	public static Vector4f mult(Vector4f vec, Matrix mat) {
+		return mult(vec.x, vec.y, vec.z, vec.w, mat);
+	}
+
+	public static Vector4f mult(float x, float y, float z, float w, Matrix mat) {
+		return new Vector4f(Math.fma(mat.m00, x, Math.fma(mat.m10, y, Math.fma(mat.m20, z, mat.m30 * w))),
+				Math.fma(mat.m01, x, Math.fma(mat.m11, y, Math.fma(mat.m21, z, mat.m31 * w))),
+				Math.fma(mat.m02, x, Math.fma(mat.m12, y, Math.fma(mat.m22, z, mat.m32 * w))),
+				Math.fma(mat.m03, x, Math.fma(mat.m13, y, Math.fma(mat.m23, z, mat.m33 * w))));
+	}
+
 	public static Vector4f div(Vector4f vec, float d) {
 		return new Vector4f(vec.x / d, vec.y / d, vec.z / d, vec.w / d);
 	}
@@ -150,8 +162,8 @@ public class Vector4f extends Vector3f {
 	}
 
 	public static float dot(Vector4f vec1, Vector4f vec2) {
-		return FastMath.fma(vec1.x, vec2.x, FastMath.fma(vec1.y, vec2.y, FastMath.fma(vec1.z, vec2.z, vec1.w
-				* vec2.w)));
+		return FastMath.fma(vec1.x, vec2.x,
+				FastMath.fma(vec1.y, vec2.y, FastMath.fma(vec1.z, vec2.z, vec1.w * vec2.w)));
 	}
 
 	public static float dot(float x1, float y1, float z1, float w1, float x2, float y2, float z2, float w2) {
@@ -222,8 +234,8 @@ public class Vector4f extends Vector3f {
 	}
 
 	public static Vector4f normalize(Vector4f vec) {
-		float scalar = FastMath.invsqrt(FastMath.fma(vec.x, vec.x, FastMath.fma(vec.y, vec.y, FastMath.fma(vec.z, vec.z,
-				vec.w * vec.w))));
+		float scalar = FastMath.invsqrt(
+				FastMath.fma(vec.x, vec.x, FastMath.fma(vec.y, vec.y, FastMath.fma(vec.z, vec.z, vec.w * vec.w))));
 		return new Vector4f(vec.x * scalar, vec.y * scalar, vec.z * scalar, vec.w * scalar);
 	}
 

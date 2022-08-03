@@ -1,6 +1,7 @@
 package org.jgine.misc.math.vector;
 
 import org.jgine.misc.math.FastMath;
+import org.jgine.misc.math.Matrix;
 
 /*
  * The MIT License
@@ -121,6 +122,14 @@ public class Vector2f {
 
 	public static Vector2f mult(float x, float y, float d) {
 		return new Vector2f(x * d, y * d);
+	}
+
+	public static Vector2f mult(Vector2f vec, Matrix mat) {
+		return mult(vec.x, vec.y, mat);
+	}
+
+	public static Vector2f mult(float x, float y, Matrix mat) {
+		return new Vector2f(Math.fma(mat.m00, x, mat.m10 * y), Math.fma(mat.m01, x, mat.m11 * y));
 	}
 
 	public static Vector2f div(Vector2f vec, float d) {

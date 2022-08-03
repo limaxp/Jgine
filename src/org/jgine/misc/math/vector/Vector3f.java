@@ -1,6 +1,7 @@
 package org.jgine.misc.math.vector;
 
 import org.jgine.misc.math.FastMath;
+import org.jgine.misc.math.Matrix;
 
 /*
  * The MIT License
@@ -134,6 +135,16 @@ public class Vector3f extends Vector2f {
 
 	public static Vector3f mult(float x, float y, float z, float d) {
 		return new Vector3f(x * d, y * d, z * d);
+	}
+
+	public static Vector3f mult(Vector3f vec, Matrix mat) {
+		return mult(vec.x, vec.y, vec.z, mat);
+	}
+
+	public static Vector3f mult(float x, float y, float z, Matrix mat) {
+		return new Vector3f(Math.fma(mat.m00, x, Math.fma(mat.m10, y, mat.m20 * z)),
+				Math.fma(mat.m01, x, Math.fma(mat.m11, y, mat.m21 * z)),
+				Math.fma(mat.m02, x, Math.fma(mat.m12, y, mat.m22 * z)));
 	}
 
 	public static Vector3f div(Vector3f vec, float d) {
