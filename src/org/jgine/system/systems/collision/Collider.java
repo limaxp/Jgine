@@ -32,14 +32,20 @@ public abstract class Collider implements SystemObject, Cloneable {
 		}
 
 		@Override
-		public void render(Vector3f pos) {
+		public void load(Map<String, Object> data) {
 		}
 
 		@Override
 		public ColliderType<?> getType() {
 			return ColliderTypes.NONE;
 		}
+
+		@Override
+		public void render(Vector3f pos) {
+		}
 	};
+
+	public boolean noResolve = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -64,8 +70,7 @@ public abstract class Collider implements SystemObject, Cloneable {
 	@Nullable
 	public abstract Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos);
 
-	public void load(Map<String, Object> data) {
-	}
+	public abstract void load(Map<String, Object> data);
 
 	public abstract ColliderType<?> getType();
 

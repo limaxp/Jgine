@@ -32,7 +32,6 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 			return;
 		Renderer.setShader(Renderer.BASIC_SHADER);
 		Renderer.enableDepthTest();
-		Renderer.enableWireframeMode();
 
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
 		Renderer.setCamera(camera);
@@ -40,6 +39,5 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 			objects[i].render(entities[i].transform.getPosition());
 
 		Renderer.disableDepthTest();
-		Renderer.disableWireframeMode();
 	}
 }

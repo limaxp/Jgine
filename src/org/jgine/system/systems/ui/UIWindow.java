@@ -33,7 +33,7 @@ public class UIWindow extends UIObject {
 	public UIWindow(int scale, boolean moveAble) {
 		this(scale, scale, moveAble);
 	}
-	
+
 	public UIWindow(int width, int height) {
 		this(width, height, false);
 	}
@@ -72,8 +72,8 @@ public class UIWindow extends UIObject {
 	@Override
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
-		UIRenderer.renderLine(getTransform(), new float[] { -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0 },
-				new Material(borderColor), true);
+		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, new Material(borderColor),
+				true);
 	}
 
 	@Override

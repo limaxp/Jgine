@@ -1,10 +1,12 @@
 package org.jgine.system.systems.collision;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.LineCollider;
+import org.jgine.system.systems.collision.collider.PolygonCollider;
 
 public class CollisionChecks2D {
 
@@ -184,5 +186,128 @@ public class CollisionChecks2D {
 			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, delta, delta);
 		}
 		return null;
+	}
+
+	@Nullable
+	public static boolean checkPolygonvsPolygon(Vector2f pos1, PolygonCollider a, Vector2f pos2, PolygonCollider b) {
+		return checkPolygonvsPolygon(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+	}
+
+	@Nullable
+	public static boolean checkPolygonvsPolygon(float x1, float y1, PolygonCollider a, float x2, float y2,
+			PolygonCollider b) {
+		int aLength = a.points.length;
+		int bLength = b.points.length;
+
+		for (int i = 0; i < aLength; i += 4) {
+			float pointAX = a.points[i];
+			float pointAY = a.points[i + 1];
+			float pointBX = a.points[i + 2];
+			float pointBY = a.points[i + 3];
+
+			float axisX = -pointBX - pointAX;
+			float axisY = pointBY - pointAY;
+			float axisInvLength = FastMath.invsqrt(axisX * axisX + axisY * axisY);
+			axisX *= axisInvLength;
+			axisY *= axisInvLength;
+
+			float p1min = Vector2f.dot(axisX, axisY, a.points[0], a.points[1]);
+			float p1max = p1min;
+			for (int j = 2; j < aLength; j += 2) {
+				float dot = Vector2f.dot(axisX, axisY, a.points[j], a.points[j + 1]);
+				p1min = Math.min(p1min, dot);
+				p1max = Math.max(p1max, dot);
+			}
+
+			float p2min = Vector2f.dot(axisX, axisY, b.points[0], b.points[1]);
+			float p2max = p2min;
+			for (int j = 2; j < bLength; j += 2) {
+				float dot = Vector2f.dot(axisX, axisY, b.points[j], b.points[j + 1]);
+				p2min = Math.min(p2max, dot);
+				p2max = Math.max(p2max, dot);
+			}
+
+			float vOffsetX = x1 - x2;
+			float vOffsetY = y1 - y2;
+			float offset = Vector2f.dot(axisX, axisY, vOffsetX, vOffsetY);
+			p1min += offset;
+			p1max += offset;
+
+			if (p1min - p2max > 0 || p2min - p1max > 0)
+				return false;
+		}
+		return true;
+	}
+
+	@Nullable
+	public static Collision resolvePolygonvsPolygon(Vector2f pos1, PolygonCollider a, Vector2f pos2,
+			PolygonCollider b) {
+		return resolvePolygonvsPolygon(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
+	}
+
+	@Nullable
+	public static Collision resolvePolygonvsPolygon(float x1, float y1, PolygonCollider a, float x2, float y2,
+			PolygonCollider b) {
+		float collisionOverlap = Float.MAX_VALUE;
+		float collisionAxisX = 0;
+		float collisionAxisY = 0;
+		PolygonCollider sa = a;
+		PolygonCollider sb = b;
+		for (int shape = 0; shape < 2; shape++) {
+			if (shape == 1) {
+				sa = b;
+				sb = a;
+			}
+
+			int aLength = sa.points.length;
+			int bLength = sb.points.length;
+			for (int i = 0; i < aLength; i += 2) {
+				int i2 = (i + 2) % aLength;
+				float pointAX = sa.points[i];
+				float pointAY = sa.points[i + 1];
+				float pointBX = sa.points[i2];
+				float pointBY = sa.points[i2 + 1];
+
+				float axisX = -(pointBY - pointAY);
+				float axisY = pointBX - pointAX;
+				float axisInvLength = FastMath.invsqrt(axisX * axisX + axisY * axisY);
+				axisX *= axisInvLength;
+				axisY *= axisInvLength;
+
+				float p1min = Float.MAX_VALUE;
+				float p1max = -Float.MAX_VALUE;
+				for (int j = 0; j < aLength; j += 2) {
+					float dot = Vector2f.dot(axisX, axisY, sa.points[j], sa.points[j + 1]);
+					p1min = Math.min(p1min, dot);
+					p1max = Math.max(p1max, dot);
+				}
+
+				float p2min = Float.MAX_VALUE;
+				float p2max = -Float.MAX_VALUE;
+				for (int j = 0; j < bLength; j += 2) {
+					float dot = Vector2f.dot(axisX, axisY, sb.points[j], sb.points[j + 1]);
+					p2min = Math.min(p2min, dot);
+					p2max = Math.max(p2max, dot);
+				}
+
+				float vOffsetX = x1 - x2;
+				float vOffsetY = y1 - y2;
+				float offset = Vector2f.dot(axisX, axisY, vOffsetX, vOffsetY);
+				p1min += offset;
+				p1max += offset;
+
+				float overlap = FastMath.min(p1max, p2max) - FastMath.max(p1min, p2min);
+				if (overlap < 0)
+					return null;
+				else {
+					if (overlap < collisionOverlap) {
+						collisionOverlap = overlap;
+						collisionAxisX = axisX;
+						collisionAxisY = axisY;
+					}
+				}
+			}
+		}
+		return new Collision(sa, sb, collisionAxisX, collisionAxisY, 0, 0, collisionOverlap, collisionOverlap);
 	}
 }

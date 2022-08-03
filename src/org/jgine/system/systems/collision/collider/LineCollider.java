@@ -84,9 +84,11 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		// TODO render line here!
-		Renderer2D.renderQuad(
+		// TODO
+		Vector3f right = new Vector3f(-normal.y, normal.x, 0);
+//		System.out.println(new Vector3f(normal) + "     " + right);
+		Renderer2D.renderLine(
 				Transform.calculateMatrix(new Matrix(), pos, new Vector3f(normal), new Vector3f(Float.MAX_VALUE)),
-				new Material());
+				new Vector3f(0, 0, 0), new Vector3f(1, 1, 0), new Material());
 	}
 }

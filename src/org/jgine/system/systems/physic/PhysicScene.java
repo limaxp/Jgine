@@ -20,6 +20,7 @@ import org.jgine.system.systems.collision.CollisionSystem;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.LineCollider;
+import org.jgine.system.systems.collision.collider.PolygonCollider;
 import org.jgine.system.systems.script.IScript;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
@@ -104,16 +105,23 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];
-			Collider objectCollider = entities[index].getSystem(collisionSystem);
-			for (int i = index + 1; i < this.size; ++i) {
-				PhysicObject target = objects[i];
-				Collider targetCollider = entities[i].getSystem(collisionSystem);
-				Collision collision = resolveCollision(object, objectCollider, target, targetCollider);
-				if (collision != null) {
-					EventManager.callEvent(entities[index], collision, IScript::onCollision);
-					EventManager.callEvent(entities[i], collision, IScript::onCollision);
+			Collider[] objectColliders = entities[index].getSystems(collisionSystem);
+			for (int objectIndex = 0; objectIndex < objectColliders.length; objectIndex++) {
+				Collider objectCollider = objectColliders[objectIndex];
+				for (int i = index + 1; i < this.size; ++i) {
+					PhysicObject target = objects[i];
+					Collider[] targetColliders = entities[i].getSystems(collisionSystem);
+					for (int targetIndex = 0; targetIndex < targetColliders.length; targetIndex++) {
+						Collider targetCollider = targetColliders[targetIndex];
+						Collision collision = resolveCollision(object, objectCollider, target, targetCollider);
+						if (collision != null) {
+							EventManager.callEvent(entities[index], collision, IScript::onCollision);
+							EventManager.callEvent(entities[i], collision, IScript::onCollision);
+						}
+					}
 				}
 			}
+
 		}
 	}
 
@@ -137,10 +145,12 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		return airResistanceFactor;
 	}
 
+	@Nullable
 	public static Collision resolveCollision(PhysicObject object1, Collider collider1, PhysicObject object2,
 			Collider collider2) {
-//		Collision collision = objectCollider.resolveCollision(new Vector3f(object.x, object.y, 0),
-//				targetCollider, new Vector3f(target.x, target.y, 0));
+		if (collider1.noResolve || collider2.noResolve)
+			return collider1.resolveCollision(new Vector3f(object1.x, object1.y, object1.z), collider2,
+					new Vector3f(object2.x, object2.y, object2.z));
 
 		if (collider1 instanceof BoundingCircle && collider2 instanceof BoundingCircle)
 			return resolveBoundingCirclevsBoundingCircle(object1, (BoundingCircle) collider1, object2,
@@ -174,6 +184,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 		else if (collider1 instanceof LineCollider && collider2 instanceof LineCollider)
 			return resolveLinevsLine(object2, (LineCollider) collider2, object1, (LineCollider) collider1);
+
+		else if (collider1 instanceof PolygonCollider && collider2 instanceof PolygonCollider)
+			return resolvePolygonvsPolygon(object1, (PolygonCollider) collider1, object2, (PolygonCollider) collider2);
 
 		return null;
 	}
@@ -269,6 +282,22 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			LineCollider collider2) {
 		Collision collision = CollisionChecks2D.resolveLinevsLine(object1.x, object1.y, collider1, object2.x, object2.y,
 				collider2);
+		if (collision == null)
+			return null;
+
+		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
+		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
+		object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
+		object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
+		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
+		return collision;
+	}
+
+	@Nullable
+	public static Collision resolvePolygonvsPolygon(PhysicObject object1, PolygonCollider collider1,
+			PhysicObject object2, PolygonCollider collider2) {
+		Collision collision = CollisionChecks2D.resolvePolygonvsPolygon(object1.x, object1.y, collider1, object2.x,
+				object2.y, collider2);
 		if (collision == null)
 			return null;
 

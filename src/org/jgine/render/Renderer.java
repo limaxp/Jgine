@@ -16,6 +16,7 @@ import org.jgine.render.graphic.mesh.Model2D;
 import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
+import org.jgine.render.shader.CircleShader;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.render.shader.PostProcessShader;
 import org.jgine.render.shader.Shader;
@@ -34,20 +35,19 @@ public class Renderer {
 	public static final PhongShader PHONG_SHADER = new PhongShader("Phong");
 	public static final BillboardParticleShader PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
 	public static final TileMapShader TILE_MAP_SHADER = new TileMapShader("TileMap");
-	// TODO fix circle shader!
-	// public static final Shader CIRCLE_SHADER = new CircleShader("Circle");
+	public static final CircleShader CIRCLE_SHADER = new CircleShader("Circle");
 	public static final PostProcessShader POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
 	protected static RenderTarget renderTarget = RenderTarget.NONE;
 
-	protected static final BaseMesh2D PLANE_MESH;
+	protected static final BaseMesh2D QUAD_MESH;
 	protected static final Mesh CUBE_MESH;
 
 	static {
-		PLANE_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
-		PLANE_MESH.setMode(MeshMode.TRIANGLE_STRIP);
+		QUAD_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
+		QUAD_MESH.setMode(MeshMode.TRIANGLE_STRIP);
 
 		CUBE_MESH = new Mesh(
 				new float[] { 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1 },
@@ -59,7 +59,7 @@ public class Renderer {
 	}
 
 	public static void terminate() {
-		PLANE_MESH.close();
+		QUAD_MESH.close();
 		CUBE_MESH.close();
 		BillboardParticle.free();
 
@@ -131,13 +131,22 @@ public class Renderer {
 	public static void renderQuad(Matrix transform, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		PLANE_MESH.render();
+		QUAD_MESH.render();
 	}
 
 	public static void renderCube(Matrix transform, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		CUBE_MESH.render();
+	}
+
+	public static void renderCircle(Matrix transform, Material material) {
+		Shader tmp = shader;
+		setShader(CIRCLE_SHADER);
+		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
+		material.bind(shader);
+		QUAD_MESH.render();
+		setShader(tmp);
 	}
 
 	public static void renderLine(Matrix transform, Vector3f start, Vector3f end, Material material) {
@@ -149,10 +158,22 @@ public class Renderer {
 		}
 	}
 
-	public static void renderLine(Matrix transform, float[] points, Material material, boolean loop) {
+	public static void renderLine3d(Matrix transform, float[] points, Material material, boolean loop) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh(points)) {
+			if (loop)
+				lineMesh.setMode(MeshMode.LINE_LOOP);
+			else
+				lineMesh.setMode(MeshMode.LINE_STRIP);
+			lineMesh.render();
+		}
+	}
+
+	public static void renderLine2d(Matrix transform, float[] points, Material material, boolean loop) {
+		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
+		material.bind(shader);
+		try (BaseMesh2D lineMesh = new BaseMesh2D(points)) {
 			if (loop)
 				lineMesh.setMode(MeshMode.LINE_LOOP);
 			else

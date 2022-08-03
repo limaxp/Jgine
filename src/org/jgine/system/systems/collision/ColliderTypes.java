@@ -8,9 +8,9 @@ import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.BoundingCylinder;
 import org.jgine.system.systems.collision.collider.BoundingSphere;
-import org.jgine.system.systems.collision.collider.ColliderGroup;
-import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.collision.collider.LineCollider;
+import org.jgine.system.systems.collision.collider.PlaneCollider;
+import org.jgine.system.systems.collision.collider.PolygonCollider;
 
 public class ColliderTypes {
 
@@ -29,8 +29,8 @@ public class ColliderTypes {
 	public static final ColliderType<BoundingCircle> CIRCLE = a("circle", BoundingCircle::new);
 
 	public static final ColliderType<AxisAlignedBoundingQuad> QUAD = a("quad", AxisAlignedBoundingQuad::new);
-
-	public static final ColliderType<ColliderGroup> GROUP = a("group", ColliderGroup::new);
+	
+	public static final ColliderType<PolygonCollider> POLYGON = a("polygon", PolygonCollider::new);
 
 	public static <T extends Collider> ColliderType<T> a(String name, Supplier<T> supplier) {
 		ColliderType<T> type = new ColliderType<T>(name, supplier);

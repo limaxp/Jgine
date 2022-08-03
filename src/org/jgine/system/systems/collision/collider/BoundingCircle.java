@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer2D;
+import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
@@ -80,7 +80,7 @@ public class BoundingCircle extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.render(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
-				ResourceManager.getModel("ball"));
+		Renderer2D.renderCircle(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
+				new Material());
 	}
 }

@@ -48,10 +48,14 @@ public class CollisionSystem extends EngineSystem {
 			colliderType = ColliderTypes.get((String) type);
 			if (colliderType == null)
 				colliderType = ColliderTypes.BOX;
-		}
-		else
+		} else
 			colliderType = ColliderTypes.BOX;
 		collider = colliderType.get();
+
+		Object noResolve = data.get("noResolve");
+		if (noResolve != null && noResolve instanceof Boolean)
+			collider.noResolve = (Boolean) noResolve;
+
 		collider.load(data);
 		return collider;
 	}
