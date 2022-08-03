@@ -87,7 +87,8 @@ public class SoundManager {
 		Transform transform = camera.getTransform();
 		listener.setPosition(transform.getPosition());
 		PhysicObject physicObject = transform.getEntity().getSystem(PhysicSystem.class);
-		listener.setVelocity(physicObject.getVelocity());
+		if (physicObject != null)
+			listener.setVelocity(physicObject.getVelocity());
 		listener.setOrientation(Vector3f.mult(camera.getForward(), -1), camera.getUp());
 	}
 
