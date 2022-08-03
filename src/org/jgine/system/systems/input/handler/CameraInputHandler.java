@@ -80,7 +80,7 @@ public class CameraInputHandler extends InputHandler {
 		setKey(KEY_FULLSCREEN, () -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
-				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleFullScreen);
+				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);
 			}
 		});
 	}

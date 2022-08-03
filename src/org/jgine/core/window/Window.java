@@ -44,9 +44,13 @@ import static org.lwjgl.glfw.GLFW.glfwGetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowAttrib;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowContentScale;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowFrameSize;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowOpacity;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowUserPointer;
 import static org.lwjgl.glfw.GLFW.glfwHideWindow;
 import static org.lwjgl.glfw.GLFW.glfwIconifyWindow;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
@@ -62,24 +66,32 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowAttrib;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowCloseCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowContentScaleCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowFocusCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowIcon;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowIconifyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowMaximizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowMonitor;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowOpacity;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPosCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowRefreshCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowUserPointer;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.input.Input;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector4i;
@@ -92,6 +104,14 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
+import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
+import org.lwjgl.glfw.GLFWWindowContentScaleCallbackI;
+import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
+import org.lwjgl.glfw.GLFWWindowIconifyCallbackI;
+import org.lwjgl.glfw.GLFWWindowMaximizeCallbackI;
+import org.lwjgl.glfw.GLFWWindowPosCallbackI;
+import org.lwjgl.glfw.GLFWWindowRefreshCallbackI;
+import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -136,31 +156,29 @@ public class Window {
 
 	public final long id;
 	private String title;
-	private int width;
-	private int height;
+	private int resolutionX;
+	private int resolutionY;
 	private int mode;
-	private boolean isFocused;
 
 	public Window(String title) {
 		this(title, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), Options.WINDOW_MODE.getInt());
 	}
 
-	public Window(String title, int width, int height, int mode) {
+	public Window(String title, int resolutionX, int resolutionY, int mode) {
 		this.title = title;
-		this.width = width;
-		this.height = height;
+		this.resolutionX = resolutionX;
+		this.resolutionY = resolutionY;
 		this.mode = mode;
-		this.isFocused = true;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OpenGL.VERSION_MAJOR);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OpenGL.VERSION_MINOR);
+		glfwWindowHint(Attribute.CONTEXT_VERSION_MAJOR, OpenGL.VERSION_MAJOR);
+		glfwWindowHint(Attribute.CONTEXT_VERSION_MINOR, OpenGL.VERSION_MINOR);
 		// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(Attribute.OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		glfwWindowHint(Attribute.VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(Attribute.RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(Attribute.FLOATING, GLFW_TRUE); // the window will be floating above all other
 
 		Display display = DisplayManager.getDisplay(Options.MONITOR.getInt());
-		System.out.println(display);
 		glfwWindowHint(GLFW_RED_BITS, display.getRedBits());
 		glfwWindowHint(GLFW_GREEN_BITS, display.getGreenBits());
 		glfwWindowHint(GLFW_BLUE_BITS, display.getBlueBits());
@@ -170,9 +188,9 @@ public class Window {
 			glfwWindowHint(Attribute.DECORATED, GLFW_FALSE); // borderless
 
 		if (mode == Mode.FULLSCREEN) {
-			id = glfwCreateWindow(width, height, title, display.id, 0);
+			id = glfwCreateWindow(resolutionX, resolutionY, title, display.id, 0);
 		} else {
-			id = glfwCreateWindow(width, height, title, 0, 0);
+			id = glfwCreateWindow(resolutionX, resolutionY, title, 0, 0);
 			setWindowed(display);
 		}
 		if (id == 0)
@@ -180,8 +198,6 @@ public class Window {
 
 		glfwMakeContextCurrent(id); // Make the OpenGL context current
 		show();
-		glfwSetWindowSizeCallback(id, this::resizeCallback);
-		glfwSetWindowFocusCallback(id, this::focusCallback);
 	}
 
 	public void delete() {
@@ -243,17 +259,16 @@ public class Window {
 		glfwShowWindow(id);
 	}
 
-	@Nullable
 	public Display getDisplay() {
 		long monitor = glfwGetWindowMonitor(id);
 		if (monitor <= 0)
-			return null;
-		return new Display(monitor);
+			return DisplayManager.getDisplay(getPosition());
+		return DisplayManager.getDisplay(monitor);
 	}
 
 	public void toggleMode() {
 		if (isFullScreen())
-			setWindowed();
+			setBorderless();
 		else if (isWindowed())
 			setBorderless();
 		else
@@ -277,8 +292,8 @@ public class Window {
 	public void setFullScreen() {
 		if (!isFullScreen()) {
 			mode = Mode.FULLSCREEN;
-			Display display = DisplayManager.getDisplay(getPosition());
-			glfwSetWindowMonitor(id, display.id, 0, 0, width, height, 0);
+			Display display = getDisplay();
+			glfwSetWindowMonitor(id, display.id, 0, 0, resolutionX, resolutionY, 0);
 			display.update();
 		}
 	}
@@ -288,14 +303,16 @@ public class Window {
 	}
 
 	public void setWindowed() {
+		setAttribute(Attribute.DECORATED, 1);
 		if (isFullScreen())
 			setWindowed(getDisplay());
+		else
+			center();
 		mode = Mode.WINDOWED;
-		setAttribute(Attribute.DECORATED, 1);
 	}
 
 	private void setWindowed(Display display) {
-		glfwSetWindowMonitor(id, 0, 0, 0, width, height, 0);
+		glfwSetWindowMonitor(id, 0, 0, 0, resolutionX, resolutionY, 0);
 		display.update();
 		center(display);
 	}
@@ -305,11 +322,14 @@ public class Window {
 	}
 
 	public void setBorderless() {
-		// TODO center window right!
+		setAttribute(Attribute.DECORATED, 0);
 		if (isFullScreen())
 			setWindowed(getDisplay());
+		else {
+			setSize(resolutionX, resolutionY);
+			center();
+		}
 		mode = Mode.BORDERLESS;
-		setAttribute(Attribute.DECORATED, 0);
 	}
 
 	public boolean isBorderless() {
@@ -317,14 +337,14 @@ public class Window {
 	}
 
 	public void center() {
-		center(DisplayManager.getDisplay(getPosition()));
+		center(getDisplay());
 	}
 
 	public void center(Display display) {
 		Vector2i displayPos = display.getVirtualPosition();
 		Vector4i framePosistions = getFrameSize();
-		setPosition(displayPos.x + (display.getWidth() - width) / 2,
-				displayPos.y + framePosistions.y + (display.getHeight() - height) / 2);
+		setPosition(displayPos.x + (display.getWidth() - resolutionX) / 2,
+				displayPos.y + framePosistions.y + (display.getHeight() - resolutionY) / 2);
 	}
 
 	public void hideCursor() {
@@ -449,16 +469,29 @@ public class Window {
 		return glfwGetWindowAttrib(id, attribute);
 	}
 
-	public int getWidth() {
-		return width;
+	public void setSize(int x, int y) {
+		glfwSetWindowSize(id, x, y);
 	}
 
-	public int getHeight() {
-		return height;
+	public void setSize(Vector2i vec) {
+		glfwSetWindowSize(id, vec.x, vec.y);
 	}
 
-	public boolean isFocused() {
-		return isFocused;
+	public Vector2i getSize() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer xSize = stack.mallocInt(1);
+			IntBuffer ySize = stack.mallocInt(1);
+			glfwGetWindowSize(id, xSize, ySize);
+			return new Vector2i(xSize.get(0), ySize.get(0));
+		}
+	}
+
+	public int getResolutionX() {
+		return resolutionX;
+	}
+
+	public int getResolutionY() {
+		return resolutionY;
 	}
 
 	public void setIcon(GLFWImage.Buffer images) {
@@ -474,6 +507,31 @@ public class Window {
 			glfwGetWindowFrameSize(id, left, top, right, bottom);
 			return new Vector4i(left.get(0), top.get(0), right.get(0), bottom.get(0));
 		}
+	}
+
+	public Vector2f getContentScale() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer xScale = stack.mallocFloat(1);
+			FloatBuffer yScale = stack.mallocFloat(1);
+			glfwGetWindowContentScale(id, xScale, yScale);
+			return new Vector2f(xScale.get(0), yScale.get(0));
+		}
+	}
+
+	public void getOpacity(float opacity) {
+		glfwSetWindowOpacity(id, opacity);
+	}
+
+	public float getOpacity() {
+		return glfwGetWindowOpacity(id);
+	}
+
+	public void setUserPointer(long userPointer) {
+		glfwSetWindowUserPointer(id, userPointer);
+	}
+
+	public long getUserPointer() {
+		return glfwGetWindowUserPointer(id);
 	}
 
 	/**
@@ -510,14 +568,35 @@ public class Window {
 		glfwSetScrollCallback(id, callback);
 	}
 
-	protected void resizeCallback(long window, int width, int height) {
-		this.width = width;
-		this.height = height;
+	public void setWindowSizeCallback(GLFWWindowSizeCallbackI callback) {
+		glfwSetWindowSizeCallback(id, callback);
 	}
 
-	protected void focusCallback(long window, boolean isFocused) {
-		this.isFocused = isFocused;
-		if (isFocused)
-			Input.setWindow(this);
+	public void setWindowFocusCallback(GLFWWindowFocusCallbackI callback) {
+		glfwSetWindowFocusCallback(id, callback);
+	}
+
+	public void setWindowCloseCallback(GLFWWindowCloseCallbackI callback) {
+		glfwSetWindowCloseCallback(id, callback);
+	}
+
+	public void setWindowContentScaleCallback(GLFWWindowContentScaleCallbackI callback) {
+		glfwSetWindowContentScaleCallback(id, callback);
+	}
+
+	public void setWindowIconifyCallback(GLFWWindowIconifyCallbackI callback) {
+		glfwSetWindowIconifyCallback(id, callback);
+	}
+
+	public void setWindowMaximizeCallback(GLFWWindowMaximizeCallbackI callback) {
+		glfwSetWindowMaximizeCallback(id, callback);
+	}
+
+	public void setWindowPosCallback(GLFWWindowPosCallbackI callback) {
+		glfwSetWindowPosCallback(id, callback);
+	}
+
+	public void setWindowRefreshCallback(GLFWWindowRefreshCallbackI callback) {
+		glfwSetWindowRefreshCallback(id, callback);
 	}
 }

@@ -47,8 +47,8 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	public void update() {
 		Vector2f cursorPos = Input.getCursorPos();
 		Window window = Engine.getInstance().getWindow();
-		mouseX = (int) (cursorPos.x / window.getWidth() * UIObject.RASTER_SIZE);
-		mouseY = (int) (UIObject.RASTER_SIZE - cursorPos.y / window.getHeight() * UIObject.RASTER_SIZE);
+		mouseX = (int) (cursorPos.x / window.getResolutionX() * UIObject.RASTER_SIZE);
+		mouseY = (int) (UIObject.RASTER_SIZE - cursorPos.y / window.getResolutionY() * UIObject.RASTER_SIZE);
 		if (mouseX > UIObject.RASTER_SIZE)
 			mouseX = UIObject.RASTER_SIZE;
 		else if (mouseX < 0)

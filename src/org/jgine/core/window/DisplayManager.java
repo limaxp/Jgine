@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.lwjgl.PointerBuffer;
 
@@ -68,19 +69,21 @@ public class DisplayManager {
 		return DISPLAYS.get(index);
 	}
 
-	@Nullable
 	public static Display getDisplay(Vector2i pos) {
 		return getDisplay(pos.x, pos.y);
 	}
 
-	@Nullable
 	public static Display getDisplay(int x, int y) {
+		Display nearestDisplay = null;
+		float smallestDistance = Float.MAX_VALUE;
 		for (Display display : getDisplays()) {
 			Vector2i pos = display.getVirtualPosition();
-			Vector2i res = display.getResolution();
-			if (x >= pos.x && x < pos.x + res.x && y >= pos.y && y < pos.y + res.y)
-				return display;
+			float distance = Vector2f.distance(x, y, pos.x, pos.y);
+			if (distance < smallestDistance) {
+				nearestDisplay = display;
+				smallestDistance = distance;
+			}
 		}
-		return null;
+		return nearestDisplay;
 	}
 }

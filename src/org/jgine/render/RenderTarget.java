@@ -85,7 +85,7 @@ public class RenderTarget implements ITexture, AutoCloseable {
 	public void end() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Window window = Engine.getInstance().getWindow();
-		glViewport(0, 0, window.getWidth(), window.getHeight());
+		glViewport(0, 0, window.getResolutionX(), window.getResolutionY());
 	}
 
 	public final Texture getTexture() {
