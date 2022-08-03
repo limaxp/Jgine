@@ -1,8 +1,5 @@
 package org.jgine.net.game.packet.listener;
 
-import org.jgine.core.Engine;
-import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.Packet;
@@ -34,10 +31,11 @@ public class GameServerPacketListener implements ServerPacketListener {
 
 	@Override
 	public void on(PositionPacket packet, PlayerConnection connection) {
-		for (Entity entity : Engine.getInstance().getScene().getEntities()) {
-			Vector3f pos = entity.transform.getPosition();
-			ConnectionManager.getServer().sendData(new PositionPacket(entity, pos.x, pos.y, pos.z), connection);
-		}
+		// TODO send scene!
+//		for (Entity entity : Engine.getInstance().getScene().getEntities()) {
+//			Vector3f pos = entity.transform.getPosition();
+//			ConnectionManager.getServer().sendData(new PositionPacket(entity, pos.x, pos.y, pos.z), connection);
+//		}
 	}
 
 	@Override

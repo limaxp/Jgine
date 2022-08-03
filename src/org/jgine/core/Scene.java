@@ -34,6 +34,7 @@ public class Scene {
 	private UpdateOrder updateOrder;
 	private UpdateOrder renderOrder;
 	private SpacePartitioning<Entity> spacePartitioning;
+	private boolean paused;
 
 	Scene(String name) {
 		this.id = name.hashCode();
@@ -43,6 +44,7 @@ public class Scene {
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		recieverMap = new ConcurrentHashMap<Object, List<BiConsumer<Entity, Object>>>();
+		paused = false;
 	}
 
 	final void free() {
@@ -263,10 +265,18 @@ public class Scene {
 
 	public void setSpacePartitioning(SpacePartitioning<Entity> spacePartitioning) {
 		this.spacePartitioning = spacePartitioning;
-		
+
 	}
 
 	public SpacePartitioning<Entity> getSpacePartitioning() {
 		return spacePartitioning;
+	}
+
+	public void pause(boolean pause) {
+		this.paused = pause;
+	}
+
+	public boolean isPaused() {
+		return paused;
 	}
 }

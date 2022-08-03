@@ -32,23 +32,17 @@ public abstract class Engine {
 		return engine;
 	}
 
-	public static enum EngineStatus {
-		STARTING, RUNNING, SHUTDOWN, PAUSE
-	}
-
 	public final String name;
-	private EngineStatus status;
+	private boolean isRunning;
 	private final Window window;
 	private GameLoop gameLoop;
 	private final Map<String, Scene> sceneMap;
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
-	private Scene scene;
 
 	public Engine(String name) {
 		engine = this;
 		this.name = name;
-		status = EngineStatus.STARTING;
 		sceneMap = new ConcurrentHashMap<String, Scene>();
 		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
@@ -87,7 +81,7 @@ public abstract class Engine {
 	}
 
 	public final void start() {
-		resume();
+		isRunning = true;
 		while (checkStatus()) {
 			gameLoop.run();
 			GLFWHelper.pollGLFWEvents();
@@ -97,20 +91,18 @@ public abstract class Engine {
 	}
 
 	private final boolean checkStatus() {
-		if (window.shouldClose()) {
+		if (window.shouldClose())
 			shutdown();
-			return false;
-		}
-		return !isShuttingDown();
+		return isRunning;
 	}
 
 	public abstract void onUpdate();
 
 	private final void update() {
-		if (isPaused())
-			return;
 		ConnectionManager.update();
-		updateScene();
+		for (Scene scene : scenes)
+			if (!scene.isPaused())
+				updateScene(scene);
 		ServiceManager.distributeChanges();
 		Scheduler.update();
 		Input.update();
@@ -118,7 +110,7 @@ public abstract class Engine {
 		onUpdate();
 	}
 
-	private final void updateScene() {
+	private final void updateScene(Scene scene) {
 		UpdateManager.distributeChanges();
 		if (scene.hasUpdateOrder()) {
 			UpdateOrder updateOrder = scene.getUpdateOrder();
@@ -143,12 +135,14 @@ public abstract class Engine {
 
 	private final void render() {
 		Renderer.begin();
-		renderScene();
+		for (Scene scene : scenes)
+			if (!scene.isPaused())
+				renderScene(scene);
 		Renderer.end();
 		onRender();
 	}
 
-	private final void renderScene() {
+	private final void renderScene(Scene scene) {
 		if (scene.hasRenderOrder()) {
 			UpdateOrder renderOrder = scene.getRenderOrder();
 			for (int i = 0; i < renderOrder.size(); i++)
@@ -172,8 +166,6 @@ public abstract class Engine {
 
 	public final Scene createScene(String name) {
 		Scene scene = new Scene(name);
-		if (this.scene == null)
-			this.scene = scene;
 		sceneMap.put(name, scene);
 		sceneIdMap.put(scene.id, scene);
 		Scheduler.runTaskSynchron(() -> scenes.add(scene));
@@ -181,8 +173,6 @@ public abstract class Engine {
 	}
 
 	public final boolean deleteScene(Scene scene) {
-		if (this.scene == scene)
-			return false;
 		sceneMap.remove(scene.name);
 		sceneIdMap.remove(scene.id);
 		Scheduler.runTaskSynchron(() -> {
@@ -208,47 +198,15 @@ public abstract class Engine {
 		return scenes.get(index);
 	}
 
-	public final Scene getScene() {
-		return scene;
-	}
-
-	public final void setScene(Scene scene) {
-		Scheduler.runTaskSynchron(() -> this.scene = scene);
-	}
-
-	public final void setScene(int index) {
-		setScene(getScenePerIndex(index));
-	}
-
 	public final int getFps() {
 		return gameLoop.getFps();
 	}
 
-	public final EngineStatus getStatus() {
-		return status;
-	}
-
-	public final void resume() {
-		status = EngineStatus.RUNNING;
-	}
-
 	public final boolean isRunning() {
-		return status == EngineStatus.RUNNING;
+		return isRunning;
 	}
 
 	public final void shutdown() {
-		status = EngineStatus.SHUTDOWN;
-	}
-
-	public final boolean isShuttingDown() {
-		return status == EngineStatus.SHUTDOWN;
-	}
-
-	public final void pause() {
-		status = EngineStatus.PAUSE;
-	}
-
-	public final boolean isPaused() {
-		return status == EngineStatus.PAUSE;
+		isRunning = false;
 	}
 }
