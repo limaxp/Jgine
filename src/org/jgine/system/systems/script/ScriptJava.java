@@ -4,7 +4,7 @@ import org.jgine.core.entity.Entity;
 
 public abstract class ScriptJava implements IScript {
 
-	private Entity entity;
+	protected Entity entity;
 
 	@Override
 	public void setEntity(Entity entity) {

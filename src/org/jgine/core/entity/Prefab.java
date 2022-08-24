@@ -157,6 +157,11 @@ public class Prefab {
 				transform.scaleX, transform.scaleY, transform.scaleZ));
 	}
 
+	public final Entity create(Scene scene, float posX, float posY, float posZ, float scaleX, float scaleY,
+			float scaleZ) {
+		return create_(scene, new Entity(scene, posX, posY, posZ, 0, 0, 0, scaleX, scaleY, scaleZ));
+	}
+
 	public final Entity create(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
 			float scaleX, float scaleY, float scaleZ) {
 		return create_(scene, new Entity(scene, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ));
