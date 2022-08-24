@@ -9,7 +9,8 @@ public class ScriptObject extends Script implements SystemObject {
 
 	protected IScript script;
 
-	public ScriptObject() {}
+	public ScriptObject() {
+	}
 
 	public ScriptObject(ScriptEngine engine) {
 		super(engine);
