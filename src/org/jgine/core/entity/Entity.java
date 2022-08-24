@@ -44,7 +44,7 @@ public class Entity {
 	}
 
 	public Entity(Scene scene, Vector2f position) {
-		this(scene, position, Vector3f.NULL, Vector3f.FULL);
+		this(scene, position, Vector2f.NULL, Vector2f.FULL);
 	}
 
 	public Entity(Scene scene, Vector2f position, Vector2f rotation, Vector2f scale) {
