@@ -28,6 +28,15 @@ public class BoundingCylinder extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+		if (scale.x == scale.z)
+			r *= scale.x;
+		else
+			r *= (int) (scale.x + scale.z) / 2;
+		h *= scale.y;
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		// TODO make this use height!
 		return Vector3f.distance(pos, point) < r * r;

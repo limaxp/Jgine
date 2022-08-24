@@ -16,6 +16,10 @@ public abstract class Collider implements SystemObject, Cloneable {
 	public static final Collider NULL = new Collider() {
 
 		@Override
+		public void scale(Vector3f scale) {
+		}
+
+		@Override
 		public boolean containsPoint(Vector3f pos, Vector3f point) {
 			return false;
 		}
@@ -62,6 +66,8 @@ public abstract class Collider implements SystemObject, Cloneable {
 			return null;
 		}
 	}
+
+	public abstract void scale(Vector3f scale);
 
 	public abstract boolean containsPoint(Vector3f pos, Vector3f point);
 

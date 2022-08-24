@@ -1,12 +1,19 @@
+import org.jgine.core.entity.Entity;
 import org.jgine.system.systems.transform.TransformSystem;
 import org.jgine.system.systems.collision.Collision;
 
+void setEntity(Entity entity) {
+	this.entity = entity;
+}
+
+Entity getEntity() {
+	return entity;
+}
+
 void onEnable() { 
-	
 }
 
 void onDisable() { 
-	
 }
 
 void update() { 

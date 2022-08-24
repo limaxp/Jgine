@@ -84,11 +84,11 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setPosition(Vector2f position) {
-		UpdateManager.update(entity, "transformPosition", setPositionIntern(position.x, position.y));
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(position.x, position.y, 0));
 	}
 
 	public final void setPosition(float x, float y) {
-		UpdateManager.update(entity, "transformPosition", setPositionIntern(x, y));
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(x, y, 0));
 	}
 
 	public final void setPosition(Vector3f position) {
@@ -97,13 +97,6 @@ public class Transform implements Cloneable {
 
 	public final void setPosition(float x, float y, float z) {
 		UpdateManager.update(entity, "transformPosition", setPositionIntern(x, y, z));
-	}
-
-	public final Vector2f setPositionIntern(float x, float y) {
-		posX = x;
-		posY = y;
-		calculateMatrix();
-		return matrix.getPosition();
 	}
 
 	public final Vector3f setPositionIntern(float x, float y, float z) {
@@ -142,19 +135,32 @@ public class Transform implements Cloneable {
 		return new Vector3f(rotX, rotY, rotZ);
 	}
 
+	public final void setScale(Vector2f scale) {
+		UpdateManager.update(entity, "transformScale", setScaleIntern(scale.x, scale.y, 0));
+	}
+
+	public final void setScale(float x, float y) {
+		UpdateManager.update(entity, "transformScale", setScaleIntern(x, y, 0));
+	}
+
 	public final void setScale(Vector3f scale) {
-		setScale(scale.x, scale.y, scale.z);
+		UpdateManager.update(entity, "transformScale", setScaleIntern(scale.x, scale.y, scale.z));
 	}
 
 	public final void setScale(float scale) {
-		setScale(scale, scale, scale);
+		UpdateManager.update(entity, "transformScale", setScaleIntern(scale, scale, scale));
 	}
 
 	public final void setScale(float x, float y, float z) {
+		UpdateManager.update(entity, "transformScale", setScaleIntern(x, y, z));
+	}
+
+	public final Vector3f setScaleIntern(float x, float y, float z) {
 		scaleX = x;
 		scaleY = y;
 		scaleZ = z;
 		calculateMatrix();
+		return matrix.getPosition();
 	}
 
 	public final Vector3f getScale() {

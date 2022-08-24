@@ -102,6 +102,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	private void solveCollisions(int index, int size) {
 		CollisionScene collisionSystem = scene.getSystem(CollisionSystem.class);
+		if (collisionSystem == null)
+			return;
+
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];

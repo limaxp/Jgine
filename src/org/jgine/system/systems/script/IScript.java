@@ -5,12 +5,9 @@ import org.jgine.system.systems.collision.Collision;
 
 public interface IScript {
 
-	public default void setEntity(Entity entity) {
-	}
+	public void setEntity(Entity entity);
 
-	public default Entity getEntity() {
-		return null;
-	}
+	public Entity getEntity();
 
 	public abstract void onEnable();
 

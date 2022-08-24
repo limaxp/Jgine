@@ -32,6 +32,14 @@ public class BoundingCircle extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+		if (scale.x == scale.y && scale.y == scale.z)
+			r *= scale.x;
+		else
+			r *= (int) (scale.x + scale.y + scale.z) / 3;
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return Vector3f.distance(pos, point) < r * r;
 	}

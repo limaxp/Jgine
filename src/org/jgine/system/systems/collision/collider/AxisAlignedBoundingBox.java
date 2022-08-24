@@ -37,6 +37,13 @@ public class AxisAlignedBoundingBox extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+		w *= scale.x;
+		h *= scale.y;
+		d *= scale.z;
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return (point.x >= (pos.x - this.w / 2) && point.x <= (pos.x + this.w / 2)) && (point.y >= (pos.y - this.h)
 				&& point.y <= (pos.y + this.h) && (point.z >= (pos.z - this.d) && point.z <= (pos.z + this.d)));

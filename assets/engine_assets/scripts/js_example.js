@@ -1,6 +1,14 @@
 
 var transformSystem = Java.type("org.jgine.system.systems.transform.TransformSystem").class;
 
+function setEntity(var entity) {
+	this.entity = entity
+}
+
+function getEntity() {
+	return entity;
+}
+
 function onEnable() { 
 
 }

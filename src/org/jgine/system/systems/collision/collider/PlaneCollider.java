@@ -27,6 +27,10 @@ public class PlaneCollider extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return distance(point) > 0 ? true : false;
 	}

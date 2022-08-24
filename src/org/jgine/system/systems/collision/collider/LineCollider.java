@@ -28,6 +28,10 @@ public class LineCollider extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return distance(pos, point) > 0 ? true : false;
 	}

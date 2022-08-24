@@ -38,6 +38,14 @@ public class PolygonCollider extends Collider {
 	}
 
 	@Override
+	public void scale(Vector3f scale) {
+		for (int i = 0; i < points.length; i += 2) {
+			points[i] *= scale.x;
+			points[i + 1] *= scale.y;
+		}
+	}
+
+	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
 		return false;
 	}
