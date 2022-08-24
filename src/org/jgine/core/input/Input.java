@@ -105,6 +105,7 @@ public class Input {
 					pressedKeys.remove(pressedKeys.indexOf(pressedKey));
 			}
 		}
+		MOUSE.setScroll(0);
 	}
 
 	public static List<InputDevice> getDevices() {
@@ -137,17 +138,19 @@ public class Input {
 
 		setKeyCallback((win, key, scanCode, action, mods) -> {
 			if (action == Key.PRESS)
-				((InputDevice) KEYBOARD).press(key);
+				KEYBOARD.press(key);
 			else if (action == Key.RELEASE)
-				((InputDevice) KEYBOARD).release(key);
+				KEYBOARD.release(key);
 		});
 
 		setMouseButtonCallback((win, button, action, mods) -> {
 			if (action == Key.PRESS)
-				((InputDevice) MOUSE).press(button);
+				MOUSE.press(button);
 			else if (action == Key.RELEASE)
-				((InputDevice) MOUSE).release(button);
+				MOUSE.release(button);
 		});
+
+		setScrollCallback((win, x, y) -> MOUSE.scroll(y));
 	}
 
 	public static Window getWindow() {

@@ -6,6 +6,8 @@ import org.jgine.core.input.Key;
 
 public class Mouse extends InputDevice {
 
+	private float scroll;
+
 	public Mouse() {
 		super(Key.MOUSE_BUTTON_LAST + 1);
 	}
@@ -44,5 +46,17 @@ public class Mouse extends InputDevice {
 	@Override
 	public boolean isMouse() {
 		return true;
+	}
+
+	public void scroll(double scroll) {
+		this.scroll += scroll;
+	}
+
+	public void setScroll(float scroll) {
+		this.scroll = scroll;
+	}
+
+	public float getScroll() {
+		return scroll;
 	}
 }

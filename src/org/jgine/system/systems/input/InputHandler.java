@@ -10,6 +10,7 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 import org.jgine.core.input.device.Gamepad;
+import org.jgine.core.input.device.Mouse;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.system.SystemObject;
 
@@ -22,6 +23,8 @@ public class InputHandler implements SystemObject {
 	private final Map<Integer, Runnable> gamepadMap;
 
 	private Consumer<Vector2f> mouseMove = (pos) -> {
+	};
+	private Consumer<Float> mouseScroll = (scroll) -> {
 	};
 	private Consumer<Vector2f> gamepadLeftStickMove = (pos) -> {
 	};
@@ -51,7 +54,9 @@ public class InputHandler implements SystemObject {
 
 	public void checkInput(InputDevice inputDevice) {
 		if (inputDevice.isMouse()) {
+			Mouse mouse = (Mouse) inputDevice;
 			mouseMove.accept(Input.getCursorPos());
+			mouseScroll.accept(mouse.getScroll());
 			checkKeys(inputDevice, mouseMap);
 
 		} else if (inputDevice.isGamepad()) {
@@ -164,6 +169,14 @@ public class InputHandler implements SystemObject {
 
 	public final Consumer<Vector2f> getMouseMove() {
 		return mouseMove;
+	}
+
+	public void setMouseScroll(Consumer<Float> mouseScroll) {
+		this.mouseScroll = mouseScroll;
+	}
+
+	public Consumer<Float> getMouseScroll() {
+		return mouseScroll;
 	}
 
 	public final void setGamepadLeftStickMove(Consumer<Vector2f> gamepadLeftStickMove) {
