@@ -67,6 +67,14 @@ public abstract class Collider implements SystemObject, Cloneable {
 		}
 	}
 
+	public void scale(float scae) {
+		scale(new Vector3f(scae));
+	}
+
+	public void scale(float x, float y, float z) {
+		scale(new Vector3f(x, y, z));
+	}
+
 	public abstract void scale(Vector3f scale);
 
 	public abstract boolean containsPoint(Vector3f pos, Vector3f point);
