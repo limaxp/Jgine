@@ -129,12 +129,24 @@ public class Vector3f extends Vector2f {
 		return new Vector3f(x1 - x2, y1 - y2, z1 - z2);
 	}
 
+	public static Vector3f mult(Vector3f vec1, Vector3f vec2) {
+		return new Vector3f(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z);
+	}
+
 	public static Vector3f mult(Vector3f vec, float d) {
 		return new Vector3f(vec.x * d, vec.y * d, vec.z * d);
 	}
 
+	public static Vector3f mult(Vector3f vec, float x2, float y2, float z2) {
+		return new Vector3f(vec.x * x2, vec.y * y2, vec.z * z2);
+	}
+
 	public static Vector3f mult(float x, float y, float z, float d) {
 		return new Vector3f(x * d, y * d, z * d);
+	}
+
+	public static Vector3f mult(float x1, float y1, float z1, float x2, float y2, float z2) {
+		return new Vector3f(x1 * x2, y1 * y2, z1 * z2);
 	}
 
 	public static Vector3f mult(Vector3f vec, Matrix mat) {
@@ -147,12 +159,24 @@ public class Vector3f extends Vector2f {
 				Math.fma(mat.m02, x, Math.fma(mat.m12, y, mat.m22 * z)));
 	}
 
+	public static Vector3f div(Vector3f vec1, Vector3f vec2) {
+		return new Vector3f(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z);
+	}
+
 	public static Vector3f div(Vector3f vec, float d) {
 		return new Vector3f(vec.x / d, vec.y / d, vec.z / d);
 	}
 
+	public static Vector3f div(Vector3f vec, float x2, float y2, float z2) {
+		return new Vector3f(vec.x / x2, vec.y / y2, vec.z / z2);
+	}
+
 	public static Vector3f div(float x, float y, float z, float d) {
 		return new Vector3f(x / d, y / d, z / d);
+	}
+
+	public static Vector3f div(float x1, float y1, float z1, float x2, float y2, float z2) {
+		return new Vector3f(x1 / x2, y1 / y2, z1 / z2);
 	}
 
 	public static float dot(Vector3f vec1, Vector3f vec2) {

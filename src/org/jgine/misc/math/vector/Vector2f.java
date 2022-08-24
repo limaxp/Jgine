@@ -116,12 +116,24 @@ public class Vector2f {
 		return new Vector2f(x1 - x2, y1 - y2);
 	}
 
+	public static Vector2f mult(Vector2f vec1, Vector2f vec2) {
+		return new Vector2f(vec1.x * vec2.x, vec1.y * vec2.y);
+	}
+
 	public static Vector2f mult(Vector2f vec, float d) {
 		return new Vector2f(vec.x * d, vec.y * d);
 	}
 
+	public static Vector2f mult(Vector2f vec, float x2, float y2) {
+		return new Vector2f(vec.x * x2, vec.y * y2);
+	}
+
 	public static Vector2f mult(float x, float y, float d) {
 		return new Vector2f(x * d, y * d);
+	}
+
+	public static Vector2f mult(float x1, float y1, float x2, float y2) {
+		return new Vector2f(x1 * x2, y1 * y2);
 	}
 
 	public static Vector2f mult(Vector2f vec, Matrix mat) {
@@ -132,12 +144,24 @@ public class Vector2f {
 		return new Vector2f(Math.fma(mat.m00, x, mat.m10 * y), Math.fma(mat.m01, x, mat.m11 * y));
 	}
 
+	public static Vector2f div(Vector2f vec1, Vector2f vec2) {
+		return new Vector2f(vec1.x / vec2.x, vec1.y / vec2.y);
+	}
+
 	public static Vector2f div(Vector2f vec, float d) {
 		return new Vector2f(vec.x / d, vec.y / d);
 	}
 
+	public static Vector2f div(Vector2f vec, float x2, float y2) {
+		return new Vector2f(vec.x / x2, vec.y / y2);
+	}
+
 	public static Vector2f div(float x, float y, float d) {
 		return new Vector2f(x / d, y / d);
+	}
+
+	public static Vector2f div(float x1, float y1, float x2, float y2) {
+		return new Vector2f(x1 / x2, y1 / y2);
 	}
 
 	public static float dot(Vector2f vec1, Vector2f vec2) {

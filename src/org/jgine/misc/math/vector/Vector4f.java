@@ -134,12 +134,24 @@ public class Vector4f extends Vector3f {
 		return new Vector4f(x1 - x2, y1 - y2, z1 - z2, w1 - w2);
 	}
 
+	public static Vector4f mult(Vector4f vec1, Vector4f vec2) {
+		return new Vector4f(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z, vec1.w * vec2.w);
+	}
+
 	public static Vector4f mult(Vector4f vec, float d) {
 		return new Vector4f(vec.x * d, vec.y * d, vec.z * d, vec.w * d);
 	}
 
+	public static Vector4f mult(Vector4f vec, float x2, float y2, float z2, float w2) {
+		return new Vector4f(vec.x * x2, vec.y * y2, vec.z * z2, vec.w * w2);
+	}
+
 	public static Vector4f mult(float x, float y, float z, float w, float d) {
 		return new Vector4f(x * d, y * d, z * d, w * d);
+	}
+
+	public static Vector4f mult(float x1, float y1, float z1, float w1, float x2, float y2, float z2, float w2) {
+		return new Vector4f(x1 * x2, y1 * y2, z1 * z2, w1 * w2);
 	}
 
 	public static Vector4f mult(Vector4f vec, Matrix mat) {
@@ -153,12 +165,24 @@ public class Vector4f extends Vector3f {
 				Math.fma(mat.m03, x, Math.fma(mat.m13, y, Math.fma(mat.m23, z, mat.m33 * w))));
 	}
 
+	public static Vector4f div(Vector4f vec1, Vector4f vec2) {
+		return new Vector4f(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w);
+	}
+
 	public static Vector4f div(Vector4f vec, float d) {
 		return new Vector4f(vec.x / d, vec.y / d, vec.z / d, vec.w / d);
 	}
 
+	public static Vector4f div(Vector4f vec, float x2, float y2, float z2, float w2) {
+		return new Vector4f(vec.x / x2, vec.y / y2, vec.z / z2, vec.w / w2);
+	}
+
 	public static Vector4f div(float x, float y, float z, float w, float d) {
 		return new Vector4f(x / d, y / d, z / d, w / d);
+	}
+
+	public static Vector4f div(float x1, float y1, float z1, float w1, float x2, float y2, float z2, float w2) {
+		return new Vector4f(x1 / x2, y1 / y2, z1 / z2, w1 / w2);
 	}
 
 	public static float dot(Vector4f vec1, Vector4f vec2) {
