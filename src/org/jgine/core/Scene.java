@@ -1,5 +1,6 @@
 package org.jgine.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
@@ -212,6 +214,7 @@ public class Scene {
 			removeEntityIntern(child);
 		entity.setParent(null);
 		entity.clearChilds();
+		entity.transform.cleanupEntity();
 	}
 
 	public final List<Entity> getEntities() {
@@ -223,7 +226,14 @@ public class Scene {
 	}
 
 	public final List<Entity> getEntitiesNear(float x, float y, float z, float range) {
-		return entities;
+		List<Entity> result = new ArrayList<Entity>();
+		for (int i = 0; i < entities.size(); i++) {
+			Entity entity = entities.get(i);
+			Vector3f entityPos = entity.transform.getPosition();
+			if (Vector3f.distance(entityPos.x, entityPos.y, entityPos.z, x, y, z) <= range)
+				result.add(entity);
+		}
+		return result;
 	}
 
 	public final List<BiConsumer<Entity, Object>> getUpdateReciever(Object identifier) {

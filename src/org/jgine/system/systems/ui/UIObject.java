@@ -3,8 +3,8 @@ package org.jgine.system.systems.ui;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.entity.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;

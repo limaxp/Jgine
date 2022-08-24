@@ -1,7 +1,7 @@
 package org.jgine.render.graphic;
 
 import org.jgine.core.Scene;
-import org.jgine.core.entity.Transform;
+import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.indexList.IndexList;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;

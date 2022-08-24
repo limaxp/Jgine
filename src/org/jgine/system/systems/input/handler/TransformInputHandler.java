@@ -1,8 +1,8 @@
 package org.jgine.system.systems.input.handler;
 
 import org.jgine.core.Engine;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.entity.Transform;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;

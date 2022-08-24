@@ -1,4 +1,4 @@
-package org.jgine.core.entity;
+package org.jgine.core;
 
 import java.util.Map;
 

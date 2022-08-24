@@ -1,5 +1,6 @@
-package org.jgine.core.entity;
+package org.jgine.core;
 
+import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;

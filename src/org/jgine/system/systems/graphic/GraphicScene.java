@@ -6,8 +6,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.render.FrustumCulling;

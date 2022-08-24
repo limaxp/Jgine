@@ -1,6 +1,6 @@
 package org.jgine.system.systems.camera;
 
-import org.jgine.core.entity.Transform;
+import org.jgine.core.Transform;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;

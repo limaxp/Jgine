@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import org.jgine.core.entity.Transform;
+import org.jgine.core.Transform;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector3f;

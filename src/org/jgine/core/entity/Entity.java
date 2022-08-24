@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
+import org.jgine.core.TransformData;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
@@ -67,7 +69,6 @@ public class Entity {
 
 	public void delete() {
 		scene.removeEntity(this);
-		transform.cleanupEntity();
 		int idIndex;
 		synchronized (ID_GENERATOR) {
 			idIndex = ID_GENERATOR.free(id);

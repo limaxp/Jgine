@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.TransformData;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector3f;

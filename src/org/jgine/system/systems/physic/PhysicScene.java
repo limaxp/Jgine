@@ -4,8 +4,8 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.entity.Transform;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector2f;
