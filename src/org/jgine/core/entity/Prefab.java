@@ -160,7 +160,7 @@ public class Prefab {
 
 	public final Entity create(Scene scene, float posX, float posY, float rotX, float rotY, float scaleX,
 			float scaleY) {
-		return create_(scene, new Entity(scene, posX, posY, 0, rotX, rotY, 0, scaleX, scaleY, 0));
+		return create_(scene, new Entity(scene, posX, posY, 0, rotX, rotY, 0, scaleX, scaleY, 1));
 	}
 
 	public final Entity create(Scene scene, Vector3f position) {
