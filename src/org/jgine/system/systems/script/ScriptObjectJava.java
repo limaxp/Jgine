@@ -7,7 +7,7 @@ import javax.script.ScriptEngine;
 
 public class ScriptObjectJava extends ScriptObject {
 
-	public ScriptObjectJava(IScript script) {
+	public ScriptObjectJava(ScriptJava script) {
 		this.script = script;
 	}
 

@@ -19,6 +19,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	@Override
 	public void initObject(Entity entity, ScriptObject object) {
 		object.put("entity", entity);
+		object.script.setEntity(entity);
 		object.script.onEnable();
 	}
 
