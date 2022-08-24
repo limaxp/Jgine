@@ -2,6 +2,7 @@ package org.jgine.core.entity;
 
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 
 /**
@@ -81,20 +82,35 @@ public class Transform implements Cloneable {
 		return matrix;
 	}
 
+	public final void setPosition(Vector2f position) {
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(position.x, position.y));
+	}
+
+	public final void setPosition(float x, float y) {
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(x, y));
+	}
+
 	public final void setPosition(Vector3f position) {
-		setPosition(position.x, position.y, position.z);
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(position.x, position.y, position.z));
 	}
 
 	public final void setPosition(float x, float y, float z) {
-		setPositionIntern(x, y, z);
-		UpdateManager.update(entity, "transformPosition", new Vector3f(posX, posY, posZ));
+		UpdateManager.update(entity, "transformPosition", setPositionIntern(x, y, z));
 	}
 
-	public final void setPositionIntern(float x, float y, float z) {
+	public final Vector2f setPositionIntern(float x, float y) {
+		posX = x;
+		posY = y;
+		calculateMatrix();
+		return matrix.getPosition();
+	}
+
+	public final Vector3f setPositionIntern(float x, float y, float z) {
 		posX = x;
 		posY = y;
 		posZ = z;
 		calculateMatrix();
+		return matrix.getPosition();
 	}
 
 	public final Vector3f getPosition() {

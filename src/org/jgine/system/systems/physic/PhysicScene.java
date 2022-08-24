@@ -77,8 +77,8 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			PhysicObject object = objects[index];
 			if (object.updatePosition(subDt, gravity, airResistanceFactor)) {
 				Entity entity = entities[index];
-				entity.transform.setPositionIntern(object.x, object.y, object.z);
-				UpdateManager.update(entity, "physicPosition", new Vector3f(object.x, object.y, object.z));
+				UpdateManager.update(entity, "physicPosition",
+						entity.transform.setPositionIntern(object.x, object.y, object.z));
 			}
 		}
 	}
