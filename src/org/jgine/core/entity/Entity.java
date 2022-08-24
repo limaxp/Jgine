@@ -68,6 +68,8 @@ public class Entity {
 	}
 
 	public void delete() {
+		if (!isAlive())
+			return;
 		scene.removeEntity(this);
 		int idIndex;
 		synchronized (ID_GENERATOR) {
@@ -76,7 +78,7 @@ public class Entity {
 		ID_MAP[idIndex] = null;
 	}
 
-	public boolean isAlive() {
+	public final boolean isAlive() {
 		return ID_GENERATOR.isAlive(id);
 	}
 
