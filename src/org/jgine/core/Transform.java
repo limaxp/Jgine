@@ -115,6 +115,16 @@ public class Transform implements Cloneable {
 		return new Vector3f(posX, posY, posZ);
 	}
 
+	public final void setRotation(Vector2f rotation) {
+		setRotation(rotation.x, rotation.y);
+	}
+
+	public final void setRotation(float x, float y) {
+		rotX = x;
+		rotY = y;
+		calculateMatrix();
+	}
+
 	public final void setRotation(Vector3f rotation) {
 		setRotation(rotation.x, rotation.y, rotation.z);
 	}

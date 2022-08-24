@@ -11,6 +11,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.TransformData;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Reflection;
 import org.jgine.misc.utils.loader.PrefabLoader;
@@ -143,6 +144,25 @@ public class Prefab {
 		return create_(scene, new Entity(scene, transform));
 	}
 
+	public final Entity create(Scene scene, Vector2f position) {
+		return create_(scene, new Entity(scene, position.x, position.y, 0, transform.rotX, transform.rotY,
+				transform.rotZ, transform.scaleX, transform.scaleY, transform.scaleZ));
+	}
+
+	public final Entity create(Scene scene, Vector2f position, Vector2f rotation, Vector2f scale) {
+		return create_(scene, new Entity(scene, position, rotation, scale));
+	}
+
+	public final Entity create(Scene scene, float posX, float posY) {
+		return create_(scene, new Entity(scene, posX, posY, 0, transform.rotX, transform.rotY, transform.rotZ,
+				transform.scaleX, transform.scaleY, transform.scaleZ));
+	}
+
+	public final Entity create(Scene scene, float posX, float posY, float rotX, float rotY, float scaleX,
+			float scaleY) {
+		return create_(scene, new Entity(scene, posX, posY, 0, rotX, rotY, 0, scaleX, scaleY, 0));
+	}
+
 	public final Entity create(Scene scene, Vector3f position) {
 		return create_(scene, new Entity(scene, position.x, position.y, position.z, transform.rotX, transform.rotY,
 				transform.rotZ, transform.scaleX, transform.scaleY, transform.scaleZ));
@@ -155,11 +175,6 @@ public class Prefab {
 	public final Entity create(Scene scene, float posX, float posY, float posZ) {
 		return create_(scene, new Entity(scene, posX, posY, posZ, transform.rotX, transform.rotY, transform.rotZ,
 				transform.scaleX, transform.scaleY, transform.scaleZ));
-	}
-
-	public final Entity create(Scene scene, float posX, float posY, float posZ, float scaleX, float scaleY,
-			float scaleZ) {
-		return create_(scene, new Entity(scene, posX, posY, posZ, 0, 0, 0, scaleX, scaleY, scaleZ));
 	}
 
 	public final Entity create(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,

@@ -13,6 +13,7 @@ import org.jgine.core.TransformData;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.scheduler.Scheduler;
@@ -40,6 +41,22 @@ public class Entity {
 	public Entity(Scene scene, TransformData transform) {
 		this(scene, transform.posX, transform.posY, transform.posZ, transform.rotX, transform.rotY, transform.rotZ,
 				transform.scaleX, transform.scaleY, transform.scaleZ);
+	}
+
+	public Entity(Scene scene, Vector2f position) {
+		this(scene, position, Vector3f.NULL, Vector3f.FULL);
+	}
+
+	public Entity(Scene scene, Vector2f position, Vector2f rotation, Vector2f scale) {
+		this(scene, position.x, position.y, 0, rotation.x, rotation.y, 0, scale.x, scale.y, 0);
+	}
+
+	public Entity(Scene scene, float posX, float posY) {
+		this(scene, posX, posY, 0, 0, 0, 0, 1, 1, 1);
+	}
+
+	public Entity(Scene scene, float posX, float posY, float rotX, float rotY, float scaleX, float scaleY) {
+		this(scene, posX, posY, 0, rotX, rotY, 0, scaleX, scaleY, 0);
 	}
 
 	public Entity(Scene scene, Vector3f position) {
