@@ -31,7 +31,7 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 		@Nullable
 		@Override
-		public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 			return null;
 		}
 
@@ -82,7 +82,7 @@ public abstract class Collider implements SystemObject, Cloneable {
 	public abstract boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos);
 
 	@Nullable
-	public abstract Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos);
+	public abstract CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos);
 
 	public abstract void load(Map<String, Object> data);
 

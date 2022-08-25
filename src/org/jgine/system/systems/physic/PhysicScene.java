@@ -14,6 +14,7 @@ import org.jgine.misc.utils.script.EventManager;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.Collision;
+import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
 import org.jgine.system.systems.collision.CollisionScene;
 import org.jgine.system.systems.collision.CollisionSystem;
@@ -116,16 +117,22 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 					Collider[] targetColliders = entities[i].getSystems(collisionSystem);
 					for (int targetIndex = 0; targetIndex < targetColliders.length; targetIndex++) {
 						Collider targetCollider = targetColliders[targetIndex];
-						Collision collision = resolveCollision(object, objectCollider, target, targetCollider);
-						if (collision != null) {
-							EventManager.callEvent(entities[index], collision, IScript::onCollision);
-							EventManager.callEvent(entities[i], collision, IScript::onCollision);
-						}
+						CollisionData collision = resolveCollision(object, objectCollider, target, targetCollider);
+						if (collision != null)
+							callCollisionEvent(entities[index], entities[i], objectCollider, targetCollider, collision);
 					}
 				}
 			}
 
 		}
+	}
+
+	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
+			Collider targetCollider, CollisionData collision) {
+		EventManager.callEvent(object, new Collision(collision, target, objectCollider, targetCollider),
+				IScript::onCollision);
+		EventManager.callEvent(target, new Collision(collision, object, targetCollider, objectCollider),
+				IScript::onCollision);
 	}
 
 	@Override
@@ -149,13 +156,13 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	}
 
 	@Nullable
-	public static Collision resolveCollision(PhysicObject object1, Collider collider1, PhysicObject object2,
+	public static CollisionData resolveCollision(PhysicObject object1, Collider collider1, PhysicObject object2,
 			Collider collider2) {
 		if (collider1.noResolve || collider2.noResolve)
 			return collider1.resolveCollision(new Vector3f(object1.x, object1.y, object1.z), collider2,
 					new Vector3f(object2.x, object2.y, object2.z));
 
-		Collision collision = null;
+		CollisionData collision = null;
 		if (collider1 instanceof BoundingCircle && collider2 instanceof BoundingCircle) {
 			collision = CollisionChecks2D.resolveBoundingCirclevsBoundingCircle(object1.x, object1.y,
 					(BoundingCircle) collider1, object2.x, object2.y, (BoundingCircle) collider2);
@@ -218,7 +225,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		return collision;
 	}
 
-	public static void resolveDefault(PhysicObject object1, PhysicObject object2, Collision collision) {
+	public static void resolveDefault(PhysicObject object1, PhysicObject object2, CollisionData collision) {
 		if (collision == null)
 			return;
 		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
@@ -231,7 +238,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		}
 	}
 
-	public static void resolveCircle(PhysicObject object1, PhysicObject object2, Collision collision) {
+	public static void resolveCircle(PhysicObject object1, PhysicObject object2, CollisionData collision) {
 		if (collision == null)
 			return;
 		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);

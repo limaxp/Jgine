@@ -12,7 +12,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.Collision;
+import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
 
 public class LineCollider extends Collider {
@@ -55,7 +55,7 @@ public class LineCollider extends Collider {
 
 	@Nullable
 	@Override
-	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
 			return CollisionChecks2D.resolveLinevsLine(pos, this, otherPos, (LineCollider) other);
 		else if (other instanceof BoundingCircle)

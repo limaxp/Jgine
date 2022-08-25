@@ -68,13 +68,13 @@ public class CollisionChecks2D {
 	}
 
 	@Nullable
-	public static Collision resolveBoundingCirclevsBoundingCircle(Vector2f pos1, BoundingCircle a, Vector2f pos2,
+	public static CollisionData resolveBoundingCirclevsBoundingCircle(Vector2f pos1, BoundingCircle a, Vector2f pos2,
 			BoundingCircle b) {
 		return resolveBoundingCirclevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveBoundingCirclevsBoundingCircle(float x1, float y1, BoundingCircle a, float x2,
+	public static CollisionData resolveBoundingCirclevsBoundingCircle(float x1, float y1, BoundingCircle a, float x2,
 			float y2, BoundingCircle b) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
@@ -85,19 +85,19 @@ public class CollisionChecks2D {
 		if (xPow + yPow < minDist * minDist) {
 			float dist = FastMath.sqrt(xPow + yPow);
 			float delta = minDist - dist;
-			return new Collision(a, b, axisX, axisY, x1, y1, delta, delta);
+			return new CollisionData(a, b, axisX, axisY, x1, y1, delta, delta);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(Vector2f pos1,
+	public static CollisionData resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(Vector2f pos1,
 			AxisAlignedBoundingQuad a, Vector2f pos2, AxisAlignedBoundingQuad b) {
 		return resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(float x1, float y1,
+	public static CollisionData resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(float x1, float y1,
 			AxisAlignedBoundingQuad a, float x2, float y2, AxisAlignedBoundingQuad b) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
@@ -109,19 +109,19 @@ public class CollisionChecks2D {
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
+			return new CollisionData(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsBoundingCircle(Vector2f pos1, AxisAlignedBoundingQuad a,
+	public static CollisionData resolveAxisAlignedBoundingQuadvsBoundingCircle(Vector2f pos1, AxisAlignedBoundingQuad a,
 			Vector2f pos2, BoundingCircle b) {
 		return resolveAxisAlignedBoundingQuadvsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsBoundingCircle(float x1, float y1,
+	public static CollisionData resolveAxisAlignedBoundingQuadvsBoundingCircle(float x1, float y1,
 			AxisAlignedBoundingQuad a, float x2, float y2, BoundingCircle b) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
@@ -133,62 +133,62 @@ public class CollisionChecks2D {
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
+			return new CollisionData(a, b, axisX, axisY, x1, y1, deltaX, deltaY);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveLinevsLine(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
+	public static CollisionData resolveLinevsLine(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
 		return resolveLinevsLine(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
+	public static CollisionData resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
 		// TODO check line resolve! dist as overlap also seems false!
 		float dist = Vector2f.cross(a.normal.x, b.normal.x, a.normal.y, b.normal.y);
 		if (dist != 0) {
 			float axisX = a.normal.x - b.normal.x;
 			float axisY = a.normal.y - b.normal.y;
-			return new Collision(a, b, axisX, axisY, x2, y2, dist, dist);
+			return new CollisionData(a, b, axisX, axisY, x2, y2, dist, dist);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveLinevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
+	public static CollisionData resolveLinevsAxisAlignedBoundingQuad(Vector2f pos1, LineCollider a, Vector2f pos2,
 			AxisAlignedBoundingQuad b) {
 		return resolveLinevsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
+	public static CollisionData resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
 			AxisAlignedBoundingQuad b) {
 		float distX = (x2 - x1) * a.normal.x;
 		float distY = (y2 - y1) * a.normal.y;
 		if (distX < b.w && distY < b.h) {
 			float deltaX = b.w - distX;
 			float deltaY = b.h - distY;
-			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
+			return new CollisionData(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveLinevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2,
+	public static CollisionData resolveLinevsBoundingCircle(Vector2f pos1, LineCollider a, Vector2f pos2,
 			BoundingCircle b) {
 		return resolveLinevsBoundingCircle(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolveLinevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
+	public static CollisionData resolveLinevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
 			BoundingCircle b) {
 		float distX = (x2 - x1) * a.normal.x;
 		float distY = (y2 - y1) * a.normal.y;
 		if ((distX + distY) < b.r) {
 			float deltaX = b.r - distX;
 			float deltaY = b.r - distY;
-			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
+			return new CollisionData(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
 		}
 		return null;
 	}
@@ -245,13 +245,13 @@ public class CollisionChecks2D {
 	}
 
 	@Nullable
-	public static Collision resolvePolygonvsPolygon(Vector2f pos1, PolygonCollider a, Vector2f pos2,
+	public static CollisionData resolvePolygonvsPolygon(Vector2f pos1, PolygonCollider a, Vector2f pos2,
 			PolygonCollider b) {
 		return resolvePolygonvsPolygon(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
 	}
 
 	@Nullable
-	public static Collision resolvePolygonvsPolygon(float x1, float y1, PolygonCollider a, float x2, float y2,
+	public static CollisionData resolvePolygonvsPolygon(float x1, float y1, PolygonCollider a, float x2, float y2,
 			PolygonCollider b) {
 		float collisionOverlap = Float.MAX_VALUE;
 		float collisionAxisX = 0;
@@ -313,6 +313,6 @@ public class CollisionChecks2D {
 				}
 			}
 		}
-		return new Collision(sa, sb, collisionAxisX, collisionAxisY, 0, 0, collisionOverlap, collisionOverlap);
+		return new CollisionData(sa, sb, collisionAxisX, collisionAxisY, 0, 0, collisionOverlap, collisionOverlap);
 	}
 }

@@ -11,7 +11,7 @@ import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.Collision;
+import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks;
 
 /**
@@ -60,7 +60,7 @@ public class BoundingSphere extends Collider {
 
 	@Nullable
 	@Override
-	public Collision resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		return null;
 	}
 
