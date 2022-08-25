@@ -53,7 +53,7 @@ public class PhysicSystem extends EngineSystem {
 
 		Object stiffness = data.get("stiffness");
 		if (stiffness != null && stiffness instanceof Number)
-			object.stiffness = ((Number) hasGravity).floatValue();
+			object.stiffness = ((Number) stiffness).floatValue();
 
 		Object acceleration = data.get("acceleration");
 		if (acceleration != null && acceleration instanceof Map) {
