@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 import org.jgine.core.Transform;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.sound.effect.EFXUtil;
 import org.jgine.system.systems.camera.Camera;
@@ -244,6 +245,18 @@ public class SoundManager {
 		return source;
 	}
 
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, float gain) {
+		return play(buffer, pos, gain, false, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, float gain, boolean loop) {
+		return play(buffer, pos, gain, loop, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, float gain, boolean loop, boolean sourceRelative) {
+		return play(buffer, pos.x, pos.y, 0, gain, loop, sourceRelative);
+	}
+
 	public static SoundSource play(SoundBuffer buffer, Vector3f pos, float gain) {
 		return play(buffer, pos, gain, false, false);
 	}
@@ -253,11 +266,29 @@ public class SoundManager {
 	}
 
 	public static SoundSource play(SoundBuffer buffer, Vector3f pos, float gain, boolean loop, boolean sourceRelative) {
+		return play(buffer, pos.x, pos.y, pos.z, gain, loop, sourceRelative);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float gain, boolean loop,
+			boolean sourceRelative) {
 		SoundSource source = createSource(buffer, loop, sourceRelative);
-		source.setPosition(pos);
+		source.setPosition(x, y, z);
 		source.setGain(gain);
 		source.play();
 		return source;
+	}
+
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, Vector2f vel, float gain) {
+		return play(buffer, pos, vel, gain, false, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, Vector2f vel, float gain, boolean loop) {
+		return play(buffer, pos, vel, gain, loop, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, Vector2f pos, Vector2f vel, float gain, boolean loop,
+			boolean sourceRelative) {
+		return play(buffer, pos.x, pos.y, 0, vel.x, vel.y, 0, gain, loop, sourceRelative);
 	}
 
 	public static SoundSource play(SoundBuffer buffer, Vector3f pos, Vector3f vel, float gain) {
@@ -270,9 +301,14 @@ public class SoundManager {
 
 	public static SoundSource play(SoundBuffer buffer, Vector3f pos, Vector3f vel, float gain, boolean loop,
 			boolean sourceRelative) {
+		return play(buffer, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, gain, loop, sourceRelative);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float velX, float velY, float velZ,
+			float gain, boolean loop, boolean sourceRelative) {
 		SoundSource source = createSource(buffer, loop, sourceRelative);
-		source.setPosition(pos);
-		source.setVelocity(vel);
+		source.setPosition(x, y, z);
+		source.setVelocity(velX, velY, velZ);
 		source.setGain(gain);
 		source.play();
 		return source;
