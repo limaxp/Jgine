@@ -2,9 +2,6 @@ package org.jgine.core.input;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CONNECTED;
 import static org.lwjgl.glfw.GLFW.GLFW_DISCONNECTED;
-import static org.lwjgl.glfw.GLFW.glfwCreateCursor;
-import static org.lwjgl.glfw.GLFW.glfwCreateStandardCursor;
-import static org.lwjgl.glfw.GLFW.glfwDestroyCursor;
 import static org.lwjgl.glfw.GLFW.glfwJoystickIsGamepad;
 import static org.lwjgl.glfw.GLFW.glfwJoystickPresent;
 import static org.lwjgl.glfw.GLFW.glfwSetJoystickCallback;
@@ -30,7 +27,6 @@ import org.jgine.misc.utils.logger.Logger;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWJoystickCallbackI;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
@@ -245,16 +241,16 @@ public class Input {
 		return glfwJoystickIsGamepad(slot);
 	}
 
-	public static long createCursor(GLFWImage image, int xhot, int yhot) {
-		return glfwCreateCursor(image, xhot, yhot);
+	public static void setCursor(Cursor cursor) {
+		window.setCursor(cursor);
 	}
 
-	public static long createStandardCursor(int shape) {
-		return glfwCreateStandardCursor(shape);
+	public static void setCursor(long cursor) {
+		window.setCursor(cursor);
 	}
 
-	public static void deleteCursor(long cursor) {
-		glfwDestroyCursor(cursor);
+	public static void setDefaultCursor() {
+		window.setDefaultCursor();
 	}
 
 	public static void setKeyCallback(GLFWKeyCallbackI callback) {

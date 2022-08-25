@@ -92,6 +92,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jgine.core.input.Cursor;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector4i;
@@ -451,6 +452,10 @@ public class Window {
 			glfwGetCursorPos(id, xPos, yPos);
 			return new Vector2f((float) xPos.get(0), (float) yPos.get(0));
 		}
+	}
+
+	public void setCursor(Cursor cursor) {
+		glfwSetCursor(id, cursor.id);
 	}
 
 	public void setCursor(long cursor) {

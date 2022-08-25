@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.input.Cursor;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.logger.Logger;
@@ -38,6 +39,7 @@ public class DisplayManager {
 
 	public static void terminate() {
 		terminateGLFW();
+		Cursor.terminate();
 	}
 
 	public static void initGLFW() {
