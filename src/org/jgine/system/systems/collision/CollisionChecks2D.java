@@ -78,9 +78,12 @@ public class CollisionChecks2D {
 			float y2, BoundingCircle b) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
-		float dist = Vector2f.length(axisX, axisY);
+		float xPow = axisX * axisX;
+		float yPow = axisY * axisY;
 		float minDist = a.r + b.r;
-		if (dist < minDist) {
+
+		if (xPow + yPow < minDist * minDist) {
+			float dist = FastMath.sqrt(xPow + yPow);
 			float delta = minDist - dist;
 			return new Collision(a, b, axisX, axisY, x1, y1, delta, delta);
 		}
@@ -180,10 +183,12 @@ public class CollisionChecks2D {
 	@Nullable
 	public static Collision resolveLinevsBoundingCircle(float x1, float y1, LineCollider a, float x2, float y2,
 			BoundingCircle b) {
-		float dist = Vector2f.dot(x2 - x1, y2 - y1, a.normal.x, a.normal.y);
-		if (dist < b.r) {
-			float delta = b.r - dist;
-			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, delta, delta);
+		float distX = (x2 - x1) * a.normal.x;
+		float distY = (y2 - y1) * a.normal.y;
+		if ((distX + distY) < b.r) {
+			float deltaX = b.r - distX;
+			float deltaY = b.r - distY;
+			return new Collision(a, b, -a.normal.x, -a.normal.y, x2, y2, deltaX, deltaY);
 		}
 		return null;
 	}

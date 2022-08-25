@@ -37,14 +37,41 @@ public class PhysicObject implements SystemObject {
 		return false;
 	}
 
+	final void initPosition(Vector3f vector) {
+		initPosition(vector.x, vector.y, vector.z);
+	}
+
+	final void initPosition(float x, float y, float z) {
+		this.x = oldX = x;
+		this.y = oldY = y;
+		this.z = oldZ = z;
+	}
+
 	final void setPosition(Vector3f vector) {
 		setPosition(vector.x, vector.y, vector.z);
 	}
 
 	final void setPosition(float x, float y, float z) {
-		this.x = oldX = x;
-		this.y = oldY = y;
-		this.z = oldZ = z;
+		float deltaX = x - this.x;
+		float deltaY = y - this.y;
+		float deltaZ = z - this.z;
+		this.x += deltaX;
+		this.y += deltaY;
+		this.z += deltaZ;
+		this.oldX += deltaX;
+		this.oldY += deltaY;
+		this.oldZ += deltaZ;
+
+//		alternative
+//		float deltaX = this.x - oldX;
+//		float deltaY = this.y - oldY;
+//		float deltaZ = this.z - oldZ;
+//		this.x = oldX = x;
+//		this.y = oldY = y;
+//		this.z = oldZ = z;
+//		this.oldX -= deltaX;
+//		this.oldY -= deltaY;
+//		this.oldZ -= deltaZ;
 	}
 
 	public final Vector3f getPosition() {

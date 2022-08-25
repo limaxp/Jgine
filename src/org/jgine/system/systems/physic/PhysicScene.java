@@ -50,7 +50,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	public void initObject(Entity entity, PhysicObject object) {
 		Transform transform = entity.transform;
 		Vector3f pos = transform.getPosition();
-		object.setPosition(pos);
+		object.initPosition(pos);
 	}
 
 	private long lastTime = System.currentTimeMillis();
@@ -155,69 +155,72 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			return collider1.resolveCollision(new Vector3f(object1.x, object1.y, object1.z), collider2,
 					new Vector3f(object2.x, object2.y, object2.z));
 
-		if (collider1 instanceof BoundingCircle && collider2 instanceof BoundingCircle)
-			return resolveBoundingCirclevsBoundingCircle(object1, (BoundingCircle) collider1, object2,
-					(BoundingCircle) collider2);
+		Collision collision = null;
+		if (collider1 instanceof BoundingCircle && collider2 instanceof BoundingCircle) {
+			collision = CollisionChecks2D.resolveBoundingCirclevsBoundingCircle(object1.x, object1.y,
+					(BoundingCircle) collider1, object2.x, object2.y, (BoundingCircle) collider2);
+			resolveCircle(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof AxisAlignedBoundingQuad)
-			return resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(object1, (AxisAlignedBoundingQuad) collider1,
-					object2, (AxisAlignedBoundingQuad) collider2);
+		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof AxisAlignedBoundingQuad) {
+			collision = CollisionChecks2D.resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(object1.x, object1.y,
+					(AxisAlignedBoundingQuad) collider1, object2.x, object2.y, (AxisAlignedBoundingQuad) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof BoundingCircle)
-			return resolveAxisAlignedBoundingQuadvsBoundingCircle(object1, (AxisAlignedBoundingQuad) collider1, object2,
-					(BoundingCircle) collider2);
+		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof BoundingCircle) {
+			collision = CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(object1.x, object1.y,
+					(AxisAlignedBoundingQuad) collider1, object2.x, object2.y, (BoundingCircle) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof BoundingCircle && collider2 instanceof AxisAlignedBoundingQuad)
-			return resolveAxisAlignedBoundingQuadvsBoundingCircle(object2, (AxisAlignedBoundingQuad) collider2, object1,
-					(BoundingCircle) collider1);
+		else if (collider1 instanceof BoundingCircle && collider2 instanceof AxisAlignedBoundingQuad) {
+			collision = CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(object2.x, object2.y,
+					(AxisAlignedBoundingQuad) collider2, object1.x, object1.y, (BoundingCircle) collider1);
+			resolveDefault(object2, object1, collision);
+		}
 
-		else if (collider1 instanceof LineCollider && collider2 instanceof BoundingCircle)
-			return resolveLinevsBoundingCircle(object1, (LineCollider) collider1, object2, (BoundingCircle) collider2);
+		else if (collider1 instanceof LineCollider && collider2 instanceof BoundingCircle) {
+			collision = CollisionChecks2D.resolveLinevsBoundingCircle(object1.x, object1.y, (LineCollider) collider1,
+					object2.x, object2.y, (BoundingCircle) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof BoundingCircle && collider2 instanceof LineCollider)
-			return resolveLinevsBoundingCircle(object2, (LineCollider) collider2, object1, (BoundingCircle) collider1);
+		else if (collider1 instanceof BoundingCircle && collider2 instanceof LineCollider) {
+			collision = CollisionChecks2D.resolveLinevsBoundingCircle(object2.x, object2.y, (LineCollider) collider2,
+					object1.x, object1.y, (BoundingCircle) collider1);
+			resolveDefault(object2, object1, collision);
+		}
 
-		else if (collider1 instanceof LineCollider && collider2 instanceof AxisAlignedBoundingQuad)
-			return resolveLinevsAxisAlignedBoundingQuad(object1, (LineCollider) collider1, object2,
-					(AxisAlignedBoundingQuad) collider2);
+		else if (collider1 instanceof LineCollider && collider2 instanceof AxisAlignedBoundingQuad) {
+			collision = CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(object1.x, object1.y,
+					(LineCollider) collider1, object2.x, object2.y, (AxisAlignedBoundingQuad) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof LineCollider)
-			return resolveLinevsAxisAlignedBoundingQuad(object2, (LineCollider) collider2, object1,
-					(AxisAlignedBoundingQuad) collider1);
+		else if (collider1 instanceof AxisAlignedBoundingQuad && collider2 instanceof LineCollider) {
+			collision = CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(object2.x, object2.y,
+					(LineCollider) collider2, object1.x, object1.y, (AxisAlignedBoundingQuad) collider1);
+			resolveDefault(object2, object1, collision);
+		}
 
-		else if (collider1 instanceof LineCollider && collider2 instanceof LineCollider)
-			return resolveLinevsLine(object2, (LineCollider) collider2, object1, (LineCollider) collider1);
+		else if (collider1 instanceof LineCollider && collider2 instanceof LineCollider) {
+			collision = CollisionChecks2D.resolveLinevsLine(object1.x, object1.y, (LineCollider) collider1, object2.x,
+					object2.y, (LineCollider) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 
-		else if (collider1 instanceof PolygonCollider && collider2 instanceof PolygonCollider)
-			return resolvePolygonvsPolygon(object1, (PolygonCollider) collider1, object2, (PolygonCollider) collider2);
-
-		return null;
-	}
-
-	@Nullable
-	public static Collision resolveBoundingCirclevsBoundingCircle(PhysicObject object1, BoundingCircle collider1,
-			PhysicObject object2, BoundingCircle collider2) {
-		Collision collision = CollisionChecks2D.resolveBoundingCirclevsBoundingCircle(object1.x, object1.y, collider1,
-				object2.x, object2.y, collider2);
-		if (collision == null)
-			return null;
-
-		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-		object1.y += object1.stiffness * collision.overlapX * axisNormal.y;
-		object2.x -= object2.stiffness * collision.overlapY * axisNormal.x;
-		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
+		else if (collider1 instanceof PolygonCollider && collider2 instanceof PolygonCollider) {
+			collision = CollisionChecks2D.resolvePolygonvsPolygon(object1.x, object1.y, (PolygonCollider) collider1,
+					object2.x, object2.y, (PolygonCollider) collider2);
+			resolveDefault(object1, object2, collision);
+		}
 		return collision;
 	}
 
-	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(PhysicObject object1,
-			AxisAlignedBoundingQuad collider1, PhysicObject object2, AxisAlignedBoundingQuad collider2) {
-		Collision collision = CollisionChecks2D.resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(object1.x,
-				object1.y, collider1, object2.x, object2.y, collider2);
+	public static void resolveDefault(PhysicObject object1, PhysicObject object2, Collision collision) {
 		if (collision == null)
-			return null;
-
+			return;
 		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
 		if (collision.overlapX < collision.overlapY) {
 			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
@@ -226,89 +229,15 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
 			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
 		}
-		return collision;
 	}
 
-	@Nullable
-	public static Collision resolveAxisAlignedBoundingQuadvsBoundingCircle(PhysicObject object1,
-			AxisAlignedBoundingQuad collider1, PhysicObject object2, BoundingCircle collider2) {
-		Collision collision = CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(object1.x, object1.y,
-				collider1, object2.x, object2.y, collider2);
+	public static void resolveCircle(PhysicObject object1, PhysicObject object2, Collision collision) {
 		if (collision == null)
-			return null;
-
-		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		if (collision.overlapX < collision.overlapY) {
-			object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-			object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
-		} else {
-			object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
-			object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		}
-		return collision;
-	}
-
-	@Nullable
-	public static Collision resolveLinevsBoundingCircle(PhysicObject object1, LineCollider collider1,
-			PhysicObject object2, BoundingCircle collider2) {
-		Collision collision = CollisionChecks2D.resolveLinevsBoundingCircle(object1.x, object1.y, collider1, object2.x,
-				object2.y, collider2);
-		if (collision == null)
-			return null;
-
-		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-		object1.y += object1.stiffness * collision.overlapX * axisNormal.y;
-		object2.x -= object2.stiffness * collision.overlapY * axisNormal.x;
-		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		return collision;
-	}
-
-	@Nullable
-	public static Collision resolveLinevsAxisAlignedBoundingQuad(PhysicObject object1, LineCollider collider1,
-			PhysicObject object2, AxisAlignedBoundingQuad collider2) {
-		Collision collision = CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(object1.x, object1.y, collider1,
-				object2.x, object2.y, collider2);
-		if (collision == null)
-			return null;
-
+			return;
 		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
 		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
 		object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
 		object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
 		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		return collision;
-	}
-
-	@Nullable
-	public static Collision resolveLinevsLine(PhysicObject object1, LineCollider collider1, PhysicObject object2,
-			LineCollider collider2) {
-		Collision collision = CollisionChecks2D.resolveLinevsLine(object1.x, object1.y, collider1, object2.x, object2.y,
-				collider2);
-		if (collision == null)
-			return null;
-
-		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-		object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
-		object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
-		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		return collision;
-	}
-
-	@Nullable
-	public static Collision resolvePolygonvsPolygon(PhysicObject object1, PolygonCollider collider1,
-			PhysicObject object2, PolygonCollider collider2) {
-		Collision collision = CollisionChecks2D.resolvePolygonvsPolygon(object1.x, object1.y, collider1, object2.x,
-				object2.y, collider2);
-		if (collision == null)
-			return null;
-
-		Vector2f axisNormal = Vector2f.normalize(collision.axisX, collision.axisY);
-		object1.x += object1.stiffness * collision.overlapX * axisNormal.x;
-		object2.x -= object2.stiffness * collision.overlapX * axisNormal.x;
-		object1.y += object1.stiffness * collision.overlapY * axisNormal.y;
-		object2.y -= object2.stiffness * collision.overlapY * axisNormal.y;
-		return collision;
 	}
 }
