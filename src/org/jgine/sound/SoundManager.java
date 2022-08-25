@@ -269,6 +269,14 @@ public class SoundManager {
 		return play(buffer, pos.x, pos.y, pos.z, gain, loop, sourceRelative);
 	}
 
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float gain) {
+		return play(buffer, x, y, z, gain, false, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float gain, boolean loop) {
+		return play(buffer, x, y, z, gain, loop, false);
+	}
+
 	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float gain, boolean loop,
 			boolean sourceRelative) {
 		SoundSource source = createSource(buffer, loop, sourceRelative);
@@ -302,6 +310,16 @@ public class SoundManager {
 	public static SoundSource play(SoundBuffer buffer, Vector3f pos, Vector3f vel, float gain, boolean loop,
 			boolean sourceRelative) {
 		return play(buffer, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, gain, loop, sourceRelative);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float velX, float velY, float velZ,
+			float gain) {
+		return play(buffer, x, y, z, velX, velY, velZ, gain, false, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float velX, float velY, float velZ,
+			float gain, boolean loop) {
+		return play(buffer, x, y, z, velX, velY, velZ, gain, loop, false);
 	}
 
 	public static SoundSource play(SoundBuffer buffer, float x, float y, float z, float velX, float velY, float velZ,
