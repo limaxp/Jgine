@@ -23,16 +23,28 @@ public class Cursor {
 			cursor.delete();
 	}
 
-	public static Cursor create(String name, BufferedImage image, int xhot, int yhot) {
-		return create(name, imageToGLFWImage(image), xhot, yhot);
+	public static Cursor create(String name, BufferedImage image) {
+		return create(name, image, 0, 0);
 	}
 
-	public static Cursor create(String name, Image image, int xhot, int yhot) {
-		return create(name, imageToGLFWImage(image), xhot, yhot);
+	public static Cursor create(String name, Image image) {
+		return create(name, image, 0, 0);
 	}
 
-	public static Cursor create(String name, GLFWImage image, int xhot, int yhot) {
-		Cursor cursor = new Cursor(glfwCreateCursor(image, xhot, yhot), name, image, xhot, yhot);
+	public static Cursor create(String name, GLFWImage image) {
+		return create(name, image, 0, 0);
+	}
+
+	public static Cursor create(String name, BufferedImage image, int offsetX, int offsetY) {
+		return create(name, imageToGLFWImage(image), offsetX, offsetY);
+	}
+
+	public static Cursor create(String name, Image image, int offsetX, int offsetY) {
+		return create(name, imageToGLFWImage(image), offsetX, offsetY);
+	}
+
+	public static Cursor create(String name, GLFWImage image, int offsetX, int offsetY) {
+		Cursor cursor = new Cursor(glfwCreateCursor(image, offsetX, offsetY), name, image, offsetX, offsetY);
 		CURSORS.put(name, cursor);
 		return cursor;
 	}
@@ -46,19 +58,19 @@ public class Cursor {
 	public final long id;
 	public final String name;
 	public final GLFWImage image;
-	public final int xhot;
-	public final int yhot;
+	public final int offsetX;
+	public final int offsetY;
 
-	public Cursor(long id, String name) {
+	private Cursor(long id, String name) {
 		this(id, name, null, 0, 0);
 	}
 
-	public Cursor(long id, String name, GLFWImage image, int xhot, int yhot) {
+	private Cursor(long id, String name, GLFWImage image, int offsetX, int offsetY) {
 		this.id = id;
 		this.name = name;
 		this.image = image;
-		this.xhot = xhot;
-		this.yhot = yhot;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
 	}
 
 	public void delete() {
