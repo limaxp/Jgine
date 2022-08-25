@@ -1,6 +1,6 @@
 package org.jgine.render;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
@@ -49,7 +49,6 @@ public class OpenGL {
 			throw new AssertionError("ARB_fragment_shader extension required.");
 
 		// glfwSwapInterval(1); // Enable v-sync
-		setClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 		glFrontFace(GL_CW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);

@@ -47,8 +47,16 @@ public class Material implements SystemObject, Cloneable {
 		this.color = Color.rgb(color);
 	}
 
+	public Material(float r, float g, float b) {
+		this.color = Color.rgb(r, g, b);
+	}
+
 	public Material(Vector4f color) {
 		this.color = Color.rgba(color);
+	}
+
+	public Material(float r, float g, float b, float a) {
+		this.color = Color.rgba(r, g, b, a);
 	}
 
 	public Material(ITexture texture) {
@@ -66,8 +74,18 @@ public class Material implements SystemObject, Cloneable {
 		setTexture(texture);
 	}
 
+	public Material(float r, float g, float b, ITexture texture) {
+		this.color = Color.rgb(r, g, b);
+		setTexture(texture);
+	}
+
 	public Material(Vector4f color, ITexture texture) {
 		this.color = Color.rgba(color);
+		setTexture(texture);
+	}
+
+	public Material(float r, float g, float b, float a, ITexture texture) {
+		this.color = Color.rgba(r, g, b, a);
 		setTexture(texture);
 	}
 

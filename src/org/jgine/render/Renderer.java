@@ -1,9 +1,13 @@
 package org.jgine.render;
 
+import static org.lwjgl.opengl.GL11.glDepthMask;
+
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.Color;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.mesh.BaseMesh;
@@ -214,6 +218,14 @@ public class Renderer {
 		return renderTarget;
 	}
 
+	public static void enableWireframeMode() {
+		OpenGL.enableWireframeMode();
+	}
+
+	public static void disableWireframeMode() {
+		OpenGL.disableWireframeMode();
+	}
+
 	public static void enableDepthTest() {
 		OpenGL.enableDepthTest();
 	}
@@ -222,11 +234,40 @@ public class Renderer {
 		OpenGL.disableDepthTest();
 	}
 
-	public static void enableWireframeMode() {
-		OpenGL.enableWireframeMode();
+	/**
+	 * Disable this to not write to depth buffer. Can be used to draw transparent
+	 * objects!
+	 */
+	public static void enableDepthMask() {
+		OpenGL.enableDepthMask();
 	}
 
-	public static void disableWireframeMode() {
-		OpenGL.disableWireframeMode();
+	/**
+	 * Disable this to not write to depth buffer. Can be used to draw transparent
+	 * objects!
+	 */
+	public static void disableDepthMask() {
+		OpenGL.disableDepthMask();
+	}
+
+	public static void setClearColor(Vector3f color) {
+		OpenGL.setClearColor(color.x, color.y, color.z, 1.0f);
+	}
+
+	public static void setClearColor(Vector4f color) {
+		OpenGL.setClearColor(color.x, color.y, color.z, color.w);
+	}
+
+	public static void setClearColor(float red, float green, float blue) {
+		OpenGL.setClearColor(red, green, blue, 1.0f);
+	}
+
+	public static void setClearColor(float red, float green, float blue, float alpha) {
+		OpenGL.setClearColor(red, green, blue, alpha);
+	}
+
+	public static void setClearColor(int color) {
+		OpenGL.setClearColor((float) Color.red(color) / 255, (float) Color.green(color) / 255,
+				(float) Color.blue(color) / 255, (float) Color.alpha(color) / 255);
 	}
 }
