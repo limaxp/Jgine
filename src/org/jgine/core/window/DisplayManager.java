@@ -4,7 +4,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_CONNECTED;
 import static org.lwjgl.glfw.GLFW.GLFW_DISCONNECTED;
 import static org.lwjgl.glfw.GLFW.glfwGetMonitors;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVersionString;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMonitorCallback;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +18,9 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
+import org.jgine.misc.utils.logger.Logger;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.glfw.GLFWErrorCallback;
 
 public class DisplayManager {
 
@@ -21,11 +28,32 @@ public class DisplayManager {
 	private static final List<Display> VIEW_LIST = Collections.unmodifiableList(DISPLAYS);
 
 	public static void init() {
+		initGLFW();
 		PointerBuffer buffer = glfwGetMonitors();
 		while (buffer.hasRemaining()) {
 			DISPLAYS.add(new Display(buffer.get()));
 		}
 		glfwSetMonitorCallback(DisplayManager::monitor_callback);
+	}
+
+	public static void terminate() {
+		terminateGLFW();
+	}
+
+	public static void initGLFW() {
+		GLFWErrorCallback.createPrint(Logger.getErrorPrintStream()).set();
+		if (!glfwInit())
+			throw new IllegalStateException("Unable to initialize GLFW");
+		Logger.log(() -> "Engine: GLFW - Version: " + glfwGetVersionString());
+	}
+
+	public static void terminateGLFW() {
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
+	}
+
+	public static void pollGLFWEvents() {
+		glfwPollEvents();
 	}
 
 	private static void monitor_callback(long monitor, int event) {

@@ -46,7 +46,6 @@ public abstract class Engine {
 		sceneMap = new ConcurrentHashMap<String, Scene>();
 		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
-		GLFWHelper.init();
 		DisplayManager.init();
 		window = new Window(name);
 		Input.setWindow(window);
@@ -66,7 +65,7 @@ public abstract class Engine {
 		Renderer.terminate();
 		SoundManager.terminate();
 		window.delete();
-		GLFWHelper.terminate();
+		DisplayManager.terminate();
 		OptionFile.save();
 		gameLoop = null;
 		ConnectionManager.terminate();
@@ -84,7 +83,7 @@ public abstract class Engine {
 		isRunning = true;
 		while (checkStatus()) {
 			gameLoop.run();
-			GLFWHelper.pollGLFWEvents();
+			DisplayManager.pollGLFWEvents();
 			Input.poll();
 		}
 		terminate();
