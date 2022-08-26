@@ -18,6 +18,7 @@ import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
@@ -221,8 +222,31 @@ public class Scene {
 		return Collections.unmodifiableList(entities);
 	}
 
+	public final Entity getEntity(float x, float y, Entity defaultValue) {
+		return spacePartitioning.get(x, y, 0, defaultValue);
+	}
+
 	public final Entity getEntity(float x, float y, float z, Entity defaultValue) {
 		return spacePartitioning.get(x, y, z, defaultValue);
+	}
+
+	public final List<Entity> getEntitiesNear(Vector2f pos, float range) {
+		return getEntitiesNear(pos.x, pos.y, range);
+	}
+
+	public final List<Entity> getEntitiesNear(float x, float y, float range) {
+		List<Entity> result = new ArrayList<Entity>();
+		for (int i = 0; i < entities.size(); i++) {
+			Entity entity = entities.get(i);
+			Vector2f entityPos = entity.transform.getPosition();
+			if (Vector2f.distance(entityPos.x, entityPos.y, x, y) <= range)
+				result.add(entity);
+		}
+		return result;
+	}
+
+	public final List<Entity> getEntitiesNear(Vector3f pos, float range) {
+		return getEntitiesNear(pos.x, pos.y, pos.z, range);
 	}
 
 	public final List<Entity> getEntitiesNear(float x, float y, float z, float range) {
