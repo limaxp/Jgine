@@ -19,7 +19,9 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1fv;
 import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.glUniform1iv;
 import static org.lwjgl.opengl.GL20.glUniform2f;
 import static org.lwjgl.opengl.GL20.glUniform2fv;
 import static org.lwjgl.opengl.GL20.glUniform2i;
@@ -32,21 +34,25 @@ import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniform4i;
 import static org.lwjgl.opengl.GL20.glUniform4iv;
+import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glValidateProgram;
 import static org.lwjgl.opengl.GL30.glUniform1ui;
+import static org.lwjgl.opengl.GL30.glUniform1uiv;
 import static org.lwjgl.opengl.GL30.glUniform2ui;
 import static org.lwjgl.opengl.GL30.glUniform2uiv;
 import static org.lwjgl.opengl.GL30.glUniform3ui;
 import static org.lwjgl.opengl.GL30.glUniform3uiv;
 import static org.lwjgl.opengl.GL30.glUniform4ui;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL30.glUniform4uiv;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
+import static org.lwjgl.opengl.GL43.GL_COMPUTE_SHADER;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.rotation.Quaternionf;
@@ -74,38 +80,73 @@ public abstract class Shader {
 		}
 	};
 
-	public final String name;
 	private int program;
-	private int vertexShader;
-	private int geometryShader;
-	private int fragmentShader;
 
 	private Shader() {
-		name = "";
 	}
 
 	public Shader(String name) {
-		this.name = name;
+		this(name + "Vertex", name + "Geometry", name + "Fragment", name + "Compute");
+	}
+
+	public Shader(String vertex, String geometry, String fragment, String compute) {
 		program = glCreateProgram();
 		if (program == 0) {
 			Logger.err("Shader: Creation failed!");
-			System.exit(1);
+			return;
 		}
-		setVertexShader(ResourceManager.getShader(name + "Vertex"));
-		setFragmentShader(ResourceManager.getShader(name + "Fragment"));
-		compileShader();
-	}
 
-	public final void delete() {
+		int vertexShader = compileShader(GL_VERTEX_SHADER, ResourceManager.getShader(vertex));
+		int geometryShader = compileShader(GL_GEOMETRY_SHADER, ResourceManager.getShader(geometry));
+		int fragmentShader = compileShader(GL_FRAGMENT_SHADER, ResourceManager.getShader(fragment));
+		int computeShader = compileShader(GL_COMPUTE_SHADER, ResourceManager.getShader(compute));
+		linkShader();
+
 		glDeleteShader(vertexShader);
 		glDeleteShader(geometryShader);
 		glDeleteShader(fragmentShader);
+		glDeleteShader(computeShader);
+	}
+
+	public final void delete() {
 		glDeleteProgram(program);
 	}
 
 	public abstract void setTransform(Matrix matrix, Matrix projectionMatrix);
 
 	public abstract void setMaterial(Material material);
+
+	private final int compileShader(int type, @Nullable String text) {
+		if (text == null)
+			return 0;
+
+		int shader = glCreateShader(type);
+		if (shader == 0) {
+			Logger.err("Shader creation failed: adding shader");
+			return 0;
+		}
+		glShaderSource(shader, text);
+		glCompileShader(shader);
+		if (glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
+			Logger.err(glGetShaderInfoLog(shader, 1024));
+			return 0;
+		}
+		glAttachShader(program, shader);
+		return shader;
+	}
+
+	protected final void linkShader() {
+		glLinkProgram(program);
+		if (glGetProgrami(program, GL_LINK_STATUS) == 0) {
+			Logger.err(glGetProgramInfoLog(program, 1024));
+			return;
+		}
+		glValidateProgram(program);
+		if (glGetProgrami(program, GL_VALIDATE_STATUS) == 0) {
+			Logger.err(glGetProgramInfoLog(program, 1024));
+			return;
+		}
+	}
 
 	public void bind() {
 		glUseProgram(program);
@@ -117,10 +158,8 @@ public abstract class Shader {
 
 	public final int addUniform(String uniform) {
 		int uniformLoc = glGetUniformLocation(program, uniform);
-		if (uniformLoc == -1) {
+		if (uniformLoc == -1)
 			Logger.err("Shader: Uniform '" + uniform + "' adding failed!");
-			System.exit(1);
-		}
 		return uniformLoc;
 	}
 
@@ -401,64 +440,5 @@ public abstract class Shader {
 
 	public final void setUniformMatrix4f(int uniform, FloatBuffer buffer) {
 		glUniformMatrix4fv(uniform, true, buffer);
-	}
-
-	protected final void setVertexShader(String text) {
-		glDeleteShader(vertexShader);
-		vertexShader = addShader(text, GL_VERTEX_SHADER);
-	}
-
-	public final int getVertexShader() {
-		return vertexShader;
-	}
-
-	protected final void setGeometryShader(String text) {
-		glDeleteShader(geometryShader);
-		geometryShader = addShader(text, GL_GEOMETRY_SHADER);
-	}
-
-	public final int getGeometryShader() {
-		return geometryShader;
-	}
-
-	protected final void setFragmentShader(String text) {
-		glDeleteShader(fragmentShader);
-		fragmentShader = addShader(text, GL_FRAGMENT_SHADER);
-	}
-
-	public final int getFragmentShader() {
-		return fragmentShader;
-	}
-
-	private final int addShader(String text, int type) {
-		int shader = glCreateShader(type);
-		if (shader == 0) {
-			Logger.err("Shader creation failed: adding shader");
-			System.exit(1);
-		}
-		glShaderSource(shader, text);
-		glCompileShader(shader);
-
-		if (glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
-			Logger.err(glGetShaderInfoLog(shader, 1024));
-			System.exit(1);
-		}
-
-		glAttachShader(program, shader);
-		return shader;
-	}
-
-	protected final void compileShader() {
-		glLinkProgram(program);
-		if (glGetProgrami(program, GL_LINK_STATUS) == 0) {
-			Logger.err(glGetProgramInfoLog(program, 1024));
-			System.exit(1);
-		}
-
-		glValidateProgram(program);
-		if (glGetProgrami(program, GL_VALIDATE_STATUS) == 0) {
-			Logger.err(glGetProgramInfoLog(program, 1024));
-			System.exit(1);
-		}
 	}
 }
