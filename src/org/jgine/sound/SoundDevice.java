@@ -64,11 +64,11 @@ public class SoundDevice {
 		checkError();
 
 		useTLC = deviceCapabilities.ALC_EXT_thread_local_context && alcSetThreadContext(context);
-		if (!useTLC) {
-			if (!alcMakeContextCurrent(context)) {
-				throw new IllegalStateException();
-			}
+//		if (!useTLC) {
+		if (!alcMakeContextCurrent(context)) {
+			throw new IllegalStateException();
 		}
+//		}
 		checkError();
 		capabilities = AL.createCapabilities(deviceCapabilities);
 		initHRTF();
@@ -78,8 +78,7 @@ public class SoundDevice {
 		alcMakeContextCurrent(MemoryUtil.NULL);
 		if (useTLC) {
 			AL.setCurrentThread(null);
-		}
-		else {
+		} else {
 			AL.setCurrentProcess(null);
 		}
 		alcDestroyContext(context);
@@ -93,8 +92,8 @@ public class SoundDevice {
 		attr.flip();
 
 		if (!resetDeviceSOFT(attr))
-			Logger.warn("SoundDevice '" + getName() + "':Failed to reset device for HRTF! " + alcGetString(device,
-					alcGetError(device)));
+			Logger.warn("SoundDevice '" + getName() + "':Failed to reset device for HRTF! "
+					+ alcGetString(device, alcGetError(device)));
 		if (!hasHRTF())
 			Logger.warn("SoundDevice '" + getName() + "': HRTF not enabled!");
 	}
