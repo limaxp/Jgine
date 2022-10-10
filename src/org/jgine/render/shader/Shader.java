@@ -47,7 +47,6 @@ import static org.lwjgl.opengl.GL30.glUniform3uiv;
 import static org.lwjgl.opengl.GL30.glUniform4ui;
 import static org.lwjgl.opengl.GL30.glUniform4uiv;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
-import static org.lwjgl.opengl.GL43.GL_COMPUTE_SHADER;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -69,7 +68,7 @@ import org.lwjgl.system.MemoryStack;
 
 public abstract class Shader {
 
-	public static final Shader NULL = new Shader() {
+	public static final Shader NULL = new Shader(0) {
 
 		@Override
 		public void setTransform(Matrix matrix, Matrix projectionMatrix) {
@@ -80,17 +79,18 @@ public abstract class Shader {
 		}
 	};
 
-	private int program;
+	protected final int program;
 
-	private Shader() {
+	public Shader(int id) {
+		program = id;
 	}
 
 	public Shader(String name) {
-		this(name + "Vertex", name + "Geometry", name + "Fragment", name + "Compute");
+		this(name + "Vertex", name + "Geometry", name + "Fragment");
 	}
 
-	public Shader(String vertex, String geometry, String fragment, String compute) {
-		program = glCreateProgram();
+	public Shader(String vertex, String geometry, String fragment) {
+		this(glCreateProgram());
 		if (program == 0) {
 			Logger.err("Shader: Creation failed!");
 			return;
@@ -99,13 +99,10 @@ public abstract class Shader {
 		int vertexShader = compileShader(GL_VERTEX_SHADER, ResourceManager.getShader(vertex));
 		int geometryShader = compileShader(GL_GEOMETRY_SHADER, ResourceManager.getShader(geometry));
 		int fragmentShader = compileShader(GL_FRAGMENT_SHADER, ResourceManager.getShader(fragment));
-		int computeShader = compileShader(GL_COMPUTE_SHADER, ResourceManager.getShader(compute));
 		linkShader();
-
 		glDeleteShader(vertexShader);
 		glDeleteShader(geometryShader);
 		glDeleteShader(fragmentShader);
-		glDeleteShader(computeShader);
 	}
 
 	public final void delete() {
@@ -116,7 +113,7 @@ public abstract class Shader {
 
 	public abstract void setMaterial(Material material);
 
-	private final int compileShader(int type, @Nullable String text) {
+	protected final int compileShader(int type, @Nullable String text) {
 		if (text == null)
 			return 0;
 
