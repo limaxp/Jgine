@@ -28,24 +28,9 @@ import org.jgine.render.graphic.material.Texture;
 
 public class RenderTarget implements ITexture, AutoCloseable {
 
-	public static final RenderTarget NONE = new RenderTarget() {
-
-		@Override
-		public void begin() {
-			super.end();
-		}
-
-		@Override
-		public void end() {
-		}
-	};
-
 	protected int fbo;
 	protected Texture texture;
 	protected int depthBuffer;
-
-	protected RenderTarget() {
-	}
 
 	public RenderTarget(int width, int height) {
 		fbo = glGenFramebuffers();
@@ -77,12 +62,12 @@ public class RenderTarget implements ITexture, AutoCloseable {
 		fbo = 0;
 	}
 
-	public void begin() {
+	public void bindRenderTarget() {
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glViewport(0, 0, texture.getWidth(), texture.getHeight());
 	}
 
-	public void end() {
+	public void unbindRenderTarget() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Window window = Engine.getInstance().getWindow();
 		glViewport(0, 0, window.getResolutionX(), window.getResolutionY());
