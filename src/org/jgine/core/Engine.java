@@ -10,6 +10,7 @@ import org.jgine.core.gameLoop.GameLoop;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
+import org.jgine.core.manager.SystemManager;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.core.window.DisplayManager;
@@ -23,6 +24,8 @@ import org.jgine.render.Renderer;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.system.systems.camera.Camera;
+import org.jgine.system.systems.camera.CameraSystem;
 
 public abstract class Engine {
 
@@ -134,6 +137,10 @@ public abstract class Engine {
 
 	private final void render() {
 		Renderer.begin();
+		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
+		Renderer.setCamera(camera);
+		// TODO camera should only render the scene its in!
+//		Scene scene = camera.getTransform().getEntity().scene;
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene);

@@ -6,13 +6,10 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.core.window.Window;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.render.UIRenderer;
 import org.jgine.system.data.ListSystemScene;
-import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 
 public class UIScene extends ListSystemScene<UISystem, UIObject> {
 
@@ -152,8 +149,6 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 
 	@Override
 	public void render() {
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		UIRenderer.setCamera(camera);
 		UIRenderer.setShader(UIRenderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++) {
 			UIObject object = objects[i];

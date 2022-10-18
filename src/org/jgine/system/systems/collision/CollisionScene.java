@@ -4,13 +4,10 @@ import java.util.function.BiConsumer;
 
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.EntityListSystemScene;
-import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
@@ -45,12 +42,8 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 			return;
 		Renderer.setShader(Renderer.BASIC_SHADER);
 		Renderer.enableDepthTest();
-
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		Renderer.setCamera(camera);
 		for (int i = 0; i < size; i++)
 			objects[i].render(entities[i].transform.getPosition());
-
 		Renderer.disableDepthTest();
 	}
 }

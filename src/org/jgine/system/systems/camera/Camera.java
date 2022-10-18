@@ -175,11 +175,11 @@ public class Camera implements SystemObject {
 		return Vector3f.cross(up, forward);
 	}
 
-	public final float getWidth() {
+	public final int getWidth() {
 		return width;
 	}
 
-	public final float getHeight() {
+	public final int getHeight() {
 		return height;
 	}
 

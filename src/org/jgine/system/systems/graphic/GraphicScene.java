@@ -19,6 +19,7 @@ import org.jgine.system.systems.camera.CameraSystem;
 public class GraphicScene extends TransformListSystemScene<GraphicSystem, GraphicObject> {
 
 	private final Queue<Object> renderQueue = new ConcurrentLinkedQueue<Object>();
+	private final FrustumCulling frustumCulling = new FrustumCulling();
 
 	public GraphicScene(GraphicSystem system, Scene scene) {
 		super(system, scene, GraphicObject.class);
@@ -36,9 +37,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	public void update() {
 		renderQueue.clear();
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		FrustumCulling frustumCulling = new FrustumCulling();
-		frustumCulling.applyPerspective(camera);
-		frustumCulling.applyCamera(camera);
+		frustumCulling.applyCamera(camera, 0);
 		TaskManager.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}
 
@@ -46,9 +45,8 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 		size = index + size;
 		for (; index < size; index++) {
 			GraphicObject object = objects[index];
-			// TODO use collider
-			// if (frustumCulling.containsPoint(object.transform.getPosition()))
-			renderQueue.addAll(Arrays.asList(transforms[index], object));
+			if (frustumCulling.containsPoint(transforms[index].getPosition()))
+				renderQueue.addAll(Arrays.asList(transforms[index], object));
 		}
 	}
 
@@ -56,13 +54,9 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	public void render() {
 		Renderer.setShader(Renderer.PHONG_SHADER);
 		Renderer.enableDepthTest();
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		Renderer.setCamera(camera);
-
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())
 			Renderer.render(((Transform) iter.next()).getMatrix(), ((GraphicObject) iter.next()).model);
-
 		Renderer.disableDepthTest();
 	}
 }

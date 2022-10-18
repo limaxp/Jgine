@@ -37,8 +37,8 @@ public class CameraSystem extends EngineSystem {
 		return new Camera(data);
 	}
 
-	public void setCamera(Camera Camera) {
-		this.mainCamera = Camera;
+	public void setCamera(Camera camera) {
+		this.mainCamera = camera;
 	}
 
 	public Camera getCamera() {

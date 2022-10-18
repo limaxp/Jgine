@@ -21,6 +21,7 @@ import org.jgine.system.systems.camera.CameraSystem;
 public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Material> {
 
 	private final Queue<Object> renderQueue = new ConcurrentLinkedQueue<Object>();
+	private final FrustumCulling2D frustumCulling = new FrustumCulling2D();
 
 	public Graphic2DScene(Graphic2DSystem system, Scene scene) {
 		super(system, scene, Material.class);
@@ -38,8 +39,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	public void update() {
 		renderQueue.clear();
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		FrustumCulling2D frustumCulling = new FrustumCulling2D();
-		frustumCulling.applyCamera(camera);
+		frustumCulling.applyCamera(camera, 0);
 		TaskManager.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}
 
@@ -47,18 +47,14 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 		size = index + size;
 		for (; index < size; index++) {
 			Material object = objects[index];
-			// TODO use collider
-//			if (frustumCulling.containsPoint(object.transform.getPosition()))
-			renderQueue.addAll(Arrays.asList(transforms[index], object));
+			if (frustumCulling.containsPoint(transforms[index].getPosition()))
+				renderQueue.addAll(Arrays.asList(transforms[index], object));
 		}
 	}
 
 	@Override
 	public void render() {
 		Renderer2D.setShader(Renderer.TEXTURE_SHADER);
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		Renderer2D.setCamera(camera);
-
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())
 			Renderer2D.renderQuad(((Transform) iter.next()).getMatrix(), (Material) iter.next());
