@@ -33,7 +33,7 @@ public class LineCollider extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return distance(pos, point) > 0 ? true : false;
+		return distance(pos, point) > 0;
 	}
 
 	public float distance(Vector2f pos, Vector2f point) {

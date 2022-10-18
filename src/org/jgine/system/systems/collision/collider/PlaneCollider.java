@@ -11,8 +11,8 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks;
+import org.jgine.system.systems.collision.CollisionData;
 
 public class PlaneCollider extends Collider {
 
@@ -32,12 +32,12 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return distance(point) > 0 ? true : false;
+		return distance(pos, point) > 0;
 	}
 
-	private double distance(Vector3f point) {
-		// Distance = (A*x0+B*y0+C*z0+D)
-		return normal.x * point.x + normal.y * point.y + normal.z * point.z;
+	public float distance(Vector3f pos, Vector3f point) {
+		Vector3f sub = Vector3f.sub(point, pos);
+		return Vector3f.dot(normal, sub);
 	}
 
 	@Override
