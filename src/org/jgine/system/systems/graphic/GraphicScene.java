@@ -37,7 +37,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 		renderQueue.clear();
 		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
 		FrustumCulling frustumCulling = new FrustumCulling();
-		frustumCulling.applyPerspective(camera.getPerspective());
+		frustumCulling.applyPerspective(camera);
 		frustumCulling.applyCamera(camera);
 		TaskManager.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}

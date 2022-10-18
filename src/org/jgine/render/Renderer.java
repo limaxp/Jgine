@@ -1,7 +1,5 @@
 package org.jgine.render;
 
-import static org.lwjgl.opengl.GL11.glDepthMask;
-
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
@@ -44,7 +42,6 @@ public class Renderer {
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
-	protected static RenderTarget renderTarget = RenderTarget.NONE;
 
 	protected static final BaseMesh2D QUAD_MESH;
 	protected static final Mesh CUBE_MESH;
@@ -75,14 +72,12 @@ public class Renderer {
 	}
 
 	public static void end() {
-		if (renderTarget != RenderTarget.NONE) {
-			RenderTarget temp = renderTarget;
-			setRenderTarget(RenderTarget.NONE);
-			setShader(UIRenderer.POST_PROCESS_SHADER);
-			UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.FULL),
-					new Material(temp));
-			setRenderTarget(temp);
-		}
+		RenderTarget renderTarget = camera.getRenderTarget();
+		renderTarget.end();
+		setShader(UIRenderer.POST_PROCESS_SHADER);
+		UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.FULL),
+				new Material(renderTarget));
+		renderTarget.begin();
 
 		Engine.getInstance().getWindow().swapBuffers();
 	}
@@ -199,23 +194,14 @@ public class Renderer {
 	}
 
 	public static void setCamera(Camera camera) {
-		Renderer.camera = camera;
+		if (Renderer.camera != camera) {
+			Renderer.camera = camera;
+			camera.getRenderTarget().begin();
+		}
 	}
 
 	public static Camera getCamera() {
 		return camera;
-	}
-
-	public static void setRenderTarget(RenderTarget renderTarget) {
-		if (Renderer.renderTarget != renderTarget) {
-			Renderer.renderTarget.end();
-			Renderer.renderTarget = renderTarget;
-			renderTarget.begin();
-		}
-	}
-
-	public static RenderTarget getRenderTarget() {
-		return renderTarget;
 	}
 
 	public static void enableWireframeMode() {

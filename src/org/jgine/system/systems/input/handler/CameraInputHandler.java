@@ -61,19 +61,22 @@ public class CameraInputHandler extends InputHandler {
 
 		setGamepadLeftStickMove((pos) -> {
 			if (pos.x < -GAMEPAD_LEWAY)
-				physicObject.accelerate(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED));
+				physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED));
 			else if (pos.x > GAMEPAD_LEWAY)
-				physicObject.accelerate(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED));
+				physicObject.accelerate(Vector3f.mult(camera.getRightDirection(), MOVEMENT_SPEED));
 			if (pos.y < -GAMEPAD_LEWAY)
-				physicObject.accelerate(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED));
+				physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), MOVEMENT_SPEED));
 			else if (pos.y > GAMEPAD_LEWAY)
-				physicObject.accelerate(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED));
+				physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED));
 		});
 
-		setKey(KEY_MOVE_FORWARD, () -> physicObject.accelerate(Vector3f.mult(camera.getForward(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_BACK, () -> physicObject.accelerate(Vector3f.mult(camera.getForward(), -MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeft(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_RIGHT, () -> physicObject.accelerate(Vector3f.mult(camera.getRight(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_FORWARD,
+				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_BACK,
+				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED)));
+		setKey(KEY_MOVE_RIGHT,
+				() -> physicObject.accelerate(Vector3f.mult(camera.getRightDirection(), MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
 		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);

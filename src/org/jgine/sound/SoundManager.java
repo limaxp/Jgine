@@ -90,7 +90,7 @@ public class SoundManager {
 		PhysicObject physicObject = transform.getEntity().getSystem(PhysicSystem.class);
 		if (physicObject != null)
 			listener.setVelocity(physicObject.getVelocity());
-		listener.setOrientation(Vector3f.mult(camera.getForward(), -1), camera.getUp());
+		listener.setOrientation(Vector3f.mult(camera.getForwardDirection(), -1), camera.getUpDirection());
 	}
 
 	private static void updateSources() {

@@ -2,7 +2,6 @@ package org.jgine.render;
 
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.Perspective;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.graphic.GraphicObject;
@@ -56,20 +55,19 @@ public class FrustumCulling {
 		return true;
 	}
 
-	public void applyPerspective(Perspective perspective) {
-		float aspectRatio = perspective.getWidth() / perspective.getHeight();
-		float tang = (float) Math.tan(Math.toRadians(perspective.getFov() * 0.5));
-		nh = perspective.getZNear() * tang;
+	public void applyPerspective(Camera camera) {
+		float aspectRatio = camera.getWidth() / camera.getHeight();
+		float tang = (float) Math.tan(Math.toRadians(camera.getFov() * 0.5));
+		nh = camera.getZNear() * tang;
 		nw = nh * aspectRatio;
 	}
 
 	public void applyCamera(Camera camera) {
-		Perspective perspective = camera.getPerspective();
 		Vector3f nc, fc, x, y, z;
 
 		Vector3f p = camera.getTransform().getPosition();
-		Vector3f l = camera.getForward();
-		Vector3f u = camera.getUp();
+		Vector3f l = camera.getForwardDirection();
+		Vector3f u = camera.getUpDirection();
 
 		// compute the Z axis of camera
 		// this axis points in the opposite direction from
@@ -81,8 +79,8 @@ public class FrustumCulling {
 		y = Vector3f.cross(z, x); // the real "up" vector is the cross product of Z and X
 
 		// compute the centers of the near and far planes
-		nc = Vector3f.sub(p, Vector3f.mult(z, perspective.getZNear()));
-		fc = Vector3f.sub(p, Vector3f.mult(z, perspective.getZFar()));
+		nc = Vector3f.sub(p, Vector3f.mult(z, camera.getZNear()));
+		fc = Vector3f.sub(p, Vector3f.mult(z, camera.getZFar()));
 
 		setPlane(planes[NEARP], nc, Vector3f.mult(z, -1));
 		setPlane(planes[FARP], fc, z);

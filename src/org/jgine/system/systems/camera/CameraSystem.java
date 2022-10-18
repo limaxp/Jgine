@@ -32,17 +32,9 @@ public class CameraSystem extends EngineSystem {
 		return new CameraScene(this, scene);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Camera load(Map<String, Object> data) {
-		Camera object = new Camera();
-		Object perspective = data.get("perspective");
-		if (perspective != null && perspective instanceof Map)
-			object.setPerspective(new Perspective((Map<String, Object>) perspective));
-		Object orthographic = data.get("orthographic");
-		if (orthographic != null && orthographic instanceof Map)
-			object.setOrthographic(new Orthographic((Map<String, Object>) orthographic));
-		return object;
+		return new Camera(data);
 	}
 
 	public void setCamera(Camera Camera) {
