@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 
 import org.jgine.core.Engine;
 import org.jgine.core.window.Window;
+import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Texture;
@@ -70,7 +71,8 @@ public class RenderTarget implements ITexture, AutoCloseable {
 	public void unbindRenderTarget() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Window window = Engine.getInstance().getWindow();
-		glViewport(0, 0, window.getResolutionX(), window.getResolutionY());
+		Vector2i windowSize = window.getSize();
+		glViewport(0, 0, windowSize.x, windowSize.y);
 	}
 
 	public final Texture getTexture() {

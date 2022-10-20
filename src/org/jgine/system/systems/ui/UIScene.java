@@ -8,6 +8,7 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.core.window.Window;
 import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.render.UIRenderer;
 import org.jgine.system.data.ListSystemScene;
 
@@ -44,8 +45,9 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	public void update() {
 		Vector2f cursorPos = Input.getCursorPos();
 		Window window = Engine.getInstance().getWindow();
-		mouseX = (int) (cursorPos.x / window.getResolutionX() * UIObject.RASTER_SIZE);
-		mouseY = (int) (UIObject.RASTER_SIZE - cursorPos.y / window.getResolutionY() * UIObject.RASTER_SIZE);
+		Vector2i windowSize = window.getSize();
+		mouseX = (int) (cursorPos.x / windowSize.x * UIObject.RASTER_SIZE);
+		mouseY = (int) (UIObject.RASTER_SIZE - cursorPos.y / windowSize.y * UIObject.RASTER_SIZE);
 		if (mouseX > UIObject.RASTER_SIZE)
 			mouseX = UIObject.RASTER_SIZE;
 		else if (mouseX < 0)
