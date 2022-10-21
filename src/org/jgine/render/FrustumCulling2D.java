@@ -1,5 +1,6 @@
 package org.jgine.render;
 
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.camera.Camera;
@@ -16,9 +17,10 @@ public class FrustumCulling2D {
 		Vector3f position = camera.getTransform().getPosition();
 		float width = camera.getWidth();
 		float height = camera.getHeight();
-		x1 = position.x - delta - width * 0.5f;
-		x2 = position.x + delta + width * 0.5f;
-		y1 = position.y - delta - height * 0.5f;
-		y2 = position.y + delta + height * 0.5f;
+		float max = FastMath.max(width, height);
+		x1 = position.x - delta - max * 0.5f;
+		x2 = position.x + delta + max * 0.5f;
+		y1 = position.y - delta - max * 0.5f;
+		y2 = position.y + delta + max * 0.5f;
 	}
 }
