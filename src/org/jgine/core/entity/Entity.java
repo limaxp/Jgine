@@ -199,6 +199,8 @@ public class Entity {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
+		if (systemScene == null)
+			return null;
 		return (T) systems.get(systemScene, 0);
 	}
 
@@ -220,6 +222,8 @@ public class Entity {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemObject> T[] getSystems(SystemScene<?, T> systemScene) {
+		if (systemScene == null)
+			return null;
 		return (T[]) systems.get(systemScene);
 	}
 
