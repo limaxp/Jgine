@@ -72,14 +72,16 @@ public class Renderer {
 	}
 
 	public static void end() {
+		Engine.getInstance().getWindow().swapBuffers();
+	}
+	
+	public static void finishFrame() {
 		RenderTarget renderTarget = camera.getRenderTarget();
 		renderTarget.unbindRenderTarget();
 		setShader(UIRenderer.POST_PROCESS_SHADER);
 		UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.FULL),
 				new Material(renderTarget));
 		renderTarget.bindRenderTarget();
-
-		Engine.getInstance().getWindow().swapBuffers();
 	}
 
 	public static void render(Matrix transform, Model model) {

@@ -84,7 +84,7 @@ public class SoundManager {
 	private static void updateListener() {
 		// TODO this should not access systems!
 		CameraSystem cameraSystem = SystemManager.get(CameraSystem.class);
-		Camera camera = cameraSystem.getCamera();
+		Camera camera = cameraSystem.getMainCamera();
 		Transform transform = camera.getTransform();
 		listener.setPosition(transform.getPosition());
 		PhysicObject physicObject = transform.getEntity().getSystem(PhysicSystem.class);

@@ -38,7 +38,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	@Override
 	public void update() {
 		renderQueue.clear();
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
+		Camera camera = SystemManager.get(CameraSystem.class).getMainCamera();
 		frustumCulling.applyCamera(camera, 50);
 		TaskManager.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}

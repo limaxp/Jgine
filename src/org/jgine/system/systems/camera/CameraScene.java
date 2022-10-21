@@ -1,5 +1,6 @@
 package org.jgine.system.systems.camera;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
@@ -16,9 +17,15 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public void initObject(Entity entity, Camera object) {
-		if (system.getCamera() == null)
-			system.setCamera(object);
 		object.transform = entity.transform;
+		system.addCamera(object);
+	}
+
+	@Override
+	@Nullable
+	public Camera removeObject(Camera object) {
+		system.removeCamera(object);
+		return super.removeObject(object);
 	}
 
 	@Override

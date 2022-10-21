@@ -15,7 +15,7 @@ import org.jgine.system.SystemObject;
  * 
  * @author Maximilian Paar
  */
-public class Camera implements SystemObject {
+public class Camera implements SystemObject, Cloneable {
 
 	public static final byte PERSPECTIVE_MODE = 1;
 	public static final byte ORTHOGRAPHIC_MODE = 2;
@@ -283,5 +283,23 @@ public class Camera implements SystemObject {
 
 		this.up = Vector3f.UP;
 		init(modeValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
+	}
+
+	@Override
+	public Camera clone() {
+		try {
+			Camera camera = (Camera) super.clone();
+			camera.renderTarget = new RenderTarget(width, height);
+			return camera;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

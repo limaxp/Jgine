@@ -137,13 +137,15 @@ public abstract class Engine {
 
 	private final void render() {
 		Renderer.begin();
-		Camera camera = SystemManager.get(CameraSystem.class).getCamera();
-		Renderer.setCamera(camera);
-		// TODO camera should only render the scene its in!
-//		Scene scene = camera.getTransform().getEntity().scene;
-		for (Scene scene : scenes)
-			if (!scene.isPaused())
-				renderScene(scene);
+		// TODO this should not access systems!
+		for (Camera camera : SystemManager.get(CameraSystem.class).getCameras()) {
+			Scene scene = camera.getTransform().getEntity().scene;
+			if (scene.isPaused())
+				continue;
+			Renderer.setCamera(camera);
+			renderScene(scene);
+			Renderer.finishFrame();
+		}
 		Renderer.end();
 		onRender();
 	}

@@ -50,7 +50,7 @@ public class PhongShader extends TextureShader {
 		super.bind();
 
 		setUniform3f(uniform_camPos,
-				((CameraSystem) SystemManager.get("camera")).getCamera().getTransform().getPosition());
+				((CameraSystem) SystemManager.get("camera")).getMainCamera().getTransform().getPosition());
 
 		if (changedAmbientLight) {
 			changedAmbientLight = false;
