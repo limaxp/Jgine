@@ -19,6 +19,7 @@ public class UIWindow extends UIObject {
 	UIScene scene;
 	List<UIObject> childs;
 	private boolean moveAble;
+	private boolean hide;
 	private Material background;
 	private Vector3f borderColor;
 
@@ -41,6 +42,7 @@ public class UIWindow extends UIObject {
 	public UIWindow(float width, float height, boolean moveAble) {
 		childs = new UnorderedIdentityArrayList<UIObject>();
 		this.moveAble = moveAble;
+		hide = false;
 		setScale(width, height);
 		background = new Material(new Vector4f(1, 1, 1, 0.2f));
 		borderColor = Vector3f.NULL;
@@ -186,6 +188,22 @@ public class UIWindow extends UIObject {
 
 	public boolean isMoveAble() {
 		return moveAble;
+	}
+
+	public void show() {
+		this.hide = false;
+	}
+
+	public void hide() {
+		this.hide = true;
+	}
+
+	public void setHidden(boolean hide) {
+		this.hide = hide;
+	}
+
+	public boolean isHidden() {
+		return hide;
 	}
 
 	public void setBackground(Material background) {

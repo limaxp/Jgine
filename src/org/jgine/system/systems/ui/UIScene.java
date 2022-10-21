@@ -74,6 +74,8 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	}
 
 	private static UIObject clickCheck(UIWindow window, float mouseX, float mouseY) {
+		if (window.isHidden())
+			return window;
 		float windowX = (mouseX - window.getX()) / window.getWidth();
 		float windowY = (mouseY - window.getY()) / window.getHeight();
 		for (UIObject child : window.getChilds()) {
@@ -103,6 +105,8 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	}
 
 	private static void hoverCheck(UIWindow window, float mouseX, float mouseY) {
+		if (window.isHidden())
+			return;
 		if (insideCheck(window, mouseX, mouseY)) {
 			if (!window.isFocused) {
 				window.isFocused = true;
@@ -143,10 +147,15 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		UIRenderer.setShader(UIRenderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++) {
 			UIObject object = objects[i];
-			object.render();
-			if (object instanceof UIWindow)
-				for (UIObject child : ((UIWindow) object).getChilds())
+			if (object instanceof UIWindow) {
+				UIWindow window = (UIWindow) object;
+				if (window.isHidden())
+					continue;
+				window.render();
+				for (UIObject child : window.getChilds())
 					child.render();
+			} else
+				object.render();
 		}
 	}
 }
