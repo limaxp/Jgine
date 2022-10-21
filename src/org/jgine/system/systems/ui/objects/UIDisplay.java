@@ -13,15 +13,15 @@ public class UIDisplay extends UIObject {
 	private RenderTarget renderTarget;
 
 	public UIDisplay() {
-		this(RASTER_SIZE);
+		this(1.0f);
 	}
 
-	public UIDisplay(int scale) {
+	public UIDisplay(float scale) {
 		this(scale, scale);
 	}
 
-	public UIDisplay(int width, int height) {
-		renderTarget = new RenderTarget(width, height);
+	public UIDisplay(float width, float height) {
+//		renderTarget = new RenderTarget(width, height);
 	}
 
 	@Override
@@ -47,11 +47,11 @@ public class UIDisplay extends UIObject {
 	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {
+	public void onClick(float mouseX, float mouseY) {
 	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {
+	public void onRelease(float mouseX, float mouseY) {
 	}
 
 	@Override

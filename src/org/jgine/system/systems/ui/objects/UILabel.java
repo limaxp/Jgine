@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
@@ -37,7 +38,8 @@ public class UILabel extends UIObject {
 	}
 
 	@Override
-	protected void create(Entity entity) {}
+	protected void create(Entity entity) {
+	}
 
 	@Override
 	protected void free() {
@@ -50,22 +52,28 @@ public class UILabel extends UIObject {
 		UIRenderer.renderQuad(getTransform(), background);
 		if (text != null) {
 			Matrix transform = new Matrix(getTransform());
+			// TODO fix position!
+			transform.m03 -= getWidth() / 2;
 			transform.scaling(0.001f, 0.001f, 0.001f);
 			UIRenderer.render(transform, text.getMesh(), text.getMaterial());
 		}
 	}
 
 	@Override
-	public void onFocus() {}
+	public void onFocus() {
+	}
 
 	@Override
-	public void onDefocus() {}
+	public void onDefocus() {
+	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {}
+	public void onClick(float mouseX, float mouseY) {
+	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {}
+	public void onRelease(float mouseX, float mouseY) {
+	}
 
 	@Override
 	public void load(Map<String, Object> data) {

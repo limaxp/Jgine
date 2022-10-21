@@ -23,22 +23,22 @@ public class UIWindow extends UIObject {
 	private Vector3f borderColor;
 
 	public UIWindow() {
-		this(RASTER_SIZE, false);
+		this(0.5f, false);
 	}
 
-	public UIWindow(int scale) {
+	public UIWindow(float scale) {
 		this(scale, false);
 	}
 
-	public UIWindow(int scale, boolean moveAble) {
+	public UIWindow(float scale, boolean moveAble) {
 		this(scale, scale, moveAble);
 	}
 
-	public UIWindow(int width, int height) {
+	public UIWindow(float width, float height) {
 		this(width, height, false);
 	}
 
-	public UIWindow(int width, int height, boolean moveAble) {
+	public UIWindow(float width, float height, boolean moveAble) {
 		childs = new UnorderedIdentityArrayList<UIObject>();
 		this.moveAble = moveAble;
 		setScale(width, height);
@@ -85,11 +85,11 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {
+	public void onClick(float mouseX, float mouseY) {
 	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {
+	public void onRelease(float mouseX, float mouseY) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -211,7 +211,7 @@ public class UIWindow extends UIObject {
 	public static class DragTask implements Runnable {
 
 		private UIWindow window;
-		private int dragX, dragY;
+		private float dragX, dragY;
 		private boolean isCanceled;
 
 		public DragTask(UIWindow window) {
@@ -222,8 +222,8 @@ public class UIWindow extends UIObject {
 
 		@Override
 		public void run() {
-			int newX = window.getX() + (window.scene.mouseX - dragX);
-			int newY = window.getY() + (window.scene.mouseY - dragY);
+			float newX = window.getX() + (window.scene.mouseX - dragX);
+			float newY = window.getY() + (window.scene.mouseY - dragY);
 			window.setPos(newX, newY);
 			dragX = window.scene.mouseX;
 			dragY = window.scene.mouseY;

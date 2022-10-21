@@ -14,15 +14,15 @@ import org.jgine.system.systems.ui.UIWindow.DragTask;
 
 public class UIHotbar extends UIObject {
 
-	private int thickness;
+	private float thickness;
 	private Material background;
 	private DragTask dragTask;
 
 	public UIHotbar() {
-		this(50);
+		this(0.05f);
 	}
 
-	public UIHotbar(int thickness) {
+	public UIHotbar(float thickness) {
 		setThickness(thickness);
 		background = new Material(new Vector4f(1, 1, 1, 0.4f));
 	}
@@ -57,13 +57,13 @@ public class UIHotbar extends UIObject {
 	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {
+	public void onClick(float mouseX, float mouseY) {
 		if (getWindow().isMoveAble())
 			Scheduler.runTaskAsynchron(dragTask = new DragTask(getWindow()));
 	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {
+	public void onRelease(float mouseX, float mouseY) {
 		if (dragTask != null && !dragTask.isCanceled())
 			dragTask.cancel();
 	}
@@ -86,13 +86,13 @@ public class UIHotbar extends UIObject {
 		return background;
 	}
 
-	public void setThickness(int thickness) {
+	public void setThickness(float thickness) {
 		this.thickness = thickness;
-		setPos(0, RASTER_SIZE - thickness);
-		setScale(RASTER_SIZE, thickness);
+		setPos(0, 1 - thickness);
+		setScale(1.0f, thickness);
 	}
 
-	public int getThickness() {
+	public float getThickness() {
 		return thickness;
 	}
 }

@@ -1,12 +1,10 @@
 package org.jgine.system.systems.ui;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
-import org.jgine.core.window.Window;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.render.UIRenderer;
@@ -14,7 +12,7 @@ import org.jgine.system.data.ListSystemScene;
 
 public class UIScene extends ListSystemScene<UISystem, UIObject> {
 
-	int mouseX, mouseY;
+	float mouseX, mouseY;
 	private UIObject clickedObject;
 
 	public UIScene(UISystem system, Scene scene) {
@@ -44,22 +42,9 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 	@Override
 	public void update() {
 		Vector2f cursorPos = Input.getCursorPos();
-		Window window = Engine.getInstance().getWindow();
-		Vector2i windowSize = window.getSize();
-
-		float xNormal = cursorPos.x / windowSize.x;
-		float yNormal = 1 - cursorPos.y / windowSize.y;
-		mouseX = (int) (xNormal * UIObject.RASTER_SIZE);
-		mouseY = (int) (yNormal * UIObject.RASTER_SIZE);
-
-		if (mouseX > UIObject.RASTER_SIZE)
-			mouseX = UIObject.RASTER_SIZE;
-		else if (mouseX < 0)
-			mouseX = 0;
-		if (mouseY > UIObject.RASTER_SIZE)
-			mouseY = UIObject.RASTER_SIZE;
-		else if (mouseY < 0)
-			mouseY = 0;
+		Vector2i windowSize = Input.getWindow().getSize();
+		mouseX = cursorPos.x / windowSize.x;
+		mouseY = 1 - cursorPos.y / windowSize.y;
 
 		for (int i = 0; i < size; i++)
 			hoverCheck(objects[i], mouseX, mouseY);
@@ -77,7 +62,7 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		}
 	}
 
-	private static UIObject clickCheck(UIObject object, int mouseX, int mouseY) {
+	private static UIObject clickCheck(UIObject object, float mouseX, float mouseY) {
 		if (object instanceof UIWindow)
 			return clickCheck((UIWindow) object, mouseX, mouseY);
 
@@ -88,9 +73,9 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		return null;
 	}
 
-	private static UIObject clickCheck(UIWindow window, int mouseX, int mouseY) {
-		int windowX = (int) ((float) (mouseX - window.getX()) / window.getWidth() * UIObject.RASTER_SIZE);
-		int windowY = (int) ((float) (mouseY - window.getY()) / window.getHeight() * UIObject.RASTER_SIZE);
+	private static UIObject clickCheck(UIWindow window, float mouseX, float mouseY) {
+		float windowX = (mouseX - window.getX()) / window.getWidth();
+		float windowY = (mouseY - window.getY()) / window.getHeight();
 		for (UIObject child : window.getChilds()) {
 			if (insideCheck(child, windowX, windowY)) {
 				child.onClick(windowX, windowY);
@@ -101,7 +86,7 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		return window;
 	}
 
-	private static void hoverCheck(UIObject object, int mouseX, int mouseY) {
+	private static void hoverCheck(UIObject object, float mouseX, float mouseY) {
 		if (object instanceof UIWindow) {
 			hoverCheck((UIWindow) object, mouseX, mouseY);
 			return;
@@ -117,14 +102,14 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		}
 	}
 
-	private static void hoverCheck(UIWindow window, int mouseX, int mouseY) {
+	private static void hoverCheck(UIWindow window, float mouseX, float mouseY) {
 		if (insideCheck(window, mouseX, mouseY)) {
 			if (!window.isFocused) {
 				window.isFocused = true;
 				window.onFocus();
 			}
-			int windowX = (int) ((float) (mouseX - window.getX()) / window.getWidth() * UIObject.RASTER_SIZE);
-			int windowY = (int) ((float) (mouseY - window.getY()) / window.getHeight() * UIObject.RASTER_SIZE);
+			float windowX = (mouseX - window.getX()) / window.getWidth();
+			float windowY = (mouseY - window.getY()) / window.getHeight();
 			for (UIObject child : window.getChilds()) {
 				if (insideCheck(child, windowX, windowY)) {
 					if (!child.isFocused) {
@@ -148,7 +133,7 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 		}
 	}
 
-	private static boolean insideCheck(UIObject object, int mouseX, int mouseY) {
+	private static boolean insideCheck(UIObject object, float mouseX, float mouseY) {
 		return mouseX >= object.getX() && mouseX <= object.getX() + object.getWidth() && mouseY >= object.getY()
 				&& mouseY <= object.getY() + object.getHeight();
 	}

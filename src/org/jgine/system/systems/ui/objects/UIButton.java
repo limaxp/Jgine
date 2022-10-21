@@ -46,12 +46,12 @@ public class UIButton extends UILabel {
 	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {
+	public void onClick(float mouseX, float mouseY) {
 		clickCallback.run();
 	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {}
+	public void onRelease(float mouseX, float mouseY) {}
 
 	@Override
 	public void load(Map<String, Object> data) {

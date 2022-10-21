@@ -31,11 +31,11 @@ public class UIList extends UIObject {
 	}
 
 	@Override
-	public void onClick(int mouseX, int mouseY) {
+	public void onClick(float mouseX, float mouseY) {
 	}
 
 	@Override
-	public void onRelease(int mouseX, int mouseY) {
+	public void onRelease(float mouseX, float mouseY) {
 	}
 
 	@Override
