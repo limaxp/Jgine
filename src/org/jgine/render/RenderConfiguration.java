@@ -4,7 +4,6 @@ import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector4f;
-import org.jgine.misc.utils.options.Options;
 
 public class RenderConfiguration {
 
@@ -16,11 +15,11 @@ public class RenderConfiguration {
 	private Matrix matrix;
 
 	public RenderConfiguration() {
-		this(new RenderTarget(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt()), 0, 0, 1, 1);
+		this(new RenderTarget(), 0, 0, 1, 1);
 	}
 
 	public RenderConfiguration(float x, float y, float width, float height) {
-		this(new RenderTarget(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt()), x, y, width, height);
+		this(new RenderTarget(), x, y, width, height);
 	}
 
 	public RenderConfiguration(RenderTarget renderTarget, float x, float y, float width, float height) {

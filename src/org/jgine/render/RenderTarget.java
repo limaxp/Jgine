@@ -24,6 +24,7 @@ import org.jgine.core.Engine;
 import org.jgine.core.window.Window;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.logger.Logger;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.ITexture;
 import org.jgine.render.graphic.material.Texture;
 
@@ -32,6 +33,10 @@ public class RenderTarget implements ITexture, AutoCloseable {
 	protected int fbo;
 	protected Texture texture;
 	protected int depthBuffer;
+
+	public RenderTarget() {
+		this(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt());
+	}
 
 	public RenderTarget(int width, int height) {
 		fbo = glGenFramebuffers();
