@@ -91,9 +91,6 @@ public class Camera implements SystemObject, Cloneable {
 			setPerspective();
 		else if (mode == ORTHOGRAPHIC_MODE)
 			setOrthographic();
-		if (renderTarget != null)
-			renderTarget.close();
-		renderTarget = new RenderTarget(width, height);
 	}
 
 	public final void setPerspective() {
@@ -215,7 +212,11 @@ public class Camera implements SystemObject, Cloneable {
 		return (float) width / height;
 	}
 
-	public RenderTarget getRenderTarget() {
+	public final void setRenderTarget(RenderTarget renderTarget) {
+		this.renderTarget = renderTarget;
+	}
+
+	public final RenderTarget getRenderTarget() {
 		return renderTarget;
 	}
 
@@ -294,9 +295,7 @@ public class Camera implements SystemObject, Cloneable {
 	@Override
 	public Camera clone() {
 		try {
-			Camera camera = (Camera) super.clone();
-			camera.renderTarget = new RenderTarget(width, height);
-			return camera;
+			return (Camera) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;

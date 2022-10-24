@@ -20,7 +20,11 @@ import org.jgine.misc.utils.options.OptionFile;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.net.game.ConnectionManager;
+import org.jgine.render.RenderConfiguration;
+import org.jgine.render.RenderTarget;
 import org.jgine.render.Renderer;
+import org.jgine.render.UIRenderer;
+import org.jgine.render.graphic.material.Material;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
@@ -29,10 +33,10 @@ import org.jgine.system.systems.camera.CameraSystem;
 
 public abstract class Engine {
 
-	private static Engine engine;
+	private static Engine instance;
 
 	public static Engine getInstance() {
-		return engine;
+		return instance;
 	}
 
 	public final String name;
@@ -42,17 +46,20 @@ public abstract class Engine {
 	private final Map<String, Scene> sceneMap;
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
+	private final List<RenderConfiguration> renderConfigs;
 
 	public Engine(String name) {
-		engine = this;
+		instance = this;
 		this.name = name;
 		sceneMap = new ConcurrentHashMap<String, Scene>();
 		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
+		renderConfigs = new IdentityArrayList<RenderConfiguration>();
 		DisplayManager.init();
 		window = new Window(name);
 		Input.setWindow(window);
 		Renderer.init();
+		renderConfigs.add(new RenderConfiguration());
 		SoundManager.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
@@ -136,7 +143,14 @@ public abstract class Engine {
 	public abstract void onRender();
 
 	private final void render() {
-		Renderer.begin();
+		Renderer.clearFrameBuffer();
+		renderCameras();
+		renderFrames();
+		window.swapBuffers();
+		onRender();
+	}
+
+	private final void renderCameras() {
 		// TODO this should not access systems!
 		for (Camera camera : SystemManager.get(CameraSystem.class).getCameras()) {
 			Scene scene = camera.getTransform().getEntity().scene;
@@ -144,10 +158,16 @@ public abstract class Engine {
 				continue;
 			Renderer.setCamera(camera);
 			renderScene(scene);
-			Renderer.finishFrame();
 		}
-		Renderer.end();
-		onRender();
+	}
+
+	private final void renderFrames() {
+		Renderer.setShader(Renderer.POST_PROCESS_SHADER);
+		RenderTarget renderTarget = Renderer.getCamera().getRenderTarget();
+		renderTarget.unbindRenderTarget();
+		for (RenderConfiguration renderConfig : renderConfigs)
+			UIRenderer.renderQuad(renderConfig.getMatrix(), new Material(renderConfig.getRenderTarget()));
+		renderTarget.bindRenderTarget();
 	}
 
 	private final void renderScene(Scene scene) {
@@ -173,7 +193,7 @@ public abstract class Engine {
 	}
 
 	public final Scene createScene(String name) {
-		Scene scene = new Scene(name);
+		Scene scene = new Scene(this, name);
 		sceneMap.put(name, scene);
 		sceneIdMap.put(scene.id, scene);
 		Scheduler.runTaskSynchron(() -> scenes.add(scene));
@@ -216,5 +236,13 @@ public abstract class Engine {
 
 	public final void shutdown() {
 		isRunning = false;
+	}
+
+	public List<RenderConfiguration> getRenderConfigs() {
+		return renderConfigs;
+	}
+
+	public final RenderConfiguration getRenderConfig() {
+		return renderConfigs.get(0);
 	}
 }

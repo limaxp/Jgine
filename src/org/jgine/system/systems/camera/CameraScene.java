@@ -18,6 +18,8 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	@Override
 	public void initObject(Entity entity, Camera object) {
 		object.transform = entity.transform;
+		if (object.getRenderTarget() == null)
+			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
 		system.addCamera(object);
 	}
 

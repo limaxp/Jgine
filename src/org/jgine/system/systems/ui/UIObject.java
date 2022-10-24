@@ -6,7 +6,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
 
 public abstract class UIObject implements SystemObject, Cloneable {
@@ -88,8 +87,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	protected Matrix calculateTransform() {
-		Transform.calculateMatrix(transform, new Vector3f(-1 + (x + width * 0.5f) * 2, -1 + (y + height * 0.5f) * 2, 0),
-				new Vector3f(width, height, 0));
+		Transform.calculateMatrix(transform, -1 + (x + width * 0.5f) * 2, -1 + (y + height * 0.5f) * 2, 0, width,
+				height, 0);
 		if (hasWindow())
 			transform.mult(window.getTransform());
 		return transform;

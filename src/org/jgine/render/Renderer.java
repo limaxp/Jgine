@@ -1,7 +1,5 @@
 package org.jgine.render;
 
-import org.jgine.core.Engine;
-import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
@@ -28,17 +26,13 @@ import org.jgine.system.systems.camera.Camera;
 
 public class Renderer {
 
-	static {
-		OpenGL.init();
-	}
-
-	public static final BasicShader BASIC_SHADER = new BasicShader("Basic");
-	public static final TextureShader TEXTURE_SHADER = new TextureShader("Texture");
-	public static final PhongShader PHONG_SHADER = new PhongShader("Phong");
-	public static final BillboardParticleShader PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
-	public static final TileMapShader TILE_MAP_SHADER = new TileMapShader("TileMap");
-	public static final CircleShader CIRCLE_SHADER = new CircleShader("Circle");
-	public static final PostProcessShader POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
+	public static final BasicShader BASIC_SHADER;
+	public static final TextureShader TEXTURE_SHADER;
+	public static final PhongShader PHONG_SHADER;
+	public static final BillboardParticleShader PARTICLE_SHADER;
+	public static final TileMapShader TILE_MAP_SHADER;
+	public static final CircleShader CIRCLE_SHADER;
+	public static final PostProcessShader POST_PROCESS_SHADER;
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
@@ -47,6 +41,16 @@ public class Renderer {
 	protected static final Mesh CUBE_MESH;
 
 	static {
+		OpenGL.init();
+
+		BASIC_SHADER = new BasicShader("Basic");
+		TEXTURE_SHADER = new TextureShader("Texture");
+		PHONG_SHADER = new PhongShader("Phong");
+		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
+		TILE_MAP_SHADER = new TileMapShader("TileMap");
+		CIRCLE_SHADER = new CircleShader("Circle");
+		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
+
 		QUAD_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
 		QUAD_MESH.setMode(MeshMode.TRIANGLE_STRIP);
 
@@ -67,21 +71,8 @@ public class Renderer {
 		OpenGL.terminate();
 	}
 
-	public static void begin() {
+	public static void clearFrameBuffer() {
 		OpenGL.clearFrameBuffer();
-	}
-
-	public static void end() {
-		Engine.getInstance().getWindow().swapBuffers();
-	}
-	
-	public static void finishFrame() {
-		RenderTarget renderTarget = camera.getRenderTarget();
-		renderTarget.unbindRenderTarget();
-		setShader(UIRenderer.POST_PROCESS_SHADER);
-		UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), Vector3f.NULL, Vector3f.FULL),
-				new Material(renderTarget));
-		renderTarget.bindRenderTarget();
 	}
 
 	public static void render(Matrix transform, Model model) {

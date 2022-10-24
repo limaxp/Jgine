@@ -27,6 +27,7 @@ import org.jgine.system.SystemScene;
 
 public class Scene {
 
+	public final Engine engine;
 	public final int id;
 	public final String name;
 	private final Map<EngineSystem, SystemScene<?, ?>> systemMap;
@@ -39,7 +40,8 @@ public class Scene {
 	private SpacePartitioning<Entity> spacePartitioning;
 	private boolean paused;
 
-	Scene(String name) {
+	Scene(Engine engine, String name) {
+		this.engine = engine;
 		this.id = name.hashCode();
 		this.name = name;
 		systemMap = new ConcurrentHashMap<EngineSystem, SystemScene<?, ?>>();
