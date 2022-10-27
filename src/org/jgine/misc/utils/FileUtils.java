@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +26,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -82,11 +83,11 @@ public class FileUtils {
 	}
 
 	public static void delete(final Path path) throws IOException {
-		java.nio.file.Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 
 			@Override
 			public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-				java.nio.file.Files.delete(file);
+				Files.delete(file);
 				return FileVisitResult.CONTINUE;
 			}
 
@@ -104,7 +105,7 @@ public class FileUtils {
 			public FileVisitResult postVisitDirectory(final Path dir, final IOException e) throws IOException {
 				if (e != null)
 					return handleException(e);
-				java.nio.file.Files.delete(dir);
+				Files.delete(dir);
 				return FileVisitResult.CONTINUE;
 			}
 		});
@@ -123,7 +124,7 @@ public class FileUtils {
 	}
 
 	public static byte[] readBytes(Path path) throws IOException {
-		return java.nio.file.Files.readAllBytes(path);
+		return Files.readAllBytes(path);
 	}
 
 	public static byte[] readBytes(final URL url) throws IOException {
@@ -131,7 +132,7 @@ public class FileUtils {
 	}
 
 	public static byte[] readBytes(File file) throws IOException {
-		return readBytes(file.getPath());
+		return readBytes(file.toPath());
 	}
 
 	public static byte[] readBytes(InputStream is) throws IOException {
@@ -181,7 +182,7 @@ public class FileUtils {
 	}
 
 	public static List<String> readStringList(Path path, Charset encoding) throws IOException {
-		return java.nio.file.Files.readAllLines(path, encoding);
+		return Files.readAllLines(path, encoding);
 	}
 
 	public static List<String> readStringList(URL url, Charset encoding) throws IOException {
@@ -189,7 +190,17 @@ public class FileUtils {
 	}
 
 	public static List<String> readStringList(File file, Charset encoding) throws IOException {
-		return readStringList(file.getPath(), encoding);
+		return readStringList(file.toPath(), encoding);
+	}
+
+	public static List<String> readStringList(InputStream is, Charset encoding) throws IOException {
+		List<String> stringList = new ArrayList<String>();
+		String line;
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, encoding))) {
+			while ((line = reader.readLine()) != null)
+				stringList.add(line);
+		}
+		return stringList;
 	}
 
 	public static List<String> readStringList(String path) throws IOException {
@@ -201,7 +212,7 @@ public class FileUtils {
 	}
 
 	public static List<String> readStringList(URL url) throws IOException {
-		return readStringList(new File(url.getFile()), Charset.defaultCharset());
+		return readStringList(url, Charset.defaultCharset());
 	}
 
 	public static List<String> readStringList(File file) throws IOException {
@@ -209,44 +220,94 @@ public class FileUtils {
 	}
 
 	public static List<String> readStringList(InputStream is) throws IOException {
-		List<String> stringList = new ArrayList<String>();
-		String line;
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-			while ((line = reader.readLine()) != null)
-				stringList.add(line);
+		return readStringList(is, Charset.defaultCharset());
+	}
+
+	public static String readString(String path, Charset encoding) throws IOException {
+		return readString(Paths.get(path), encoding);
+	}
+
+	public static String readString(Path path, Charset encoding) throws IOException {
+		return Files.readString(path, encoding);
+	}
+
+	public static String readString(URL url, Charset encoding) throws IOException {
+		return readString(new File(url.getFile()), encoding);
+	}
+
+	public static String readString(File file, Charset encoding) throws IOException {
+		return readString(file.toPath(), encoding);
+	}
+
+	public static String readString(InputStream is, Charset encoding) {
+		try (Scanner s = new java.util.Scanner(is, encoding); Scanner s2 = s.useDelimiter("\\A")) {
+			String string = s2.hasNext() ? s2.next() : "";
+			s.close();
+			s2.close();
+			return string;
 		}
-		return stringList;
 	}
 
 	public static String readString(String path) throws IOException {
-		return readString(new File(path));
+		return readString(path, Charset.defaultCharset());
 	}
 
 	public static String readString(Path path) throws IOException {
-		return readString(path.toFile());
+		return readString(path, Charset.defaultCharset());
 	}
 
 	public static String readString(URL url) throws IOException {
-		return readString(new File(url.getFile()));
+		return readString(url, Charset.defaultCharset());
 	}
 
 	public static String readString(File file) throws IOException {
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			StringBuilder builder = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null)
-				builder.append(line).append("\n");
-			return builder.toString();
-		}
+		return readString(file, Charset.defaultCharset());
 	}
 
 	public static String readString(InputStream is) {
-		java.util.Scanner s = new java.util.Scanner(is);
-		java.util.Scanner s2 = s.useDelimiter("\\A");
-		String string = s2.hasNext() ? s2.next() : "";
-		s.close();
-		s2.close();
-		return string;
+		return readString(is, Charset.defaultCharset());
+	}
+
+	public static Stream<String> readStream(String path, Charset encoding) throws IOException {
+		return readStream(Paths.get(path), encoding);
+	}
+
+	public static Stream<String> readStream(Path path, Charset encoding) throws IOException {
+		return Files.lines(path, encoding);
+	}
+
+	public static Stream<String> readStream(URL url, Charset encoding) throws IOException {
+		return readStream(new File(url.getFile()), encoding);
+	}
+
+	public static Stream<String> readStream(File file, Charset encoding) throws IOException {
+		return readStream(file.toPath(), encoding);
+	}
+
+	public static Stream<String> readStream(InputStream is, Charset encoding) throws IOException {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, encoding))) {
+			return reader.lines();
+		}
+	}
+
+	public static Stream<String> readStream(String path) throws IOException {
+		return readStream(path, Charset.defaultCharset());
+	}
+
+	public static Stream<String> readStream(Path path) throws IOException {
+		return readStream(path, Charset.defaultCharset());
+	}
+
+	public static Stream<String> readStream(URL url) throws IOException {
+		return readStream(url, Charset.defaultCharset());
+	}
+
+	public static Stream<String> readStream(File file) throws IOException {
+		return readStream(file, Charset.defaultCharset());
+	}
+
+	public static Stream<String> readStream(InputStream is) throws IOException {
+		return readStream(is, Charset.defaultCharset());
 	}
 
 	public static BufferedImage readBufferedImage(String path) throws IOException {
@@ -263,6 +324,10 @@ public class FileUtils {
 
 	public static BufferedImage readBufferedImage(File file) throws IOException {
 		return ImageIO.read(file);
+	}
+
+	public static BufferedImage readBufferedImage(InputStream is) throws IOException {
+		return ImageIO.read(is);
 	}
 
 	public static Image readImage(String path) throws IOException {
@@ -321,6 +386,24 @@ public class FileUtils {
 		}
 	}
 
+	public static void writeFile(String path, ByteBuffer data) throws IOException {
+		writeFile(new File(path), data);
+	}
+
+	public static void writeFile(Path path, ByteBuffer data) throws IOException {
+		writeFile(path.toFile(), data);
+	}
+
+	public static void writeFile(URL url, ByteBuffer data) throws IOException {
+		writeFile(new File(url.getFile()), data);
+	}
+
+	public static void writeFile(File file, ByteBuffer data) throws IOException {
+		try (FileOutputStream os = new FileOutputStream(file); FileChannel fc = os.getChannel()) {
+			fc.write(data);
+		}
+	}
+
 	public static void writeFile(String path, List<String> data) throws IOException {
 		writeFile(new File(path), data);
 	}
@@ -345,7 +428,7 @@ public class FileUtils {
 	}
 
 	public static void writeFile(Path path, InputStream stream) throws IOException {
-		java.nio.file.Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	public static void writeFile(URL url, InputStream stream) throws IOException {
