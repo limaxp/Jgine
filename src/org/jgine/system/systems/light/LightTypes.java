@@ -15,7 +15,7 @@ public class LightTypes {
 
 	public static <T extends Light> LightType<T> a(String name, Supplier<T> supplier) {
 		LightType<T> type = new LightType<T>(name, supplier);
-		Registry.LIGHT_TYPES.register(name, type);
+		type.setId(Registry.LIGHT_TYPES.register(name, type));
 		return type;
 	}
 

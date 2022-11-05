@@ -78,7 +78,7 @@ public class InputHandler implements SystemObject {
 			}).run();
 	}
 
-	public InputHandlerType<?> getType() {
+	public InputHandlerType<? extends InputHandler> getType() {
 		return InputHandlerTypes.UNKNOWN;
 	}
 

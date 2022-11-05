@@ -1,5 +1,8 @@
 package org.jgine.system.systems.light;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -67,5 +70,18 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public Light load(DataInput in) throws IOException {
+		Light object = LightTypes.get(in.readInt()).get();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(Light object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
+		object.save(out);
 	}
 }

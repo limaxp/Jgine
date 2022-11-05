@@ -84,6 +84,7 @@ public class Texture implements ITexture, AutoCloseable {
 		NONE.rows = 1;
 	}
 
+	public final String name;
 	private int id;
 	private int width;
 	private int height;
@@ -92,6 +93,11 @@ public class Texture implements ITexture, AutoCloseable {
 	private AnimationFrame[] animation;
 
 	public Texture() {
+		this.name = "";
+	}
+
+	public Texture(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -242,6 +248,11 @@ public class Texture implements ITexture, AutoCloseable {
 	@Override
 	public final int getHeight() {
 		return height;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	public final void setAnimation(AnimationFrame[] animation) {

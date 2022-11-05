@@ -56,6 +56,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 		return null;
 	}
 
+	@Override
 	public T2 getObject(int index) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 //		return new Pointer<T2>().address(address).data;

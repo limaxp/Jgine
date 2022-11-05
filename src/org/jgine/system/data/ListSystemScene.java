@@ -55,6 +55,11 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	public Collection<T2> getObjects() {
 		return new FastArrayList<>(objects, size);
 	}
+	
+	@Override
+	public T2 getObject(int index) {
+		return objects[index];
+	}
 
 	public int indexOf(T2 object) {
 		for (int i = 0; i < size; i++)

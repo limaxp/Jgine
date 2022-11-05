@@ -1,5 +1,8 @@
 package org.jgine.core.entity;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +29,23 @@ public class Entity {
 	private static final IdGenerator ID_GENERATOR = new IdGenerator();
 	private static final Entity[] ID_MAP = new Entity[ID_GENERATOR.getMaxId()];
 
+	private static int generateId(Entity entity) {
+		int id;
+		synchronized (ID_GENERATOR) {
+			id = ID_GENERATOR.generate();
+		}
+		ID_MAP[IdGenerator.index(id)] = entity;
+		return id;
+	}
+
+	public static void freeId(int id) {
+		int index;
+		synchronized (ID_GENERATOR) {
+			index = ID_GENERATOR.free(id);
+		}
+		ID_MAP[index] = null;
+	}
+
 	public final int id;
 	public final Scene scene;
 	public final Transform transform;
@@ -48,15 +68,15 @@ public class Entity {
 	}
 
 	public Entity(Scene scene, Vector2f position, Vector2f rotation, Vector2f scale) {
-		this(scene, position.x, position.y, 0, rotation.x, rotation.y, 0, scale.x, scale.y, 1);
+		this(scene, position.x, position.y, 0.0f, rotation.x, rotation.y, 0.0f, scale.x, scale.y, 1.0f);
 	}
 
 	public Entity(Scene scene, float posX, float posY) {
-		this(scene, posX, posY, 0, 0, 0, 0, 1, 1, 1);
+		this(scene, posX, posY, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	public Entity(Scene scene, float posX, float posY, float rotX, float rotY, float scaleX, float scaleY) {
-		this(scene, posX, posY, 0, rotX, rotY, 0, scaleX, scaleY, 1);
+		this(scene, posX, posY, 0.0f, rotX, rotY, 0.0f, scaleX, scaleY, 1.0f);
 	}
 
 	public Entity(Scene scene, Vector3f position) {
@@ -68,15 +88,12 @@ public class Entity {
 	}
 
 	public Entity(Scene scene, float posX, float posY, float posZ) {
-		this(scene, posX, posY, posZ, 0, 0, 0, 1, 1, 1);
+		this(scene, posX, posY, posZ, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	public Entity(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX,
 			float scaleY, float scaleZ) {
-		synchronized (ID_GENERATOR) {
-			this.id = ID_GENERATOR.generate();
-		}
-		ID_MAP[IdGenerator.index(id)] = this;
+		this.id = generateId(this);
 		this.scene = scene;
 		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
@@ -85,26 +102,23 @@ public class Entity {
 	}
 
 	public void delete() {
-		if (!isAlive())
-			return;
 		scene.removeEntity(this);
-		int idIndex;
-		synchronized (ID_GENERATOR) {
-			idIndex = ID_GENERATOR.free(id);
-		}
-		ID_MAP[idIndex] = null;
 	}
 
 	public final boolean isAlive() {
 		return ID_GENERATOR.isAlive(id);
 	}
 
-	public final <T extends SystemObject> T addSystem(String system, T object) {
-		return addSystem(scene.getSystem(SystemManager.get(system)), object);
+	public final <T extends SystemObject> T addSystem(String name, T object) {
+		return addSystem(scene.getSystem(name), object);
 	}
 
 	public final <T extends SystemObject> T addSystem(Class<? extends EngineSystem> clazz, T object) {
 		return addSystem(scene.getSystem(clazz), object);
+	}
+
+	public final <T extends SystemObject> T addSystem(int id, T object) {
+		return addSystem(scene.getSystem(id), object);
 	}
 
 	public final <T extends SystemObject> T addSystem(EngineSystem system, T object) {
@@ -119,13 +133,18 @@ public class Entity {
 	}
 
 	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(String system, T... objects) {
-		addSystem(scene.getSystem(SystemManager.get(system)), objects);
+	public final <T extends SystemObject> void addSystem(String name, T... objects) {
+		addSystem(scene.getSystem(SystemManager.get(name)), objects);
 	}
 
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(Class<? extends EngineSystem> clazz, T... objects) {
 		addSystem(scene.getSystem(clazz), objects);
+	}
+
+	@SafeVarargs
+	public final <T extends SystemObject> void addSystem(int id, T... objects) {
+		addSystem(scene.getSystem(SystemManager.get(id)), objects);
 	}
 
 	@SafeVarargs
@@ -146,14 +165,20 @@ public class Entity {
 
 	@SuppressWarnings("unchecked")
 	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(String system) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(system)));
+	public final <T extends SystemObject> T[] removeSystem(String name) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(name)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(Class<? extends EngineSystem> clazz) {
 		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public final <T extends SystemObject> T[] removeSystem(int id) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(id)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,13 +207,18 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(String system) {
-		return getSystem(scene.getSystem(SystemManager.get(system)));
+	public final <T extends SystemObject> T getSystem(String name) {
+		return getSystem(scene.getSystem(SystemManager.get(name)));
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz) {
 		return getSystem(scene.getSystem(clazz));
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(int id) {
+		return getSystem(scene.getSystem(SystemManager.get(id)));
 	}
 
 	@Nullable
@@ -205,13 +235,18 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T[] getSystems(String system) {
-		return getSystems(scene.getSystem(SystemManager.get(system)));
+	public final <T extends SystemObject> T[] getSystems(String name) {
+		return getSystems(scene.getSystem(SystemManager.get(name)));
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T[] getSystems(Class<? extends EngineSystem> clazz) {
 		return getSystems(scene.getSystem(clazz));
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T[] getSystems(int id) {
+		return getSystems(scene.getSystem(SystemManager.get(id)));
 	}
 
 	@Nullable
@@ -319,6 +354,33 @@ public class Entity {
 
 	private final void updateChild() {
 		transform.calculateMatrix();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void load(DataInput in) throws IOException {
+		prefab = Prefab.get(in.readInt());
+		// TODO parent, childs
+		transform.load(in);
+
+		int systemSize = in.readInt();
+		for (int i = 0; i < systemSize; i++) {
+			@SuppressWarnings("rawtypes")
+			SystemScene systemScene = scene.getSystem(in.readInt());
+			addSystem(systemScene, systemScene.load(in));
+		}
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(prefab.id);
+		// TODO parent, childs
+		transform.save(out);
+
+		out.writeInt(systems.size());
+		for (Entry<SystemScene<?, ?>, SystemObject[]> entry : getSystemEntries()) {
+			SystemScene<?, ?> systemScene = entry.getKey();
+			out.writeInt(systemScene.system.getId());
+			systemScene.save_(entry.getValue()[0], out);
+		}
 	}
 
 	@Nullable

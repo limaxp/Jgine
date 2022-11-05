@@ -10,8 +10,13 @@ import org.jgine.system.EngineSystem;
 
 public class SystemManager {
 
-	private static final Map<String, EngineSystem> NAME_MAP = new HashMap<String, EngineSystem>();
-	private static final Map<Class<? extends EngineSystem>, EngineSystem> CLASS_MAP = new IdentityHashMap<Class<? extends EngineSystem>, EngineSystem>();
+	public static final int MAX_SIZE = 1000;
+
+	private static final Map<String, EngineSystem> NAME_MAP = new HashMap<String, EngineSystem>(MAX_SIZE);
+	private static final Map<Class<? extends EngineSystem>, EngineSystem> CLASS_MAP = new IdentityHashMap<Class<? extends EngineSystem>, EngineSystem>(
+			MAX_SIZE);
+	private static EngineSystem[] ID_MAP = new EngineSystem[MAX_SIZE];
+	private static int size;
 
 	public static <T extends EngineSystem> T register(String name, T system) {
 		if (NAME_MAP.containsKey(name)) {
@@ -21,6 +26,9 @@ public class SystemManager {
 		NAME_MAP.put(name, system);
 		if (!CLASS_MAP.containsKey(system.getClass()))
 			CLASS_MAP.put(system.getClass(), system);
+		int id = size++;
+		ID_MAP[id] = system;
+		system.init(id, name);
 		return system;
 	}
 
@@ -34,7 +42,16 @@ public class SystemManager {
 		return (T) CLASS_MAP.get(clazz);
 	}
 
-	public static final Collection<EngineSystem> getSystems() {
+	@SuppressWarnings("unchecked")
+	public static <T extends EngineSystem> T get(int id) {
+		return (T) ID_MAP[id];
+	}
+
+	public static Collection<EngineSystem> getSystems() {
 		return NAME_MAP.values();
+	}
+
+	public static int getSystemSize() {
+		return size;
 	}
 }

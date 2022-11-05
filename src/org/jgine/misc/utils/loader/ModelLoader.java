@@ -70,11 +70,9 @@ public class ModelLoader {
 		}).SeekProc((pFile, offset, origin) -> {
 			if (origin == Assimp.aiOrigin_CUR) {
 				data.position(data.position() + (int) offset);
-			}
-			else if (origin == Assimp.aiOrigin_SET) {
+			} else if (origin == Assimp.aiOrigin_SET) {
 				data.position((int) offset);
-			}
-			else if (origin == Assimp.aiOrigin_END) {
+			} else if (origin == Assimp.aiOrigin_END) {
 				data.position(data.limit() + (int) offset);
 			}
 			return 0;
@@ -93,11 +91,14 @@ public class ModelLoader {
 	}
 
 	public static Model load(String path) {
-		AIScene scene = aiImportFileEx(path,
-				aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
+		return load("", path);
+	}
+
+	public static Model load(String name, String path) {
+		AIScene scene = aiImportFileEx(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
-		return new Model(scene);
+		return new Model(name, scene);
 	}
 
 	/**
@@ -108,11 +109,22 @@ public class ModelLoader {
 	 * @return
 	 */
 	public static Model load(ByteBuffer buffer) {
-		AIScene scene = aiImportFileFromMemory(buffer,
-				aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, (ByteBuffer) null);
+		return load("", buffer);
+	}
+
+	/**
+	 * Only works with file formats which don't spread their content onto multiple
+	 * files, such as .obj or .md3.
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public static Model load(String name, ByteBuffer buffer) {
+		AIScene scene = aiImportFileFromMemory(buffer, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate,
+				(ByteBuffer) null);
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
-		return new Model(scene);
+		return new Model(name, scene);
 	}
 
 	public static String getAiLegalString() {
@@ -176,7 +188,8 @@ public class ModelLoader {
 		private String id;
 		private String comments;
 
-		private ModelFormat() {}
+		private ModelFormat() {
+		}
 
 		public String getName() {
 			return name;

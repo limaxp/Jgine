@@ -19,4 +19,9 @@ public class BitmapFont implements Font {
 		this.colums = colums;
 		this.rows = rows;
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
 }

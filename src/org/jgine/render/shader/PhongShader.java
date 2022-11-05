@@ -8,6 +8,8 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.Color;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
@@ -58,7 +60,9 @@ public class PhongShader extends TextureShader {
 		}
 
 		if (directionalLight.checkChanged()) {
-			setUniform3f(uniform_directionalLight_color, directionalLight.getColor());
+			// TODO color?
+			Vector4f color = Color.toVector(directionalLight.getColor());
+			setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
 			setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
 			setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
 		}
@@ -69,7 +73,8 @@ public class PhongShader extends TextureShader {
 			PointLight pointLight = pointLights.get(i);
 			if (pointLight.checkChanged()) {
 				int[] pointLightUniforms = uniforms_pointLights[i];
-				setUniform3f(pointLightUniforms[0], pointLight.getColor());
+				Vector4f color = Color.toVector(pointLight.getColor());
+				setUniform3f(pointLightUniforms[0], color.x, color.y, color.z);
 				setUniformf(pointLightUniforms[1], pointLight.getIntensity());
 				setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
 				setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);

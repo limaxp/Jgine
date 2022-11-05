@@ -1,5 +1,9 @@
 package org.jgine.core;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.Matrix;
@@ -25,6 +29,10 @@ public class Transform implements Cloneable {
 	protected float scaleZ;
 	protected Matrix matrix;
 
+	public Transform(Entity entity) {
+		this(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+	}
+
 	public Transform(Entity entity, Vector3f position, Vector3f rotation, Vector3f scale) {
 		this(entity, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale.x, scale.y, scale.z);
 	}
@@ -32,6 +40,7 @@ public class Transform implements Cloneable {
 	public Transform(Entity entity, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
 			float scaleX, float scaleY, float scaleZ) {
 		this.entity = entity;
+		this.matrix = new Matrix();
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
@@ -41,7 +50,6 @@ public class Transform implements Cloneable {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
-		matrix = new Matrix();
 		calculateMatrix();
 	}
 
@@ -217,5 +225,30 @@ public class Transform implements Cloneable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public final void load(DataInput in) throws IOException {
+		posX = in.readFloat();
+		posY = in.readFloat();
+		posZ = in.readFloat();
+		rotX = in.readFloat();
+		rotY = in.readFloat();
+		rotZ = in.readFloat();
+		scaleX = in.readFloat();
+		scaleY = in.readFloat();
+		scaleZ = in.readFloat();
+		calculateMatrix();
+	}
+
+	public final void save(DataOutput out) throws IOException {
+		out.writeFloat(posX);
+		out.writeFloat(posY);
+		out.writeFloat(posZ);
+		out.writeFloat(rotX);
+		out.writeFloat(rotY);
+		out.writeFloat(rotZ);
+		out.writeFloat(scaleX);
+		out.writeFloat(scaleY);
+		out.writeFloat(scaleZ);
 	}
 }

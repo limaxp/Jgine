@@ -1,5 +1,9 @@
 package org.jgine.system.systems.tileMap;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
@@ -31,5 +35,14 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 			TileMapObject object = objects[i];
 			Renderer2D.render(transforms[i].getMatrix(), object, object.material);
 		}
+	}
+
+	@Override
+	public TileMapObject load(DataInput in) throws IOException {
+		return null;
+	}
+
+	@Override
+	public void save(TileMapObject object, DataOutput out) throws IOException {
 	}
 }

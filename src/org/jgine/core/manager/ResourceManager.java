@@ -2,7 +2,6 @@ package org.jgine.core.manager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
@@ -264,9 +263,5 @@ public class ResourceManager {
 			}
 		else
 			return Paths.get(uri);
-	}
-
-	public static InputStream getResourceInputStream(String name) {
-		return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
 	}
 }

@@ -1,13 +1,16 @@
 package org.jgine.system.systems.ui.objects;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.Color;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.text.Text;
@@ -21,18 +24,17 @@ public class UILabel extends UIObject {
 
 	private Material background;
 	private Text text;
-	private Material material;
+	private Matrix textTransform;
 
 	public UILabel() {
-		background = new Material(new Vector4f(1, 1, 1, 0.2f));
-		material = new Material();
+		background = new Material(Color.TRANSLUCENT_WEAK);
+		textTransform = new Matrix();
 	}
 
 	@Override
 	public UILabel clone() {
 		UILabel obj = (UILabel) super.clone();
 		obj.background = background.clone();
-		obj.material = material.clone();
 		// TODO clone text!
 		return obj;
 	}
@@ -50,13 +52,22 @@ public class UILabel extends UIObject {
 	@Override
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
-		if (text != null) {
-			Matrix transform = new Matrix(getTransform());
-			// TODO fix position!
-			transform.m03 -= getWidth() / 2;
-			transform.scaling(0.001f, 0.001f, 0.001f);
-			UIRenderer.render(transform, text.getMesh(), text.getMaterial());
-		}
+		if (text != null)
+			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial());
+	}
+
+	@Override
+	protected void calculateTransform() {
+		super.calculateTransform();
+		calculateTextTransform();
+	}
+
+	protected void calculateTextTransform() {
+		Transform.calculateMatrix(textTransform, -1 + (getX() + getWidth() * 0.1f) * 2,
+				-1 + (getY() + getHeight() * 0.5f) * 2, 0, getWidth(), getHeight(), 0);
+		if (hasWindow())
+			textTransform.mult(getWindow().getTransform());
+		textTransform.scaling(0.001f, 0.001f, 0.001f);
 	}
 
 	@Override
@@ -75,21 +86,45 @@ public class UILabel extends UIObject {
 	public void onRelease(float mouseX, float mouseY) {
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {
 		super.load(data);
-		Object texture = data.get("background");
-		if (texture != null && texture instanceof String)
-			background.setTexture(ResourceManager.getTexture((String) texture, background));
+		Object backgroundData = data.get("background");
+		if (backgroundData instanceof String)
+			background.setTexture(ResourceManager.getTexture((String) backgroundData));
+		else if (backgroundData instanceof Map)
+			background.load((Map<String, Object>) backgroundData);
 
-		Object text = data.get("text");
-		if (text != null && text instanceof String) {
-			this.text = new TrueTypeText(TrueTypeFont.CONSOLAS, (String) text);
+		Object textData = data.get("text");
+		if (textData instanceof String) {
+			TrueTypeFont font = TrueTypeFont.ARIAL;
+			Object fontData = data.get("font");
+			if (fontData instanceof String) {
+				TrueTypeFont font2 = TrueTypeFont.get((String) textData);
+				if (font2 != null)
+					font = font2;
+			}
+			this.text = new TrueTypeText(font, (String) textData);
 		}
+	}
 
-		// Object text = data.get("text");
-		// if (text != null && text instanceof String)
-		// this.text = new BitmapText(BitmapFont.CONSOLAS, (String) text);
+	@Override
+	public void load(DataInput in) throws IOException {
+		super.load(in);
+		background.load(in);
+		TrueTypeFont font = TrueTypeFont.get(in.readUTF());
+		if (font == null)
+			font = TrueTypeFont.ARIAL;
+		this.text = new TrueTypeText(font, in.readUTF());
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		super.save(out);
+		background.save(out);
+		out.writeUTF(text.getFont().getName());
+		out.writeUTF(text.getText());
 	}
 
 	@Override
@@ -114,11 +149,4 @@ public class UILabel extends UIObject {
 		return text;
 	}
 
-	public void setMaterial(Material material) {
-		this.material = material;
-	}
-
-	public Material getMaterial() {
-		return material;
-	}
 }

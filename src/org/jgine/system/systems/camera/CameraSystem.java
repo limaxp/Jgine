@@ -41,7 +41,9 @@ public class CameraSystem extends EngineSystem {
 
 	@Override
 	public Camera load(Map<String, Object> data) {
-		return new Camera(data);
+		Camera camera = new Camera();
+		camera.load(data);
+		return camera;
 	}
 
 	protected void addCamera(Camera camera) {

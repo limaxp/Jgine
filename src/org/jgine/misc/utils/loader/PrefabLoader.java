@@ -15,9 +15,9 @@ import org.jgine.system.EngineSystem;
 
 public class PrefabLoader {
 
+	private static final Map<String, Object> EMPTY_DATA = new HashMap<String, Object>();
 	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>();
 	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>();
-
 	private static final Map<String, List<PrefabData>> STALLED_PARENTS_MAP = new HashMap<String, List<PrefabData>>();
 	private static final Map<String, List<PrefabData>> STALLED_CHILDS_MAP = new HashMap<String, List<PrefabData>>();
 
@@ -81,7 +81,7 @@ public class PrefabLoader {
 				if (value instanceof Map)
 					prefab.set(system, system.load((Map<String, Object>) value));
 				else
-					prefab.set(system, system.load());
+					prefab.set(system, system.load(EMPTY_DATA));
 			}
 		}
 

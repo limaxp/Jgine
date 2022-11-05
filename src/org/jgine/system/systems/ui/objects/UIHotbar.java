@@ -1,9 +1,14 @@
 package org.jgine.system.systems.ui.objects;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.core.manager.ResourceManager;
+import org.jgine.misc.utils.Color;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
@@ -14,8 +19,8 @@ import org.jgine.system.systems.ui.UIWindow.DragTask;
 
 public class UIHotbar extends UIObject {
 
-	private float thickness;
 	private Material background;
+	private float thickness;
 	private DragTask dragTask;
 
 	public UIHotbar() {
@@ -24,7 +29,7 @@ public class UIHotbar extends UIObject {
 
 	public UIHotbar(float thickness) {
 		setThickness(thickness);
-		background = new Material(new Vector4f(1, 1, 1, 0.4f));
+		background = new Material(Color.TRANSLUCENT_MID);
 	}
 
 	@Override
@@ -68,9 +73,30 @@ public class UIHotbar extends UIObject {
 			dragTask.cancel();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {
 		super.load(data);
+		Object backgroundData = data.get("background");
+		if (backgroundData instanceof String)
+			background.setTexture(ResourceManager.getTexture((String) backgroundData));
+		else if (backgroundData instanceof Map)
+			background.load((Map<String, Object>) backgroundData);
+		setThickness(YamlHelper.toFloat(data.get("thickness"), 0.05f));
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		super.load(in);
+		background.load(in);
+		setThickness(in.readFloat());
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		super.save(out);
+		background.save(out);
+		out.writeFloat(thickness);
 	}
 
 	@Override

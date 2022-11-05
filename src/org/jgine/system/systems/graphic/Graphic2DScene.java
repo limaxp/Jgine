@@ -1,5 +1,8 @@
 package org.jgine.system.systems.graphic;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
@@ -58,5 +61,17 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())
 			Renderer2D.renderQuad(((Transform) iter.next()).getMatrix(), (Material) iter.next());
+	}
+
+	@Override
+	public Material load(DataInput in) throws IOException {
+		Material object = new Material();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(Material object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 }

@@ -1,128 +1,79 @@
 package org.jgine.misc.utils.loader;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
+import java.util.Collection;
+import java.util.List;
 
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.entity.Prefab;
-import org.jgine.core.manager.SystemManager;
-import org.jgine.system.EngineSystem;
+import org.jgine.misc.utils.logger.Logger;
+import org.jgine.system.SystemScene;
 
 public class SceneLoader {
 
-	protected interface LineParser {
-
-		public void parseLine(String line) throws IOException,
-				NumberFormatException, NoSuchElementException;
+	public static Scene load(File file) {
+		try (DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+			return load(is);
+		} catch (FileNotFoundException e) {
+			Logger.err("SceneLoader: File '" + file.getPath() + "' not found", e);
+		} catch (IOException e) {
+			Logger.err("SceneLoader: Error loading file '" + file.getPath() + "'", e);
+		}
+		return null;
 	}
 
-	protected final HashMap<String, LineParser> parsers;
-	protected File path;
-	protected Scene scene;
-	protected Entity currentEntity;
-
-	public SceneLoader() {
-		parsers = new HashMap<String, LineParser>();
-		parsers.put("scene", new SceneLineParser());
+	public static void write(Scene scene, File file) {
+		try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+			write(scene, os);
+		} catch (FileNotFoundException e) {
+			Logger.err("SceneLoader: File '" + file.getPath() + "' not found", e);
+		} catch (IOException e) {
+			Logger.err("SceneLoader: Error writing file '" + file.getPath() + "'", e);
+		}
 	}
 
-	public Scene load(File file) throws IOException {
-		path = file.getParentFile();
-		String filename = file.getName();
-		scene = Engine.getInstance().createScene(filename);
-		parseFile(filename);
+	// TODO transform calculates Matrix 2 times on load!
+
+	public static Scene load(DataInput in) throws IOException {
+		String name = in.readUTF();
+		Scene scene = Engine.getInstance().createScene(name);
+
+		int systemSize = in.readInt();
+		for (int i = 0; i < systemSize; i++)
+			scene.addSystem(in.readInt());
+
+		int entitySize = in.readInt();
+		for (int i = 0; i < entitySize; i++)
+			new Entity(scene).load(in);
 		return scene;
+
+		// TODO updateOrder, renderOrder, spacePartitioning
 	}
 
-	protected void parseFile(String filename) throws IOException {
-		// get the file relative to the source path
-		File file = new File(path, filename);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		LineParser parser = getParser(filename);
+	public static void write(Scene scene, DataOutput out) throws IOException {
+		out.writeUTF(scene.name);
 
-		// parse every line in the file
-		while (true) {
-			String line = reader.readLine();
-			// no more lines to read
-			if (line == null) {
-				reader.close();
-				return;
-			}
-			line = line.trim();
-			// ignore blank lines and comments
-			if (line.length() > 0 && !line.startsWith("#")) {
-				// interpret the line
-				try {
-					parser.parseLine(line);
-				} catch (NumberFormatException ex) {
-					reader.close();
-					throw new IOException(ex.getMessage());
-				} catch (NoSuchElementException ex) {
-					reader.close();
-					throw new IOException(ex.getMessage());
-				}
-			}
-		}
-	}
+		Collection<SystemScene<?, ?>> systems = scene.getSystems();
+		out.writeInt(systems.size());
+		for (SystemScene<?, ?> systemScene : systems)
+			out.writeInt(systemScene.system.getId());
 
-	private LineParser getParser(String filename) {
-		// get the parser based on the file extension
-		LineParser parser = null;
-		int extIndex = filename.lastIndexOf('.');
-		if (extIndex != -1) {
-			String ext = filename.substring(extIndex + 1);
-			parser = (LineParser) parsers.get(ext.toLowerCase());
-		}
-		if (parser == null) {
-			parser = (LineParser) parsers.get("scene");
-		}
-		return parser;
-	}
+		List<Entity> entities = scene.getEntities();
+		out.writeInt(entities.size());
+		for (Entity entity : entities)
+			entity.save(out);
 
-	protected class SceneLineParser implements LineParser {
-
-		public void parseLine(String line) throws IOException,
-				NumberFormatException, NoSuchElementException {
-			StringTokenizer tokenizer = new StringTokenizer(line);
-			String command = tokenizer.nextToken();
-			switch (command) {
-			case "system":
-				scene.addSystem(SystemManager.get(tokenizer.nextToken()));
-				break;
-
-			case "entity":
-				String name = tokenizer.nextToken();
-				Prefab prefab = Prefab.get(name);
-				currentEntity = new Entity(scene);
-				if (prefab != null)
-					prefab.create(scene, currentEntity);
-				break;
-
-			case "addSystem":
-				EngineSystem system = SystemManager.get(tokenizer.nextToken());
-				if (system != null) {
-					// TODO create some System to load data
-					// probably save as Yaml
-					currentEntity.addSystem(system, system.load()); 
-				}
-				break;
-
-			case "removeSystem":
-				EngineSystem system2 = SystemManager.get(tokenizer.nextToken());
-				if (system2 != null)
-					currentEntity.removeSystem(system2);
-				break;
-
-			default:
-				break;
-			}
-		}
+		// TODO updateOrder, renderOrder, spacePartitioning
 	}
 }

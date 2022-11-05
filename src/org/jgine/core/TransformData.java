@@ -1,6 +1,9 @@
 package org.jgine.core;
 
+import java.util.List;
 import java.util.Map;
+
+import org.jgine.misc.utils.loader.YamlHelper;
 
 public class TransformData {
 
@@ -16,40 +19,60 @@ public class TransformData {
 
 	public TransformData load(Map<String, Object> data) {
 		Object position = data.get("position");
-		if (position != null) {
-			if (position instanceof Number)
-				posX = posY = posZ = ((Number) position).floatValue();
-			else if (position instanceof Map) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> positionMap = (Map<String, Object>) position;
-				posX = ((Number) positionMap.getOrDefault("x", 0)).floatValue();
-				posY = ((Number) positionMap.getOrDefault("y", 0)).floatValue();
-				posZ = ((Number) positionMap.getOrDefault("z", 0)).floatValue();
+		if (position instanceof Number)
+			posX = posY = posZ = ((Number) position).floatValue();
+		else if (position instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> positionList = (List<Object>) position;
+			if (positionList.size() >= 3) {
+				posX = YamlHelper.toFloat(positionList.get(0));
+				posY = YamlHelper.toFloat(positionList.get(1));
+				posZ = YamlHelper.toFloat(positionList.get(2));
 			}
+		} else if (position instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> positionMap = (Map<String, Object>) position;
+			posX = YamlHelper.toFloat(positionMap.get("x"));
+			posY = YamlHelper.toFloat(positionMap.get("y"));
+			posZ = YamlHelper.toFloat(positionMap.get("z"));
 		}
+
 		Object rotation = data.get("rotation");
-		if (rotation != null) {
-			if (rotation instanceof Number)
-				rotX = rotY = rotZ = ((Number) rotation).floatValue();
-			else if (rotation instanceof Map) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> rotationMap = (Map<String, Object>) rotation;
-				rotX = ((Number) rotationMap.getOrDefault("x", 0)).floatValue();
-				rotY = ((Number) rotationMap.getOrDefault("y", 0)).floatValue();
-				rotZ = ((Number) rotationMap.getOrDefault("z", 0)).floatValue();
+		if (rotation instanceof Number)
+			rotX = rotY = rotZ = ((Number) rotation).floatValue();
+		else if (rotation instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> rotationList = (List<Object>) rotation;
+			if (rotationList.size() >= 3) {
+				rotX = YamlHelper.toFloat(rotationList.get(0));
+				rotY = YamlHelper.toFloat(rotationList.get(1));
+				rotZ = YamlHelper.toFloat(rotationList.get(2));
 			}
+		} else if (rotation instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> rotationMap = (Map<String, Object>) rotation;
+			rotX = YamlHelper.toFloat(rotationMap.get("x"));
+			rotY = YamlHelper.toFloat(rotationMap.get("y"));
+			rotZ = YamlHelper.toFloat(rotationMap.get("z"));
 		}
+
 		Object scale = data.get("scale");
-		if (scale != null) {
-			if (scale instanceof Number)
-				scaleX = scaleY = scaleZ = ((Number) scale).floatValue();
-			else if (scale instanceof Map) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> scaleMap = (Map<String, Object>) scale;
-				scaleX = ((Number) scaleMap.getOrDefault("x", 1)).floatValue();
-				scaleY = ((Number) scaleMap.getOrDefault("y", 1)).floatValue();
-				scaleZ = ((Number) scaleMap.getOrDefault("z", 1)).floatValue();
+		if (scale instanceof Number)
+			scaleX = scaleY = scaleZ = ((Number) scale).floatValue();
+		else if (scale instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> scaleList = (List<Object>) scale;
+			if (scaleList.size() >= 3) {
+				scaleX = YamlHelper.toFloat(scaleList.get(0));
+				scaleY = YamlHelper.toFloat(scaleList.get(1));
+				scaleZ = YamlHelper.toFloat(scaleList.get(2));
 			}
+		} else if (scale instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> scaleMap = (Map<String, Object>) scale;
+			scaleX = YamlHelper.toFloat(scaleMap.get("x"));
+			scaleY = YamlHelper.toFloat(scaleMap.get("y"));
+			scaleZ = YamlHelper.toFloat(scaleMap.get("z"));
 		}
 		return this;
 	}

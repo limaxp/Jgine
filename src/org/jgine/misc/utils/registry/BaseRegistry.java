@@ -12,13 +12,13 @@ public class BaseRegistry<T> extends Registry<T> {
 
 	protected final Object[] values;
 	protected int size;
-	protected final Map<Integer, T> idMap;
+	protected final Object[] idMap;
 	protected final Map<String, T> keyMap;
 
 	public BaseRegistry(String name, int size) {
 		super(name);
 		values = new Object[size];
-		idMap = new HashMap<Integer, T>(size);
+		idMap = new Object[size];
 		keyMap = new HashMap<String, T>(size);
 	}
 
@@ -35,7 +35,7 @@ public class BaseRegistry<T> extends Registry<T> {
 
 	@Override
 	public boolean register(int id, String key, T value) {
-		if (idMap.containsKey(id)) {
+		if (idMap[id] != null) {
 			Logger.log(name + " Registry: id collision! id = " + id + ", value = " + value);
 			return false;
 		}
@@ -44,7 +44,7 @@ public class BaseRegistry<T> extends Registry<T> {
 			return false;
 		}
 		values[size++] = value;
-		idMap.put(id, value);
+		idMap[id] = value;
 		keyMap.put(key, value);
 		return true;
 	}
@@ -59,14 +59,17 @@ public class BaseRegistry<T> extends Registry<T> {
 		return keyMap.getOrDefault(key, defaultValue);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T get(int id) {
-		return idMap.get(id);
+		return (T) idMap[id];
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T getOrDefault(int id, T defaultValue) {
-		return idMap.getOrDefault(id, defaultValue);
+		Object value = idMap[id];
+		return value != null ? (T) value : null;
 	}
 
 	@SuppressWarnings("unchecked")

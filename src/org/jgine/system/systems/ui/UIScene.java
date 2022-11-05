@@ -1,5 +1,9 @@
 package org.jgine.system.systems.ui;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
@@ -157,5 +161,18 @@ public class UIScene extends ListSystemScene<UISystem, UIObject> {
 			} else
 				object.render();
 		}
+	}
+
+	@Override
+	public UIObject load(DataInput in) throws IOException {
+		UIObject object = UIObjectTypes.get(in.readInt()).get();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(UIObject object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
+		object.save(out);
 	}
 }

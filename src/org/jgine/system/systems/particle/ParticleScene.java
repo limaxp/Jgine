@@ -1,5 +1,9 @@
 package org.jgine.system.systems.particle;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
@@ -54,5 +58,15 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 				Renderer.render(transforms[i].getMatrix(), object, object.material);
 		}
 		Renderer.disableDepthTest();
+	}
+
+	@Override
+	public ParticleObject load(DataInput in) throws IOException {
+		ParticleObject object = new ParticleObject();
+		return object;
+	}
+
+	@Override
+	public void save(ParticleObject object, DataOutput out) throws IOException {
 	}
 }

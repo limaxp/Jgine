@@ -1,5 +1,8 @@
 package org.jgine.system.systems.collision.collider;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -7,13 +10,14 @@ import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionData;
 
 public class LineCollider extends Collider {
 
@@ -73,12 +77,18 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		Object normal = data.get("normal");
-		if (normal != null && normal instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> normalMap = (Map<String, Object>) normal;
-			this.normal = new Vector2f((float) normalMap.getOrDefault("x", 0), (float) normalMap.getOrDefault("y", 0));
-		}
+		normal = YamlHelper.toVector2f(data.get("normal"));
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		normal = new Vector2f(in.readFloat(), in.readFloat());
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(normal.x);
+		out.writeFloat(normal.y);
 	}
 
 	@Override

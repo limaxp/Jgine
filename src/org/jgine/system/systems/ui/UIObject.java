@@ -1,11 +1,15 @@
 package org.jgine.system.systems.ui;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
 
 public abstract class UIObject implements SystemObject, Cloneable {
@@ -16,12 +20,10 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	private float width;
 	private float height;
 	private Matrix transform;
-	boolean transformChanged;
 	boolean isFocused;
 
 	public UIObject() {
 		transform = new Matrix();
-		transformChanged = true;
 		isFocused = false;
 	}
 
@@ -35,8 +37,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public UIObject clone() {
 		try {
 			UIObject obj = (UIObject) super.clone();
-			obj.transform = new Matrix();
-			obj.transformChanged = true;
+			obj.transform = new Matrix(transform);
 			return obj;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -59,50 +60,62 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public abstract void onRelease(float mouseX, float mouseY);
 
 	public void load(Map<String, Object> data) {
-		Object x = data.get("x");
-		if (x != null && x instanceof Number)
-			this.x = ((Number) x).floatValue();
-		Object y = data.get("y");
-		if (y != null && y instanceof Number)
-			this.y = ((Number) y).floatValue();
-		Object width = data.get("width");
-		if (width != null && width instanceof Number)
-			this.width = ((Number) width).floatValue();
-		Object height = data.get("height");
-		if (height != null && height instanceof Number)
-			this.height = ((Number) height).floatValue();
-		Object scale = data.get("scale");
-		if (scale != null && scale instanceof Number)
-			setScale(((Number) scale).floatValue());
+		x = YamlHelper.toFloat(data.get("x"));
+		y = YamlHelper.toFloat(data.get("y"));
+		width = YamlHelper.toFloat(data.get("width"));
+		height = YamlHelper.toFloat(data.get("height"));
+		float scale = YamlHelper.toFloat(data.get("scale"));
+		if (scale != 0)
+			setScale(scale);
+		calculateTransform();
+	}
+
+	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		width = in.readFloat();
+		height = in.readFloat();
+		calculateTransform();
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(width);
+		out.writeFloat(height);
+		calculateTransform();
 	}
 
 	public abstract UIObjectType<?> getType();
 
 	public final Matrix getTransform() {
-		if (!transformChanged)
-			return transform;
-		calculateTransform();
-		transformChanged = false;
 		return transform;
 	}
 
-	protected Matrix calculateTransform() {
+	protected void calculateTransform() {
 		Transform.calculateMatrix(transform, -1 + (x + width * 0.5f) * 2, -1 + (y + height * 0.5f) * 2, 0, width,
 				height, 0);
 		if (hasWindow())
 			transform.mult(window.getTransform());
-		return transform;
+	}
+
+	public final void set(float x, float y, float width, float height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		calculateTransform();
 	}
 
 	public final void setPos(float x, float y) {
 		this.x = x;
 		this.y = y;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final void setX(float x) {
 		this.x = x;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final float getX() {
@@ -111,7 +124,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public final void setY(float y) {
 		this.y = y;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final float getY() {
@@ -121,18 +134,18 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public final void setScale(float scale) {
 		this.width = scale;
 		this.height = scale;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final void setScale(float width, float height) {
 		this.width = width;
 		this.height = height;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final void setWidth(float width) {
 		this.width = width;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final float getWidth() {
@@ -141,7 +154,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public final void setHeight(float height) {
 		this.height = height;
-		transformChanged = true;
+		calculateTransform();
 	}
 
 	public final float getHeight() {
@@ -154,6 +167,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.window = window;
 		if (window != null)
 			window.childs.add(this);
+		calculateTransform();
 	}
 
 	@Nullable

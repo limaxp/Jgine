@@ -1,11 +1,15 @@
 package org.jgine.system.systems.collision.collider;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
@@ -80,12 +84,20 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		Object width = data.get("width");
-		if (width != null && width instanceof Number)
-			this.w = ((Number) width).floatValue();
-		Object height = data.get("height");
-		if (height != null && height instanceof Number)
-			this.h = ((Number) height).floatValue();
+		w = YamlHelper.toFloat(data.get("width"));
+		h = YamlHelper.toFloat(data.get("height"));
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		w = in.readFloat();
+		h = in.readFloat();
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(w);
+		out.writeFloat(h);
 	}
 
 	@Override

@@ -87,8 +87,7 @@ public abstract class ResourceLoader {
 				try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap())) {
 					loadRecources(fileSystem.getPath(name));
 				}
-			}
-			else
+			} else
 				loadRecources(Paths.get(uri));
 		}
 	}
@@ -99,11 +98,11 @@ public abstract class ResourceLoader {
 				Path subPath = it.next();
 				String fileName = subPath.getFileName().toString();
 				if (fileName.contains(".")) {
-					String resourceName = path.getFileName().toString() + subPath.toString().split(path.getFileName()
-							.toString())[1];
-					InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+					String resourcePath = path.getFileName().toString()
+							+ subPath.toString().split(path.getFileName().toString())[1];
+					InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 					if (is != null)
-						switchExtension(fileName, resourceName, is);
+						switchExtension(fileName, resourcePath, is);
 				}
 			}
 		}
@@ -116,7 +115,7 @@ public abstract class ResourceLoader {
 		loadingPrefabs.clear();
 	}
 
-	private void switchExtension(String fileName, String resourceName, InputStream is) throws IOException {
+	private void switchExtension(String fileName, String resourcePath, InputStream is) throws IOException {
 		int dotPosition = fileName.lastIndexOf('.');
 		String name = fileName.substring(0, dotPosition);
 		String extension = fileName.substring(dotPosition + 1, fileName.length());
@@ -124,7 +123,7 @@ public abstract class ResourceLoader {
 
 		case "png":
 		case "jpg":
-			textureCallback(name, loadTexture(resourceName, is));
+			textureCallback(name, loadTexture(name, resourcePath, is));
 			is.close();
 			break;
 
@@ -139,12 +138,12 @@ public abstract class ResourceLoader {
 			break;
 
 		case "ogg":
-			soundCallback(name, loadSoundOgg(name, is));
+			soundCallback(name, loadSoundOgg(is));
 			is.close();
 			break;
 
 		case "wav":
-			soundCallback(name, loadSoundWav(name, is));
+			soundCallback(name, loadSoundWav(is));
 			is.close();
 			break;
 
@@ -157,7 +156,7 @@ public abstract class ResourceLoader {
 
 		default:
 			if (ModelLoader.supportsImportExtension(extension))
-				modelCallback(name, loadModel(is));
+				modelCallback(name, loadModel(name, is));
 			is.close();
 			break;
 		}
@@ -172,7 +171,7 @@ public abstract class ResourceLoader {
 
 		case "png":
 		case "jpg":
-			textureCallback(name, loadTexture(file));
+			textureCallback(name, loadTexture(name, file));
 			break;
 
 		case "fs":
@@ -185,11 +184,11 @@ public abstract class ResourceLoader {
 			break;
 
 		case "ogg":
-			soundCallback(name, loadSoundOgg(name, file));
+			soundCallback(name, loadSoundOgg(file));
 			break;
 
 		case "wav":
-			soundCallback(name, loadSoundWav(name, file));
+			soundCallback(name, loadSoundWav(file));
 			break;
 
 		case "js":
@@ -200,14 +199,14 @@ public abstract class ResourceLoader {
 
 		default:
 			if (ModelLoader.supportsImportExtension(extension))
-				modelCallback(name, loadModel(file.getPath()));
+				modelCallback(name, loadModel(name, file.getPath()));
 			break;
 		}
 	}
 
 	@Nullable
-	public static Model loadModel(String path) {
-		return ModelLoader.load(path);
+	public static Model loadModel(String name, String path) {
+		return ModelLoader.load(name, path);
 	}
 
 	/**
@@ -217,7 +216,7 @@ public abstract class ResourceLoader {
 	 * @param is
 	 * @return
 	 */
-	public static Model loadModel(InputStream is) {
+	public static Model loadModel(String name, InputStream is) {
 		ByteBuffer buffer;
 		try {
 			buffer = FileUtils.readByteBuffer(is);
@@ -225,17 +224,17 @@ public abstract class ResourceLoader {
 			Logger.err("ResourceLoader: Model input stream could not be loaded!", e);
 			return null;
 		}
-		return ModelLoader.load(buffer);
+		return ModelLoader.load(name, buffer);
 	}
 
 	@Nullable
-	public static Texture loadTexture(File file) {
-		return TextureLoader.loadTexture(file);
+	public static Texture loadTexture(String name, File file) {
+		return TextureLoader.loadTexture(name, file);
 	}
 
 	@Nullable
-	public static Texture loadTexture(String resourceName, InputStream is) {
-		return TextureLoader.loadTexture(resourceName, is);
+	public static Texture loadTexture(String name, String resourcePath, InputStream is) {
+		return TextureLoader.loadTexture(name, resourcePath, is);
 	}
 
 	@Nullable
@@ -264,7 +263,7 @@ public abstract class ResourceLoader {
 	}
 
 	@Nullable
-	public static SoundBuffer loadSoundOgg(String name, File file) {
+	public static SoundBuffer loadSoundOgg(File file) {
 		try (FileInputStream fis = new FileInputStream(file)) {
 			if (fis.available() > SoundStream.MIN_SIZE)
 				return SoundStream.from(fis);
@@ -277,25 +276,25 @@ public abstract class ResourceLoader {
 	}
 
 	@Nullable
-	public static SoundBuffer loadSoundOgg(String name, InputStream is) {
+	public static SoundBuffer loadSoundOgg(InputStream is) {
 		try {
 			if (is.available() > SoundStream.MIN_SIZE)
 				return SoundStream.from(is);
 			else
 				return new SoundBuffer(is);
 		} catch (IOException e) {
-			Logger.err("ResourceLoader: Sound '" + name + "' input stream could not be loaded!", e);
+			Logger.err("ResourceLoader: Ogg input stream could not be loaded!", e);
 			return null;
 		}
 	}
 
 	@Nullable
-	public static SoundBuffer loadSoundWav(String name, File file) {
+	public static SoundBuffer loadSoundWav(File file) {
 		WaveData waveData = WaveData.create(file);
 		SoundBuffer soundBuffer;
 		if (waveData.data.remaining() > SoundStream.MIN_SIZE)
-			soundBuffer = new SoundStream(waveData.data, waveData.format, waveData.samplerate, waveData.data
-					.remaining());
+			soundBuffer = new SoundStream(waveData.data, waveData.format, waveData.samplerate,
+					waveData.data.remaining());
 		else
 			soundBuffer = new SoundBuffer(waveData.data, waveData.format, waveData.samplerate);
 		waveData.dispose();
@@ -303,19 +302,19 @@ public abstract class ResourceLoader {
 	}
 
 	@Nullable
-	public static SoundBuffer loadSoundWav(String name, InputStream is) {
+	public static SoundBuffer loadSoundWav(InputStream is) {
 		try (BufferedInputStream bis = new BufferedInputStream(is)) {
 			WaveData waveData = WaveData.create(bis);
 			SoundBuffer soundBuffer;
 			if (waveData.data.remaining() > SoundStream.MIN_SIZE)
-				soundBuffer = new SoundStream(waveData.data, waveData.format, waveData.samplerate, waveData.data
-						.remaining());
+				soundBuffer = new SoundStream(waveData.data, waveData.format, waveData.samplerate,
+						waveData.data.remaining());
 			else
 				soundBuffer = new SoundBuffer(waveData.data, waveData.format, waveData.samplerate);
 			waveData.dispose();
 			return soundBuffer;
 		} catch (IOException e) {
-			Logger.err("ResourceLoader: Sound '" + name + "' could not be loaded!", e);
+			Logger.err("ResourceLoader: Wavefront input stream could not be loaded!", e);
 			return null;
 		}
 	}

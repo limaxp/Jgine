@@ -23,6 +23,7 @@ public class IdGenerator {
 
 	public IdGenerator(int maxId) {
 		generation = new byte[maxId];
+		size = 1;
 		freeIndices = new ArrayBlockingQueue<Integer>(MINIMUM_FREE_INDICES + 1000);
 	}
 

@@ -29,12 +29,12 @@ public class ColliderTypes {
 	public static final ColliderType<BoundingCircle> CIRCLE = a("circle", BoundingCircle::new);
 
 	public static final ColliderType<AxisAlignedBoundingQuad> QUAD = a("quad", AxisAlignedBoundingQuad::new);
-	
+
 	public static final ColliderType<PolygonCollider> POLYGON = a("polygon", PolygonCollider::new);
 
 	public static <T extends Collider> ColliderType<T> a(String name, Supplier<T> supplier) {
 		ColliderType<T> type = new ColliderType<T>(name, supplier);
-		Registry.COLLIDER_TYPES.register(name, type);
+		type.setId(Registry.COLLIDER_TYPES.register(name, type));
 		return type;
 	}
 

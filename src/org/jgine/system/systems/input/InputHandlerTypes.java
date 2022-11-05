@@ -20,7 +20,7 @@ public class InputHandlerTypes {
 
 	public static <T extends InputHandler> InputHandlerType<T> a(String name, Supplier<T> supplier) {
 		InputHandlerType<T> type = new InputHandlerType<T>(name, supplier);
-		Registry.INPUT_HANDLER_TYPES.register(name, type);
+		type.setId(Registry.INPUT_HANDLER_TYPES.register(name, type));
 		return type;
 	}
 

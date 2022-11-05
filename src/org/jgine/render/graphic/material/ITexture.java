@@ -2,6 +2,8 @@ package org.jgine.render.graphic.material;
 
 public interface ITexture extends AutoCloseable {
 
+	public String getName();
+
 	public int getWidth();
 
 	public int getHeight();
@@ -16,7 +18,7 @@ public interface ITexture extends AutoCloseable {
 
 	@Override
 	public void close();
-	
+
 	public default TextureAnimationHandler createAnimationHandler() {
 		return TextureAnimationHandler.NONE;
 	}

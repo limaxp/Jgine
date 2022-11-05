@@ -54,6 +54,8 @@ public class Scene {
 
 	final void free() {
 		UpdateManager.unregister(this);
+		for (Entity entity : entities)
+			Entity.freeId(entity.id);
 		entities.clear();
 		for (SystemScene<?, ?> systemScene : systemList)
 			systemScene.free();
@@ -62,12 +64,16 @@ public class Scene {
 		systemList.clear();
 	}
 
-	public final <T extends SystemScene<?, ?>> T addSystem(String system) {
-		return addSystem(SystemManager.get(system));
+	public final <T extends SystemScene<?, ?>> T addSystem(String name) {
+		return addSystem(SystemManager.get(name));
 	}
 
 	public final <T extends SystemScene<?, ?>> T addSystem(Class<? extends EngineSystem> clazz) {
 		return addSystem(SystemManager.get(clazz));
+	}
+
+	public final <T extends SystemScene<?, ?>> T addSystem(int id) {
+		return addSystem(SystemManager.get(id));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,12 +86,16 @@ public class Scene {
 		return (T) systemScene;
 	}
 
-	public final <T extends SystemScene<?, ?>> T removeSystem(String system) {
-		return removeSystem(SystemManager.get(system));
+	public final <T extends SystemScene<?, ?>> T removeSystem(String name) {
+		return removeSystem(SystemManager.get(name));
 	}
 
 	public final <T extends SystemScene<?, ?>> T removeSystem(Class<? extends EngineSystem> clazz) {
 		return removeSystem(SystemManager.get(clazz));
+	}
+
+	public final <T extends SystemScene<?, ?>> T removeSystem(int id) {
+		return removeSystem(SystemManager.get(id));
 	}
 
 	@Nullable
@@ -113,9 +123,9 @@ public class Scene {
 		}
 	}
 
-	public final void addSystems(String... systems) {
-		for (String system : systems)
-			addSystem(SystemManager.get(system));
+	public final void addSystems(String... names) {
+		for (String name : names)
+			addSystem(SystemManager.get(name));
 	}
 
 	@SafeVarargs
@@ -124,20 +134,30 @@ public class Scene {
 			addSystem(SystemManager.get(clazz));
 	}
 
+	public final void addSystems(int... ids) {
+		for (int id : ids)
+			addSystem(SystemManager.get(id));
+	}
+
 	public final void addSystems(EngineSystem... systems) {
 		for (EngineSystem system : systems)
 			addSystem(system);
 	}
 
-	public final void removeSystems(String... systems) {
-		for (String system : systems)
-			removeSystem(SystemManager.get(system));
+	public final void removeSystems(String... names) {
+		for (String name : names)
+			removeSystem(SystemManager.get(name));
 	}
 
 	@SafeVarargs
 	public final void removeSystems(Class<? extends EngineSystem>... classes) {
 		for (Class<? extends EngineSystem> clazz : classes)
 			removeSystem(SystemManager.get(clazz));
+	}
+
+	public final void removeSystems(int... ids) {
+		for (int id : ids)
+			removeSystem(SystemManager.get(id));
 	}
 
 	public final void removeSystems(EngineSystem... systems) {
@@ -169,8 +189,8 @@ public class Scene {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(String system) {
-		return (T) systemMap.get(SystemManager.get(system));
+	public final <T extends SystemScene<?, ?>> T getSystem(String name) {
+		return (T) systemMap.get(SystemManager.get(name));
 	}
 
 	@Nullable
@@ -181,16 +201,26 @@ public class Scene {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
+	public final <T extends SystemScene<?, ?>> T getSystem(int id) {
+		return (T) systemMap.get(SystemManager.get(id));
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T getSystem(EngineSystem system) {
 		return (T) systemMap.get(system);
 	}
 
-	public final boolean hasSystem(String system) {
-		return systemMap.containsKey(SystemManager.get(system));
+	public final boolean hasSystem(String name) {
+		return systemMap.containsKey(SystemManager.get(name));
 	}
 
 	public final boolean hasSystem(Class<? extends EngineSystem> clazz) {
 		return systemMap.containsKey(SystemManager.get(clazz));
+	}
+
+	public final boolean hasSystem(int id) {
+		return systemMap.containsKey(SystemManager.get(id));
 	}
 
 	public final boolean hasSystem(EngineSystem system) {
@@ -202,7 +232,10 @@ public class Scene {
 	}
 
 	public final void removeEntity(Entity entity) {
-		Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
+		if (entity.isAlive()) {
+			Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
+			Entity.freeId(entity.id);
+		}
 	}
 
 	private final void removeEntityIntern(Entity entity) {
@@ -213,8 +246,10 @@ public class Scene {
 			for (int i = 0; i < objects.length; i++)
 				system.removeObject_(objects[i]);
 		}
-		for (Entity child : entity.getChilds())
+		for (Entity child : entity.getChilds()) {
 			removeEntityIntern(child);
+			Entity.freeId(child.id);
+		}
 		entity.setParent(null);
 		entity.clearChilds();
 		entity.transform.cleanupEntity();

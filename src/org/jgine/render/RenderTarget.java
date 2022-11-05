@@ -85,6 +85,11 @@ public class RenderTarget implements ITexture, AutoCloseable {
 	}
 
 	@Override
+	public String getName() {
+		return texture.name;
+	}
+
+	@Override
 	public int getWidth() {
 		return texture.getWidth();
 	}

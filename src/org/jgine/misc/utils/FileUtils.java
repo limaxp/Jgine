@@ -655,15 +655,15 @@ public class FileUtils {
 		}
 	}
 
-	private static InputStream getResourceStream(Class<?> clazz, String name) {
+	public static InputStream getResourceStream(Class<?> clazz, String name) {
 		return clazz.getResourceAsStream(name);
 	}
 
-	private static InputStream getResourceStream(ClassLoader classLoader, String name) {
+	public static InputStream getResourceStream(ClassLoader classLoader, String name) {
 		return classLoader.getResourceAsStream(name);
 	}
 
-	private static InputStream getResourceStream(String name) {
+	public static InputStream getResourceStream(String name) {
 		return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
 	}
 

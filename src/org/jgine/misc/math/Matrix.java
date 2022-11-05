@@ -54,10 +54,8 @@ public class Matrix implements Cloneable {
 		this.m33 = 1;
 	}
 
-	public Matrix(float m00, float m01, float m02, float m03,
-			float m10, float m11, float m12, float m13,
-			float m20, float m21, float m22, float m23,
-			float m30, float m31, float m32, float m33) {
+	public Matrix(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20,
+			float m21, float m22, float m23, float m30, float m31, float m32, float m33) {
 		this.m00 = m00;
 		this.m01 = m01;
 		this.m02 = m02;
@@ -156,38 +154,38 @@ public class Matrix implements Cloneable {
 	}
 
 	public Matrix mult(Matrix right) {
-		float nm00 = FastMath.fma(m00, right.m00, FastMath.fma(m10, right.m01, FastMath.fma(m20, right.m02, m30
-				* right.m03)));
-		float nm01 = FastMath.fma(m01, right.m00, FastMath.fma(m11, right.m01, FastMath.fma(m21, right.m02, m31
-				* right.m03)));
-		float nm02 = FastMath.fma(m02, right.m00, FastMath.fma(m12, right.m01, FastMath.fma(m22, right.m02, m32
-				* right.m03)));
-		float nm03 = FastMath.fma(m03, right.m00, FastMath.fma(m13, right.m01, FastMath.fma(m23, right.m02, m33
-				* right.m03)));
-		float nm10 = FastMath.fma(m00, right.m10, FastMath.fma(m10, right.m11, FastMath.fma(m20, right.m12, m30
-				* right.m13)));
-		float nm11 = FastMath.fma(m01, right.m10, FastMath.fma(m11, right.m11, FastMath.fma(m21, right.m12, m31
-				* right.m13)));
-		float nm12 = FastMath.fma(m02, right.m10, FastMath.fma(m12, right.m11, FastMath.fma(m22, right.m12, m32
-				* right.m13)));
-		float nm13 = FastMath.fma(m03, right.m10, FastMath.fma(m13, right.m11, FastMath.fma(m23, right.m12, m33
-				* right.m13)));
-		float nm20 = FastMath.fma(m00, right.m20, FastMath.fma(m10, right.m21, FastMath.fma(m20, right.m22, m30
-				* right.m23)));
-		float nm21 = FastMath.fma(m01, right.m20, FastMath.fma(m11, right.m21, FastMath.fma(m21, right.m22, m31
-				* right.m23)));
-		float nm22 = FastMath.fma(m02, right.m20, FastMath.fma(m12, right.m21, FastMath.fma(m22, right.m22, m32
-				* right.m23)));
-		float nm23 = FastMath.fma(m03, right.m20, FastMath.fma(m13, right.m21, FastMath.fma(m23, right.m22, m33
-				* right.m23)));
-		float nm30 = FastMath.fma(m00, right.m30, FastMath.fma(m10, right.m31, FastMath.fma(m20, right.m32, m30
-				* right.m33)));
-		float nm31 = FastMath.fma(m01, right.m30, FastMath.fma(m11, right.m31, FastMath.fma(m21, right.m32, m31
-				* right.m33)));
-		float nm32 = FastMath.fma(m02, right.m30, FastMath.fma(m12, right.m31, FastMath.fma(m22, right.m32, m32
-				* right.m33)));
-		float nm33 = FastMath.fma(m03, right.m30, FastMath.fma(m13, right.m31, FastMath.fma(m23, right.m32, m33
-				* right.m33)));
+		float nm00 = FastMath.fma(m00, right.m00,
+				FastMath.fma(m10, right.m01, FastMath.fma(m20, right.m02, m30 * right.m03)));
+		float nm01 = FastMath.fma(m01, right.m00,
+				FastMath.fma(m11, right.m01, FastMath.fma(m21, right.m02, m31 * right.m03)));
+		float nm02 = FastMath.fma(m02, right.m00,
+				FastMath.fma(m12, right.m01, FastMath.fma(m22, right.m02, m32 * right.m03)));
+		float nm03 = FastMath.fma(m03, right.m00,
+				FastMath.fma(m13, right.m01, FastMath.fma(m23, right.m02, m33 * right.m03)));
+		float nm10 = FastMath.fma(m00, right.m10,
+				FastMath.fma(m10, right.m11, FastMath.fma(m20, right.m12, m30 * right.m13)));
+		float nm11 = FastMath.fma(m01, right.m10,
+				FastMath.fma(m11, right.m11, FastMath.fma(m21, right.m12, m31 * right.m13)));
+		float nm12 = FastMath.fma(m02, right.m10,
+				FastMath.fma(m12, right.m11, FastMath.fma(m22, right.m12, m32 * right.m13)));
+		float nm13 = FastMath.fma(m03, right.m10,
+				FastMath.fma(m13, right.m11, FastMath.fma(m23, right.m12, m33 * right.m13)));
+		float nm20 = FastMath.fma(m00, right.m20,
+				FastMath.fma(m10, right.m21, FastMath.fma(m20, right.m22, m30 * right.m23)));
+		float nm21 = FastMath.fma(m01, right.m20,
+				FastMath.fma(m11, right.m21, FastMath.fma(m21, right.m22, m31 * right.m23)));
+		float nm22 = FastMath.fma(m02, right.m20,
+				FastMath.fma(m12, right.m21, FastMath.fma(m22, right.m22, m32 * right.m23)));
+		float nm23 = FastMath.fma(m03, right.m20,
+				FastMath.fma(m13, right.m21, FastMath.fma(m23, right.m22, m33 * right.m23)));
+		float nm30 = FastMath.fma(m00, right.m30,
+				FastMath.fma(m10, right.m31, FastMath.fma(m20, right.m32, m30 * right.m33)));
+		float nm31 = FastMath.fma(m01, right.m30,
+				FastMath.fma(m11, right.m31, FastMath.fma(m21, right.m32, m31 * right.m33)));
+		float nm32 = FastMath.fma(m02, right.m30,
+				FastMath.fma(m12, right.m31, FastMath.fma(m22, right.m32, m32 * right.m33)));
+		float nm33 = FastMath.fma(m03, right.m30,
+				FastMath.fma(m13, right.m31, FastMath.fma(m23, right.m32, m33 * right.m33)));
 		m00 = nm00;
 		m01 = nm01;
 		m02 = nm02;
@@ -291,7 +289,7 @@ public class Matrix implements Cloneable {
 		m31 = FastMath.fma(m01, x, FastMath.fma(m11, y, FastMath.fma(m21, z, m31)));
 		m32 = FastMath.fma(m02, x, FastMath.fma(m12, y, FastMath.fma(m22, z, m32)));
 		m33 = FastMath.fma(m03, x, FastMath.fma(m13, y, FastMath.fma(m23, z, m33)));
-		return null;
+		return this;
 	}
 
 	/**
@@ -667,9 +665,8 @@ public class Matrix implements Cloneable {
 	 * @param upZ
 	 * @return
 	 */
-	public Matrix setLookAt(float eyeX, float eyeY, float eyeZ,
-			float centerX, float centerY, float centerZ,
-			float upX, float upY, float upZ) {
+	public Matrix setLookAt(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX,
+			float upY, float upZ) {
 		// Compute direction from position to lookAt
 		float dirX, dirY, dirZ;
 		dirX = eyeX - centerX;
@@ -742,9 +739,8 @@ public class Matrix implements Cloneable {
 	 * @param upZ
 	 * @return
 	 */
-	public Matrix lookAt(float eyeX, float eyeY, float eyeZ,
-			float centerX, float centerY, float centerZ,
-			float upX, float upY, float upZ) {
+	public Matrix lookAt(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX,
+			float upY, float upZ) {
 		// Compute direction from position to lookAt
 		float dirX, dirY, dirZ;
 		dirX = eyeX - centerX;
@@ -844,13 +840,11 @@ public class Matrix implements Cloneable {
 			float e = 1E-6f;
 			rm22 = e - 1.0f;
 			rm32 = (e - (zZeroToOne ? 1.0f : 2.0f)) * zNear;
-		}
-		else if (nearInf) {
+		} else if (nearInf) {
 			float e = 1E-6f;
 			rm22 = (zZeroToOne ? 0.0f : 1.0f) - e;
 			rm32 = ((zZeroToOne ? 1.0f : 2.0f) - e) * zFar;
-		}
-		else {
+		} else {
 			rm22 = (zZeroToOne ? zFar : zFar + zNear) / (zNear - zFar);
 			rm32 = (zZeroToOne ? zFar : zFar + zFar) * zNear / (zNear - zFar);
 		}
@@ -900,13 +894,11 @@ public class Matrix implements Cloneable {
 			float e = 1E-6f;
 			m22 = e - 1.0f;
 			m32 = (e - (zZeroToOne ? 1.0f : 2.0f)) * zNear;
-		}
-		else if (nearInf) {
+		} else if (nearInf) {
 			float e = 1E-6f;
 			m22 = (zZeroToOne ? 0.0f : 1.0f) - e;
 			m32 = ((zZeroToOne ? 1.0f : 2.0f) - e) * zFar;
-		}
-		else {
+		} else {
 			m22 = (zZeroToOne ? zFar : zFar + zNear) / (zNear - zFar);
 			m32 = (zZeroToOne ? zFar : zFar + zFar) * zNear / (zNear - zFar);
 		}
@@ -986,9 +978,8 @@ public class Matrix implements Cloneable {
 				rotation.w, scale.x, scale.y, scale.z);
 	}
 
-	public Matrix translationRotateScale(float tx, float ty, float tz,
-			float qx, float qy, float qz, float qw,
-			float sx, float sy, float sz) {
+	public Matrix translationRotateScale(float tx, float ty, float tz, float qx, float qy, float qz, float qw, float sx,
+			float sy, float sz) {
 		float dqx = qx + qx;
 		float dqy = qy + qy;
 		float dqz = qz + qz;
@@ -1071,12 +1062,9 @@ public class Matrix implements Cloneable {
 	}
 
 	public float determinant() {
-		return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32)
-				+ (m02 * m10 - m00 * m12) * (m21 * m33 - m23 * m31)
-				+ (m00 * m13 - m03 * m10) * (m21 * m32 - m22 * m31)
-				+ (m01 * m12 - m02 * m11) * (m20 * m33 - m23 * m30)
-				+ (m03 * m11 - m01 * m13) * (m20 * m32 - m22 * m30)
-				+ (m02 * m13 - m03 * m12) * (m20 * m31 - m21 * m30);
+		return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32) + (m02 * m10 - m00 * m12) * (m21 * m33 - m23 * m31)
+				+ (m00 * m13 - m03 * m10) * (m21 * m32 - m22 * m31) + (m01 * m12 - m02 * m11) * (m20 * m33 - m23 * m30)
+				+ (m03 * m11 - m01 * m13) * (m20 * m32 - m22 * m30) + (m02 * m13 - m03 * m12) * (m20 * m31 - m21 * m30);
 	}
 
 	public Vector4f getRow(int row) {
@@ -1228,12 +1216,7 @@ public class Matrix implements Cloneable {
 	}
 
 	public float[] toArray() {
-		return new float[] {
-				m00, m01, m02, m03,
-				m10, m11, m12, m13,
-				m20, m21, m22, m23,
-				m30, m31, m32, m33
-		};
+		return new float[] { m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33 };
 	}
 
 	@Override
@@ -1245,13 +1228,11 @@ public class Matrix implements Cloneable {
 			char c = str.charAt(i);
 			if (c == 'E') {
 				eIndex = i;
-			}
-			else if (c == ' ' && eIndex == i - 1) {
+			} else if (c == ' ' && eIndex == i - 1) {
 				// workaround Java 1.4 DecimalFormat bug
 				res.append('+');
 				continue;
-			}
-			else if (Character.isDigit(c) && eIndex == i - 1) {
+			} else if (Character.isDigit(c) && eIndex == i - 1) {
 				res.append('+');
 			}
 			res.append(c);
@@ -1260,14 +1241,14 @@ public class Matrix implements Cloneable {
 	}
 
 	public String toString(NumberFormat formatter) {
-		return StringUtils.format(m00, formatter) + " " + StringUtils.format(m10, formatter) + " " + StringUtils.format(
-				m20, formatter) + " " + StringUtils.format(m30, formatter) + "\n"
-				+ StringUtils.format(m01, formatter) + " " + StringUtils.format(m11, formatter) + " " + StringUtils
-						.format(m21, formatter) + " " + StringUtils.format(m31, formatter) + "\n"
-				+ StringUtils.format(m02, formatter) + " " + StringUtils.format(m12, formatter) + " " + StringUtils
-						.format(m22, formatter) + " " + StringUtils.format(m32, formatter) + "\n"
-				+ StringUtils.format(m03, formatter) + " " + StringUtils.format(m13, formatter) + " " + StringUtils
-						.format(m23, formatter) + " " + StringUtils.format(m33, formatter) + "\n";
+		return StringUtils.format(m00, formatter) + " " + StringUtils.format(m10, formatter) + " "
+				+ StringUtils.format(m20, formatter) + " " + StringUtils.format(m30, formatter) + "\n"
+				+ StringUtils.format(m01, formatter) + " " + StringUtils.format(m11, formatter) + " "
+				+ StringUtils.format(m21, formatter) + " " + StringUtils.format(m31, formatter) + "\n"
+				+ StringUtils.format(m02, formatter) + " " + StringUtils.format(m12, formatter) + " "
+				+ StringUtils.format(m22, formatter) + " " + StringUtils.format(m32, formatter) + "\n"
+				+ StringUtils.format(m03, formatter) + " " + StringUtils.format(m13, formatter) + " "
+				+ StringUtils.format(m23, formatter) + " " + StringUtils.format(m33, formatter) + "\n";
 	}
 
 	public static Matrix asPerspective(float fov, float width, float height, float zNear, float zFar) {
@@ -1275,11 +1256,8 @@ public class Matrix implements Cloneable {
 		float tanHalfFOV = (float) FastMath.tan(FastMath.toRadians(fov / 2));
 		float zRange = zNear - zFar;
 
-		return new Matrix(
-				1.0f / (tanHalfFOV * aspectRatio), 0, 0, 0,
-				0, 1.0f / tanHalfFOV, 0, 0,
-				0, 0, (-zNear - zFar) / zRange, 2 * zFar * zNear / zRange,
-				0, 0, 1, 0);
+		return new Matrix(1.0f / (tanHalfFOV * aspectRatio), 0, 0, 0, 0, 1.0f / tanHalfFOV, 0, 0, 0, 0,
+				(-zNear - zFar) / zRange, 2 * zFar * zNear / zRange, 0, 0, 1, 0);
 	}
 
 	public static Matrix asOrthographic(float left, float right, float bottom, float top, float zNear, float zFar) {
@@ -1287,19 +1265,13 @@ public class Matrix implements Cloneable {
 		float height = top - bottom;
 		float depth = zFar - zNear;
 
-		return new Matrix(
-				2 / width, 0, 0, -(right + left) / width,
-				0, 2 / height, 0, -(top + bottom) / height,
-				0, 0, -2 / depth, -(zFar + zNear) / depth,
-				0, 0, 0, 1);
+		return new Matrix(2 / width, 0, 0, -(right + left) / width, 0, 2 / height, 0, -(top + bottom) / height, 0, 0,
+				-2 / depth, -(zFar + zNear) / depth, 0, 0, 0, 1);
 	}
 
 	public static Matrix asCameraRotation(Vector3f forward, Vector3f up) {
 		Vector3f right = Vector3f.cross(up, forward);
-		return new Matrix(
-				right.x, right.y, right.z, 0,
-				up.x, up.y, up.z, 0,
-				forward.x, forward.y, forward.z, 0,
-				0, 0, 0, 1);
+		return new Matrix(right.x, right.y, right.z, 0, up.x, up.y, up.z, 0, forward.x, forward.y, forward.z, 0, 0, 0,
+				0, 1);
 	}
 }

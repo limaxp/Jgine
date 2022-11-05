@@ -47,22 +47,7 @@ public class PhysicSystem extends EngineSystem {
 	@Override
 	public PhysicObject load(Map<String, Object> data) {
 		PhysicObject object = new PhysicObject();
-		Object hasGravity = data.get("hasGravity");
-		if (hasGravity != null && hasGravity instanceof Boolean)
-			object.hasGravity = (boolean) hasGravity;
-
-		Object stiffness = data.get("stiffness");
-		if (stiffness != null && stiffness instanceof Number)
-			object.stiffness = ((Number) stiffness).floatValue();
-
-		Object acceleration = data.get("acceleration");
-		if (acceleration != null && acceleration instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> accelerationMap = (Map<String, Object>) acceleration;
-			object.accelerate(((Number) accelerationMap.getOrDefault("x", 0)).floatValue(),
-					((Number) accelerationMap.getOrDefault("y", 0)).floatValue(),
-					((Number) accelerationMap.getOrDefault("z", 0)).floatValue());
-		}
+		object.load(data);
 		return object;
 	}
 

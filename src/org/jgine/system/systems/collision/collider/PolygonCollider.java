@@ -1,5 +1,9 @@
 package org.jgine.system.systems.collision.collider;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -7,13 +11,14 @@ import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionData;
 
 public class PolygonCollider extends Collider {
 
@@ -71,7 +76,7 @@ public class PolygonCollider extends Collider {
 	@Override
 	public void load(Map<String, Object> data) {
 		Object points = data.get("points");
-		if (points != null && points instanceof String) {
+		if (points instanceof String) {
 			String pointsString = (String) points;
 			if (!pointsString.contains(","))
 				return;
@@ -79,7 +84,28 @@ public class PolygonCollider extends Collider {
 			this.points = new float[split.length];
 			for (int i = 0; i < split.length; i++)
 				this.points[i] = Float.parseFloat(split[i]);
+		} else if (points instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<Object> pointList = (List<Object>) points;
+			this.points = new float[pointList.size()];
+			for (int i = 0; i < pointList.size(); i++)
+				this.points[i] = YamlHelper.toFloat(pointList.get(i));
 		}
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		int length = in.readInt();
+		points = new float[length];
+		for (int i = 0; i < length; i++)
+			points[i] = in.readFloat();
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(points.length);
+		for (int i = 0; i < points.length; i++)
+			out.writeFloat(points[i]);
 	}
 
 	@Override

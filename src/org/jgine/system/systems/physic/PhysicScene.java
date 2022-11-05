@@ -1,5 +1,8 @@
 package org.jgine.system.systems.physic;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -14,8 +17,8 @@ import org.jgine.misc.utils.script.EventManager;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.Collision;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionScene;
 import org.jgine.system.systems.collision.CollisionSystem;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
@@ -137,6 +140,18 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public PhysicObject load(DataInput in) throws IOException {
+		PhysicObject object = new PhysicObject();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(PhysicObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	public void setGravity(float gravity) {

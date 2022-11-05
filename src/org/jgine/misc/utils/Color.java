@@ -29,6 +29,10 @@ public class Color {
 	public static final int ORANGE = rgb(255, 200, 0);
 	public static final int MAGENTA = rgb(255, 0, 255);
 
+	public static final int TRANSLUCENT_WEAK = rgba(1.0f, 1.0f, 1.0f, 0.2f);
+	public static final int TRANSLUCENT_MID = rgba(1.0f, 1.0f, 1.0f, 0.4f);
+	public static final int TRANSLUCENT_STRONG = rgba(1.0f, 1.0f, 1.0f, 0.6f);
+
 	public static int rgb(byte r, byte g, byte b) {
 		return 0xff000000 | r << 16 | g << 8 | b;
 	}

@@ -11,8 +11,8 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
-public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends SystemObject> extends
-		SystemScene<T1, T2> {
+public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
+		extends SystemScene<T1, T2> {
 
 	protected Class<T2> clazz;
 	protected T2[] objects;
@@ -61,8 +61,17 @@ public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends 
 		return new FastArrayList<>(objects, size);
 	}
 
+	@Override
+	public T2 getObject(int index) {
+		return objects[index];
+	}
+
 	public Collection<Entity> getEntities() {
 		return new FastArrayList<>(entities, size);
+	}
+
+	public Entity getEntity(int index) {
+		return entities[index];
 	}
 
 	public int indexOf(T2 object) {

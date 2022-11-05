@@ -1,5 +1,8 @@
 package org.jgine.system.systems.ui;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +10,9 @@ import java.util.Map;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.Color;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
@@ -44,7 +47,7 @@ public class UIWindow extends UIObject {
 		this.moveAble = moveAble;
 		hide = false;
 		setScale(width, height);
-		background = new Material(new Vector4f(1, 1, 1, 0.2f));
+		background = new Material(Color.TRANSLUCENT_WEAK);
 		borderColor = Vector3f.NULL;
 	}
 
@@ -98,30 +101,66 @@ public class UIWindow extends UIObject {
 	@Override
 	public void load(Map<String, Object> data) {
 		super.load(data);
-
-		Object moveAble = data.get("moveAble");
-		if (moveAble != null && moveAble instanceof Boolean)
-			this.moveAble = (boolean) moveAble;
+		moveAble = YamlHelper.toBoolean(data.get("moveAble"));
+		hide = YamlHelper.toBoolean(data.get("hide"));
+		Object backgroundData = data.get("background");
+		if (backgroundData instanceof Map)
+			background.load((Map<String, Object>) backgroundData);
 
 		Object childs = data.get("childs");
-		if (childs != null && childs instanceof Map) {
+		if (childs instanceof List) {
+			List<Object> childList = (List<Object>) childs;
+			for (Object subData : childList)
+				loadChild(subData);
+		} else if (childs instanceof Map) {
 			Map<String, Object> childMap = (Map<String, Object>) childs;
-			for (Object subData : childMap.values()) {
-				if (subData instanceof Map) {
-					Map<String, Object> childData = (Map<String, Object>) subData;
-					UIObjectType<?> uiObjectType;
-					Object type = childData.get("type");
-					if (type != null && type instanceof String) {
-						uiObjectType = UIObjectTypes.get((String) type);
-						if (uiObjectType == null)
-							uiObjectType = UIObjectTypes.LABEL;
-					} else
-						uiObjectType = UIObjectTypes.LABEL;
-					UIObject uiObject = uiObjectType.get();
-					uiObject.load(childData);
-					addChild(uiObject);
-				}
-			}
+			for (Object subData : childMap.values())
+				loadChild(subData);
+		}
+	}
+
+	private void loadChild(Object data) {
+		if (data instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> childData = (Map<String, Object>) data;
+			UIObjectType<?> uiObjectType;
+			Object type = childData.get("type");
+			if (type != null && type instanceof String) {
+				uiObjectType = UIObjectTypes.get((String) type);
+				if (uiObjectType == null)
+					uiObjectType = UIObjectTypes.LABEL;
+			} else
+				uiObjectType = UIObjectTypes.LABEL;
+			UIObject object = uiObjectType.get();
+			object.load(childData);
+			addChild(object);
+		}
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		super.load(in);
+		moveAble = in.readBoolean();
+		hide = in.readBoolean();
+		background.load(in);
+		int childSize = in.readInt();
+		for (int i = 0; i < childSize; i++) {
+			UIObject object = UIObjectTypes.get(in.readInt()).get();
+			object.load(in);
+			addChild(object);
+		}
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		super.save(out);
+		out.writeBoolean(moveAble);
+		out.writeBoolean(hide);
+		background.save(out);
+		out.writeInt(childs.size());
+		for (UIObject child : childs) {
+			out.writeInt(child.getType().getId());
+			child.save(out);
 		}
 	}
 
@@ -131,11 +170,10 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
-	protected Matrix calculateTransform() {
-		Matrix transform = super.calculateTransform();
+	protected void calculateTransform() {
+		super.calculateTransform();
 		for (UIObject child : childs)
-			child.transformChanged = true;
-		return transform;
+			child.calculateTransform();
 	}
 
 	public final <T extends UIObject> T addChild(T child) {
@@ -143,12 +181,14 @@ public class UIWindow extends UIObject {
 			child.window.childs.remove(this);
 		child.window = this;
 		childs.add(child);
+		child.calculateTransform();
 		return child;
 	}
 
 	public final void removeChild(UIObject child) {
 		child.window = null;
 		childs.remove(child);
+		child.calculateTransform();
 	}
 
 	public final void isChild(UIObject child) {
@@ -166,8 +206,10 @@ public class UIWindow extends UIObject {
 	}
 
 	public final void clearChilds() {
-		for (UIObject child : childs)
+		for (UIObject child : childs) {
 			child.window = null;
+			child.calculateTransform();
+		}
 		childs.clear();
 	}
 

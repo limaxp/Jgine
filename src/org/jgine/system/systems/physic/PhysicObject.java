@@ -1,8 +1,14 @@
 package org.jgine.system.systems.physic;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Map;
+
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
 
 public class PhysicObject implements SystemObject {
@@ -103,5 +109,33 @@ public class PhysicObject implements SystemObject {
 
 	public final Vector3f getVelocity() {
 		return new Vector3f(x - oldX, y - oldY, z - oldZ);
+	}
+
+	public void load(Map<String, Object> data) {
+		hasGravity = YamlHelper.toBoolean(data.get("hasGravity"), true);
+		stiffness = YamlHelper.toFloat(data.get("stiffness"), 0.5f);
+		accelerate(YamlHelper.toVector3f(data.get("acceleration")));
+	}
+
+	public void load(DataInput in) throws IOException {
+		hasGravity = in.readBoolean();
+		stiffness = in.readFloat();
+		x = in.readFloat();
+		y = in.readFloat();
+		z = in.readFloat();
+		oldX = in.readFloat();
+		oldY = in.readFloat();
+		oldZ = in.readFloat();
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeBoolean(hasGravity);
+		out.writeFloat(stiffness);
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(z);
+		out.writeFloat(oldX);
+		out.writeFloat(oldY);
+		out.writeFloat(oldZ);
 	}
 }

@@ -62,8 +62,17 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 		return new FastArrayList<>(objects, size);
 	}
 
+	@Override
+	public T2 getObject(int index) {
+		return objects[index];
+	}
+
 	public Collection<Transform> getTransforms() {
 		return new FastArrayList<>(transforms, size);
+	}
+
+	public Transform getTransform(int index) {
+		return transforms[index];
 	}
 
 	public int indexOf(T2 object) {

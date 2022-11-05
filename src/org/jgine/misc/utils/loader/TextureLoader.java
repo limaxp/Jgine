@@ -18,46 +18,51 @@ public class TextureLoader {
 
 	@Nullable
 	public static Texture loadTexture(File file) {
+		return loadTexture("", file);
+	}
+
+	@Nullable
+	public static Texture loadTexture(String name, File file) {
 		Image image = loadImage(file);
 		if (image == null)
 			return null;
-		Texture texture = new Texture();
+		Texture texture = new Texture(name);
 		texture.load(image);
 		loadTextureAnimation(texture, file);
 		return texture;
 	}
 
-	private static void loadTextureAnimation(Texture texture, File file) {
-		String filePath = file.getPath();
-		int dotPosition = filePath.lastIndexOf('.');
-		String animationFilePath = filePath.substring(0, dotPosition) + ".meta";
-		File animationFile = new File(animationFilePath);
-		if (!animationFile.exists())
-			return;
-		loadAnimation(texture, animationFile);
+	@Nullable
+	public static Texture loadTexture(String resourcePath, InputStream is) {
+		return loadTexture("", resourcePath, is);
 	}
 
 	@Nullable
-	public static Texture loadTexture(String resourceName, InputStream is) {
+	public static Texture loadTexture(String name, String resourcePath, InputStream is) {
 		Image image = loadImage(is);
 		if (image == null)
 			return null;
-		Texture texture = new Texture();
+		Texture texture = new Texture(name);
 		texture.load(image);
-		loadTextureAnimation(texture, resourceName);
+		loadTextureAnimation(texture, resourcePath);
 		return texture;
 	}
 
-	private static void loadTextureAnimation(Texture texture, String resourceName) {
-		int dotPosition = resourceName.lastIndexOf('.');
-		String animationResourceName = resourceName.substring(0, dotPosition) + ".meta";
-		try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-				animationResourceName)) {
-			if (is == null)
-				return;
-			loadAnimation(texture, is);
+	private static void loadTextureAnimation(Texture texture, File file) {
+		String filePath = file.getPath();
+		File animationFile = new File(filePath.substring(0, filePath.lastIndexOf('.')) + ".meta");
+		if (animationFile.exists())
+			loadAnimation(texture, animationFile);
+	}
+
+	private static void loadTextureAnimation(Texture texture, String resourcePath) {
+		String animationResourceName = resourcePath.substring(0, resourcePath.lastIndexOf('.')) + ".meta";
+		try (InputStream is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(animationResourceName)) {
+			if (is != null)
+				loadAnimation(texture, is);
 		} catch (IOException e) {
-			Logger.err("ResourceLoader: Animation '" + resourceName + "' could not be loaded!", e);
+			Logger.err("ResourceLoader: Animation '" + resourcePath + "' could not be loaded!", e);
 		}
 	}
 

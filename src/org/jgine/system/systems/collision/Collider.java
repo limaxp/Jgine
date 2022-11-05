@@ -1,5 +1,8 @@
 package org.jgine.system.systems.collision;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +40,14 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 		@Override
 		public void load(Map<String, Object> data) {
+		}
+
+		@Override
+		public void load(DataInput in) {
+		}
+
+		@Override
+		public void save(DataOutput out) {
 		}
 
 		@Override
@@ -86,7 +97,11 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 	public abstract void load(Map<String, Object> data);
 
-	public abstract ColliderType<?> getType();
+	public abstract void load(DataInput in) throws IOException;
+
+	public abstract void save(DataOutput out) throws IOException;
+
+	public abstract ColliderType<? extends Collider> getType();
 
 	public abstract void render(Vector3f pos);
 }

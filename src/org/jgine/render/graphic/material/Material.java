@@ -1,19 +1,16 @@
 package org.jgine.render.graphic.material;
 
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_AMBIENT;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_SPECULAR;
-import static org.lwjgl.assimp.Assimp.aiGetErrorString;
-import static org.lwjgl.assimp.Assimp.aiGetMaterialColor;
-import static org.lwjgl.assimp.Assimp.aiTextureType_DIFFUSE;
-import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
-
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.Map;
 
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
@@ -24,12 +21,14 @@ import org.lwjgl.assimp.Assimp;
 
 public class Material implements SystemObject, Cloneable {
 
-	public int color;
-	public float specularIntesity;
-	public float specularPower; // how wide
 	public int ambientColor;
 	public int diffuseColor;
 	public int specularColor;
+	public int emissiveColor;
+	public int transparentColor;
+	public int color;
+	public float specularIntesity;
+	public float specularPower; // how wide
 	private ITexture texture = Texture.NONE;
 	// this here makes every entity to move at same time
 	private TextureAnimationHandler animationHandler = TextureAnimationHandler.NONE;
@@ -89,35 +88,6 @@ public class Material implements SystemObject, Cloneable {
 		setTexture(texture);
 	}
 
-	public Material load(AIMaterial material) {
-		this.color = Color.WHITE;
-		AIString path = AIString.calloc();
-		Assimp.aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null,
-				null);
-		String texturePath = path.dataString();
-		if (texturePath != null && texturePath.length() > 0)
-			texture = ResourceManager.getTexture(texturePath, this);
-
-		AIColor4D mAmbientColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, mAmbientColor) != 0) {
-			throw new IllegalStateException(aiGetErrorString());
-		}
-		ambientColor = Color.rgba(mAmbientColor.r(), mAmbientColor.g(), mAmbientColor.b(), mAmbientColor.a());
-
-		AIColor4D mDiffuseColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, mDiffuseColor) != 0) {
-			throw new IllegalStateException(aiGetErrorString());
-		}
-		diffuseColor = Color.rgba(mDiffuseColor.r(), mDiffuseColor.g(), mDiffuseColor.b(), mDiffuseColor.a());
-
-		AIColor4D mSpecularColor = AIColor4D.create();
-		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, mSpecularColor) != 0) {
-			throw new IllegalStateException(aiGetErrorString());
-		}
-		specularColor = Color.rgba(mSpecularColor.r(), mSpecularColor.g(), mSpecularColor.b(), mSpecularColor.a());
-		return this;
-	}
-
 	public final void bind(Shader shader) {
 		texturePos = animationHandler.getTexturePosition();
 		texture.bind();
@@ -135,6 +105,8 @@ public class Material implements SystemObject, Cloneable {
 		ambientColor = material.ambientColor;
 		diffuseColor = material.diffuseColor;
 		specularColor = material.specularColor;
+		emissiveColor = material.emissiveColor;
+		transparentColor = material.transparentColor;
 		texture = material.texture;
 		texturePos = material.texturePos;
 	}
@@ -146,6 +118,8 @@ public class Material implements SystemObject, Cloneable {
 		ambientColor = material.ambientColor;
 		diffuseColor = material.diffuseColor;
 		specularColor = material.specularColor;
+		emissiveColor = material.emissiveColor;
+		transparentColor = material.transparentColor;
 	}
 
 	public final void setTexture(ITexture texture) {
@@ -162,6 +136,49 @@ public class Material implements SystemObject, Cloneable {
 		return texturePos;
 	}
 
+	public void load(AIMaterial material) {
+		ambientColor = loadColorAssimp(material, Assimp.AI_MATKEY_COLOR_AMBIENT, Assimp.aiTextureType_NONE, 0);
+		diffuseColor = loadColorAssimp(material, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0);
+		specularColor = loadColorAssimp(material, Assimp.AI_MATKEY_COLOR_SPECULAR, Assimp.aiTextureType_NONE, 0);
+		emissiveColor = loadColorAssimp(material, Assimp.AI_MATKEY_COLOR_EMISSIVE, Assimp.aiTextureType_NONE, 0);
+		transparentColor = loadColorAssimp(material, Assimp.AI_MATKEY_COLOR_TRANSPARENT, Assimp.aiTextureType_NONE, 0);
+		String texture = loadTextureAssimp(material, Assimp.aiTextureType_DIFFUSE, 0);
+		if (texture.length() > 0)
+			setTexture(ResourceManager.getTexture(texture, this));
+	}
+
+	public void load(Map<String, Object> data) {
+		this.color = YamlHelper.toColor(data.get("color"));
+		this.ambientColor = YamlHelper.toColor(data.get("ambientColor"));
+		this.diffuseColor = YamlHelper.toColor(data.get("diffuseColor"));
+		this.specularColor = YamlHelper.toColor(data.get("specularColor"));
+		this.emissiveColor = YamlHelper.toColor(data.get("emissiveColor"));
+		this.transparentColor = YamlHelper.toColor(data.get("transparentColor"));
+		Object texture = data.get("texture");
+		if (texture instanceof String)
+			setTexture(ResourceManager.getTexture((String) texture));
+	}
+
+	public void load(DataInput in) throws IOException {
+		color = in.readInt();
+		ambientColor = in.readInt();
+		diffuseColor = in.readInt();
+		specularColor = in.readInt();
+		emissiveColor = in.readInt();
+		transparentColor = in.readInt();
+		setTexture(ResourceManager.getTexture(in.readUTF()));
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(color);
+		out.writeInt(ambientColor);
+		out.writeInt(diffuseColor);
+		out.writeInt(specularColor);
+		out.writeInt(emissiveColor);
+		out.writeInt(transparentColor);
+		out.writeUTF(texture.getName());
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final <T extends SystemObject> T copy() {
@@ -170,21 +187,32 @@ public class Material implements SystemObject, Cloneable {
 
 	@Override
 	public Material clone() {
-		Material obj;
 		try {
-			obj = (Material) super.clone();
-			obj.color = color;
-			obj.specularIntesity = specularIntesity;
-			obj.specularPower = specularPower;
-			obj.ambientColor = ambientColor;
-			obj.diffuseColor = diffuseColor;
-			obj.specularColor = specularColor;
-			obj.texture = texture;
-			obj.texturePos = texturePos;
-			return obj;
+			return (Material) super.clone();
 		} catch (CloneNotSupportedException e) {
 			Logger.err("Material: Error on clone!", e);
 			return null;
 		}
+	}
+
+	protected static String loadStringAssimp(AIMaterial material, String key, int textureType, int textureIndex) {
+		AIString aiString = AIString.calloc();
+		if (Assimp.aiGetMaterialString(material, key, textureType, textureIndex, aiString) != 0)
+			throw new IllegalStateException(Assimp.aiGetErrorString());
+		return aiString.dataString();
+	}
+
+	protected static int loadColorAssimp(AIMaterial material, String key, int textureType, int textureIndex) {
+		AIColor4D aiColor = AIColor4D.create();
+		if (Assimp.aiGetMaterialColor(material, key, textureType, textureIndex, aiColor) != 0)
+			throw new IllegalStateException(Assimp.aiGetErrorString());
+		return Color.rgba(aiColor.r(), aiColor.g(), aiColor.b(), aiColor.a());
+	}
+
+	protected static String loadTextureAssimp(AIMaterial material, int textureType, int textureIndex) {
+		AIString aiString = AIString.calloc();
+		Assimp.aiGetMaterialTexture(material, textureType, textureIndex, aiString, (IntBuffer) null, null, null, null,
+				null, null);
+		return aiString.dataString();
 	}
 }

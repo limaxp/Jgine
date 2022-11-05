@@ -1,5 +1,8 @@
 package org.jgine.system.systems.collision.collider;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -7,6 +10,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
@@ -69,13 +73,20 @@ public class BoundingCylinder extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		Object radius = data.get("radius");
-		if (radius != null && radius instanceof Number)
-			this.r = ((Number) radius).floatValue();
+		r = YamlHelper.toFloat(data.get("radius"));
+		h = YamlHelper.toFloat(data.get("height"));
+	}
 
-		Object height = data.get("height");
-		if (height != null && height instanceof Number)
-			this.h = ((Number) height).floatValue();
+	@Override
+	public void load(DataInput in) throws IOException {
+		r = in.readFloat();
+		r = in.readFloat();
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(r);
+		out.writeFloat(h);
 	}
 
 	@Override

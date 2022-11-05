@@ -1,5 +1,9 @@
 package org.jgine.system.systems.camera;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
@@ -36,5 +40,17 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public Camera load(DataInput in) throws IOException {
+		Camera object = new Camera();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(Camera object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 }

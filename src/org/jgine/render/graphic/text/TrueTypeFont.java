@@ -9,7 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -17,64 +20,68 @@ import org.lwjgl.system.MemoryStack;
 
 public class TrueTypeFont implements Font {
 
-	public static TrueTypeFont CONSOLAS = TrueTypeFont.create(getResourceFile("fonts/arial/ARIAL.TTF"));
+	private static final Map<String, TrueTypeFont> NAME_MAP = new HashMap<String, TrueTypeFont>();
 
-	public static InputStream getResourceFile(String name) {
-		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-		if (is == null) {
-			Logger.warn("ResourceLoader: resource not found: " + name);
-			return is;
+	public static TrueTypeFont ARIAL = TrueTypeFont.load("arial", FileUtils.getResourceStream("fonts/arial/ARIAL.TTF"));
+
+	@Nullable
+	public static TrueTypeFont load(String name, File file) {
+		try {
+			return load(name, FileUtils.readByteBuffer(file));
+		} catch (IOException e) {
+			Logger.err("TrueTypeFont: Error loading file '" + file.getPath() + "'", e);
+			return null;
 		}
-		return is;
 	}
 
+	@Nullable
+	public static TrueTypeFont load(String name, InputStream is) {
+		try {
+			return load(name, FileUtils.readByteBuffer(is));
+		} catch (IOException e) {
+			Logger.err("TrueTypeFont: Error loading input stream", e);
+			return null;
+		}
+	}
+
+	public static TrueTypeFont load(String name, ByteBuffer ttf) {
+		TrueTypeFont font = new TrueTypeFont(name, ttf);
+		NAME_MAP.put(name, font);
+		return font;
+	}
+
+	@Nullable
+	public static TrueTypeFont get(String name) {
+		return NAME_MAP.get(name);
+	}
+
+	public final String name;
 	protected final ByteBuffer ttf;
 	public final STBTTFontinfo info;
 	public final int ascent;
 	public final int descent;
 	public final int lineGap;
 
-	public static TrueTypeFont create(File file) {
-		try {
-			return new TrueTypeFont(file);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static TrueTypeFont create(InputStream is) {
-		try {
-			return new TrueTypeFont(is);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public TrueTypeFont(File file) throws IOException {
-		this(FileUtils.readByteBuffer(file));
-	}
-
-	public TrueTypeFont(InputStream is) throws IOException {
-		this(FileUtils.readByteBuffer(is));
-	}
-
-	public TrueTypeFont(ByteBuffer ttf) {
+	protected TrueTypeFont(String name, ByteBuffer ttf) {
+		this.name = name;
 		this.ttf = ttf;
 		info = STBTTFontinfo.create();
-		if (!stbtt_InitFont(info, ttf)) {
+		if (!stbtt_InitFont(info, ttf))
 			throw new IllegalStateException("Failed to initialize font information.");
-		}
 
 		try (MemoryStack stack = stackPush()) {
 			IntBuffer pAscent = stack.mallocInt(1);
 			IntBuffer pDescent = stack.mallocInt(1);
 			IntBuffer pLineGap = stack.mallocInt(1);
-
 			stbtt_GetFontVMetrics(info, pAscent, pDescent, pLineGap);
-
 			ascent = pAscent.get(0);
 			descent = pDescent.get(0);
 			lineGap = pLineGap.get(0);
 		}
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

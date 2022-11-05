@@ -1,5 +1,9 @@
 package org.jgine.system.systems.script;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
@@ -43,5 +47,15 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public ScriptObject load(DataInput in) throws IOException {
+		return null;
+	}
+
+	@Override
+	public void save(ScriptObject object, DataOutput out) throws IOException {
+
 	}
 }

@@ -1,5 +1,9 @@
 package org.jgine.system.systems.input;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
@@ -27,5 +31,16 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public InputHandler load(DataInput in) throws IOException {
+		InputHandler object = InputHandlerTypes.get(in.readInt()).get();
+		return object;
+	}
+
+	@Override
+	public void save(InputHandler object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
 	}
 }

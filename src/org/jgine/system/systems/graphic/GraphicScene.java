@@ -1,5 +1,8 @@
 package org.jgine.system.systems.graphic;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
@@ -8,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
+import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.core.manager.TaskManager;
 import org.jgine.render.FrustumCulling;
@@ -58,5 +62,17 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 		while (iter.hasNext())
 			Renderer.render(((Transform) iter.next()).getMatrix(), ((GraphicObject) iter.next()).model);
 		Renderer.disableDepthTest();
+	}
+
+	@Override
+	public GraphicObject load(DataInput in) throws IOException {
+		GraphicObject object = new GraphicObject();
+		object.model = ResourceManager.getModel(in.readUTF());
+		return object;
+	}
+
+	@Override
+	public void save(GraphicObject object, DataOutput out) throws IOException {
+		out.writeUTF(object.model.name);
 	}
 }

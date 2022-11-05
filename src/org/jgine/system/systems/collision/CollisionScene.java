@@ -1,5 +1,8 @@
 package org.jgine.system.systems.collision;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.function.BiConsumer;
 
 import org.jgine.core.Scene;
@@ -45,5 +48,18 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		for (int i = 0; i < size; i++)
 			objects[i].render(entities[i].transform.getPosition());
 		Renderer.disableDepthTest();
+	}
+
+	@Override
+	public Collider load(DataInput in) throws IOException {
+		Collider object = ColliderTypes.get(in.readInt()).get();
+		object.load(in);
+		return object;
+	}
+
+	@Override
+	public void save(Collider object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
+		object.save(out);
 	}
 }

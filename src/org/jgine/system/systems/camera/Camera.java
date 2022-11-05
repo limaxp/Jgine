@@ -1,11 +1,15 @@
 package org.jgine.system.systems.camera;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget;
 import org.jgine.system.SystemObject;
@@ -37,48 +41,60 @@ public class Camera implements SystemObject, Cloneable {
 	private Matrix usedMatrix;
 	private RenderTarget renderTarget;
 
-	public Camera() {
-		this(PERSPECTIVE_MODE, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), DEFAULT_Z_NEAR,
+	public static Camera create() {
+		return create(PERSPECTIVE_MODE, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), DEFAULT_Z_NEAR,
 				DEFAULT_Z_FAR, DEFAULT_FOV, Vector3f.Z_AXIS);
 	}
 
-	public Camera(Map<String, Object> data) {
-		load(data);
-	}
-
-	public Camera(byte mode) {
-		this(mode, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), DEFAULT_Z_NEAR, DEFAULT_Z_FAR,
+	public static Camera create(byte mode) {
+		return create(mode, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), DEFAULT_Z_NEAR, DEFAULT_Z_FAR,
 				DEFAULT_FOV, Vector3f.Z_AXIS);
 	}
 
-	public Camera(byte mode, int width, int height, float zNear, float zFar, float fov) {
-		this(mode, width, height, zNear, zFar, fov, Vector3f.Z_AXIS);
+	public static Camera create(byte mode, int width, int height, float zNear, float zFar, float fov) {
+		return create(mode, width, height, zNear, zFar, fov, Vector3f.Z_AXIS);
 	}
 
-	public Camera(byte mode, int width, int height, float zNear, float zFar, float fov, Vector3f forward) {
-		set(mode, width, height, zNear, zFar, fov, forward);
+	public static Camera create(byte mode, int width, int height, float zNear, float zFar, float fov,
+			Vector3f forward) {
+		return create(mode, width, height, zNear, zFar, fov, Vector3f.Z_AXIS, Vector3f.UP);
+	}
+
+	public static Camera create(byte mode, int width, int height, float zNear, float zFar, float fov, Vector3f forward,
+			Vector3f up) {
+		Camera camera = new Camera();
+		camera.set(mode, width, height, zNear, zFar, fov, forward, up);
+		return camera;
+	}
+
+	protected Camera() {
 	}
 
 	public final void set(int width, int height, float zNear, float zFar, float fov) {
-		set(getMode(), width, height, zNear, zFar, fov, forward);
+		set(getMode(), width, height, zNear, zFar, fov, forward, up);
 	}
 
 	public final void set(int width, int height, float zNear, float zFar, float fov, Vector3f forward) {
-		set(getMode(), width, height, zNear, zFar, fov, forward);
+		set(getMode(), width, height, zNear, zFar, fov, forward, up);
 	}
 
 	public final void set(byte mode, int width, int height, float zNear, float zFar, float fov) {
-		set(mode, width, height, zNear, zFar, fov, forward);
+		set(mode, width, height, zNear, zFar, fov, forward, up);
 	}
 
 	public final void set(byte mode, int width, int height, float zNear, float zFar, float fov, Vector3f forward) {
+		set(mode, width, height, zNear, zFar, fov, forward, up);
+	}
+
+	public final void set(byte mode, int width, int height, float zNear, float zFar, float fov, Vector3f forward,
+			Vector3f up) {
 		this.width = width;
 		this.height = height;
 		this.zNear = zNear;
 		this.zFar = zFar;
 		this.fov = fov;
 		this.forward = forward;
-		this.up = Vector3f.UP;
+		this.up = up;
 		init(mode);
 	}
 
@@ -227,63 +243,49 @@ public class Camera implements SystemObject, Cloneable {
 	public void load(Map<String, Object> data) {
 		byte modeValue = PERSPECTIVE_MODE;
 		Object mode = data.get("mode");
-		if (mode != null) {
-			if (mode instanceof Number)
-				modeValue = ((Number) width).byteValue();
-			else if (mode instanceof String) {
-				if (((String) mode).equalsIgnoreCase("perspective"))
-					modeValue = PERSPECTIVE_MODE;
-				else if (((String) mode).equalsIgnoreCase("orthographic"))
-					modeValue = ORTHOGRAPHIC_MODE;
-			}
+		if (mode instanceof Number)
+			modeValue = ((Number) width).byteValue();
+		else if (mode instanceof String) {
+			if (((String) mode).equalsIgnoreCase("perspective"))
+				modeValue = PERSPECTIVE_MODE;
+			else if (((String) mode).equalsIgnoreCase("orthographic"))
+				modeValue = ORTHOGRAPHIC_MODE;
 		}
-		Object width = data.get("width");
-		if (width != null && width instanceof Number)
-			this.width = ((Number) width).intValue();
-		else
-			this.width = Options.RESOLUTION_X.getInt();
-		Object height = data.get("height");
-		if (height != null && height instanceof Number)
-			this.height = ((Number) height).intValue();
-		else
-			this.height = Options.RESOLUTION_Y.getInt();
-		Object zNear = data.get("zNear");
-		if (zNear != null && zNear instanceof Number)
-			this.zNear = ((Number) zNear).floatValue();
-		else
-			this.zNear = DEFAULT_Z_NEAR;
-		Object zFar = data.get("zFar");
-		if (zFar != null && zFar instanceof Number)
-			this.zFar = ((Number) zFar).floatValue();
-		else
-			this.zFar = DEFAULT_Z_FAR;
-		Object fov = data.get("fov");
-		if (fov != null && fov instanceof Number)
-			this.fov = ((Number) fov).floatValue();
-		else
-			this.fov = DEFAULT_FOV;
-
-		Object forward = data.get("forward");
-		if (forward != null) {
-			float xValue = 0.0f;
-			Object x = data.get("x");
-			if (x != null && x instanceof Number)
-				xValue = ((Number) x).floatValue();
-			float yValue = 0.0f;
-			Object y = data.get("y");
-			if (y != null && y instanceof Number)
-				yValue = ((Number) y).floatValue();
-			float zValue = 0.0f;
-			Object z = data.get("z");
-			if (z != null && z instanceof Number)
-				zValue = ((Number) z).floatValue();
-			this.forward = new Vector3f(xValue, yValue, zValue);
-		} else {
-			this.forward = Vector3f.Z_AXIS;
-		}
-
-		this.up = Vector3f.UP;
+		width = YamlHelper.toInt(data.get("width"), Options.RESOLUTION_X.getInt());
+		height = YamlHelper.toInt(data.get("height"), Options.RESOLUTION_Y.getInt());
+		zNear = YamlHelper.toFloat(data.get("zNear"), DEFAULT_Z_NEAR);
+		zFar = YamlHelper.toFloat(data.get("zFar"), DEFAULT_Z_FAR);
+		fov = YamlHelper.toFloat(data.get("fov"), DEFAULT_FOV);
+		forward = YamlHelper.toVector3f(data.get("forward"), Vector3f.Z_AXIS);
+		up = YamlHelper.toVector3f(data.get("up"), Vector3f.UP);
 		init(modeValue);
+	}
+
+	public void load(DataInput in) throws IOException {
+		byte modeValue = in.readByte();
+		width = in.readInt();
+		height = in.readInt();
+		zNear = in.readFloat();
+		zFar = in.readFloat();
+		fov = in.readFloat();
+		forward = new Vector3f(in.readFloat(), in.readFloat(), in.readFloat());
+		up = new Vector3f(in.readFloat(), in.readFloat(), in.readFloat());
+		init(modeValue);
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.write(getMode());
+		out.writeInt(width);
+		out.writeInt(height);
+		out.writeFloat(zNear);
+		out.writeFloat(zFar);
+		out.writeFloat(fov);
+		out.writeFloat(forward.x);
+		out.writeFloat(forward.y);
+		out.writeFloat(forward.z);
+		out.writeFloat(up.x);
+		out.writeFloat(up.y);
+		out.writeFloat(up.z);
 	}
 
 	@SuppressWarnings("unchecked")

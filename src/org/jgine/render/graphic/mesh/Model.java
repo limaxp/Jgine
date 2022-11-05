@@ -16,23 +16,32 @@ import org.lwjgl.assimp.AIScene;
 
 public class Model extends UnorderedIdentityArrayList<Mesh> implements SystemObject, AutoCloseable {
 
-	public Model() {
+	public final String name;
+
+	public Model(String name) {
+		this.name = name;
 	}
 
-	public Model(Collection<? extends Mesh> meshes) {
+	public Model(String name, Collection<? extends Mesh> meshes) {
 		super(meshes);
+		this.name = name;
 	}
 
-	public Model(Mesh[] meshes) {
+	public Model(String name, Mesh[] meshes) {
 		super(meshes);
+		this.name = name;
 	}
 
-	public Model(AIScene scene) {
+	public Model(String name, AIScene scene) {
+		this.name = name;
 		int materialCount = scene.mNumMaterials();
 		PointerBuffer materialsBuffer = scene.mMaterials();
 		List<Material> materials = new ArrayList<>();
-		for (int i = 0; i < materialCount; ++i)
-			materials.add(new Material().load(AIMaterial.create(materialsBuffer.get(i))));
+		for (int i = 0; i < materialCount; ++i) {
+			Material material = new Material();
+			material.load(AIMaterial.create(materialsBuffer.get(i)));
+			materials.add(material);
+		}
 
 		int meshCount = scene.mNumMeshes();
 		PointerBuffer meshesBuffer = scene.mMeshes();
