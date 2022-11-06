@@ -171,22 +171,21 @@ public class UIWindow extends UIObject {
 			child.calculateTransform();
 	}
 
-	public final <T extends UIObject> T addChild(T child) {
+	public void addChild(UIObject child) {
 		if (child.window != null)
 			child.window.childs.remove(this);
 		child.window = this;
 		childs.add(child);
 		child.calculateTransform();
-		return child;
 	}
 
-	public final void removeChild(UIObject child) {
+	public void removeChild(UIObject child) {
 		child.window = null;
 		childs.remove(child);
 		child.calculateTransform();
 	}
 
-	public final void isChild(UIObject child) {
+	public void isChild(UIObject child) {
 		childs.contains(child);
 	}
 
@@ -195,12 +194,12 @@ public class UIWindow extends UIObject {
 			addChild(child);
 	}
 
-	public final void removeChilds(Collection<UIObject> childs) {
+	public void removeChilds(Collection<UIObject> childs) {
 		for (UIObject child : childs)
 			removeChild(child);
 	}
 
-	public final void clearChilds() {
+	public void clearChilds() {
 		for (UIObject child : childs) {
 			child.window = null;
 			child.calculateTransform();
@@ -208,14 +207,14 @@ public class UIWindow extends UIObject {
 		childs.clear();
 	}
 
-	public final void setChilds(Collection<UIObject> childs) {
+	public void setChilds(Collection<UIObject> childs) {
 		if (!childs.isEmpty())
 			clearChilds();
 		for (UIObject child : childs)
 			addChild(child);
 	}
 
-	public final List<UIObject> getChilds() {
+	public List<UIObject> getChilds() {
 		return Collections.unmodifiableList(childs);
 	}
 

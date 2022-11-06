@@ -78,7 +78,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 			focusObjects = FOCUS_OBJECTS_EMPTY;
 			return;
 		}
-		
+
 		List<UIObject> focusObjectsNew = new IdentityArrayList<UIObject>();
 		focusObjectsNew.add(object);
 		addTopWindows(focusObjectsNew, object);
@@ -174,7 +174,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 			if (!insideCheck(child, windowX, windowY))
 				continue;
 			if (child instanceof UIWindow)
-				return focusCheck(window, windowX, windowY);
+				return focusCheck((UIWindow) child, windowX, windowY);
 			return child;
 		}
 		return window;
