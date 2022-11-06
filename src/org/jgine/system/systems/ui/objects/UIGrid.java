@@ -7,18 +7,19 @@ import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
 
-public class UIList extends UIWindow {
+public class UIGrid extends UIWindow {
 
 	private float childHeight = 0.05f;
+	private float childWidth = 0.2f;
 
-	public UIList() {
+	public UIGrid() {
 	}
 
-	public UIList(float scale) {
+	public UIGrid(float scale) {
 		super(scale);
 	}
 
-	public UIList(float width, float height) {
+	public UIGrid(float width, float height) {
 		super(width, height);
 	}
 
@@ -39,8 +40,8 @@ public class UIList extends UIWindow {
 	}
 
 	@Override
-	public UIObjectType<? extends UIList> getType() {
-		return UIObjectTypes.LIST;
+	public UIObjectType<? extends UIGrid> getType() {
+		return UIObjectTypes.GRID;
 	}
 
 	@Override
@@ -62,7 +63,21 @@ public class UIList extends UIWindow {
 		return childHeight;
 	}
 
+	public void setChildWidth(float childWidth) {
+		this.childWidth = childWidth;
+		List<UIObject> childs = getChilds();
+		int size = childs.size();
+		for (int i = 0; i < size; i++)
+			placeChild(childs.get(i), i);
+	}
+
+	public float getChildWidth() {
+		return childWidth;
+	}
+
 	protected void placeChild(UIObject child, int index) {
-		child.set(0, 1 - (childHeight * (index + 1)), 1, childHeight);
+		float widthSize = childWidth * index;
+		int height = (int) widthSize;
+		child.set(widthSize - height, 1 - (childHeight * (1 + height)), childWidth, childHeight);
 	}
 }
