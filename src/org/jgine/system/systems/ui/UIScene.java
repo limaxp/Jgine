@@ -10,7 +10,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
-import org.jgine.misc.collection.list.arrayList.FastArrayList;
+import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.render.UIRenderer;
@@ -18,14 +18,15 @@ import org.jgine.system.data.ListSystemScene;
 
 public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
+	private static final List<UIObject> FOCUS_OBJECTS_EMPTY = new IdentityArrayList<UIObject>();
+
 	float mouseX, mouseY;
-	private UIObject focusObject;
-	private List<UIWindow> focusWindows;
+	private List<UIObject> focusObjects;
 	private UIObject clickedObject;
 
 	public UIScene(UISystem system, Scene scene) {
 		super(system, scene, UIWindow.class);
-		focusWindows = new FastArrayList<UIWindow>();
+		focusObjects = FOCUS_OBJECTS_EMPTY;
 	}
 
 	@Override
@@ -53,43 +54,47 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		mouseX = cursorPos.x / windowSize.x;
 		mouseY = 1 - cursorPos.y / windowSize.y;
 
+		UIObject focusObject = null;
 		for (int i = size - 1; i >= 0; i--) {
 			UIWindow window = objects[i];
 			if (insideCheck(window, mouseX, mouseY)) {
-				UIObject focusObject = focusCheck(window, mouseX, mouseY);
-				focus(focusObject);
-				clickCheck(focusObject, mouseX, mouseY);
+				focusObject = focusCheck(window, mouseX, mouseY);
 				break;
 			}
 		}
+		focus(focusObject);
+		clickCheck(focusObject, mouseX, mouseY);
 	}
 
 	private void focus(UIObject object) {
-		if (object == focusObject)
+		if (object == focusObjects.get(0))
 			return;
 
-		object.isFocused = true;
-		object.onFocus();
-		if (focusObject != null) {
-			focusObject.isFocused = false;
-			focusObject.onDefocus();
+		if (object == null && focusObjects != FOCUS_OBJECTS_EMPTY) {
+			for (UIObject obj : focusObjects) {
+				obj.isFocused = false;
+				obj.onDefocus();
+			}
+			focusObjects = FOCUS_OBJECTS_EMPTY;
+			return;
 		}
-		focusObject = object;
-
-		List<UIWindow> focusWindowsNew = getTopWindows(object);
-		for (UIWindow window : focusWindowsNew) {
-			if (!this.focusWindows.contains(window)) {
-				window.isFocused = true;
-				window.onFocus();
+		
+		List<UIObject> focusObjectsNew = new IdentityArrayList<UIObject>();
+		focusObjectsNew.add(object);
+		addTopWindows(focusObjectsNew, object);
+		for (UIObject uiObject : focusObjectsNew) {
+			if (!focusObjects.contains(uiObject)) {
+				uiObject.isFocused = true;
+				uiObject.onFocus();
 			}
 		}
-		for (UIWindow window : focusWindows) {
-			if (!focusWindowsNew.contains(window)) {
-				window.isFocused = false;
-				window.onDefocus();
+		for (UIObject uiObject : focusObjects) {
+			if (!focusObjectsNew.contains(uiObject)) {
+				uiObject.isFocused = false;
+				uiObject.onDefocus();
 			}
 		}
-		focusWindows = focusWindowsNew;
+		focusObjects = focusObjectsNew;
 	}
 
 	private void clickCheck(UIObject focusObject, float mouseX, float mouseY) {
@@ -104,21 +109,15 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	private void click(UIObject focusObject, float mouseX, float mouseY) {
-		if (clickedObject == null) {
-			focusObject.onClick(mouseX, mouseY);
-			clickedObject = focusObject;
-			UIWindow topWindow = getTopWindow(focusObject);
-			if (topWindow != objects[size - 1]) {
-				int topWindowIndex = 0;
-				for (int i = 0; i < size; i++) {
-					if (objects[i] == topWindow) {
-						topWindowIndex = i;
-						break;
-					}
-				}
-				objects[topWindowIndex] = objects[size - 1];
-				objects[size - 1] = topWindow;
-			}
+		if (clickedObject != null || focusObject == null)
+			return;
+
+		focusObject.onClick(mouseX, mouseY);
+		clickedObject = focusObject;
+		UIWindow topWindow = getTopWindow(focusObject);
+		if (topWindow != objects[size - 1]) {
+			objects[getTopWindowIndex(topWindow)] = objects[size - 1];
+			objects[size - 1] = topWindow;
 		}
 	}
 
@@ -141,19 +140,22 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		object.save(out);
 	}
 
-	private static List<UIWindow> getTopWindows(UIObject object) {
-		List<UIWindow> result = new FastArrayList<UIWindow>();
+	private int getTopWindowIndex(UIWindow object) {
+		for (int i = 0; i < size; i++)
+			if (objects[i] == object)
+				return i;
+		return 0;
+	}
+
+	private static void addTopWindows(List<UIObject> result, UIObject object) {
 		UIWindow window = object.window;
-		if (window == null) {
-			result.add((UIWindow) object);
-			return result;
-		}
+		if (window == null)
+			return;
 		result.add(window);
 		while (window.window != null) {
 			window = window.window;
 			result.add(window);
 		}
-		return result;
 	}
 
 	private static UIWindow getTopWindow(UIObject object) {
