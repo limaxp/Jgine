@@ -2,6 +2,7 @@ package org.jgine.misc.utils.loader;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +141,10 @@ public class PrefabLoader {
 	@Nullable
 	public static Prefab get(int id) {
 		return ID_MAP.get(id);
+	}
+
+	public static Collection<Prefab> values() {
+		return NAME_MAP.values();
 	}
 
 	private static final class PrefabData {

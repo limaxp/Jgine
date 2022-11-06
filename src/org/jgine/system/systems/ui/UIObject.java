@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
@@ -45,8 +44,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		}
 	}
 
-	protected abstract void create(Entity entity);
-
 	protected abstract void free();
 
 	public abstract void render();
@@ -58,6 +55,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public abstract void onClick(float mouseX, float mouseY);
 
 	public abstract void onRelease(float mouseX, float mouseY);
+
+	public abstract UIObjectType<?> getType();
 
 	public void load(Map<String, Object> data) {
 		x = YamlHelper.toFloat(data.get("x"));
@@ -85,8 +84,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		out.writeFloat(height);
 		calculateTransform();
 	}
-
-	public abstract UIObjectType<?> getType();
 
 	public final Matrix getTransform() {
 		return transform;

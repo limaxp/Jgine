@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -38,10 +37,6 @@ public class UIHotbar extends UIObject {
 		obj.background = background.clone();
 		obj.dragTask = null;
 		return obj;
-	}
-
-	@Override
-	protected void create(Entity entity) {
 	}
 
 	@Override

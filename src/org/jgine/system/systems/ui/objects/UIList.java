@@ -1,25 +1,20 @@
 package org.jgine.system.systems.ui.objects;
 
-import org.jgine.core.entity.Entity;
-import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.system.systems.ui.UIWindow;
 
-public class UIList extends UIObject {
+public class UIList extends UIWindow {
 
 	public UIList() {
 	}
 
-	@Override
-	protected void create(Entity entity) {
+	public UIList(float scale) {
+		super(scale);
 	}
 
-	@Override
-	protected void free() {
-	}
-
-	@Override
-	public void render() {
+	public UIList(float width, float height) {
+		super(width, height);
 	}
 
 	@Override

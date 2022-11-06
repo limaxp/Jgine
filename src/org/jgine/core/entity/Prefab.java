@@ -1,6 +1,7 @@
 package org.jgine.core.entity;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -212,5 +213,9 @@ public class Prefab {
 	@Nullable
 	public static Prefab get(int id) {
 		return PrefabLoader.get(id);
+	}
+
+	public static Collection<Prefab> values() {
+		return PrefabLoader.values();
 	}
 }

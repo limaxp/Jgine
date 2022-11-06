@@ -13,18 +13,9 @@ public class UISystem extends EngineSystem {
 	}
 
 	@Override
-	public UIObject load(Map<String, Object> data) {
-		UIObjectType<?> uiObjectType;
-		Object type = data.get("type");
-		if (type != null && type instanceof String) {
-			uiObjectType = UIObjectTypes.get((String) type);
-			if (uiObjectType == null)
-				uiObjectType = UIObjectTypes.LABEL;
-		}
-		else
-			uiObjectType = UIObjectTypes.LABEL;
-		UIObject uiObject = uiObjectType.get();
-		uiObject.load(data);
-		return uiObject;
+	public UIWindow load(Map<String, Object> data) {
+		UIWindow object = new UIWindow();
+		object.load(data);
+		return object;
 	}
 }

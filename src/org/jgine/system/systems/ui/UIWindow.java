@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jgine.core.entity.Entity;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -55,19 +55,10 @@ public class UIWindow extends UIObject {
 	public UIWindow clone() {
 		UIWindow obj = (UIWindow) super.clone();
 		obj.childs = new UnorderedIdentityArrayList<UIObject>();
-		for (UIObject child : childs) {
-			UIObject cloneChild = child.clone();
-			cloneChild.window = obj;
-			obj.childs.add(cloneChild);
-		}
+		for (UIObject child : childs)
+			obj.addChild(child.clone());
 		obj.background = background.clone();
 		return obj;
-	}
-
-	@Override
-	protected void create(Entity entity) {
-		for (UIObject child : childs)
-			scene.initObject(entity, child);
 	}
 
 	@Override
@@ -76,9 +67,13 @@ public class UIWindow extends UIObject {
 
 	@Override
 	public void render() {
+		if (hide)
+			return;
 		UIRenderer.renderQuad(getTransform(), background);
 		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, new Material(borderColor),
 				true);
+		for (UIObject child : childs)
+			child.render();
 	}
 
 	@Override
@@ -282,11 +277,14 @@ public class UIWindow extends UIObject {
 
 		@Override
 		public void run() {
-			float newX = window.getX() + (window.scene.mouseX - dragX);
-			float newY = window.getY() + (window.scene.mouseY - dragY);
-			window.setPos(newX, newY);
-			dragX = window.scene.mouseX;
-			dragY = window.scene.mouseY;
+			float distance = Vector2f.distance(window.scene.mouseX, window.scene.mouseY, dragX, dragY);
+			if (distance > 0.01f) {
+				float newX = window.getX() + (window.scene.mouseX - dragX);
+				float newY = window.getY() + (window.scene.mouseY - dragY);
+				window.setPos(newX, newY);
+				dragX = window.scene.mouseX;
+				dragY = window.scene.mouseY;
+			}
 			if (!isCanceled)
 				Scheduler.runTaskAsynchron(this);
 		}

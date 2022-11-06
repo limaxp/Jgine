@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
-import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.Color;
@@ -43,10 +42,6 @@ public class UIBar extends UIObject {
 		obj.bar = bar.clone();
 		obj.barTransform = new Matrix(barTransform);
 		return obj;
-	}
-
-	@Override
-	protected void create(Entity entity) {
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	public Collection<T2> getObjects() {
 		return new FastArrayList<>(objects, size);
 	}
-	
+
 	@Override
 	public T2 getObject(int index) {
 		return objects[index];
@@ -75,14 +75,14 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 		return -1;
 	}
 
-	private final void ensureCapacity(int minCapacity) {
+	protected final void ensureCapacity(int minCapacity) {
 		int length = objects.length;
 		if (minCapacity > length)
 			resize(minCapacity + GROW_SIZE);
 	}
 
 	@SuppressWarnings("unchecked")
-	private final void resize(int size) {
+	protected final void resize(int size) {
 		T2[] newArray = (T2[]) Array.newInstance(clazz, size);
 		System.arraycopy(objects, 0, newArray, 0, this.size);
 		objects = newArray;
