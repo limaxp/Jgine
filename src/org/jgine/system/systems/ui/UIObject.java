@@ -85,7 +85,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		calculateTransform();
 	}
 
-	public final Matrix getTransform() {
+	public Matrix getTransform() {
 		return transform;
 	}
 
@@ -96,7 +96,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 			transform.mult(window.getTransform());
 	}
 
-	public final void set(float x, float y, float width, float height) {
+	public void set(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -104,61 +104,61 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		calculateTransform();
 	}
 
-	public final void setPos(float x, float y) {
+	public void setPos(float x, float y) {
 		this.x = x;
 		this.y = y;
 		calculateTransform();
 	}
 
-	public final void setX(float x) {
+	public void setX(float x) {
 		this.x = x;
 		calculateTransform();
 	}
 
-	public final float getX() {
+	public float getX() {
 		return x;
 	}
 
-	public final void setY(float y) {
+	public void setY(float y) {
 		this.y = y;
 		calculateTransform();
 	}
 
-	public final float getY() {
+	public float getY() {
 		return y;
 	}
 
-	public final void setScale(float scale) {
+	public void setScale(float scale) {
 		this.width = scale;
 		this.height = scale;
 		calculateTransform();
 	}
 
-	public final void setScale(float width, float height) {
+	public void setScale(float width, float height) {
 		this.width = width;
 		this.height = height;
 		calculateTransform();
 	}
 
-	public final void setWidth(float width) {
+	public void setWidth(float width) {
 		this.width = width;
 		calculateTransform();
 	}
 
-	public final float getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
-	public final void setHeight(float height) {
+	public void setHeight(float height) {
 		this.height = height;
 		calculateTransform();
 	}
 
-	public final float getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
-	public final void setWindow(@Nullable UIWindow window) {
+	public void setWindow(@Nullable UIWindow window) {
 		if (this.window != null)
 			this.window.childs.remove(this);
 		this.window = window;
@@ -168,15 +168,15 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	@Nullable
-	public final UIWindow getWindow() {
+	public UIWindow getWindow() {
 		return window;
 	}
 
-	public final boolean hasWindow() {
+	public boolean hasWindow() {
 		return window != null;
 	}
 
-	public final boolean isFocused() {
+	public boolean isFocused() {
 		return isFocused;
 	}
 }

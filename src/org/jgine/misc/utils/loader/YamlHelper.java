@@ -7,6 +7,7 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
+import org.jgine.render.graphic.text.Text;
 
 public class YamlHelper {
 
@@ -188,6 +189,22 @@ public class YamlHelper {
 			return (Float) o;
 		else if (o instanceof Integer)
 			return (Integer) o / 255;
+		return defaultValue;
+	}
+
+	public static int toTextType(Object data) {
+		return toTextType(data, Text.TYPE_TRUETYPE);
+	}
+
+	public static int toTextType(Object data, int defaultValue) {
+		if (data instanceof Number)
+			return ((Number) data).intValue();
+		else if (data instanceof String) {
+			if (((String) data).equalsIgnoreCase("truetype"))
+				return Text.TYPE_TRUETYPE;
+			else if (((String) data).equalsIgnoreCase("bitmap"))
+				return Text.TYPE_BITMAP;
+		}
 		return defaultValue;
 	}
 }

@@ -20,41 +20,14 @@ import org.lwjgl.system.MemoryStack;
 
 public class TrueTypeFont implements Font {
 
+	public static final int MAX_SIZE = 1000;
 	private static final Map<String, TrueTypeFont> NAME_MAP = new HashMap<String, TrueTypeFont>();
+	private static final TrueTypeFont[] ID_MAP = new TrueTypeFont[MAX_SIZE];
+	private static int increment;
 
 	public static TrueTypeFont ARIAL = TrueTypeFont.load("arial", FileUtils.getResourceStream("fonts/arial/ARIAL.TTF"));
 
-	@Nullable
-	public static TrueTypeFont load(String name, File file) {
-		try {
-			return load(name, FileUtils.readByteBuffer(file));
-		} catch (IOException e) {
-			Logger.err("TrueTypeFont: Error loading file '" + file.getPath() + "'", e);
-			return null;
-		}
-	}
-
-	@Nullable
-	public static TrueTypeFont load(String name, InputStream is) {
-		try {
-			return load(name, FileUtils.readByteBuffer(is));
-		} catch (IOException e) {
-			Logger.err("TrueTypeFont: Error loading input stream", e);
-			return null;
-		}
-	}
-
-	public static TrueTypeFont load(String name, ByteBuffer ttf) {
-		TrueTypeFont font = new TrueTypeFont(name, ttf);
-		NAME_MAP.put(name, font);
-		return font;
-	}
-
-	@Nullable
-	public static TrueTypeFont get(String name) {
-		return NAME_MAP.get(name);
-	}
-
+	public final int id;
 	public final String name;
 	protected final ByteBuffer ttf;
 	public final STBTTFontinfo info;
@@ -62,7 +35,8 @@ public class TrueTypeFont implements Font {
 	public final int descent;
 	public final int lineGap;
 
-	protected TrueTypeFont(String name, ByteBuffer ttf) {
+	public TrueTypeFont(String name, ByteBuffer ttf) {
+		this.id = increment++;
 		this.name = name;
 		this.ttf = ttf;
 		info = STBTTFontinfo.create();
@@ -78,10 +52,42 @@ public class TrueTypeFont implements Font {
 			descent = pDescent.get(0);
 			lineGap = pLineGap.get(0);
 		}
+		NAME_MAP.put(name, this);
+		ID_MAP[id] = this;
 	}
 
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Nullable
+	public static TrueTypeFont load(String name, File file) {
+		try {
+			return new TrueTypeFont(name, FileUtils.readByteBuffer(file));
+		} catch (IOException e) {
+			Logger.err("TrueTypeFont: Error loading file '" + file.getPath() + "'", e);
+			return null;
+		}
+	}
+
+	@Nullable
+	public static TrueTypeFont load(String name, InputStream is) {
+		try {
+			return new TrueTypeFont(name, FileUtils.readByteBuffer(is));
+		} catch (IOException e) {
+			Logger.err("TrueTypeFont: Error loading input stream", e);
+			return null;
+		}
+	}
+
+	@Nullable
+	public static TrueTypeFont get(String name) {
+		return NAME_MAP.get(name);
+	}
+
+	@Nullable
+	public static TrueTypeFont get(int id) {
+		return ID_MAP[id];
 	}
 }

@@ -25,6 +25,7 @@ public class UIWindow extends UIObject {
 	private boolean hide;
 	private Material background;
 	private Vector3f borderColor;
+	private float reservedTopSpace;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -172,17 +173,22 @@ public class UIWindow extends UIObject {
 	}
 
 	public void addChild(UIObject child) {
-		if (child.window != null)
-			child.window.childs.remove(this);
-		child.window = this;
-		childs.add(child);
-		child.calculateTransform();
+		child.setWindow(this);
 	}
 
-	public void removeChild(UIObject child) {
+	public int removeChild(UIObject child) {
+		int index = childs.indexOf(child);
+		childs.remove(index);
 		child.window = null;
-		childs.remove(child);
 		child.calculateTransform();
+		return index;
+	}
+
+	public UIObject removeChild(int index) {
+		UIObject child = childs.remove(index);
+		child.window = null;
+		child.calculateTransform();
+		return child;
 	}
 
 	public void isChild(UIObject child) {
@@ -260,6 +266,18 @@ public class UIWindow extends UIObject {
 
 	public UIScene getScene() {
 		return scene;
+	}
+
+	public void setReservedTopSpace(float reservedTopSpace) {
+		this.reservedTopSpace = reservedTopSpace;
+	}
+
+	public void addReservedTopSpace(float reservedTopSpace) {
+		this.reservedTopSpace += reservedTopSpace;
+	}
+
+	public float getReservedTopSpace() {
+		return reservedTopSpace;
 	}
 
 	public static class DragTask implements Runnable {

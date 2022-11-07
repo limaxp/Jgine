@@ -1,16 +1,18 @@
 package org.jgine.system.systems.ui.objects;
 
-import java.util.List;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Map;
 
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-import org.jgine.system.systems.ui.UIWindow;
 
-public class UIGrid extends UIWindow {
+public class UIGrid extends UIList {
 
-	private float childHeight = 0.05f;
-	private float childWidth = 0.2f;
+	protected float elementWidth = 0.2f;
 
 	public UIGrid() {
 	}
@@ -40,44 +42,42 @@ public class UIGrid extends UIWindow {
 	}
 
 	@Override
+	public void load(Map<String, Object> data) {
+		elementWidth = YamlHelper.toFloat(data.get("elementWidth"), 0.02f);
+		super.load(data);
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		elementWidth = in.readFloat();
+		super.load(in);
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(elementWidth);
+		super.save(out);
+	}
+
+	@Override
 	public UIObjectType<? extends UIGrid> getType() {
 		return UIObjectTypes.GRID;
 	}
 
+	public void setElementWidth(float elementWidth) {
+		this.elementWidth = elementWidth;
+		placeChilds(0);
+	}
+
+	public float getElementWidth() {
+		return elementWidth;
+	}
+
 	@Override
-	public void addChild(UIObject child) {
-		super.addChild(child);
-		int size = getChilds().size();
-		placeChild(child, size - 1);
-	}
-
-	public void setChildHeight(float childHeight) {
-		this.childHeight = childHeight;
-		List<UIObject> childs = getChilds();
-		int size = childs.size();
-		for (int i = 0; i < size; i++)
-			placeChild(childs.get(i), i);
-	}
-
-	public float getChildHeight() {
-		return childHeight;
-	}
-
-	public void setChildWidth(float childWidth) {
-		this.childWidth = childWidth;
-		List<UIObject> childs = getChilds();
-		int size = childs.size();
-		for (int i = 0; i < size; i++)
-			placeChild(childs.get(i), i);
-	}
-
-	public float getChildWidth() {
-		return childWidth;
-	}
-
 	protected void placeChild(UIObject child, int index) {
-		float widthSize = childWidth * index;
+		float widthSize = elementWidth * index;
 		int height = (int) widthSize;
-		child.set(widthSize - height, 1 - (childHeight * (1 + height)), childWidth, childHeight);
+		child.set(widthSize - height, 1 - getWindow().getReservedTopSpace() - (elementHeight * (1 + height)),
+				elementWidth, elementHeight);
 	}
 }

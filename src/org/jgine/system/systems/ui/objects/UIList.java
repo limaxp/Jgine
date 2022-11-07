@@ -1,7 +1,12 @@
 package org.jgine.system.systems.ui.objects;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
@@ -9,7 +14,7 @@ import org.jgine.system.systems.ui.UIWindow;
 
 public class UIList extends UIWindow {
 
-	private float childHeight = 0.05f;
+	protected float elementHeight = 0.05f;
 
 	public UIList() {
 	}
@@ -39,6 +44,24 @@ public class UIList extends UIWindow {
 	}
 
 	@Override
+	public void load(Map<String, Object> data) {
+		this.elementHeight = YamlHelper.toFloat(data.get("elementHeight"), 0.05f);
+		super.load(data);
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		this.elementHeight = in.readFloat();
+		super.load(in);
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeFloat(elementHeight);
+		super.save(out);
+	}
+
+	@Override
 	public UIObjectType<? extends UIList> getType() {
 		return UIObjectTypes.LIST;
 	}
@@ -50,19 +73,37 @@ public class UIList extends UIWindow {
 		placeChild(child, size - 1);
 	}
 
-	public void setChildHeight(float childHeight) {
-		this.childHeight = childHeight;
+	@Override
+	public int removeChild(UIObject child) {
+		int index = super.removeChild(child);
+		placeChilds(index);
+		return index;
+	}
+
+	@Override
+	public UIObject removeChild(int index) {
+		UIObject child = super.removeChild(index);
+		placeChilds(index);
+		return child;
+	}
+
+	public void setElementHeight(float elementHeight) {
+		this.elementHeight = elementHeight;
+		placeChilds(0);
+	}
+
+	public float getElementHeight() {
+		return elementHeight;
+	}
+
+	protected void placeChilds(int index) {
 		List<UIObject> childs = getChilds();
 		int size = childs.size();
-		for (int i = 0; i < size; i++)
+		for (int i = index; i < size; i++)
 			placeChild(childs.get(i), i);
 	}
 
-	public float getChildHeight() {
-		return childHeight;
-	}
-
 	protected void placeChild(UIObject child, int index) {
-		child.set(0, 1 - (childHeight * (index + 1)), 1, childHeight);
+		child.set(0, 1 - getWindow().getReservedTopSpace() - (elementHeight * (index + 1)), 1, elementHeight);
 	}
 }

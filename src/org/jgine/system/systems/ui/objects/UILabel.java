@@ -10,8 +10,11 @@ import org.jgine.core.Transform;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.Color;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.render.graphic.text.BitmapFont;
+import org.jgine.render.graphic.text.BitmapText;
 import org.jgine.render.graphic.text.Text;
 import org.jgine.render.graphic.text.TrueTypeFont;
 import org.jgine.render.graphic.text.TrueTypeText;
@@ -23,6 +26,8 @@ public class UILabel extends UIObject {
 
 	private Material background;
 	private Text text;
+	private float textOffsetX;
+	private float textOffsetY;
 	private Matrix textTransform;
 
 	public UILabel() {
@@ -34,7 +39,10 @@ public class UILabel extends UIObject {
 	public UILabel clone() {
 		UILabel obj = (UILabel) super.clone();
 		obj.background = background.clone();
-		obj.text = new TrueTypeText((TrueTypeFont) text.getFont(), text.getText());
+		if (text instanceof TrueTypeText)
+			obj.text = new TrueTypeText((TrueTypeFont) text.getFont(), text.getSize(), text.getText());
+		else if (text instanceof BitmapText)
+			obj.text = new BitmapText((BitmapFont) text.getFont(), text.getSize(), text.getText());
 		obj.textTransform = new Matrix(textTransform);
 		return obj;
 	}
@@ -55,12 +63,13 @@ public class UILabel extends UIObject {
 	@Override
 	protected void calculateTransform() {
 		super.calculateTransform();
-		calculateTextTransform();
+		if (text != null)
+			calculateTextTransform();
 	}
 
 	protected void calculateTextTransform() {
-		Transform.calculateMatrix(textTransform, -1 + (getX() + getWidth() * 0.1f) * 2,
-				-1 + (getY() + getHeight() * 0.5f) * 2, 0, getWidth(), getHeight(), 0);
+		Transform.calculateMatrix(textTransform, -1 + (getX() + textOffsetX) * 2, -1 + (getY() + textOffsetY) * 2, 0,
+				getWidth(), getHeight(), 0);
 		if (hasWindow())
 			textTransform.mult(getWindow().getTransform());
 		textTransform.scaling(0.001f, 0.001f, 0.001f);
@@ -94,33 +103,61 @@ public class UILabel extends UIObject {
 
 		Object textData = data.get("text");
 		if (textData instanceof String) {
-			TrueTypeFont font = TrueTypeFont.ARIAL;
-			Object fontData = data.get("font");
-			if (fontData instanceof String) {
-				TrueTypeFont font2 = TrueTypeFont.get((String) textData);
-				if (font2 != null)
-					font = font2;
+			int type = YamlHelper.toTextType(data.get("type"));
+			int textSize = YamlHelper.toInt(data.get("textSize"), 64);
+			if (type == Text.TYPE_TRUETYPE) {
+				TrueTypeFont font = TrueTypeFont.ARIAL;
+				Object fontData = data.get("font");
+				if (fontData instanceof String) {
+					TrueTypeFont font2 = TrueTypeFont.get((String) textData);
+					if (font2 != null)
+						font = font2;
+				}
+				this.text = new TrueTypeText(font, textSize, (String) textData);
+			} else if (type == Text.TYPE_BITMAP) {
+				BitmapFont font = BitmapFont.CONSOLAS;
+				Object fontData = data.get("font");
+				if (fontData instanceof String) {
+					BitmapFont font2 = BitmapFont.get((String) textData);
+					if (font2 != null)
+						font = font2;
+				}
+				this.text = new BitmapText(font, textSize, (String) textData);
 			}
-			this.text = new TrueTypeText(font, (String) textData);
 		}
+		textOffsetX = YamlHelper.toFloat(data.get("textOffsetX"));
+		textOffsetY = YamlHelper.toFloat(data.get("textOffsetY"));
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
 		super.load(in);
 		background.load(in);
-		TrueTypeFont font = TrueTypeFont.get(in.readUTF());
-		if (font == null)
-			font = TrueTypeFont.ARIAL;
-		this.text = new TrueTypeText(font, in.readUTF());
+		if (in.readBoolean()) {
+			TrueTypeFont font = TrueTypeFont.get(in.readUTF());
+			if (font == null)
+				font = TrueTypeFont.ARIAL;
+			this.text = new TrueTypeText(font, in.readInt(), in.readUTF());
+		} else {
+			BitmapFont font = BitmapFont.get(in.readUTF());
+			if (font == null)
+				font = BitmapFont.CONSOLAS;
+			this.text = new BitmapText(font, in.readInt(), in.readUTF());
+		}
+		textOffsetX = in.readInt();
+		textOffsetY = in.readInt();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
 		super.save(out);
 		background.save(out);
+		out.writeBoolean(text instanceof TrueTypeText);
 		out.writeUTF(text.getFont().getName());
+		out.writeInt(text.getSize());
 		out.writeUTF(text.getText());
+		out.writeFloat(textOffsetX);
+		out.writeFloat(textOffsetY);
 	}
 
 	@Override
@@ -145,4 +182,30 @@ public class UILabel extends UIObject {
 		return text;
 	}
 
+	public void setTextOffset(float textOffsetX, float textOffsetY) {
+		this.textOffsetX = textOffsetX;
+		this.textOffsetY = textOffsetY;
+		if (text != null)
+			calculateTextTransform();
+	}
+
+	public void setTextOffsetX(float textOffsetX) {
+		this.textOffsetX = textOffsetX;
+		if (text != null)
+			calculateTextTransform();
+	}
+
+	public float getTextOffsetX() {
+		return textOffsetX;
+	}
+
+	public void setTextOffsetY(float textOffsetY) {
+		this.textOffsetY = textOffsetY;
+		if (text != null)
+			calculateTextTransform();
+	}
+
+	public float getTextOffsetY() {
+		return textOffsetY;
+	}
 }

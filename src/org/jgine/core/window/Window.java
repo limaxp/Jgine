@@ -1,44 +1,24 @@
 package org.jgine.core.window;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_AUTO_ICONIFY;
 import static org.lwjgl.glfw.GLFW.GLFW_BLUE_BITS;
-import static org.lwjgl.glfw.GLFW.GLFW_CLIENT_API;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_CREATION_API;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_NO_ERROR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_RELEASE_BEHAVIOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_REVISION;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_ROBUSTNESS;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
-import static org.lwjgl.glfw.GLFW.GLFW_DECORATED;
+import static org.lwjgl.glfw.GLFW.GLFW_DONT_CARE;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_FLOATING;
-import static org.lwjgl.glfw.GLFW.GLFW_FOCUSED;
-import static org.lwjgl.glfw.GLFW.GLFW_FOCUS_ON_SHOW;
 import static org.lwjgl.glfw.GLFW.GLFW_GREEN_BITS;
-import static org.lwjgl.glfw.GLFW.GLFW_HOVERED;
-import static org.lwjgl.glfw.GLFW.GLFW_ICONIFIED;
 import static org.lwjgl.glfw.GLFW.GLFW_LOCK_KEY_MODS;
-import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_DEBUG_CONTEXT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_RAW_MOUSE_MOTION;
 import static org.lwjgl.glfw.GLFW.GLFW_RED_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_REFRESH_RATE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_STICKY_KEYS;
 import static org.lwjgl.glfw.GLFW.GLFW_STICKY_MOUSE_BUTTONS;
-import static org.lwjgl.glfw.GLFW.GLFW_TRANSPARENT_FRAMEBUFFER;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwFocusWindow;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
@@ -54,7 +34,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetWindowUserPointer;
 import static org.lwjgl.glfw.GLFW.glfwHideWindow;
 import static org.lwjgl.glfw.GLFW.glfwIconifyWindow;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwMaximizeWindow;
 import static org.lwjgl.glfw.GLFW.glfwRawMouseMotionSupported;
+import static org.lwjgl.glfw.GLFW.glfwRequestWindowAttention;
 import static org.lwjgl.glfw.GLFW.glfwRestoreWindow;
 import static org.lwjgl.glfw.GLFW.glfwSetCharCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetCursor;
@@ -65,6 +47,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowAspectRatio;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowAttrib;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowCloseCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowContentScaleCallback;
@@ -80,6 +63,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetWindowRefreshCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeLimits;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowUserPointer;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
@@ -91,13 +75,13 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Cursor;
+import org.jgine.core.window.WindowBuilder.Attribute;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector4i;
 import org.jgine.misc.utils.options.Options;
-import org.jgine.render.OpenGL;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
@@ -122,31 +106,7 @@ import org.lwjgl.system.MemoryStack;
  */
 public class Window {
 
-	public static class Attribute {
-
-		public static final int FOCUSED = GLFW_FOCUSED;
-		public static final int ICONIFIED = GLFW_ICONIFIED;
-		public static final int MAXIMIZED = GLFW_MAXIMIZED;
-		public static final int HOVERED = GLFW_HOVERED;
-		public static final int VISIBLE = GLFW_VISIBLE;
-		public static final int RESIZABLE = GLFW_RESIZABLE;
-		public static final int DECORATED = GLFW_DECORATED;
-		public static final int AUTO_ICONIFY = GLFW_AUTO_ICONIFY;
-		public static final int FLOATING = GLFW_FLOATING;
-		public static final int TRANSPARENT_FRAMEBUFFER = GLFW_TRANSPARENT_FRAMEBUFFER;
-		public static final int FOCUS_ON_SHOW = GLFW_FOCUS_ON_SHOW;
-		public static final int CLIENT_API = GLFW_CLIENT_API;
-		public static final int CONTEXT_CREATION_API = GLFW_CONTEXT_CREATION_API;
-		public static final int CONTEXT_VERSION_MAJOR = GLFW_CONTEXT_VERSION_MAJOR;
-		public static final int CONTEXT_VERSION_MINOR = GLFW_CONTEXT_VERSION_MINOR;
-		public static final int CONTEXT_REVISION = GLFW_CONTEXT_REVISION;
-		public static final int OPENGL_FORWARD_COMPAT = GLFW_OPENGL_FORWARD_COMPAT;
-		public static final int OPENGL_DEBUG_CONTEXT = GLFW_OPENGL_DEBUG_CONTEXT;
-		public static final int OPENGL_PROFILE = GLFW_OPENGL_PROFILE;
-		public static final int CONTEXT_RELEASE_BEHAVIOR = GLFW_CONTEXT_RELEASE_BEHAVIOR;
-		public static final int CONTEXT_NO_ERROR = GLFW_CONTEXT_NO_ERROR;
-		public static final int CONTEXT_ROBUSTNESS = GLFW_CONTEXT_ROBUSTNESS;
-	}
+	public static final int SIZE_LIMIT_NONE = GLFW_DONT_CARE;
 
 	public static class Mode {
 
@@ -170,14 +130,6 @@ public class Window {
 		this.resolutionX = resolutionX;
 		this.resolutionY = resolutionY;
 		this.mode = mode;
-
-		glfwWindowHint(Attribute.CONTEXT_VERSION_MAJOR, OpenGL.VERSION_MAJOR);
-		glfwWindowHint(Attribute.CONTEXT_VERSION_MINOR, OpenGL.VERSION_MINOR);
-		// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(Attribute.OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-		glfwWindowHint(Attribute.VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(Attribute.RESIZABLE, GLFW_TRUE); // the window will be resizable
-		glfwWindowHint(Attribute.FLOATING, GLFW_TRUE); // the window will be floating above all other
 
 		Display display = DisplayManager.getDisplay(Options.MONITOR.getInt());
 		glfwWindowHint(GLFW_RED_BITS, display.getRedBits());
@@ -218,7 +170,7 @@ public class Window {
 		return glfwWindowShouldClose(id);
 	}
 
-	public void setTitle(@NonNull String title) {
+	public void setTitle(String title) {
 		this.title = title;
 		glfwSetWindowTitle(id, title);
 	}
@@ -248,6 +200,10 @@ public class Window {
 		glfwIconifyWindow(id);
 	}
 
+	public void maximize() {
+		glfwMaximizeWindow(id);
+	}
+
 	public void restore() {
 		glfwRestoreWindow(id);
 	}
@@ -258,6 +214,38 @@ public class Window {
 
 	public void show() {
 		glfwShowWindow(id);
+	}
+
+	public void focus() {
+		glfwFocusWindow(id);
+	}
+
+	public boolean isFocused() {
+		return hasAttribute(Attribute.FOCUSED);
+	}
+
+	public boolean isHovered() {
+		return hasAttribute(Attribute.HOVERED);
+	}
+
+	public void setResizeAble(boolean resizeAble) {
+		setAttribute(Attribute.RESIZABLE, resizeAble ? GLFW_TRUE : GLFW_FALSE);
+	}
+
+	public boolean isResizeAble() {
+		return hasAttribute(Attribute.RESIZABLE);
+	}
+
+	public void setFloating(boolean floating) {
+		glfwWindowHint(Attribute.FLOATING, floating ? GLFW_TRUE : GLFW_FALSE);
+	}
+
+	public boolean isFloating() {
+		return hasAttribute(Attribute.FLOATING);
+	}
+
+	public void requestAttention() {
+		glfwRequestWindowAttention(id);
 	}
 
 	public Display getDisplay() {
@@ -474,6 +462,10 @@ public class Window {
 		return glfwGetWindowAttrib(id, attribute);
 	}
 
+	public boolean hasAttribute(int attribute) {
+		return glfwGetWindowAttrib(id, attribute) == GLFW_TRUE;
+	}
+
 	public void setSize(int x, int y) {
 		glfwSetWindowSize(id, x, y);
 	}
@@ -499,7 +491,7 @@ public class Window {
 		return resolutionY;
 	}
 
-	public void setIcon(GLFWImage.Buffer images) {
+	public void setIcon(GLFWImage.@Nullable Buffer images) {
 		glfwSetWindowIcon(id, images);
 	}
 
@@ -523,7 +515,7 @@ public class Window {
 		}
 	}
 
-	public void getOpacity(float opacity) {
+	public void setOpacity(float opacity) {
 		glfwSetWindowOpacity(id, opacity);
 	}
 
@@ -537,6 +529,22 @@ public class Window {
 
 	public long getUserPointer() {
 		return glfwGetWindowUserPointer(id);
+	}
+
+	/**
+	 * To disable size limits for a window, set them all to SIZE_LIMIT_NONE (-1).
+	 * 
+	 * @param minWidth
+	 * @param minHeight
+	 * @param maxWidth
+	 * @param maxHeight
+	 */
+	public void setSizeLimits(int minWidth, int minHeight, int maxWidth, int maxHeight) {
+		glfwSetWindowSizeLimits(id, minWidth, minHeight, maxWidth, maxHeight);
+	}
+
+	public void setAspectRatio(int numerator, int denominator) {
+		glfwSetWindowAspectRatio(id, numerator, denominator);
 	}
 
 	/**

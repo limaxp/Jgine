@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -14,6 +15,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.system.systems.ui.UIWindow;
 import org.jgine.system.systems.ui.UIWindow.DragTask;
 
 public class UIHotbar extends UIObject {
@@ -66,6 +68,13 @@ public class UIHotbar extends UIObject {
 	public void onRelease(float mouseX, float mouseY) {
 		if (dragTask != null && !dragTask.isCanceled())
 			dragTask.cancel();
+	}
+
+	@Override
+	public void setWindow(@Nullable UIWindow window) {
+		super.setWindow(window);
+		if (window != null)
+			window.addReservedTopSpace(thickness);
 	}
 
 	@SuppressWarnings("unchecked")

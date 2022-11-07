@@ -7,30 +7,60 @@ import java.nio.charset.Charset;
 import org.jgine.misc.collection.list.FloatList;
 import org.jgine.misc.collection.list.arrayList.FloatArrayList;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.BaseMesh2D;
 
 public class BitmapText extends Text {
 
-	private BitmapFont font;
-
-	public BitmapText(BitmapFont font, String text) {
-		super(text, new Material(font.texture));
-		this.font = font;
-		buildMesh(font.texture, font.colums, font.rows);
+	public BitmapText(BitmapFont font, int size, String text) {
+		super(font, size, text, new Material(font.texture));
+		buildMesh();
 	}
 
-	private void buildMesh(Texture texture, int colums, int rows) {
+	protected void buildMesh() {
 		if (mesh != null)
 			close();
-		float tileWidth = (float) texture.getWidth() / (float) colums;
-		float tileHeight = (float) texture.getHeight() / (float) rows;
+		mesh = buildMesh((BitmapFont) font, size, text);
+	}
 
+	@Override
+	public void setFont(Font font) {
+		if (!(font instanceof BitmapFont))
+			return;
+		super.setFont(font);
+		BitmapFont bitmapFont = (BitmapFont) font;
+		BitmapFont currentFont = getFont();
+		this.material.setTexture(bitmapFont.texture);
+		if (currentFont.colums != bitmapFont.colums || currentFont.rows != bitmapFont.rows)
+			buildMesh();
+	}
+
+	@Override
+	public BitmapFont getFont() {
+		return (BitmapFont) font;
+	}
+
+	@Override
+	public void setText(String text) {
+		super.setText(text);
+		buildMesh();
+	}
+
+	@Override
+	public void setSize(int size) {
+		super.setSize(size);
+		buildMesh();
+	}
+
+	public static BaseMesh2D buildMesh(BitmapFont font, int size, String text) {
+		// TODO size!
+		int colums = font.colums;
+		int rows = font.rows;
+		float tileWidth = font.getTileWidth();
+		float tileHeight = font.getTileHeight();
 		FloatList positions = new FloatArrayList();
 		FloatList textCoords = new FloatArrayList();
 		byte[] chars = text.getBytes(Charset.forName("ISO-8859-1"));
 		int numChars = chars.length;
-
 		int currentWidth = 0;
 		int currentHeight = 0;
 		for (int i = 0; i < numChars; i++) {
@@ -65,27 +95,9 @@ public class BitmapText extends Text {
 			textCoords.add((float) row / (float) rows);
 			currentWidth++;
 		}
-		mesh = new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
+		BaseMesh2D mesh = new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
 		mesh.setMode(GL_TRIANGLE_STRIP);
+		return mesh;
 	}
 
-	@Override
-	public void setText(String text) {
-		super.setText(text);
-		buildMesh(font.texture, font.colums, font.rows);
-	}
-
-	public void setFont(Font font) {
-		if (!(font instanceof BitmapFont))
-			return;
-		BitmapFont bitmapFont = (BitmapFont) font;
-		if (this.font.colums != bitmapFont.colums || this.font.rows != bitmapFont.rows)
-			buildMesh(bitmapFont.texture, bitmapFont.colums, bitmapFont.rows);
-		this.material.setTexture(bitmapFont.texture);
-		this.font = bitmapFont;
-	}
-
-	public BitmapFont getFont() {
-		return font;
-	}
 }

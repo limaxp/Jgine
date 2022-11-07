@@ -35,6 +35,7 @@ public class DisplayManager {
 			DISPLAYS.add(new Display(buffer.get()));
 		}
 		glfwSetMonitorCallback(DisplayManager::monitor_callback);
+		WindowBuilder.init();
 	}
 
 	public static void terminate() {
