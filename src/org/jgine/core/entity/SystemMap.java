@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
@@ -105,17 +106,23 @@ public class SystemMap {
 		}
 	}
 
+	@Nullable
 	public SystemObject get(EngineSystem system, int index) {
 		return get(system.getId(), index);
 	}
 
+	@Nullable
 	public SystemObject get(SystemScene<?, ?> systemScene, int index) {
 		return get(systemScene.system.getId(), index);
 	}
 
+	@Nullable
 	public SystemObject get(int id, int index) {
 		synchronized (this) {
-			return get_(id)[index];
+			SystemObject[] subObjects = get_(id);
+			if (subObjects != EMPTY_OBJECTS)
+				return subObjects[index];
+			return null;
 		}
 	}
 

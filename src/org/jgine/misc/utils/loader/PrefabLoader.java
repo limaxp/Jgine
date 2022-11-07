@@ -2,7 +2,6 @@ package org.jgine.misc.utils.loader;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
+import org.jgine.core.entity.PrefabManager;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.system.EngineSystem;
@@ -17,8 +17,6 @@ import org.jgine.system.EngineSystem;
 public class PrefabLoader {
 
 	private static final Map<String, Object> EMPTY_DATA = new HashMap<String, Object>();
-	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>();
-	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>();
 	private static final Map<String, List<PrefabData>> STALLED_PARENTS_MAP = new HashMap<String, List<PrefabData>>();
 	private static final Map<String, List<PrefabData>> STALLED_CHILDS_MAP = new HashMap<String, List<PrefabData>>();
 
@@ -94,8 +92,7 @@ public class PrefabLoader {
 		if (transformData != null && transformData instanceof Map)
 			prefab.transform.load((Map<String, Object>) transformData);
 
-		NAME_MAP.put(prefab.name, prefab);
-		ID_MAP.put(prefab.id, prefab);
+		PrefabManager.register(prefab);
 		loadStalledParents(prefab.name);
 		loadStalledChilds(prefab.name);
 		return prefab;
@@ -131,20 +128,6 @@ public class PrefabLoader {
 			for (PrefabData data : stalled)
 				loadChilds(data.prefab, data.data);
 		}
-	}
-
-	@Nullable
-	public static Prefab get(String name) {
-		return NAME_MAP.get(name);
-	}
-
-	@Nullable
-	public static Prefab get(int id) {
-		return ID_MAP.get(id);
-	}
-
-	public static Collection<Prefab> values() {
-		return NAME_MAP.values();
 	}
 
 	private static final class PrefabData {

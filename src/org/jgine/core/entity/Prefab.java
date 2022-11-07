@@ -15,7 +15,6 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArray
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Reflection;
-import org.jgine.misc.utils.loader.PrefabLoader;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
@@ -207,15 +206,15 @@ public class Prefab {
 
 	@Nullable
 	public static Prefab get(String name) {
-		return PrefabLoader.get(name);
+		return PrefabManager.get(name);
 	}
 
 	@Nullable
 	public static Prefab get(int id) {
-		return PrefabLoader.get(id);
+		return PrefabManager.get(id);
 	}
 
 	public static Collection<Prefab> values() {
-		return PrefabLoader.values();
+		return PrefabManager.values();
 	}
 }
