@@ -63,8 +63,7 @@ public class UILabel extends UIObject {
 	@Override
 	protected void calculateTransform() {
 		super.calculateTransform();
-		if (text != null)
-			calculateTextTransform();
+		calculateTextTransform();
 	}
 
 	protected void calculateTextTransform() {
