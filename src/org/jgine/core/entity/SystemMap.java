@@ -101,6 +101,7 @@ public class SystemMap {
 			SystemObject[] newObjects = Arrays.copyOf(subObjects, size);
 			if (subId != size)
 				System.arraycopy(subObjects, subId + 1, newObjects, subId, size - subId);
+			objects[id] = newObjects;
 			size--;
 			return id;
 		}
@@ -191,14 +192,9 @@ public class SystemMap {
 		return new SystemsEntryIterator(scene);
 	}
 
-	private class SystemSceneIterator implements Iterator<SystemScene<?, ?>> {
+	private abstract class DataIterator<E> implements Iterator<E> {
 
-		private Scene scene;
-		private int index = -1;
-
-		public SystemSceneIterator(Scene scene) {
-			this.scene = scene;
-		}
+		protected int index = -1;
 
 		@Override
 		public boolean hasNext() {
@@ -209,6 +205,15 @@ public class SystemMap {
 					return true;
 			}
 			return false;
+		}
+	}
+
+	private class SystemSceneIterator extends DataIterator<SystemScene<?, ?>> {
+
+		protected Scene scene;
+
+		public SystemSceneIterator(Scene scene) {
+			this.scene = scene;
 		}
 
 		@Override
@@ -217,20 +222,7 @@ public class SystemMap {
 		}
 	}
 
-	private class SystemsIterator implements Iterator<SystemObject[]> {
-
-		private int index = -1;
-
-		@Override
-		public boolean hasNext() {
-			index++;
-			for (; index < objects.length; index++) {
-				SystemObject[] o = objects[index];
-				if (o != EMPTY_OBJECTS)
-					return true;
-			}
-			return false;
-		}
+	private class SystemsIterator extends DataIterator<SystemObject[]> {
 
 		@Override
 		public SystemObject[] next() {
@@ -238,10 +230,25 @@ public class SystemMap {
 		}
 	}
 
+	private class SystemsEntryIterator extends DataIterator<Entry<SystemScene<?, ?>, SystemObject[]>> {
+
+		protected Scene scene;
+
+		public SystemsEntryIterator(Scene scene) {
+			this.scene = scene;
+		}
+
+		@Override
+		public Entry<SystemScene<?, ?>, SystemObject[]> next() {
+			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, SystemObject[]>(scene.getSystem(index),
+					objects[index]);
+		}
+	}
+
 	private class SystemIterator implements Iterator<SystemObject> {
 
-		private int index = -1;
-		private int subIndex = -1;
+		protected int index = -1;
+		protected int subIndex = -1;
 
 		@Override
 		public boolean hasNext() {
@@ -266,33 +273,6 @@ public class SystemMap {
 		@Override
 		public SystemObject next() {
 			return objects[index][subIndex];
-		}
-	}
-
-	private class SystemsEntryIterator implements Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> {
-
-		private Scene scene;
-		private int index = -1;
-
-		public SystemsEntryIterator(Scene scene) {
-			this.scene = scene;
-		}
-
-		@Override
-		public boolean hasNext() {
-			index++;
-			for (; index < objects.length; index++) {
-				SystemObject[] o = objects[index];
-				if (o != EMPTY_OBJECTS)
-					return true;
-			}
-			return false;
-		}
-
-		@Override
-		public Entry<SystemScene<?, ?>, SystemObject[]> next() {
-			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, SystemObject[]>(scene.getSystem(index),
-					objects[index]);
 		}
 	}
 }

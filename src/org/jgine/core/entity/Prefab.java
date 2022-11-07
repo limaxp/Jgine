@@ -1,16 +1,17 @@
 package org.jgine.core.entity;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.TransformData;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
+import org.jgine.misc.collection.iterator.ArrayIterator;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -20,77 +21,205 @@ import org.jgine.system.SystemObject;
 
 public class Prefab {
 
+	private static final SystemObject[] EMPTY_OBJECTS = new SystemObject[0];
+
 	public final String name;
 	public final int id;
 	public final TransformData transform;
-	private final List<EngineSystem> systems;
-	private final List<SystemObject> objects;
+	private EngineSystem[] systems;
+	private SystemObject[][] objects;
+	private String[][] names;
+	int size;
 	private final Map<Object, Object> data;
 	private final List<Prefab> childs;
 
 	public Prefab(String name) {
 		this.name = name;
 		id = name.hashCode();
-		systems = new IdentityArrayList<EngineSystem>();
-		objects = new IdentityArrayList<SystemObject>();
+		systems = new EngineSystem[5];
+		objects = new SystemObject[5][];
+		names = new String[5][];
 		data = new HashMap<Object, Object>();
 		childs = new UnorderedIdentityArrayList<Prefab>();
 		transform = new TransformData();
 	}
 
-	public final void set(EngineSystem system, SystemObject object) {
-		int index = systems.indexOf(system);
+	public final void set(EngineSystem system, String name, SystemObject object) {
+		int index = indexOf(system);
 		if (index >= 0) {
-			objects.set(index, object);
+			String[] subNames = names[index];
+			for (int i = 0; i < subNames.length; i++) {
+				if (name.equals(subNames[i])) {
+					objects[index][i] = object;
+					return;
+				}
+			}
+			SystemObject[] subObjects = objects[index];
+			String[] newNames = Arrays.copyOf(subNames, subNames.length + 1);
+			newNames[subNames.length] = name;
+			names[index] = newNames;
+			SystemObject[] newObjects = Arrays.copyOf(subObjects, subObjects.length + 1);
+			newObjects[subObjects.length] = object;
+			objects[index] = newObjects;
 			return;
 		}
-		systems.add(system);
-		objects.add(object);
+		ensureCapacity(size);
+		systems[size] = system;
+		names[size] = new String[] { name };
+		objects[size] = new SystemObject[] { object };
+		size++;
 	}
 
 	@Nullable
-	public final SystemObject remove(EngineSystem system) {
-		int index = systems.indexOf(system);
+	public final SystemObject remove(EngineSystem system, String name) {
+		int index = indexOf(system);
 		if (index >= 0) {
-			systems.remove(index);
-			return objects.remove(index);
+			String[] subNames = names[index];
+			for (int i = 0; i < subNames.length; i++) {
+				if (name.equals(subNames[i])) {
+					SystemObject[] subObjects = objects[index];
+					SystemObject result = subObjects[i];
+					int newSize = subNames.length - 1;
+					if (newSize == 0) {
+						if (index != --size) {
+							System.arraycopy(systems, index + 1, systems, index, size - index);
+							System.arraycopy(names, index + 1, names, index, size - index);
+							System.arraycopy(objects, index + 1, objects, index, size - index);
+						}
+						systems[size] = null;
+						names[size] = null;
+						objects[size] = null;
+
+					} else {
+						String[] newNames = Arrays.copyOf(subNames, newSize);
+						SystemObject[] newObjects = Arrays.copyOf(subObjects, newSize);
+						if (i != newSize) {
+							System.arraycopy(subNames, i + 1, newNames, i, newSize - i);
+							System.arraycopy(subObjects, i + 1, newObjects, i, newSize - i);
+						}
+						names[index] = newNames;
+						objects[index] = newObjects;
+					}
+					return result;
+				}
+			}
+		}
+		return null;
+	}
+
+	public final SystemObject[] remove(EngineSystem system) {
+		int index = indexOf(system);
+		if (index >= 0) {
+			SystemObject[] result = objects[index];
+			if (index != --size) {
+				System.arraycopy(systems, index + 1, systems, index, size - index);
+				System.arraycopy(names, index + 1, names, index, size - index);
+				System.arraycopy(objects, index + 1, objects, index, size - index);
+			}
+			systems[size] = null;
+			names[size] = null;
+			objects[size] = null;
+			return result;
+		}
+		return EMPTY_OBJECTS;
+	}
+
+	@Nullable
+	public final SystemObject get(EngineSystem system, String name) {
+		int index = indexOf(system);
+		if (index >= 0) {
+			String[] subNames = names[index];
+			for (int i = 0; i < subNames.length; i++)
+				if (name.equals(subNames[i]))
+					return objects[index][i];
 		}
 		return null;
 	}
 
 	@Nullable
-	public final SystemObject get(EngineSystem system) {
-		int index = systems.indexOf(system);
-		if (index >= 0)
-			return objects.get(index);
+	public final SystemObject get(EngineSystem system, int index) {
+		SystemObject[] subObjects = get(system);
+		if (subObjects != EMPTY_OBJECTS)
+			return subObjects[index];
 		return null;
+	}
+
+	public final SystemObject[] get(EngineSystem system) {
+		int index = indexOf(system);
+		if (index >= 0)
+			return objects[index];
+		return EMPTY_OBJECTS;
 	}
 
 	public final boolean has(EngineSystem system) {
-		return systems.contains(system);
+		return indexOf(system) != -1;
 	}
 
-	public final List<EngineSystem> getSystems() {
-		return Collections.unmodifiableList(systems);
+	public final Iterator<EngineSystem> systemIterator() {
+		return new ArrayIterator<EngineSystem>(systems);
 	}
 
-	public final List<SystemObject> getObjects() {
-		return Collections.unmodifiableList(objects);
+	public final Iterator<String> nameIterator() {
+		return new NameIterator();
+	}
+
+	public final Iterator<SystemObject> objectIterator() {
+		return new ObjectIterator();
 	}
 
 	public final void addParent(Prefab parent) {
-		List<EngineSystem> parentSystems = parent.systems;
-		List<SystemObject> parentObjects = parent.objects;
-		for (int i = 0; i < parentSystems.size(); i++)
-			set(parentSystems.get(i), parentObjects.get(i).copy());
+		EngineSystem[] parentSystems = parent.systems;
+		String[][] parentNames = parent.names;
+		SystemObject[][] parentObjects = parent.objects;
+		for (int i = 0; i < parent.size; i++) {
+			EngineSystem parentSystem = parentSystems[i];
+			String[] subNames = parentNames[i];
+			SystemObject[] subObjects = parentObjects[i];
+			for (int j = 0; j < subNames.length; j++) {
+				set(parentSystem, subNames[j], subObjects[j].copy());
+			}
+		}
 		setData(parent.data);
 	}
 
 	public final void removeParent(Prefab parent) {
-		List<EngineSystem> parentSystems = parent.systems;
-		for (int i = 0; i < parentSystems.size(); i++)
-			remove(parentSystems.get(i));
+		EngineSystem[] parentSystems = parent.systems;
+		String[][] parentNames = parent.names;
+		for (int i = 0; i < parent.size; i++) {
+			EngineSystem parentSystem = parentSystems[i];
+			String[] subNames = parentNames[i];
+			for (int j = 0; j < subNames.length; j++)
+				remove(parentSystem, subNames[j]);
+		}
 		removeData(parent.data);
+	}
+
+	private final int indexOf(EngineSystem system) {
+		for (int i = 0; i < size; i++) {
+			if (system == systems[i])
+				return i;
+		}
+		return -1;
+	}
+
+	private final void ensureCapacity(int minCapacity) {
+		int length = systems.length;
+		if (minCapacity > length)
+			resize(Math.max(length * 2, minCapacity));
+	}
+
+	private final void resize(int size) {
+		EngineSystem[] newSystems = new EngineSystem[size];
+		System.arraycopy(systems, 0, newSystems, 0, this.size);
+		systems = newSystems;
+
+		SystemObject[][] newObjects = new SystemObject[size][];
+		System.arraycopy(objects, 0, newObjects, 0, this.size);
+		objects = newObjects;
+
+		String[][] newNames = new String[size][];
+		System.arraycopy(names, 0, newNames, 0, this.size);
+		names = newNames;
 	}
 
 	public final void addChild(Prefab child) {
@@ -110,8 +239,12 @@ public class Prefab {
 	}
 
 	public final void clear() {
-		systems.clear();
-		objects.clear();
+		for (int i = 0; i < size; i++) {
+			systems[i] = null;
+			objects[i] = null;
+			names[i] = null;
+		}
+		size = 0;
 		data.clear();
 		childs.clear();
 	}
@@ -184,8 +317,12 @@ public class Prefab {
 
 	private final Entity create_(Scene scene, Entity entity) {
 		entity.setPrefab(this);
-		for (int i = 0; i < systems.size(); i++)
-			entity.addSystem(systems.get(i), objects.get(i).copy());
+		for (int i = 0; i < size; i++) {
+			EngineSystem system = systems[i];
+			SystemObject[] subObjects = objects[i];
+			for (int j = 0; j < subObjects.length; j++)
+				entity.addSystem(system, subObjects[j].copy());
+		}
 		for (Prefab child : childs)
 			child.create(scene).setParent(entity);
 		return entity;
@@ -193,8 +330,12 @@ public class Prefab {
 
 	public final <T extends Entity> T create(Scene scene, T entity) {
 		entity.setPrefab(this);
-		for (int i = 0; i < systems.size(); i++)
-			entity.addSystem(systems.get(i), objects.get(i).copy());
+		for (int i = 0; i < size; i++) {
+			EngineSystem system = systems[i];
+			SystemObject[] subObjects = objects[i];
+			for (int j = 0; j < subObjects.length; j++)
+				entity.addSystem(system, subObjects[j].copy());
+		}
 		if (!childs.isEmpty()) {
 			Constructor<? extends Entity> constructor = Reflection.getDeclaredConstructor(entity.getClass(),
 					new Class[] { Scene.class });
@@ -216,5 +357,49 @@ public class Prefab {
 
 	public static Collection<Prefab> values() {
 		return PrefabManager.values();
+	}
+
+	private abstract class SubDataIterator<E> implements Iterator<E> {
+
+		protected int index;
+		protected int subIndex;
+
+		@Override
+		public boolean hasNext() {
+			if (index < size) {
+				if (subIndex < names[index].length)
+					return true;
+				else if (index + 1 < size)
+					return true;
+			}
+			return false;
+		}
+
+		@Override
+		public E next() {
+			if (subIndex >= names[index].length) {
+				index++;
+				subIndex = 0;
+			}
+			return null;
+		}
+	}
+
+	private class NameIterator extends SubDataIterator<String> {
+
+		@Override
+		public String next() {
+			super.next();
+			return names[index][subIndex++];
+		}
+	}
+
+	private class ObjectIterator extends SubDataIterator<SystemObject> {
+
+		@Override
+		public SystemObject next() {
+			super.next();
+			return objects[index][subIndex++];
+		}
 	}
 }

@@ -25,7 +25,7 @@ public class PrefabLoader {
 		Map<String, Object> data = YamlLoader.load(file);
 		if (data == null)
 			return null;
-		return loadParents(new Prefab(name), data);
+		return load(name, data);
 	}
 
 	@Nullable
@@ -33,13 +33,19 @@ public class PrefabLoader {
 		Map<String, Object> data = YamlLoader.load(is);
 		if (data == null)
 			return null;
-		return loadParents(new Prefab(name), data);
+		return load(name, data);
+	}
+
+	public static Prefab load(String name, Map<String, Object> data) {
+		Prefab prefab = new Prefab(name);
+		loadParents(prefab, data);
+		return prefab;
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Prefab loadParents(Prefab prefab, Map<String, Object> data) {
 		Object parents = data.get("parents");
-		if (parents != null && parents instanceof List) {
+		if (parents instanceof List) {
 			for (String parentName : (List<String>) parents) {
 				Prefab parent = Prefab.get(parentName);
 				if (parent == null) {
@@ -56,7 +62,7 @@ public class PrefabLoader {
 	@SuppressWarnings("unchecked")
 	private static Prefab loadChilds(Prefab prefab, Map<String, Object> data) {
 		Object childs = data.get("childs");
-		if (childs != null && childs instanceof List) {
+		if (childs instanceof List) {
 			for (String childName : (List<String>) childs) {
 				Prefab child = Prefab.get(childName);
 				if (child == null) {
@@ -72,24 +78,29 @@ public class PrefabLoader {
 
 	@SuppressWarnings("unchecked")
 	private static Prefab loadData(Prefab prefab, Map<String, Object> data) {
-		Object systems = data.get("systems");
-		if (systems != null && systems instanceof Map) {
-			for (Entry<String, Object> entry : ((Map<String, Object>) systems).entrySet()) {
-				EngineSystem system = SystemManager.get(entry.getKey());
-				Object value = entry.getValue();
-				if (value instanceof Map)
-					prefab.set(system, system.load((Map<String, Object>) value));
-				else
-					prefab.set(system, system.load(EMPTY_DATA));
+		Object systemData = data.get("systems");
+		if (systemData instanceof Map) {
+			for (Entry<String, Object> entry : ((Map<String, Object>) systemData).entrySet()) {
+				String name = entry.getKey();
+				EngineSystem system = SystemManager.get(name);
+				Object entryData = entry.getValue();
+				if (entryData instanceof Map) {
+					Map<String, Object> entryMap = (Map<String, Object>) entryData;
+					if (system == null)
+						system = SystemManager.get(YamlHelper.toString(entryMap.get("system")));
+					if (system != null)
+						prefab.set(system, name, system.load(entryMap));
+				} else if (system != null)
+					prefab.set(system, name, system.load(EMPTY_DATA));
 			}
 		}
 
 		Object prefabData = data.get("data");
-		if (prefabData != null && prefabData instanceof Map)
+		if (prefabData instanceof Map)
 			prefab.setData((Map<String, Object>) prefabData);
 
 		Object transformData = data.get("transform");
-		if (transformData != null && transformData instanceof Map)
+		if (transformData instanceof Map)
 			prefab.transform.load((Map<String, Object>) transformData);
 
 		PrefabManager.register(prefab);
