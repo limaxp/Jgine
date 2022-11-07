@@ -14,6 +14,7 @@ import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.script.EventManager;
+import org.jgine.system.SystemObject;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.Collision;
@@ -112,14 +113,14 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];
-			Collider[] objectColliders = entities[index].getSystems(collisionSystem);
+			SystemObject[] objectColliders = entities[index].getSystems(collisionSystem);
 			for (int objectIndex = 0; objectIndex < objectColliders.length; objectIndex++) {
-				Collider objectCollider = objectColliders[objectIndex];
+				Collider objectCollider = (Collider) objectColliders[objectIndex];
 				for (int i = index + 1; i < this.size; ++i) {
 					PhysicObject target = objects[i];
-					Collider[] targetColliders = entities[i].getSystems(collisionSystem);
+					SystemObject[] targetColliders = entities[i].getSystems(collisionSystem);
 					for (int targetIndex = 0; targetIndex < targetColliders.length; targetIndex++) {
-						Collider targetCollider = targetColliders[targetIndex];
+						Collider targetCollider = (Collider) targetColliders[targetIndex];
 						CollisionData collision = resolveCollision(object, objectCollider, target, targetCollider);
 						if (collision != null)
 							callCollisionEvent(entities[index], entities[i], objectCollider, targetCollider, collision);

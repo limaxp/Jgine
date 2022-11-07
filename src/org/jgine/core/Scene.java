@@ -3,6 +3,7 @@ package org.jgine.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -240,12 +241,15 @@ public class Scene {
 
 	private final void removeEntityIntern(Entity entity) {
 		entities.remove(entity);
-		for (Entry<SystemScene<?, ?>, SystemObject[]> entry : entity.getSystemEntries()) {
+		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = entity.getEntryIterator();
+		while (entryIterator.hasNext()) {
+			Entry<SystemScene<?, ?>, SystemObject[]> entry = entryIterator.next();
 			SystemScene<?, ?> system = entry.getKey();
 			SystemObject[] objects = entry.getValue();
 			for (int i = 0; i < objects.length; i++)
 				system.removeObject_(objects[i]);
 		}
+
 		for (Entity child : entity.getChilds()) {
 			removeEntityIntern(child);
 			Entity.freeId(child.id);

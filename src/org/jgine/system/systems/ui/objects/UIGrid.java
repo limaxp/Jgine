@@ -77,7 +77,6 @@ public class UIGrid extends UIList {
 	protected void placeChild(UIObject child, int index) {
 		float widthSize = elementWidth * index;
 		int height = (int) widthSize;
-		child.set(widthSize - height, 1 - getWindow().getReservedTopSpace() - (elementHeight * (1 + height)),
-				elementWidth, elementHeight);
+		child.set(widthSize - height, 1 - (elementHeight * (1 + height)), elementWidth, elementHeight);
 	}
 }

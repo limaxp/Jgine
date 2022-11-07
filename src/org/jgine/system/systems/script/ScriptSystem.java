@@ -42,8 +42,7 @@ public class ScriptSystem extends EngineSystem {
 				script.script = script.getInterface(interfaceClass);
 			else
 				script.script = script.getInterface(IScript.class);
-		}
-		else
+		} else
 			script.script = script.getInterface(IScript.class);
 		return script;
 	}

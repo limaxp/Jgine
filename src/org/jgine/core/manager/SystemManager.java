@@ -51,7 +51,7 @@ public class SystemManager {
 		return NAME_MAP.values();
 	}
 
-	public static int getSystemSize() {
+	public static int getSize() {
 		return size;
 	}
 }

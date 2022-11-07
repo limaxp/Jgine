@@ -104,6 +104,6 @@ public class UIList extends UIWindow {
 	}
 
 	protected void placeChild(UIObject child, int index) {
-		child.set(0, 1 - getWindow().getReservedTopSpace() - (elementHeight * (index + 1)), 1, elementHeight);
+		child.set(0, 1 - (elementHeight * (index + 1)), 1, elementHeight);
 	}
 }

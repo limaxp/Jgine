@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -16,9 +15,8 @@ import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
-import org.jgine.system.systems.ui.UIWindow.DragTask;
 
-public class UIHotbar extends UIObject {
+public class UIHotbar extends UIGrid {
 
 	private Material background;
 	private float thickness;
@@ -47,7 +45,11 @@ public class UIHotbar extends UIObject {
 
 	@Override
 	public void render() {
+		if (isHidden())
+			return;
 		UIRenderer.renderQuad(getTransform(), background);
+		for (UIObject child : getChilds())
+			child.render();
 	}
 
 	@Override
@@ -60,7 +62,8 @@ public class UIHotbar extends UIObject {
 
 	@Override
 	public void onClick(float mouseX, float mouseY) {
-		if (getWindow().isMoveAble())
+		UIWindow window = getWindow();
+		if (window != null && window.isMoveAble())
 			Scheduler.runTaskAsynchron(dragTask = new DragTask(getWindow()));
 	}
 
@@ -68,13 +71,6 @@ public class UIHotbar extends UIObject {
 	public void onRelease(float mouseX, float mouseY) {
 		if (dragTask != null && !dragTask.isCanceled())
 			dragTask.cancel();
-	}
-
-	@Override
-	public void setWindow(@Nullable UIWindow window) {
-		super.setWindow(window);
-		if (window != null)
-			window.addReservedTopSpace(thickness);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -118,8 +114,7 @@ public class UIHotbar extends UIObject {
 
 	public void setThickness(float thickness) {
 		this.thickness = thickness;
-		setPos(0, 1 - thickness);
-		setScale(1.0f, thickness);
+		set(0, 1 - thickness, 1.0f, thickness);
 	}
 
 	public float getThickness() {

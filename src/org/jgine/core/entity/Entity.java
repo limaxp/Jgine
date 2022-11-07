@@ -5,9 +5,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
@@ -15,7 +15,6 @@ import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.collection.map.ConcurrentArrayHashMap;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.id.IdGenerator;
@@ -49,7 +48,7 @@ public class Entity {
 	public final int id;
 	public final Scene scene;
 	public final Transform transform;
-	private final ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject> systems;
+	private final SystemMap systems;
 	private Prefab prefab;
 	private Entity parent;
 	private List<Entity> childs;
@@ -95,7 +94,7 @@ public class Entity {
 			float scaleY, float scaleZ) {
 		this.id = generateId(this);
 		this.scene = scene;
-		systems = new ConcurrentArrayHashMap<SystemScene<?, ?>, SystemObject>();
+		systems = new SystemMap();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		transform = new Transform(this, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 		scene.addEntity(this);
@@ -200,8 +199,9 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> SystemScene<?, T> removeSystem(T object) {
+		int id = systems.remove(object);
 		@SuppressWarnings("unchecked")
-		SystemScene<?, T> systemScene = (SystemScene<?, T>) systems.rem(object);
+		SystemScene<?, T> systemScene = (SystemScene<?, T>) scene.getSystem(id);
 		Scheduler.runTaskSynchron(() -> systemScene.removeObject(object));
 		return systemScene;
 	}
@@ -235,43 +235,46 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T[] getSystems(String name) {
+	public final SystemObject[] getSystems(String name) {
 		return getSystems(scene.getSystem(SystemManager.get(name)));
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T[] getSystems(Class<? extends EngineSystem> clazz) {
+	public final SystemObject[] getSystems(Class<? extends EngineSystem> clazz) {
 		return getSystems(scene.getSystem(clazz));
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T[] getSystems(int id) {
+	public final SystemObject[] getSystems(int id) {
 		return getSystems(scene.getSystem(SystemManager.get(id)));
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T[] getSystems(EngineSystem system) {
+	public final SystemObject[] getSystems(EngineSystem system) {
 		return getSystems(scene.getSystem(system));
 	}
 
 	@Nullable
-	@SuppressWarnings("unchecked")
-	public final <T extends SystemObject> T[] getSystems(SystemScene<?, T> systemScene) {
+	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
 		if (systemScene == null)
 			return null;
-		return (T[]) systems.get(systemScene);
+		return systems.get(systemScene);
 	}
 
-	public final Collection<SystemScene<?, ?>> getSystemScenes() {
-		return systems.keySet();
+	public final Iterator<SystemScene<?, ?>> getSystemsSceneIterator() {
+		return systems.getSceneIterator(scene);
 	}
 
-	public final Collection<SystemObject[]> getSystems() {
-		return systems.values();
+	public final Iterator<SystemObject[]> getSystemsIterator() {
+		return systems.getSystemsIterator();
 	}
 
-	public final Set<Entry<SystemScene<?, ?>, SystemObject[]>> getSystemEntries() {
-		return systems.entrySet();
+	public final Iterator<SystemObject> getSystemIterator() {
+		return systems.getSystemIterator();
+	}
+
+	public final Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getEntryIterator() {
+		return systems.getEntryIterator(scene);
 	}
 
 	final void setPrefab(Prefab prefab) {
@@ -376,7 +379,9 @@ public class Entity {
 		transform.save(out);
 
 		out.writeInt(systems.size());
-		for (Entry<SystemScene<?, ?>, SystemObject[]> entry : getSystemEntries()) {
+		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = getEntryIterator();
+		while (entryIterator.hasNext()) {
+			Entry<SystemScene<?, ?>, SystemObject[]> entry = entryIterator.next();
 			SystemScene<?, ?> systemScene = entry.getKey();
 			out.writeInt(systemScene.system.getId());
 			systemScene.save_(entry.getValue()[0], out);

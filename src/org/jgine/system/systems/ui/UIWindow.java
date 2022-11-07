@@ -21,11 +21,11 @@ public class UIWindow extends UIObject {
 
 	UIScene scene;
 	List<UIObject> childs;
+	private List<UIObject> childsView;
 	private boolean moveAble;
 	private boolean hide;
 	private Material background;
 	private Vector3f borderColor;
-	private float reservedTopSpace;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -45,6 +45,7 @@ public class UIWindow extends UIObject {
 
 	public UIWindow(float width, float height, boolean moveAble) {
 		childs = new UnorderedIdentityArrayList<UIObject>();
+		childsView = Collections.unmodifiableList(childs);
 		this.moveAble = moveAble;
 		hide = false;
 		setScale(width, height);
@@ -56,6 +57,7 @@ public class UIWindow extends UIObject {
 	public UIWindow clone() {
 		UIWindow obj = (UIWindow) super.clone();
 		obj.childs = new UnorderedIdentityArrayList<UIObject>();
+		obj.childsView = Collections.unmodifiableList(obj.childs);
 		for (UIObject child : childs)
 			obj.addChild(child.clone());
 		obj.background = background.clone();
@@ -221,7 +223,7 @@ public class UIWindow extends UIObject {
 	}
 
 	public List<UIObject> getChilds() {
-		return Collections.unmodifiableList(childs);
+		return childsView;
 	}
 
 	public void setMoveAble(boolean moveAble) {
@@ -266,18 +268,6 @@ public class UIWindow extends UIObject {
 
 	public UIScene getScene() {
 		return scene;
-	}
-
-	public void setReservedTopSpace(float reservedTopSpace) {
-		this.reservedTopSpace = reservedTopSpace;
-	}
-
-	public void addReservedTopSpace(float reservedTopSpace) {
-		this.reservedTopSpace += reservedTopSpace;
-	}
-
-	public float getReservedTopSpace() {
-		return reservedTopSpace;
 	}
 
 	public static class DragTask implements Runnable {
