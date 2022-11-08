@@ -45,7 +45,9 @@ public class UIList extends UIWindow {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		this.elementHeight = YamlHelper.toFloat(data.get("elementHeight"), 0.05f);
+		Object elementHeightData = data.get("elementHeight");
+		if (elementHeightData != null)
+			this.elementHeight = YamlHelper.toFloat(elementHeightData, 0.05f);
 		super.load(data);
 	}
 

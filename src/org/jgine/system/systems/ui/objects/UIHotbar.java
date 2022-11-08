@@ -11,6 +11,7 @@ import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.render.graphic.material.Texture;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
@@ -78,11 +79,15 @@ public class UIHotbar extends UIGrid {
 	public void load(Map<String, Object> data) {
 		super.load(data);
 		Object backgroundData = data.get("background");
-		if (backgroundData instanceof String)
-			background.setTexture(ResourceManager.getTexture((String) backgroundData));
-		else if (backgroundData instanceof Map)
+		if (backgroundData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) backgroundData);
+			if (texture != null)
+				background.setTexture(texture);
+		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
-		setThickness(YamlHelper.toFloat(data.get("thickness"), 0.05f));
+		Object thicknessData = data.get("thickness");
+		if (thicknessData != null)
+			setThickness(YamlHelper.toFloat(thicknessData, 0.05f));
 	}
 
 	@Override

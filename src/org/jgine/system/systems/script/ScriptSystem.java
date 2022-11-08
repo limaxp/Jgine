@@ -28,14 +28,14 @@ public class ScriptSystem extends EngineSystem {
 		// TODO use different ScriptEngines for different file extensions!
 		ScriptObject script = new ScriptObject(ScriptManager.getEngineByName("bsh"));
 		Object scriptName = data.get("script");
-		if (scriptName != null && scriptName instanceof String) {
+		if (scriptName instanceof String) {
 			String scriptString = ResourceManager.getScript((String) scriptName);
 			if (scriptString != null)
 				script.eval(scriptString);
 		}
 
 		Object interfaceName = data.get("interface");
-		if (interfaceName != null && interfaceName instanceof String) {
+		if (interfaceName instanceof String) {
 			@SuppressWarnings("unchecked")
 			Class<IScript> interfaceClass = (Class<IScript>) Reflection.getClass((String) interfaceName);
 			if (interfaceClass != null)

@@ -77,7 +77,9 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		normal = YamlHelper.toVector2f(data.get("normal"));
+		Object normalData = data.get("normal");
+		if (normalData != null)
+			normal = YamlHelper.toVector2f(normalData);
 	}
 
 	@Override

@@ -43,7 +43,9 @@ public class UIGrid extends UIList {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		elementWidth = YamlHelper.toFloat(data.get("elementWidth"), 0.02f);
+		Object elementWidthData = data.get("elementWidth");
+		if (elementWidthData != null)
+			elementWidth = YamlHelper.toFloat(elementWidthData, 0.02f);
 		super.load(data);
 	}
 

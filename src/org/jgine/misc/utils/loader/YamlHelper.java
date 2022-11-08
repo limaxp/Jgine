@@ -185,10 +185,10 @@ public class YamlHelper {
 	}
 
 	private static float toColor_(Object o, float defaultValue) {
-		if (o instanceof Float)
-			return (Float) o;
+		if (o instanceof Double)
+			return ((Double) o).floatValue();
 		else if (o instanceof Integer)
-			return (Integer) o / 255;
+			return ((Integer) o).floatValue() / 255;
 		return defaultValue;
 	}
 

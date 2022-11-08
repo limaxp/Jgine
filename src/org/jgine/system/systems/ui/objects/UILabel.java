@@ -3,6 +3,7 @@ package org.jgine.system.systems.ui.objects;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -13,6 +14,7 @@ import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.text.BitmapFont;
 import org.jgine.render.graphic.text.BitmapText;
 import org.jgine.render.graphic.text.Text;
@@ -95,9 +97,11 @@ public class UILabel extends UIObject {
 	public void load(Map<String, Object> data) {
 		super.load(data);
 		Object backgroundData = data.get("background");
-		if (backgroundData instanceof String)
-			background.setTexture(ResourceManager.getTexture((String) backgroundData));
-		else if (backgroundData instanceof Map)
+		if (backgroundData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) backgroundData);
+			if (texture != null)
+				background.setTexture(texture);
+		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
 
 		Object textData = data.get("text");
@@ -124,8 +128,24 @@ public class UILabel extends UIObject {
 				this.text = new BitmapText(font, textSize, (String) textData);
 			}
 		}
-		textOffsetX = YamlHelper.toFloat(data.get("textOffsetX"));
-		textOffsetY = YamlHelper.toFloat(data.get("textOffsetY"));
+		Object textOffsetXData = data.get("textOffsetX");
+		if (textOffsetXData != null)
+			textOffsetX = YamlHelper.toFloat(textOffsetXData);
+		Object textOffsetYData = data.get("textOffsetY");
+		if (textOffsetYData != null)
+			textOffsetY = YamlHelper.toFloat(textOffsetYData);
+		Object textOffsetData = data.get("textOffset");
+		if (textOffsetData != null) {
+			if (textOffsetData instanceof Number)
+				textOffsetX = textOffsetY = ((Number) textOffsetData).floatValue();
+			else if (textOffsetData instanceof List) {
+				List<Object> textOffsetList = (List<Object>) textOffsetData;
+				if (textOffsetList.size() >= 2) {
+					textOffsetX = YamlHelper.toFloat(textOffsetList.get(0));
+					textOffsetX = YamlHelper.toFloat(textOffsetList.get(1));
+				}
+			}
+		}
 	}
 
 	@Override

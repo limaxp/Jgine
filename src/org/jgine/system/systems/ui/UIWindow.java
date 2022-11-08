@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -16,6 +17,7 @@ import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.render.graphic.material.Texture;
 
 public class UIWindow extends UIObject {
 
@@ -99,10 +101,18 @@ public class UIWindow extends UIObject {
 	@Override
 	public void load(Map<String, Object> data) {
 		super.load(data);
-		moveAble = YamlHelper.toBoolean(data.get("moveAble"));
-		hide = YamlHelper.toBoolean(data.get("hide"));
+		Object moveAbleData = data.get("moveAble");
+		if (moveAbleData != null)
+			moveAble = YamlHelper.toBoolean(moveAbleData);
+		Object hideData = data.get("hide");
+		if (hideData != null)
+			hide = YamlHelper.toBoolean(hideData);
 		Object backgroundData = data.get("background");
-		if (backgroundData instanceof Map)
+		if (backgroundData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) backgroundData);
+			if (texture != null)
+				background.setTexture(texture);
+		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
 
 		Object childs = data.get("childs");

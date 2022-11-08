@@ -59,13 +59,21 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public abstract UIObjectType<?> getType();
 
 	public void load(Map<String, Object> data) {
-		x = YamlHelper.toFloat(data.get("x"));
-		y = YamlHelper.toFloat(data.get("y"));
-		width = YamlHelper.toFloat(data.get("width"));
-		height = YamlHelper.toFloat(data.get("height"));
-		float scale = YamlHelper.toFloat(data.get("scale"));
-		if (scale != 0)
-			setScale(scale);
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
+		Object widthData = data.get("width");
+		if (widthData != null)
+			width = YamlHelper.toFloat(widthData);
+		Object heightData = data.get("height");
+		if (heightData != null)
+			height = YamlHelper.toFloat(heightData);
+		Object scaleData = data.get("scale");
+		if (scaleData != null)
+			setScale(YamlHelper.toFloat(scaleData));
 		calculateTransform();
 	}
 

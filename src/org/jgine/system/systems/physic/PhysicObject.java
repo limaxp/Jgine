@@ -112,9 +112,15 @@ public class PhysicObject implements SystemObject {
 	}
 
 	public void load(Map<String, Object> data) {
-		hasGravity = YamlHelper.toBoolean(data.get("hasGravity"), true);
-		stiffness = YamlHelper.toFloat(data.get("stiffness"), 0.5f);
-		accelerate(YamlHelper.toVector3f(data.get("acceleration")));
+		Object hasGravityData = data.get("hasGravity");
+		if (hasGravityData != null)
+			hasGravity = YamlHelper.toBoolean(hasGravityData, true);
+		Object stiffnessData = data.get("stiffness");
+		if (stiffnessData != null)
+			stiffness = YamlHelper.toFloat(stiffnessData, 0.5f);
+		Object accelerationData = data.get("acceleration");
+		if (accelerationData != null)
+			accelerate(YamlHelper.toVector3f(accelerationData));
 	}
 
 	public void load(DataInput in) throws IOException {

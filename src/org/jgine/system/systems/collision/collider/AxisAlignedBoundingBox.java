@@ -82,9 +82,15 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		w = YamlHelper.toFloat(data.get("width"));
-		h = YamlHelper.toFloat(data.get("height"));
-		d = YamlHelper.toFloat(data.get("depth"));
+		Object widthData = data.get("width");
+		if (widthData != null)
+			w = YamlHelper.toFloat(widthData);
+		Object heightData = data.get("height");
+		if (heightData != null)
+			h = YamlHelper.toFloat(heightData);
+		Object depthData = data.get("depth");
+		if (depthData != null)
+			d = YamlHelper.toFloat(depthData);
 	}
 
 	@Override

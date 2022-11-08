@@ -68,6 +68,13 @@ public class Camera implements SystemObject, Cloneable {
 	}
 
 	protected Camera() {
+		this.width = Options.RESOLUTION_X.getInt();
+		this.height = Options.RESOLUTION_Y.getInt();
+		zNear = DEFAULT_Z_NEAR;
+		zFar = DEFAULT_Z_FAR;
+		fov = DEFAULT_FOV;
+		forward = Vector3f.Z_AXIS;
+		up = Vector3f.UP;
 	}
 
 	public final void set(int width, int height, float zNear, float zFar, float fov) {
@@ -251,13 +258,27 @@ public class Camera implements SystemObject, Cloneable {
 			else if (((String) mode).equalsIgnoreCase("orthographic"))
 				modeValue = ORTHOGRAPHIC_MODE;
 		}
-		width = YamlHelper.toInt(data.get("width"), Options.RESOLUTION_X.getInt());
-		height = YamlHelper.toInt(data.get("height"), Options.RESOLUTION_Y.getInt());
-		zNear = YamlHelper.toFloat(data.get("zNear"), DEFAULT_Z_NEAR);
-		zFar = YamlHelper.toFloat(data.get("zFar"), DEFAULT_Z_FAR);
-		fov = YamlHelper.toFloat(data.get("fov"), DEFAULT_FOV);
-		forward = YamlHelper.toVector3f(data.get("forward"), Vector3f.Z_AXIS);
-		up = YamlHelper.toVector3f(data.get("up"), Vector3f.UP);
+		Object widthData = data.get("width");
+		if (widthData != null)
+			width = YamlHelper.toInt(widthData, Options.RESOLUTION_X.getInt());
+		Object heightData = data.get("height");
+		if (heightData != null)
+			height = YamlHelper.toInt(heightData, Options.RESOLUTION_Y.getInt());
+		Object zNearData = data.get("zNear");
+		if (zNearData != null)
+			zNear = YamlHelper.toFloat(zNearData, DEFAULT_Z_NEAR);
+		Object zFarData = data.get("zFar");
+		if (zFarData != null)
+			zFar = YamlHelper.toFloat(zFarData, DEFAULT_Z_FAR);
+		Object fovData = data.get("fov");
+		if (fovData != null)
+			fov = YamlHelper.toFloat(fovData, DEFAULT_FOV);
+		Object forwardData = data.get("forward");
+		if (forwardData != null)
+			forward = YamlHelper.toVector3f(forwardData, Vector3f.Z_AXIS);
+		Object upData = data.get("up");
+		if (upData != null)
+			up = YamlHelper.toVector3f(upData, Vector3f.UP);
 		init(modeValue);
 	}
 

@@ -73,8 +73,12 @@ public class BoundingCylinder extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		r = YamlHelper.toFloat(data.get("radius"));
-		h = YamlHelper.toFloat(data.get("height"));
+		Object radiusData = data.get("radius");
+		if (radiusData != null)
+			r = YamlHelper.toFloat(radiusData);
+		Object heightData = data.get("height");
+		if (heightData != null)
+			h = YamlHelper.toFloat(heightData);
 	}
 
 	@Override

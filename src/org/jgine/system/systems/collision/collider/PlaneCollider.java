@@ -71,7 +71,9 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		normal = YamlHelper.toVector3f(data.get("normal"));
+		Object normalData = data.get("normal");
+		if (normalData != null)
+			normal = YamlHelper.toVector3f(normalData);
 	}
 
 	@Override

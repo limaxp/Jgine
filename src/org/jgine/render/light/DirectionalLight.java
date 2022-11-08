@@ -26,7 +26,9 @@ public class DirectionalLight extends Light {
 	@Override
 	public void load(Map<String, Object> data) {
 		super.load(data);
-		direction = YamlHelper.toVector3f(data.get("direction"));
+		Object directionData = data.get("direction");
+		if (directionData != null)
+			direction = YamlHelper.toVector3f(directionData, Vector3f.Z_AXIS);
 	}
 
 	@Override

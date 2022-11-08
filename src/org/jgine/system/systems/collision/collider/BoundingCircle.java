@@ -80,7 +80,9 @@ public class BoundingCircle extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
-		r = YamlHelper.toFloat(data.get("radius"));
+		Object radiusData = data.get("radius");
+		if (radiusData != null)
+			r = YamlHelper.toFloat(radiusData);
 	}
 
 	@Override

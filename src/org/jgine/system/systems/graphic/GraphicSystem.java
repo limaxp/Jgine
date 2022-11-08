@@ -17,7 +17,7 @@ public class GraphicSystem extends EngineSystem {
 	public GraphicObject load(Map<String, Object> data) {
 		GraphicObject object = new GraphicObject();
 		Object model = data.get("model");
-		if (model != null && model instanceof String)
+		if (model instanceof String)
 			object.model = ResourceManager.getModel((String) model);
 		return object;
 	}

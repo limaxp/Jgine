@@ -148,12 +148,24 @@ public class Material implements SystemObject, Cloneable {
 	}
 
 	public void load(Map<String, Object> data) {
-		this.color = YamlHelper.toColor(data.get("color"));
-		this.ambientColor = YamlHelper.toColor(data.get("ambientColor"));
-		this.diffuseColor = YamlHelper.toColor(data.get("diffuseColor"));
-		this.specularColor = YamlHelper.toColor(data.get("specularColor"));
-		this.emissiveColor = YamlHelper.toColor(data.get("emissiveColor"));
-		this.transparentColor = YamlHelper.toColor(data.get("transparentColor"));
+		Object colorData = data.get("color");
+		if (colorData != null)
+			this.color = YamlHelper.toColor(colorData, Color.WHITE);
+		Object ambientColorData = data.get("ambientColor");
+		if (ambientColorData != null)
+			this.ambientColor = YamlHelper.toColor(ambientColorData);
+		Object diffuseColorData = data.get("diffuseColor");
+		if (diffuseColorData != null)
+			this.diffuseColor = YamlHelper.toColor(diffuseColorData);
+		Object specularColorData = data.get("specularColor");
+		if (specularColorData != null)
+			this.specularColor = YamlHelper.toColor(specularColorData);
+		Object emissiveColorData = data.get("emissiveColor");
+		if (emissiveColorData != null)
+			this.emissiveColor = YamlHelper.toColor(emissiveColorData);
+		Object transparentColorData = data.get("transparentColor");
+		if (transparentColorData != null)
+			this.transparentColor = YamlHelper.toColor(transparentColorData);
 		Object texture = data.get("texture");
 		if (texture instanceof String)
 			setTexture(ResourceManager.getTexture((String) texture));

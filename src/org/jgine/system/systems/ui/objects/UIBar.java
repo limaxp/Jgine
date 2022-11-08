@@ -103,8 +103,12 @@ public class UIBar extends UIObject {
 		else if (barData instanceof Map)
 			bar.load((Map<String, Object>) barData);
 
-		filled = YamlHelper.toFloat(data.get("filled"), 1.0f);
-		barType = YamlHelper.toByte(data.get("barType"));
+		Object filledData = data.get("filled");
+		if (filledData != null)
+			filled = YamlHelper.toFloat(filledData, 1.0f);
+		Object barTypeData = data.get("barType");
+		if (barTypeData != null)
+			barType = YamlHelper.toByte(barTypeData);
 	}
 
 	@Override

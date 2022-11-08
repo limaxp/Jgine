@@ -25,8 +25,12 @@ public abstract class Light implements SystemObject {
 	public abstract LightType<? extends Light> getType();
 
 	public void load(Map<String, Object> data) {
-		color = YamlHelper.toColor(data.get("color"), Color.WHITE);
-		intensity = YamlHelper.toFloat(data.get("intensity"), 1.0f);
+		Object colorData = data.get("color");
+		if (colorData != null)
+			color = YamlHelper.toColor(colorData, Color.WHITE);
+		Object intensityData = data.get("intensity");
+		if (intensityData != null)
+			intensity = YamlHelper.toFloat(intensityData, 1.0f);
 	}
 
 	public void load(DataInput in) throws IOException {
