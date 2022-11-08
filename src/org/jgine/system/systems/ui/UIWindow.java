@@ -123,7 +123,7 @@ public class UIWindow extends UIObject {
 			Map<String, Object> childData = (Map<String, Object>) data;
 			UIObjectType<?> uiObjectType;
 			Object type = childData.get("type");
-			if (type != null && type instanceof String) {
+			if (type instanceof String) {
 				uiObjectType = UIObjectTypes.get((String) type);
 				if (uiObjectType == null)
 					uiObjectType = UIObjectTypes.LABEL;

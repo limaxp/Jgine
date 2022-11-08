@@ -71,7 +71,7 @@ public abstract class Engine {
 		for (Scene scene : scenes)
 			scene.free();
 		TaskExecutor.shutdown();
-		ResourceManager.free();
+		ResourceManager.terminate();
 		Renderer.terminate();
 		SoundManager.terminate();
 		window.delete();

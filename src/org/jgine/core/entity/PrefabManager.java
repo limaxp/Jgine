@@ -16,6 +16,11 @@ public class PrefabManager {
 		ID_MAP.put(prefab.id, prefab);
 	}
 
+	public static void free(Prefab prefab) {
+		NAME_MAP.remove(prefab.name);
+		ID_MAP.remove(prefab.id);
+	}
+
 	@Nullable
 	public static Prefab get(String name) {
 		return NAME_MAP.get(name);
@@ -30,4 +35,8 @@ public class PrefabManager {
 		return NAME_MAP.values();
 	}
 
+	public static void clear() {
+		NAME_MAP.clear();
+		ID_MAP.clear();
+	}
 }

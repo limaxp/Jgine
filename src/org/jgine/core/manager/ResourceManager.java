@@ -8,6 +8,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
+import org.jgine.core.entity.PrefabManager;
+import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.utils.loader.ModelLoader;
 import org.jgine.misc.utils.loader.ResourceLoader;
@@ -29,7 +32,6 @@ public class ResourceManager {
 
 	// TODO should be able to dynamic load resources if used and free resources if
 	// not!
-	// TODO should be able to cache used TrueTypeFont stuff!
 
 	private static final Map<String, Model> MODEL_MAP = new HashMap<String, Model>();
 	private static final Map<String, Texture> TEXTURE_MAP = new HashMap<String, Texture>();
@@ -45,6 +47,7 @@ public class ResourceManager {
 		private final Map<String, String> shaders = new HashMap<String, String>();
 		private final Map<String, SoundBuffer> sounds = new HashMap<String, SoundBuffer>();
 		private final Map<String, String> scripts = new HashMap<String, String>();
+		private final List<Prefab> prefabs = new IdentityArrayList<Prefab>();
 
 		@Override
 		public void modelCallback(String name, @Nullable Model model) {
@@ -87,6 +90,8 @@ public class ResourceManager {
 
 		@Override
 		public void prefabCallback(String name, @Nullable Prefab prefab) {
+			if (prefab != null)
+				prefabs.add(prefab);
 		}
 
 		@Override
@@ -121,6 +126,11 @@ public class ResourceManager {
 		loadResource("engine_assets");
 	}
 
+	public static void terminate() {
+		free();
+		ModelLoader.free();
+	}
+
 	public static void load(String path) {
 		load(null, path);
 	}
@@ -153,7 +163,6 @@ public class ResourceManager {
 	}
 
 	public static void free() {
-		ModelLoader.free();
 		for (Model model : MODEL_MAP.values())
 			model.close();
 		MODEL_MAP.clear();
@@ -166,6 +175,7 @@ public class ResourceManager {
 		SOUND_MAP.clear();
 		SCRIPT_MAP.clear();
 		DATA_MAP.clear();
+		PrefabManager.clear();
 	}
 
 	public static void free(Object identifier) {
@@ -190,11 +200,17 @@ public class ResourceManager {
 		for (Entry<String, String> script : data.scripts.entrySet()) {
 			SCRIPT_MAP.remove(script.getKey());
 		}
+		for (Prefab prefab : data.prefabs)
+			PrefabManager.free(prefab);
 	}
 
 	@Nullable
 	public static Model getModel(String name) {
 		return MODEL_MAP.get(name);
+	}
+
+	public static Collection<Model> getModels() {
+		return MODEL_MAP.values();
 	}
 
 	@Nullable
@@ -215,9 +231,17 @@ public class ResourceManager {
 		return texture;
 	}
 
+	public static Collection<Texture> getTextures() {
+		return TEXTURE_MAP.values();
+	}
+
 	@Nullable
 	public static String getShader(String name) {
 		return SHADER_MAP.get(name);
+	}
+
+	public static Collection<String> getShaders() {
+		return SHADER_MAP.values();
 	}
 
 	@Nullable
@@ -225,9 +249,17 @@ public class ResourceManager {
 		return SOUND_MAP.get(name);
 	}
 
+	public static Collection<SoundBuffer> getSounds() {
+		return SOUND_MAP.values();
+	}
+
 	@Nullable
 	public static String getScript(String name) {
 		return SCRIPT_MAP.get(name);
+	}
+
+	public static Collection<String> getScripts() {
+		return SCRIPT_MAP.values();
 	}
 
 	private static void addWaitingMaterial(String name, Material material) {

@@ -208,30 +208,55 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name) {
-		return getSystem(scene.getSystem(SystemManager.get(name)));
+		return getSystem(scene.getSystem(SystemManager.get(name)), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz) {
-		return getSystem(scene.getSystem(clazz));
+		return getSystem(scene.getSystem(clazz), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(int id) {
-		return getSystem(scene.getSystem(SystemManager.get(id)));
+		return getSystem(scene.getSystem(SystemManager.get(id)), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem system) {
-		return getSystem(scene.getSystem(system));
+		return getSystem(scene.getSystem(system), 0);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
+		return getSystem(systemScene, 0);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(String name, int index) {
+		return getSystem(scene.getSystem(SystemManager.get(name)), index);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz, int index) {
+		return getSystem(scene.getSystem(clazz), index);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(int id, int index) {
+		return getSystem(scene.getSystem(SystemManager.get(id)), index);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
+		return getSystem(scene.getSystem(system), index);
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
+	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
 		if (systemScene == null)
 			return null;
-		return (T) systems.get(systemScene, 0);
+		return (T) systems.get(systemScene, index);
 	}
 
 	@Nullable

@@ -13,8 +13,16 @@ public class UISystem extends EngineSystem {
 	}
 
 	@Override
-	public UIWindow load(Map<String, Object> data) {
-		UIWindow object = new UIWindow();
+	public UIObject load(Map<String, Object> data) {
+		UIObjectType<?> uiObjectType;
+		Object type = data.get("type");
+		if (type instanceof String) {
+			uiObjectType = UIObjectTypes.get((String) type);
+			if (uiObjectType == null)
+				uiObjectType = UIObjectTypes.LABEL;
+		} else
+			uiObjectType = UIObjectTypes.LABEL;
+		UIObject object = uiObjectType.get();
 		object.load(data);
 		return object;
 	}
