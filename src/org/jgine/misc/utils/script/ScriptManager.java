@@ -1,12 +1,20 @@
 package org.jgine.misc.utils.script;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.Invocable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.jgine.misc.utils.logger.Logger;
 
 import bsh.BshScriptEngineFactory;
 
@@ -29,10 +37,6 @@ public class ScriptManager {
 			ENGINE_MANAGER.registerEngineExtension(extenson, factory);
 	}
 
-	public static List<ScriptEngineFactory> getFactories() {
-		return ENGINE_MANAGER.getEngineFactories();
-	}
-
 	public static ScriptEngine getEngineByName(String name) {
 		return ENGINE_MANAGER.getEngineByName(name);
 	}
@@ -45,20 +49,24 @@ public class ScriptManager {
 		return ENGINE_MANAGER.getEngineByExtension(extension);
 	}
 
-	public static void setGlobal(String name, Object value) {
+	public static void setProperty(String name, Object value) {
 		ENGINE_MANAGER.put(name, value);
 	}
 
-	public static Object getGlobal(String name) {
+	public static Object getProperty(String name) {
 		return ENGINE_MANAGER.get(name);
 	}
 
-	public static void setGlobalBindings(Bindings bindings) {
+	public static void setBindings(Bindings bindings) {
 		ENGINE_MANAGER.setBindings(bindings);
 	}
 
-	public static Object getGlobalBindings() {
+	public static Bindings getBindings() {
 		return ENGINE_MANAGER.getBindings();
+	}
+
+	public static List<ScriptEngineFactory> getFactories() {
+		return ENGINE_MANAGER.getEngineFactories();
 	}
 
 	public static List<String> getFactoryInfo() {
@@ -93,5 +101,125 @@ public class ScriptManager {
 		stringBuilder.append(langVersion);
 		stringBuilder.append(')');
 		return stringBuilder.toString();
+	}
+
+	public static Object eval(ScriptEngine engine, String text) {
+		try {
+			return engine.eval(text);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating text!", e);
+			return null;
+		}
+	}
+
+	public static Object eval(ScriptEngine engine, Reader reader) {
+		try {
+			return engine.eval(reader);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating reader!", e);
+			return null;
+		}
+	}
+
+	public static Object eval(ScriptEngine engine, Bindings bindings, String text) {
+		try {
+			return engine.eval(text, bindings);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating text!", e);
+			return null;
+		}
+	}
+
+	public static Object eval(ScriptEngine engine, Bindings bindings, Reader reader) {
+		try {
+			return engine.eval(reader, bindings);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating reader!", e);
+			return null;
+		}
+	}
+
+	public static Object eval(ScriptEngine engine, ScriptContext context, String text) {
+		try {
+			return engine.eval(text, context);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating text!", e);
+			return null;
+		}
+	}
+
+	public static Object eval(ScriptEngine engine, ScriptContext context, Reader reader) {
+		try {
+			return engine.eval(reader, context);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on evaluating reader!", e);
+			return null;
+		}
+	}
+
+	public static <T> T getInterface(ScriptEngine engine, Class<T> clazz) {
+		return ((Invocable) engine).getInterface(clazz);
+	}
+
+	public static <T> T getInterface(ScriptEngine engine, Object obj, Class<T> clazz) {
+		return ((Invocable) engine).getInterface(obj, clazz);
+	}
+
+	public static Object invoke(ScriptEngine engine, String name, Object... objects) {
+		try {
+			return ((Invocable) engine).invokeFunction(name, objects);
+		} catch (ScriptException | NoSuchMethodException e) {
+			Logger.err("ScriptManager: Error on invoking script function'" + name + "'", e);
+			return null;
+		}
+	}
+
+	public static Object invoke(ScriptEngine engine, Object obj, String name, Object... objects) {
+		try {
+			return ((Invocable) engine).invokeMethod(obj, name, objects);
+		} catch (ScriptException | NoSuchMethodException e) {
+			Logger.err("ScriptManager: Error on invoking script function'" + name + "'", e);
+			return null;
+		}
+	}
+
+	public static final CompiledScript compile(ScriptEngine engine, String script) {
+		try {
+			return ((Compilable) engine).compile(script);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on compiling text!", e);
+			return null;
+		}
+	}
+
+	public static final CompiledScript compile(ScriptEngine engine, Reader reader) {
+		try {
+			return ((Compilable) engine).compile(reader);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on compiling reader!", e);
+			return null;
+		}
+	}
+
+	public static Object run(CompiledScript script) {
+		return run(script, script.getEngine().getContext());
+	}
+
+	public static Object run(CompiledScript script, ScriptContext context) {
+		try {
+			return script.eval(context);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on running script!", e);
+			return null;
+		}
+	}
+
+	public static Object run(CompiledScript script, Bindings bindings) {
+		try {
+			return script.eval(bindings);
+		} catch (ScriptException e) {
+			Logger.err("ScriptManager: Error on running script!", e);
+			return null;
+		}
 	}
 }

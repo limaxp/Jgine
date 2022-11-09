@@ -2,21 +2,38 @@ package org.jgine.system.systems.script;
 
 import javax.script.ScriptEngine;
 
-import org.jgine.misc.utils.script.Script;
 import org.jgine.system.SystemObject;
 
-public class ScriptObject extends Script implements SystemObject {
+public class ScriptObject implements SystemObject, Cloneable {
 
-	protected IScript script;
-
-	public ScriptObject() {
-	}
+	protected ScriptEngine engine;
+	protected IScript scriptInterface;
 
 	public ScriptObject(ScriptEngine engine) {
-		super(engine);
+		this.engine = engine;
 	}
 
-	public IScript getScript() {
-		return script;
+	public ScriptEngine getEngine() {
+		return engine;
+	}
+
+	public IScript getInterface() {
+		return scriptInterface;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
+	}
+
+	@Override
+	public ScriptObject clone() {
+		try {
+			return (ScriptObject) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

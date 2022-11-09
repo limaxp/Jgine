@@ -20,11 +20,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.script.ScriptEngine;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
+import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.Model;
 import org.jgine.sound.SoundBuffer;
@@ -42,7 +45,7 @@ public abstract class ResourceLoader {
 
 	public abstract void soundCallback(String name, @Nullable SoundBuffer sound);
 
-	public abstract void scriptCallback(String name, @Nullable String script);
+	public abstract void scriptCallback(String name, @Nullable ScriptEngine script);
 
 	private final List<PrefabPrototype> loadingPrefabs = new UnorderedIdentityArrayList<PrefabPrototype>();
 
@@ -147,16 +150,14 @@ public abstract class ResourceLoader {
 			is.close();
 			break;
 
-		case "js":
-		case "bsh":
-		case "lua":
-			scriptCallback(name, loadScript(is));
-			is.close();
-			break;
-
 		default:
 			if (ModelLoader.supportsImportExtension(extension))
 				modelCallback(name, loadModel(name, is));
+			ScriptEngine engine = ScriptManager.getEngineByExtension(extension);
+			if (engine != null) {
+				ScriptManager.eval(engine, loadScript(is));
+				scriptCallback(name, engine);
+			}
 			is.close();
 			break;
 		}
@@ -191,15 +192,14 @@ public abstract class ResourceLoader {
 			soundCallback(name, loadSoundWav(file));
 			break;
 
-		case "js":
-		case "bsh":
-		case "lua":
-			scriptCallback(name, loadScript(file));
-			break;
-
 		default:
 			if (ModelLoader.supportsImportExtension(extension))
 				modelCallback(name, loadModel(name, file.getPath()));
+			ScriptEngine engine = ScriptManager.getEngineByExtension(extension);
+			if (engine != null) {
+				ScriptManager.eval(engine, loadScript(file));
+				scriptCallback(name, engine);
+			}
 			break;
 		}
 	}

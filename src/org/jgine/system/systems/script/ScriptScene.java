@@ -8,6 +8,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.TaskManager;
+import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.data.ListSystemScene;
 
 public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
@@ -22,15 +23,17 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public void initObject(Entity entity, ScriptObject object) {
-		object.put("entity", entity);
-		object.script.setEntity(entity);
-		object.script.onEnable();
+		if (object instanceof ScriptObjectJava)
+			((ScriptJava) ((ScriptObjectJava) object).scriptInterface).entity = entity;
+		else
+			object.scriptInterface = (IScript) ScriptManager.invoke(object.engine, "create", entity);
+		object.scriptInterface.onEnable();
 	}
 
 	@Override
 	@Nullable
 	public ScriptObject removeObject(ScriptObject object) {
-		object.script.onDisable();
+		object.scriptInterface.onDisable();
 		return super.removeObject(object);
 	}
 
@@ -42,7 +45,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	public void update(int index, int size) {
 		size = index + size;
 		for (; index < size; index++)
-			objects[index].script.update();
+			objects[index].scriptInterface.update();
 	}
 
 	@Override

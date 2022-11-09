@@ -25,13 +25,13 @@ public class EventManager {
 		SystemObject[] scripts = getScripts(entity);
 		if (scripts != null)
 			for (int i = 0; i < scripts.length; i++)
-				func.accept(((ScriptObject) scripts[i]).getScript(), t);
+				func.accept(((ScriptObject) scripts[i]).getInterface(), t);
 	}
 
 	public static <T1, T2> void callEvent(Entity entity, T1 t1, T2 t2, TriConsumer<IScript, T1, T2> func) {
 		SystemObject[] scripts = getScripts(entity);
 		if (scripts != null)
 			for (int i = 0; i < scripts.length; i++)
-				func.accept(((ScriptObject) scripts[i]).getScript(), t1, t2);
+				func.accept(((ScriptObject) scripts[i]).getInterface(), t1, t2);
 	}
 }

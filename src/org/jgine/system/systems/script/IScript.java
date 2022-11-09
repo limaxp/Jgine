@@ -5,9 +5,7 @@ import org.jgine.system.systems.collision.Collision;
 
 public interface IScript {
 
-	public void setEntity(Entity entity);
-
-	public Entity getEntity();
+	public abstract Entity getEntity();
 
 	public abstract void onEnable();
 

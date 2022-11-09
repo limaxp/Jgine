@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.script.ScriptEngine;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
@@ -37,7 +39,7 @@ public class ResourceManager {
 	private static final Map<String, Texture> TEXTURE_MAP = new HashMap<String, Texture>();
 	private static final Map<String, String> SHADER_MAP = new HashMap<String, String>();
 	private static final Map<String, SoundBuffer> SOUND_MAP = new HashMap<String, SoundBuffer>();
-	private static final Map<String, String> SCRIPT_MAP = new HashMap<String, String>();
+	private static final Map<String, ScriptEngine> SCRIPT_MAP = new HashMap<String, ScriptEngine>();
 	private static final Map<String, List<Material>> WAITING_MATERIAL_MAP = new HashMap<String, List<Material>>();
 
 	private static class ResourceData extends ResourceLoader {
@@ -46,7 +48,7 @@ public class ResourceManager {
 		private final Map<String, Texture> textures = new HashMap<String, Texture>();
 		private final Map<String, String> shaders = new HashMap<String, String>();
 		private final Map<String, SoundBuffer> sounds = new HashMap<String, SoundBuffer>();
-		private final Map<String, String> scripts = new HashMap<String, String>();
+		private final Map<String, ScriptEngine> scripts = new HashMap<String, ScriptEngine>();
 		private final List<Prefab> prefabs = new IdentityArrayList<Prefab>();
 
 		@Override
@@ -108,9 +110,9 @@ public class ResourceManager {
 		}
 
 		@Override
-		public void scriptCallback(String name, @Nullable String script) {
-			if (script != null && !script.isEmpty()) {
-				String old = SCRIPT_MAP.put(name, script);
+		public void scriptCallback(String name, @Nullable ScriptEngine script) {
+			if (script != null) {
+				ScriptEngine old = SCRIPT_MAP.put(name, script);
 				if (old != null) {
 					Logger.warn("ResourceManager: Script name conflict '" + name + "'");
 					SCRIPT_MAP.put(name, old);
@@ -197,7 +199,7 @@ public class ResourceManager {
 			SOUND_MAP.remove(sound.getKey());
 			sound.getValue().close();
 		}
-		for (Entry<String, String> script : data.scripts.entrySet()) {
+		for (Entry<String, ScriptEngine> script : data.scripts.entrySet()) {
 			SCRIPT_MAP.remove(script.getKey());
 		}
 		for (Prefab prefab : data.prefabs)
@@ -254,11 +256,11 @@ public class ResourceManager {
 	}
 
 	@Nullable
-	public static String getScript(String name) {
+	public static ScriptEngine getScript(String name) {
 		return SCRIPT_MAP.get(name);
 	}
 
-	public static Collection<String> getScripts() {
+	public static Collection<ScriptEngine> getScripts() {
 		return SCRIPT_MAP.values();
 	}
 
