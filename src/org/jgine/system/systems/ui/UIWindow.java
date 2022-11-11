@@ -32,6 +32,7 @@ public class UIWindow extends UIObject {
 	private List<UIObject> childsView;
 	private boolean moveAble;
 	private boolean hide;
+	private boolean floating;
 	private Material background;
 	private Vector3f borderColor;
 	ScriptEngine scriptEngine;
@@ -57,6 +58,7 @@ public class UIWindow extends UIObject {
 		childsView = Collections.unmodifiableList(childs);
 		this.moveAble = moveAble;
 		hide = false;
+		floating = false;
 		setScale(width, height);
 		background = new Material(Color.TRANSLUCENT_WEAK);
 		borderColor = Vector3f.NULL;
@@ -123,6 +125,10 @@ public class UIWindow extends UIObject {
 		Object hideData = data.get("hide");
 		if (hideData != null)
 			hide = YamlHelper.toBoolean(hideData);
+		Object floatingData = data.get("floating");
+		if (floatingData != null)
+			floating = YamlHelper.toBoolean(floatingData);
+
 		Object backgroundData = data.get("background");
 		if (backgroundData instanceof String) {
 			Texture texture = ResourceManager.getTexture((String) backgroundData);
@@ -173,6 +179,7 @@ public class UIWindow extends UIObject {
 		super.load(in);
 		moveAble = in.readBoolean();
 		hide = in.readBoolean();
+		floating = in.readBoolean();
 		background.load(in);
 		int childSize = in.readInt();
 		for (int i = 0; i < childSize; i++) {
@@ -190,6 +197,7 @@ public class UIWindow extends UIObject {
 		super.save(out);
 		out.writeBoolean(moveAble);
 		out.writeBoolean(hide);
+		out.writeBoolean(floating);
 		background.save(out);
 		out.writeInt(childs.size());
 		for (UIObject child : childs) {
@@ -292,6 +300,14 @@ public class UIWindow extends UIObject {
 
 	public boolean isHidden() {
 		return hide;
+	}
+
+	public void setFloating(boolean floating) {
+		this.floating = floating;
+	}
+
+	public boolean isFloating() {
+		return floating;
 	}
 
 	public void setBackground(Material background) {

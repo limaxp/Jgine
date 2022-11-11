@@ -115,10 +115,13 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
 		focusObject.onClick(mouseX, mouseY);
 		clickedObject = focusObject;
-		UIWindow topWindow = getTopWindow(focusObject);
-		if (topWindow != objects[size - 1]) {
-			objects[getTopWindowIndex(topWindow)] = objects[size - 1];
-			objects[size - 1] = topWindow;
+		UIWindow topWindow = objects[size - 1];
+		if (topWindow.isFloating())
+			return;
+		UIWindow newTopWindow = getTopWindow(focusObject);
+		if (newTopWindow != objects[size - 1]) {
+			objects[getTopWindowIndex(newTopWindow)] = objects[size - 1];
+			objects[size - 1] = newTopWindow;
 		}
 	}
 
