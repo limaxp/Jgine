@@ -13,6 +13,7 @@ import org.jgine.system.SystemScene;
 public class ScriptSystem extends EngineSystem {
 
 	public ScriptSystem() {
+		super("script");
 		EventManager.setScriptSupplier((entity) -> entity.getSystems(this));
 	}
 

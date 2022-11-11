@@ -18,17 +18,17 @@ public class SystemManager {
 	private static EngineSystem[] ID_MAP = new EngineSystem[MAX_SIZE];
 	private static int size;
 
-	public static <T extends EngineSystem> T register(String name, T system) {
-		if (NAME_MAP.containsKey(name)) {
-			Logger.warn("SystemManager: System '" + name + "' does already exist!");
+	public static <T extends EngineSystem> T register(T system) {
+		if (NAME_MAP.containsKey(system.name)) {
+			Logger.warn("SystemManager: System '" + system.name + "' does already exist!");
 			return system;
 		}
-		NAME_MAP.put(name, system);
+		NAME_MAP.put(system.name, system);
 		if (!CLASS_MAP.containsKey(system.getClass()))
 			CLASS_MAP.put(system.getClass(), system);
 		int id = size++;
 		ID_MAP[id] = system;
-		system.init(id, name);
+		system.init(id);
 		return system;
 	}
 

@@ -6,6 +6,10 @@ import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
 public class ParticleSystem extends EngineSystem {
+	
+	public ParticleSystem() {
+		super("particle");
+	}
 
 	@Override
 	public ParticleScene createScene(Scene scene) {

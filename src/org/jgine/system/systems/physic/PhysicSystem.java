@@ -13,6 +13,7 @@ public class PhysicSystem extends EngineSystem {
 	private float airResistanceFactor = 0.99f;
 
 	public PhysicSystem() {
+		super("physic");
 		ServiceManager.register("gravity", new Property<Float>() {
 
 			@Override

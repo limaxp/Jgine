@@ -9,6 +9,10 @@ import org.jgine.system.SystemScene;
 
 public class LightSystem extends EngineSystem {
 
+	public LightSystem() {
+		super("light");
+	}
+
 	@Override
 	public SystemScene<?, ?> createScene(Scene scene) {
 		return new LightScene(this, scene);

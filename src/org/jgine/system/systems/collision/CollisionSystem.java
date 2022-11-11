@@ -12,6 +12,7 @@ public class CollisionSystem extends EngineSystem {
 	private boolean showHitBox = false;
 
 	public CollisionSystem() {
+		super("collider");
 		ServiceManager.register("showHitBox", new Property<Boolean>() {
 
 			@Override

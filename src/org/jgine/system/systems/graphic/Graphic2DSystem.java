@@ -8,6 +8,10 @@ import org.jgine.system.EngineSystem;
 
 public class Graphic2DSystem extends EngineSystem {
 
+	public Graphic2DSystem() {
+		super("graphic2d");
+	}
+
 	@Override
 	public Graphic2DScene createScene(Scene scene) {
 		return new Graphic2DScene(this, scene);

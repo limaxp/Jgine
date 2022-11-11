@@ -7,6 +7,10 @@ import org.jgine.system.EngineSystem;
 
 public class InputSystem extends EngineSystem {
 
+	public InputSystem() {
+		super("input");
+	}
+
 	@Override
 	public InputScene createScene(Scene scene) {
 		return new InputScene(this, scene);
@@ -21,8 +25,7 @@ public class InputSystem extends EngineSystem {
 			inputHandlerType = InputHandlerTypes.get((String) type);
 			if (inputHandlerType == null)
 				inputHandlerType = InputHandlerTypes.TRANSFORM;
-		}
-		else
+		} else
 			inputHandlerType = InputHandlerTypes.TRANSFORM;
 		inputHandler = inputHandlerType.get();
 		return inputHandler;

@@ -8,8 +8,9 @@ import org.jgine.system.EngineSystem;
 public class TileMapSystem extends EngineSystem {
 
 	public TileMapSystem() {
+		super("tilemap");
 	}
-
+	
 	@Override
 	public TileMapScene createScene(Scene scene) {
 		return new TileMapScene(this, scene);

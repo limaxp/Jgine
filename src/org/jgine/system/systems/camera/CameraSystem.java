@@ -18,6 +18,7 @@ public class CameraSystem extends EngineSystem {
 	private Camera mainCamera;
 
 	public CameraSystem() {
+		super("camera");
 		cameras = new FastArrayList<Camera>();
 		cameras_view = Collections.unmodifiableList(cameras);
 		ServiceManager.register("camera", new Property<Camera>() {

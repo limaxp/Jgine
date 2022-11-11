@@ -7,6 +7,13 @@ public class GraphicObject implements SystemObject, Cloneable {
 
 	protected Model model;
 
+	public GraphicObject() {
+	}
+
+	public GraphicObject(Model model) {
+		this.model = model;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final <T extends SystemObject> T copy() {

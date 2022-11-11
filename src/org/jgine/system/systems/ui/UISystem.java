@@ -7,6 +7,10 @@ import org.jgine.system.EngineSystem;
 
 public class UISystem extends EngineSystem {
 
+	public UISystem() {
+		super("ui");
+	}
+
 	@Override
 	public UIScene createScene(Scene scene) {
 		return new UIScene(this, scene);

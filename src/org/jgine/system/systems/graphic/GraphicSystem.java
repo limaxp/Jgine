@@ -8,6 +8,10 @@ import org.jgine.system.EngineSystem;
 
 public class GraphicSystem extends EngineSystem {
 
+	public GraphicSystem() {
+		super("graphic");
+	}
+
 	@Override
 	public GraphicScene createScene(Scene scene) {
 		return new GraphicScene(this, scene);
