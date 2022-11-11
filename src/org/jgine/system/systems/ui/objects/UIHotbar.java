@@ -54,15 +54,8 @@ public class UIHotbar extends UIGrid {
 	}
 
 	@Override
-	public void onFocus() {
-	}
-
-	@Override
-	public void onDefocus() {
-	}
-
-	@Override
 	public void onClick(float mouseX, float mouseY) {
+		super.onClick(mouseX, mouseY);
 		UIWindow window = getWindow();
 		if (window != null && window.isMoveAble())
 			Scheduler.runTaskAsynchron(dragTask = new DragTask(getWindow()));
@@ -70,6 +63,7 @@ public class UIHotbar extends UIGrid {
 
 	@Override
 	public void onRelease(float mouseX, float mouseY) {
+		super.onRelease(mouseX, mouseY);
 		if (dragTask != null && !dragTask.isCanceled())
 			dragTask.cancel();
 	}

@@ -20,11 +20,14 @@ import bsh.BshScriptEngineFactory;
 
 public class ScriptManager {
 
+	public static final ScriptEngine NULL_SCRIPT_ENGINE = new NullScriptEngine();
+
 	private static final ScriptEngineManager ENGINE_MANAGER;
 
 	static {
 		ENGINE_MANAGER = new ScriptEngineManager();
 		registerFactory(new BshScriptEngineFactory());
+		// TODO add Nashorn!
 	}
 
 	public static void registerFactory(ScriptEngineFactory factory) {

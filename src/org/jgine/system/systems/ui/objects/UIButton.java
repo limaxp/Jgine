@@ -32,21 +32,20 @@ public class UIButton extends UILabel {
 
 	@Override
 	public void onFocus() {
+		super.onFocus();
 		getBackground().color = Color.TRANSLUCENT_STRONG;
 	}
 
 	@Override
 	public void onDefocus() {
+		super.onDefocus();
 		getBackground().color = Color.TRANSLUCENT_WEAK;
 	}
 
 	@Override
 	public void onClick(float mouseX, float mouseY) {
+		super.onClick(mouseX, mouseY);
 		clickCallback.run();
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
 	}
 
 	@Override

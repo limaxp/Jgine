@@ -71,22 +71,6 @@ public class UIBar extends UIObject {
 			barTransform.mult(getWindow().getTransform());
 	}
 
-	@Override
-	public void onFocus() {
-	}
-
-	@Override
-	public void onDefocus() {
-	}
-
-	@Override
-	public void onClick(float mouseX, float mouseY) {
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {

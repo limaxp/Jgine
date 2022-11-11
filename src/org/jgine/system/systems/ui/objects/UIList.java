@@ -28,22 +28,6 @@ public class UIList extends UIWindow {
 	}
 
 	@Override
-	public void onFocus() {
-	}
-
-	@Override
-	public void onDefocus() {
-	}
-
-	@Override
-	public void onClick(float mouseX, float mouseY) {
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
-	}
-
-	@Override
 	public void load(Map<String, Object> data) {
 		Object elementHeightData = data.get("elementHeight");
 		if (elementHeightData != null)

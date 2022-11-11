@@ -26,22 +26,6 @@ public class UIGrid extends UIList {
 	}
 
 	@Override
-	public void onFocus() {
-	}
-
-	@Override
-	public void onDefocus() {
-	}
-
-	@Override
-	public void onClick(float mouseX, float mouseY) {
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
-	}
-
-	@Override
 	public void load(Map<String, Object> data) {
 		Object elementWidthData = data.get("elementWidth");
 		if (elementWidthData != null)

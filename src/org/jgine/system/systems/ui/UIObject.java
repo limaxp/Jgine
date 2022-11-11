@@ -9,6 +9,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.loader.YamlHelper;
+import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.SystemObject;
 
 public abstract class UIObject implements SystemObject, Cloneable {
@@ -20,6 +21,10 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	private float height;
 	private Matrix transform;
 	boolean isFocused;
+	public String focusFunction;
+	public String defocusFunction;
+	public String clickFunction;
+	public String releaseFunction;
 
 	public UIObject() {
 		transform = new Matrix();
@@ -48,15 +53,27 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public abstract void render();
 
-	public abstract void onFocus();
-
-	public abstract void onDefocus();
-
-	public abstract void onClick(float mouseX, float mouseY);
-
-	public abstract void onRelease(float mouseX, float mouseY);
-
 	public abstract UIObjectType<?> getType();
+
+	public void onFocus() {
+		if (focusFunction != null)
+			ScriptManager.invoke(window.scriptEngine, focusFunction, this);
+	}
+
+	public void onDefocus() {
+		if (defocusFunction != null)
+			ScriptManager.invoke(window.scriptEngine, defocusFunction, this);
+	}
+
+	public void onClick(float mouseX, float mouseY) {
+		if (clickFunction != null)
+			ScriptManager.invoke(window.scriptEngine, clickFunction, this);
+	}
+
+	public void onRelease(float mouseX, float mouseY) {
+		if (releaseFunction != null)
+			ScriptManager.invoke(window.scriptEngine, releaseFunction, this);
+	}
 
 	public void load(Map<String, Object> data) {
 		Object xData = data.get("x");
@@ -74,6 +91,18 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		Object scaleData = data.get("scale");
 		if (scaleData != null)
 			setScale(YamlHelper.toFloat(scaleData));
+		Object focusFunctionData = data.get("onFocus");
+		if (focusFunctionData != null)
+			focusFunction = YamlHelper.toString(focusFunctionData);
+		Object defocusFunctionData = data.get("onDefocus");
+		if (defocusFunctionData != null)
+			defocusFunction = YamlHelper.toString(defocusFunctionData);
+		Object clickFunctionData = data.get("onClick");
+		if (clickFunctionData != null)
+			clickFunction = YamlHelper.toString(clickFunctionData);
+		Object releaseFunctionData = data.get("onRelease");
+		if (releaseFunctionData != null)
+			releaseFunction = YamlHelper.toString(releaseFunctionData);
 		calculateTransform();
 	}
 
@@ -82,6 +111,10 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		y = in.readFloat();
 		width = in.readFloat();
 		height = in.readFloat();
+		focusFunction = in.readUTF();
+		defocusFunction = in.readUTF();
+		clickFunction = in.readUTF();
+		releaseFunction = in.readUTF();
 		calculateTransform();
 	}
 
@@ -90,6 +123,10 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		out.writeFloat(y);
 		out.writeFloat(width);
 		out.writeFloat(height);
+		out.writeUTF(focusFunction);
+		out.writeUTF(defocusFunction);
+		out.writeUTF(clickFunction);
+		out.writeUTF(releaseFunction);
 		calculateTransform();
 	}
 

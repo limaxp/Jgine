@@ -30,6 +30,9 @@ import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.Model;
 import org.jgine.sound.SoundBuffer;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 public class ResourceManager {
 
 	// TODO should be able to dynamic load resources if used and free resources if
@@ -39,7 +42,7 @@ public class ResourceManager {
 	private static final Map<String, Texture> TEXTURE_MAP = new HashMap<String, Texture>();
 	private static final Map<String, String> SHADER_MAP = new HashMap<String, String>();
 	private static final Map<String, SoundBuffer> SOUND_MAP = new HashMap<String, SoundBuffer>();
-	private static final Map<String, ScriptEngine> SCRIPT_MAP = new HashMap<String, ScriptEngine>();
+	private static final BiMap<String, ScriptEngine> SCRIPT_MAP = HashBiMap.create();
 	private static final Map<String, List<Material>> WAITING_MATERIAL_MAP = new HashMap<String, List<Material>>();
 
 	private static class ResourceData extends ResourceLoader {
@@ -258,6 +261,11 @@ public class ResourceManager {
 	@Nullable
 	public static ScriptEngine getScript(String name) {
 		return SCRIPT_MAP.get(name);
+	}
+
+	@Nullable
+	public static String getScriptName(ScriptEngine scipt) {
+		return SCRIPT_MAP.inverse().get(scipt);
 	}
 
 	public static Collection<ScriptEngine> getScripts() {

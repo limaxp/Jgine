@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+
+import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
@@ -15,12 +19,14 @@ import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Scheduler;
+import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 
 public class UIWindow extends UIObject {
 
+	Entity entity;
 	UIScene scene;
 	List<UIObject> childs;
 	private List<UIObject> childsView;
@@ -28,6 +34,7 @@ public class UIWindow extends UIObject {
 	private boolean hide;
 	private Material background;
 	private Vector3f borderColor;
+	ScriptEngine scriptEngine;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -53,6 +60,7 @@ public class UIWindow extends UIObject {
 		setScale(width, height);
 		background = new Material(Color.TRANSLUCENT_WEAK);
 		borderColor = Vector3f.NULL;
+		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 	}
 
 	@Override
@@ -83,18 +91,26 @@ public class UIWindow extends UIObject {
 
 	@Override
 	public void onFocus() {
+		if (focusFunction != null)
+			ScriptManager.invoke(scriptEngine, focusFunction, this);
 	}
 
 	@Override
 	public void onDefocus() {
+		if (defocusFunction != null)
+			ScriptManager.invoke(scriptEngine, defocusFunction, this);
 	}
 
 	@Override
 	public void onClick(float mouseX, float mouseY) {
+		if (clickFunction != null)
+			ScriptManager.invoke(scriptEngine, clickFunction, this);
 	}
 
 	@Override
 	public void onRelease(float mouseX, float mouseY) {
+		if (releaseFunction != null)
+			ScriptManager.invoke(scriptEngine, releaseFunction, this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -124,6 +140,13 @@ public class UIWindow extends UIObject {
 			Map<String, Object> childMap = (Map<String, Object>) childs;
 			for (Object subData : childMap.values())
 				loadChild(subData);
+		}
+
+		Object scriptName = data.get("script");
+		if (scriptName instanceof String) {
+			ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
+			if (scriptEngine != null)
+				this.scriptEngine = scriptEngine;
 		}
 	}
 
@@ -157,6 +180,9 @@ public class UIWindow extends UIObject {
 			object.load(in);
 			addChild(object);
 		}
+		ScriptEngine loadedScript = ResourceManager.getScript(in.readUTF());
+		if (loadedScript != null)
+			scriptEngine = loadedScript;
 	}
 
 	@Override
@@ -170,6 +196,7 @@ public class UIWindow extends UIObject {
 			out.writeInt(child.getType().getId());
 			child.save(out);
 		}
+		out.writeUTF(ResourceManager.getScriptName(scriptEngine));
 	}
 
 	@Override
@@ -182,6 +209,13 @@ public class UIWindow extends UIObject {
 		super.calculateTransform();
 		for (UIObject child : childs)
 			child.calculateTransform();
+	}
+
+	@Override
+	public void setWindow(@Nullable UIWindow window) {
+		super.setWindow(window);
+		this.entity = window.entity;
+		this.scene = window.scene;
 	}
 
 	public void addChild(UIObject child) {
@@ -276,8 +310,20 @@ public class UIWindow extends UIObject {
 		return borderColor;
 	}
 
+	public Entity getEntity() {
+		return entity;
+	}
+
 	public UIScene getScene() {
 		return scene;
+	}
+
+	public void setScriptEngine(ScriptEngine scriptEngine) {
+		this.scriptEngine = scriptEngine;
+	}
+
+	public ScriptEngine getScriptEngine() {
+		return scriptEngine;
 	}
 
 	public static class DragTask implements Runnable {

@@ -76,22 +76,6 @@ public class UILabel extends UIObject {
 		textTransform.scaling(0.001f, 0.001f, 0.001f);
 	}
 
-	@Override
-	public void onFocus() {
-	}
-
-	@Override
-	public void onDefocus() {
-	}
-
-	@Override
-	public void onClick(float mouseX, float mouseY) {
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {

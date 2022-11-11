@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="C:/Programming/Game/libraries/bsh-2.1.0.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.jdt.annotation_2.2.600.v20200408-1511.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="C:/Programming/Game/libraries/guava-31.1-jre.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
