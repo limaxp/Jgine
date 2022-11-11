@@ -48,7 +48,7 @@ public class CameraSystem extends EngineSystem {
 	}
 
 	protected void addCamera(Camera camera) {
-		cameras.add(camera);
+		cameras.add(0, camera);
 		if (mainCamera == null)
 			mainCamera = camera;
 	}

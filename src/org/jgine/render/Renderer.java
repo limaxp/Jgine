@@ -71,10 +71,6 @@ public class Renderer {
 		OpenGL.terminate();
 	}
 
-	public static void clearFrameBuffer() {
-		OpenGL.clearFrameBuffer();
-	}
-
 	public static void render(Matrix transform, Model model) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		for (Mesh mesh : model) {
@@ -187,10 +183,9 @@ public class Renderer {
 	}
 
 	public static void setCamera(Camera camera) {
-		if (Renderer.camera != camera) {
+		if (Renderer.camera != camera)
 			Renderer.camera = camera;
-			camera.getRenderTarget().bindRenderTarget();
-		}
+		camera.getRenderTarget().bindRenderTarget();
 	}
 
 	public static Camera getCamera() {

@@ -143,7 +143,6 @@ public abstract class Engine {
 	public abstract void onRender();
 
 	private final void render() {
-		Renderer.clearFrameBuffer();
 		renderCameras();
 		renderFrames();
 		window.swapBuffers();
