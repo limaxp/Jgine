@@ -91,6 +91,18 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
+	public void onEnable() {
+		if (enableFunction != null)
+			ScriptManager.invoke(scriptEngine, enableFunction, this);
+	}
+
+	@Override
+	public void onDisable() {
+		if (disableFunction != null)
+			ScriptManager.invoke(scriptEngine, disableFunction, this);
+	}
+
+	@Override
 	public void onFocus() {
 		if (focusFunction != null)
 			ScriptManager.invoke(scriptEngine, focusFunction, this);
@@ -225,15 +237,13 @@ public class UIWindow extends UIObject {
 	public int removeChild(UIObject child) {
 		int index = childs.indexOf(child);
 		childs.remove(index);
-		child.window = null;
-		child.calculateTransform();
+		child.free();
 		return index;
 	}
 
 	public UIObject removeChild(int index) {
 		UIObject child = childs.remove(index);
-		child.window = null;
-		child.calculateTransform();
+		child.free();
 		return child;
 	}
 
@@ -252,10 +262,8 @@ public class UIWindow extends UIObject {
 	}
 
 	public void clearChilds() {
-		for (UIObject child : childs) {
-			child.window = null;
-			child.calculateTransform();
-		}
+		for (UIObject child : childs)
+			child.free();
 		childs.clear();
 	}
 

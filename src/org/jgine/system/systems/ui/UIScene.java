@@ -39,16 +39,33 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	public void initObject(Entity entity, UIWindow object) {
 		object.entity = entity;
 		object.scene = this;
-		for (UIObject child : object.childs)
+		object.onEnable();
+		for (UIObject child : object.childs) {
 			if (child instanceof UIWindow)
 				initObject(entity, (UIWindow) child);
+			else
+				child.onEnable();
+		}
 	}
 
 	@Override
 	@Nullable
 	public UIWindow removeObject(UIWindow object) {
-		object.free();
+		disableObject(object);
 		return super.removeObject(object);
+	}
+
+	private void disableObject(UIWindow object) {
+		object.onDisable();
+		for (UIObject child : object.childs) {
+			if (child instanceof UIWindow)
+				disableObject((UIWindow) child);
+			else {
+				child.onDisable();
+				child.free();
+			}
+		}
+		object.free();
 	}
 
 	@Override

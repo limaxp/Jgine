@@ -21,6 +21,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	private float height;
 	private Matrix transform;
 	boolean isFocused;
+	public String enableFunction;
+	public String disableFunction;
 	public String focusFunction;
 	public String defocusFunction;
 	public String clickFunction;
@@ -54,6 +56,16 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public abstract void render();
 
 	public abstract UIObjectType<?> getType();
+
+	public void onEnable() {
+		if (enableFunction != null)
+			ScriptManager.invoke(window.scriptEngine, enableFunction, this);
+	}
+
+	public void onDisable() {
+		if (disableFunction != null)
+			ScriptManager.invoke(window.scriptEngine, disableFunction, this);
+	}
 
 	public void onFocus() {
 		if (focusFunction != null)
@@ -91,6 +103,12 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		Object scaleData = data.get("scale");
 		if (scaleData != null)
 			setScale(YamlHelper.toFloat(scaleData));
+		Object enableFunctionData = data.get("onEnable");
+		if (enableFunctionData != null)
+			enableFunction = YamlHelper.toString(enableFunctionData);
+		Object disableFunctionData = data.get("onDisable");
+		if (disableFunctionData != null)
+			disableFunction = YamlHelper.toString(disableFunctionData);
 		Object focusFunctionData = data.get("onFocus");
 		if (focusFunctionData != null)
 			focusFunction = YamlHelper.toString(focusFunctionData);
@@ -111,6 +129,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		y = in.readFloat();
 		width = in.readFloat();
 		height = in.readFloat();
+		enableFunction = in.readUTF();
+		disableFunction = in.readUTF();
 		focusFunction = in.readUTF();
 		defocusFunction = in.readUTF();
 		clickFunction = in.readUTF();
@@ -123,11 +143,12 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		out.writeFloat(y);
 		out.writeFloat(width);
 		out.writeFloat(height);
+		out.writeUTF(enableFunction);
+		out.writeUTF(disableFunction);
 		out.writeUTF(focusFunction);
 		out.writeUTF(defocusFunction);
 		out.writeUTF(clickFunction);
 		out.writeUTF(releaseFunction);
-		calculateTransform();
 	}
 
 	public Matrix getTransform() {
@@ -223,5 +244,53 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public boolean isFocused() {
 		return isFocused;
+	}
+
+	public String getEnableFunction() {
+		return enableFunction;
+	}
+
+	public void setEnableFunction(String enableFunction) {
+		this.enableFunction = enableFunction;
+	}
+
+	public String getDisableFunction() {
+		return disableFunction;
+	}
+
+	public void setDisableFunction(String disableFunction) {
+		this.disableFunction = disableFunction;
+	}
+
+	public String getFocusFunction() {
+		return focusFunction;
+	}
+
+	public void setFocusFunction(String focusFunction) {
+		this.focusFunction = focusFunction;
+	}
+
+	public String getDefocusFunction() {
+		return defocusFunction;
+	}
+
+	public void setDefocusFunction(String defocusFunction) {
+		this.defocusFunction = defocusFunction;
+	}
+
+	public String getClickFunction() {
+		return clickFunction;
+	}
+
+	public void setClickFunction(String clickFunction) {
+		this.clickFunction = clickFunction;
+	}
+
+	public String getReleaseFunction() {
+		return releaseFunction;
+	}
+
+	public void setReleaseFunction(String releaseFunction) {
+		this.releaseFunction = releaseFunction;
 	}
 }

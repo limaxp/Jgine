@@ -65,4 +65,11 @@ public class UIGrid extends UIList {
 		int height = (int) widthSize;
 		child.set(widthSize - height, 1 - (elementHeight * (1 + height)), elementWidth, elementHeight);
 	}
+
+	@Override
+	protected void placeChildReverse(UIObject child, int index) {
+		float widthSize = elementWidth * index;
+		int height = (int) widthSize;
+		child.set(1 - elementWidth - widthSize - height, elementHeight * height, elementWidth, elementHeight);
+	}
 }

@@ -15,6 +15,7 @@ import org.jgine.system.systems.ui.UIWindow;
 public class UIList extends UIWindow {
 
 	protected float elementHeight = 0.05f;
+	protected boolean reverse;
 
 	public UIList() {
 	}
@@ -32,18 +33,23 @@ public class UIList extends UIWindow {
 		Object elementHeightData = data.get("elementHeight");
 		if (elementHeightData != null)
 			this.elementHeight = YamlHelper.toFloat(elementHeightData, 0.05f);
+		Object reverseData = data.get("reverse");
+		if (reverseData != null)
+			this.reverse = YamlHelper.toBoolean(reverseData);
 		super.load(data);
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
 		this.elementHeight = in.readFloat();
+		this.reverse = in.readBoolean();
 		super.load(in);
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
 		out.writeFloat(elementHeight);
+		out.writeBoolean(reverse);
 		super.save(out);
 	}
 
@@ -56,7 +62,10 @@ public class UIList extends UIWindow {
 	public void addChild(UIObject child) {
 		super.addChild(child);
 		int size = getChilds().size();
-		placeChild(child, size - 1);
+		if (reverse)
+			placeChildReverse(child, size - 1);
+		else
+			placeChild(child, size - 1);
 	}
 
 	@Override
@@ -82,14 +91,31 @@ public class UIList extends UIWindow {
 		return elementHeight;
 	}
 
+	public void setReverse(boolean reversed) {
+		this.reverse = reversed;
+		placeChilds(0);
+	}
+
+	public boolean isReversed() {
+		return reverse;
+	}
+
 	protected void placeChilds(int index) {
 		List<UIObject> childs = getChilds();
 		int size = childs.size();
-		for (int i = index; i < size; i++)
-			placeChild(childs.get(i), i);
+		if (reverse)
+			for (int i = index; i < size; i++)
+				placeChildReverse(childs.get(i), i);
+		else
+			for (int i = index; i < size; i++)
+				placeChild(childs.get(i), i);
 	}
 
 	protected void placeChild(UIObject child, int index) {
 		child.set(0, 1 - (elementHeight * (index + 1)), 1, elementHeight);
+	}
+
+	protected void placeChildReverse(UIObject child, int index) {
+		child.set(0, elementHeight * index, 1, elementHeight);
 	}
 }
