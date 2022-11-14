@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.script.ScriptEngine;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
@@ -217,13 +216,6 @@ public class UIWindow extends UIObject {
 		super.calculateTransform();
 		for (UIObject child : childs)
 			child.calculateTransform();
-	}
-
-	@Override
-	public void setWindow(@Nullable UIWindow window) {
-		super.setWindow(window);
-		this.entity = window.entity;
-		this.scene = window.scene;
 	}
 
 	public void addChild(UIObject child) {

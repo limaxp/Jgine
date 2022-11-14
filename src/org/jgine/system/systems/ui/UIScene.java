@@ -39,6 +39,9 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	public void initObject(Entity entity, UIWindow object) {
 		object.entity = entity;
 		object.scene = this;
+		for (UIObject child : object.childs)
+			if (child instanceof UIWindow)
+				initObject(entity, (UIWindow) child);
 	}
 
 	@Override
