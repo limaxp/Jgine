@@ -231,18 +231,24 @@ public class UIWindow extends UIObject {
 	}
 
 	public void addChild(UIObject child) {
-		child.setWindow(this);
+		if (child.window != null)
+			return;
+		child.window = this;
+		childs.add(child);
+		child.calculateTransform();
 	}
 
 	public int removeChild(UIObject child) {
 		int index = childs.indexOf(child);
 		childs.remove(index);
+		child.onDisable();
 		child.free();
 		return index;
 	}
 
 	public UIObject removeChild(int index) {
 		UIObject child = childs.remove(index);
+		child.onDisable();
 		child.free();
 		return child;
 	}
@@ -262,8 +268,10 @@ public class UIWindow extends UIObject {
 	}
 
 	public void clearChilds() {
-		for (UIObject child : childs)
+		for (UIObject child : childs) {
+			child.onDisable();
 			child.free();
+		}
 		childs.clear();
 	}
 

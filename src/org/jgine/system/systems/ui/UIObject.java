@@ -224,15 +224,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		return height;
 	}
 
-	public void setWindow(@Nullable UIWindow window) {
-		if (this.window != null)
-			this.window.childs.remove(this);
-		this.window = window;
-		if (window != null)
-			window.childs.add(this);
-		calculateTransform();
-	}
-
 	@Nullable
 	public UIWindow getWindow() {
 		return window;
