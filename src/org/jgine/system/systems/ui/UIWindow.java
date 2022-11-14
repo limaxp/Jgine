@@ -231,8 +231,6 @@ public class UIWindow extends UIObject {
 	}
 
 	public void addChild(UIObject child) {
-		if (child.window != null)
-			return;
 		child.window = this;
 		childs.add(child);
 		child.calculateTransform();
