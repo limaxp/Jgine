@@ -386,7 +386,9 @@ public class Entity {
 
 	@SuppressWarnings("unchecked")
 	public void load(DataInput in) throws IOException {
-		prefab = Prefab.get(in.readInt());
+		int prefabId = in.readInt();
+		if (prefabId != -1)
+			prefab = Prefab.get(prefabId);
 		// TODO parent, childs
 		transform.load(in);
 
@@ -399,7 +401,10 @@ public class Entity {
 	}
 
 	public void save(DataOutput out) throws IOException {
-		out.writeInt(prefab.id);
+		if (prefab != null)
+			out.writeInt(prefab.id);
+		else
+			out.writeInt(-1);
 		// TODO parent, childs
 		transform.save(out);
 

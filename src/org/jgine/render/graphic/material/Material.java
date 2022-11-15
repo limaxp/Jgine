@@ -178,7 +178,9 @@ public class Material implements SystemObject, Cloneable {
 		specularColor = in.readInt();
 		emissiveColor = in.readInt();
 		transparentColor = in.readInt();
-		setTexture(ResourceManager.getTexture(in.readUTF()));
+		String textureName = in.readUTF();
+		if (!textureName.isEmpty())
+			setTexture(ResourceManager.getTexture(textureName));
 	}
 
 	public void save(DataOutput out) throws IOException {
