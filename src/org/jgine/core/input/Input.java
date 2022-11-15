@@ -137,6 +137,8 @@ public class Input {
 		Input.window = window;
 
 		setKeyCallback((win, key, scanCode, action, mods) -> {
+			if (key == Key.KEY_UNKNOWN)
+				return;
 			if (action == Key.PRESS)
 				KEYBOARD.press(key);
 			else if (action == Key.RELEASE)
@@ -144,6 +146,8 @@ public class Input {
 		});
 
 		setMouseButtonCallback((win, button, action, mods) -> {
+			if (button == Key.KEY_UNKNOWN)
+				return;
 			if (action == Key.PRESS)
 				MOUSE.press(button);
 			else if (action == Key.RELEASE)

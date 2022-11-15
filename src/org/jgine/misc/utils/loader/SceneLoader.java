@@ -62,6 +62,7 @@ public class SceneLoader {
 	}
 
 	public static void write(Scene scene, DataOutput out) throws IOException {
+		// TODO write must be synchronized! Scheduler.runTaskSynchron()
 		out.writeUTF(scene.name);
 
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
