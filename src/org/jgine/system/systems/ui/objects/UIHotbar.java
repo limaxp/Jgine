@@ -57,7 +57,7 @@ public class UIHotbar extends UIGrid {
 	public void onClick(float mouseX, float mouseY) {
 		super.onClick(mouseX, mouseY);
 		UIWindow window = getWindow();
-		if (window.isMoveAble())
+		if (window != null && window.isMoveAble())
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(getWindow()));
 	}
 

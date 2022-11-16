@@ -26,6 +26,12 @@ public class UIGrid extends UIList {
 	}
 
 	@Override
+	protected void renderChilds() {
+		for (UIObject child : getChilds())
+			child.render();
+	}
+
+	@Override
 	public void load(Map<String, Object> data) {
 		Object elementWidthData = data.get("elementWidth");
 		if (elementWidthData != null)

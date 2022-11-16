@@ -85,6 +85,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		}
 		focus(focusObject);
 		clickCheck(focusObject, mouseX, mouseY);
+		scrollCheck(focusObject);
 	}
 
 	private void focus(UIObject object) {
@@ -143,6 +144,12 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 			objects[getTopWindowIndex(newTopWindow)] = objects[size - 1];
 			objects[size - 1] = newTopWindow;
 		}
+	}
+
+	private void scrollCheck(UIObject focusObject) {
+		float scroll = Input.getMouse().getScroll();
+		if (scroll != 0 && focusObject != null)
+			focusObject.onScroll(scroll);
 	}
 
 	@Override

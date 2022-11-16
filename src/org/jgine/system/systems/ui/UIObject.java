@@ -27,6 +27,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public String defocusFunction;
 	public String clickFunction;
 	public String releaseFunction;
+	public String scrollFunction;
 
 	public UIObject() {
 		transform = new Matrix();
@@ -87,6 +88,11 @@ public abstract class UIObject implements SystemObject, Cloneable {
 			ScriptManager.invoke(window.scriptEngine, releaseFunction, this);
 	}
 
+	public void onScroll(float scroll) {
+		if (scrollFunction != null)
+			ScriptManager.invoke(window.scriptEngine, scrollFunction, this);
+	}
+
 	public void load(Map<String, Object> data) {
 		Object xData = data.get("x");
 		if (xData != null)
@@ -121,6 +127,9 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		Object releaseFunctionData = data.get("onRelease");
 		if (releaseFunctionData != null)
 			releaseFunction = YamlHelper.toString(releaseFunctionData);
+		Object scrollFunctionData = data.get("onScroll");
+		if (scrollFunctionData != null)
+			scrollFunction = YamlHelper.toString(scrollFunctionData);
 		calculateTransform();
 	}
 
@@ -135,6 +144,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		defocusFunction = in.readUTF();
 		clickFunction = in.readUTF();
 		releaseFunction = in.readUTF();
+		scrollFunction = in.readUTF();
 		calculateTransform();
 	}
 
@@ -149,6 +159,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		out.writeUTF(defocusFunction);
 		out.writeUTF(clickFunction);
 		out.writeUTF(releaseFunction);
+		out.writeUTF(scrollFunction);
 	}
 
 	public Matrix getTransform() {
@@ -283,5 +294,13 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public void setReleaseFunction(String releaseFunction) {
 		this.releaseFunction = releaseFunction;
+	}
+
+	public void setScrollFunction(String scrollFunction) {
+		this.scrollFunction = scrollFunction;
+	}
+
+	public String getScrollFunction() {
+		return scrollFunction;
 	}
 }

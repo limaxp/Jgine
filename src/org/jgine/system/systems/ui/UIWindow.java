@@ -86,6 +86,10 @@ public class UIWindow extends UIObject {
 		UIRenderer.renderQuad(getTransform(), background);
 		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, new Material(borderColor),
 				true);
+		renderChilds();
+	}
+
+	protected void renderChilds() {
 		for (UIObject child : childs)
 			child.render();
 	}

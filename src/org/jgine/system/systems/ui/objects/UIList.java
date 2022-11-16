@@ -16,6 +16,7 @@ public class UIList extends UIWindow {
 
 	protected float elementHeight = 0.05f;
 	protected boolean reverse;
+	protected int scroll;
 
 	public UIList() {
 	}
@@ -26,6 +27,31 @@ public class UIList extends UIWindow {
 
 	public UIList(float width, float height) {
 		super(width, height);
+	}
+
+	@Override
+	protected void renderChilds() {
+		List<UIObject> childs = getChilds();
+		int size = childs.size();
+		int maxElements = (int) (1.0f / elementHeight);
+		for (int i = 0; i < maxElements; i++) {
+			int j = i + scroll;
+			if (j >= size)
+				break;
+			childs.get(j).render();
+		}
+	}
+
+	@Override
+	public void onScroll(float scroll) {
+		super.onScroll(scroll);
+		this.scroll -= scroll;
+		if (this.scroll < 0)
+			this.scroll = 0;
+		int size = getChilds().size();
+		if (this.scroll > size)
+			this.scroll = size;
+		placeChilds(0);
 	}
 
 	@Override
@@ -112,10 +138,10 @@ public class UIList extends UIWindow {
 	}
 
 	protected void placeChild(UIObject child, int index) {
-		child.set(0, 1 - (elementHeight * (index + 1)), 1, elementHeight);
+		child.set(0, 1 - (elementHeight * (index + 1 - scroll)), 1, elementHeight);
 	}
 
 	protected void placeChildReverse(UIObject child, int index) {
-		child.set(0, elementHeight * index, 1, elementHeight);
+		child.set(0, elementHeight * (index - scroll), 1, elementHeight);
 	}
 }
