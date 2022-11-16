@@ -114,6 +114,7 @@ public abstract class Engine {
 				updateScene(scene);
 		ServiceManager.distributeChanges();
 		Scheduler.update();
+		TaskExecutor.execute(Scheduler::updateAsync);
 		Input.update();
 		SoundManager.update();
 		onUpdate();

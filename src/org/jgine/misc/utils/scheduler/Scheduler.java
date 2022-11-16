@@ -2,14 +2,14 @@ package org.jgine.misc.utils.scheduler;
 
 public class Scheduler {
 
-	protected static final int DEFAULT_CAPACITY = 4096;
+	protected static final int START_CAPACITY = 4096;
 
-	private static final Runnable[] SYNCHRON_ARRAY = new Runnable[DEFAULT_CAPACITY];
+	private static Runnable[] SYNCHRON_ARRAY = new Runnable[START_CAPACITY];
 	private static int synchronSize;
-	private static final TimeBuffer<Runnable> TIME_BUFFER = new TimeBuffer<Runnable>(DEFAULT_CAPACITY);
-	private static final TimeBuffer<Runnable> TIME_BUFFER_ASYNC = new TimeBuffer<Runnable>(DEFAULT_CAPACITY);
-	private static final TaskBuffer TASK_BUFFER = new TaskBuffer(DEFAULT_CAPACITY);
-	private static final TaskBuffer TASK_BUFFER_ASYNC = new TaskBuffer(DEFAULT_CAPACITY);
+	private static final TimeBuffer<Runnable> TIME_BUFFER = new TimeBuffer<Runnable>(START_CAPACITY);
+	private static final TimeBuffer<Runnable> TIME_BUFFER_ASYNC = new TimeBuffer<Runnable>(START_CAPACITY);
+	private static final TaskBuffer TASK_BUFFER = new TaskBuffer(START_CAPACITY);
+	private static final TaskBuffer TASK_BUFFER_ASYNC = new TaskBuffer(START_CAPACITY);
 
 	public static void update() {
 		synchronized (SYNCHRON_ARRAY) {
@@ -22,11 +22,15 @@ public class Scheduler {
 		synchronized (TIME_BUFFER) {
 			TIME_BUFFER.update(time, Runnable::run);
 		}
-		synchronized (TIME_BUFFER_ASYNC) {
-			TIME_BUFFER_ASYNC.update(time, TaskExecutor::execute);
-		}
 		synchronized (TASK_BUFFER) {
 			TASK_BUFFER.update(time, Runnable::run);
+		}
+	}
+
+	public static void updateAsync() {
+		long time = System.currentTimeMillis();
+		synchronized (TIME_BUFFER_ASYNC) {
+			TIME_BUFFER_ASYNC.update(time, TaskExecutor::execute);
 		}
 		synchronized (TASK_BUFFER_ASYNC) {
 			TASK_BUFFER_ASYNC.update(time, TaskExecutor::execute);
@@ -35,6 +39,11 @@ public class Scheduler {
 
 	public static void runTaskSynchron(Runnable task) {
 		synchronized (SYNCHRON_ARRAY) {
+			if (synchronSize + 1 > SYNCHRON_ARRAY.length) {
+				Runnable[] newArray = new Runnable[SYNCHRON_ARRAY.length * 2];
+				System.arraycopy(SYNCHRON_ARRAY, 0, newArray, 0, synchronSize);
+				SYNCHRON_ARRAY = newArray;
+			}
 			SYNCHRON_ARRAY[synchronSize++] = task;
 		}
 	}
