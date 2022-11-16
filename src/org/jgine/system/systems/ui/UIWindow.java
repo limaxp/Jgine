@@ -17,7 +17,7 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.misc.utils.scheduler.Scheduler;
+import org.jgine.misc.utils.scheduler.Task;
 import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
@@ -348,11 +348,10 @@ public class UIWindow extends UIObject {
 		return scriptEngine;
 	}
 
-	public static class DragTask implements Runnable {
+	public static class DragTask extends Task {
 
 		private UIWindow window;
 		private float dragX, dragY;
-		private boolean isCanceled;
 
 		public DragTask(UIWindow window) {
 			this.window = window;
@@ -370,16 +369,6 @@ public class UIWindow extends UIObject {
 				dragX = window.scene.mouseX;
 				dragY = window.scene.mouseY;
 			}
-			if (!isCanceled)
-				Scheduler.runTaskAsynchron(this);
-		}
-
-		public void cancel() {
-			isCanceled = true;
-		}
-
-		public boolean isCanceled() {
-			return isCanceled;
 		}
 	}
 }
