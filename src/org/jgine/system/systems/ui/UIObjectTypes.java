@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import org.jgine.misc.utils.registry.Registry;
 import org.jgine.system.systems.ui.objects.UIBar;
-import org.jgine.system.systems.ui.objects.UIButton;
 import org.jgine.system.systems.ui.objects.UIGrid;
 import org.jgine.system.systems.ui.objects.UIHotbar;
 import org.jgine.system.systems.ui.objects.UILabel;
@@ -17,8 +16,6 @@ public class UIObjectTypes {
 	public static final UIObjectType<UIHotbar> HOTBAR = a("hotbar", UIHotbar::new);
 
 	public static final UIObjectType<UILabel> LABEL = a("label", UILabel::new);
-
-	public static final UIObjectType<UIButton> BUTTON = a("button", UIButton::new);
 
 	public static final UIObjectType<UIBar> BAR = a("bar", UIBar::new);
 

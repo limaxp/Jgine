@@ -47,13 +47,13 @@ public class UIGrid extends UIList {
 	public void setScroll(int scroll) {
 		if (!scrollable)
 			return;
-		this.scroll -= scroll;
-		if (this.scroll < 0)
-			this.scroll = 0;
+		scroll = this.scroll - scroll;
+		if (scroll < 0)
+			return;
 		int maxY = (int) (1.0f / elementHeight);
-		int size = 1 + getChilds().size() / maxY;
-		if (this.scroll > size)
-			this.scroll = size;
+		if (scroll + maxY > 1 + getChilds().size() / maxY)
+			return;
+		this.scroll = scroll;
 		placeChilds(0);
 	}
 

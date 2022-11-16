@@ -94,42 +94,6 @@ public class UIWindow extends UIObject {
 			child.render();
 	}
 
-	@Override
-	public void onEnable() {
-		if (enableFunction != null)
-			ScriptManager.invoke(scriptEngine, enableFunction, this);
-	}
-
-	@Override
-	public void onDisable() {
-		if (disableFunction != null)
-			ScriptManager.invoke(scriptEngine, disableFunction, this);
-	}
-
-	@Override
-	public void onFocus() {
-		if (focusFunction != null)
-			ScriptManager.invoke(scriptEngine, focusFunction, this);
-	}
-
-	@Override
-	public void onDefocus() {
-		if (defocusFunction != null)
-			ScriptManager.invoke(scriptEngine, defocusFunction, this);
-	}
-
-	@Override
-	public void onClick(float mouseX, float mouseY) {
-		if (clickFunction != null)
-			ScriptManager.invoke(scriptEngine, clickFunction, this);
-	}
-
-	@Override
-	public void onRelease(float mouseX, float mouseY) {
-		if (releaseFunction != null)
-			ScriptManager.invoke(scriptEngine, releaseFunction, this);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {
@@ -348,6 +312,7 @@ public class UIWindow extends UIObject {
 		this.scriptEngine = scriptEngine;
 	}
 
+	@Override
 	public ScriptEngine getScriptEngine() {
 		return scriptEngine;
 	}

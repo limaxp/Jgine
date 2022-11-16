@@ -92,6 +92,7 @@ public class UIList extends UIWindow {
 			placeChildReverse(child, size - 1);
 		else
 			placeChild(child, size - 1);
+		child.setScrollFunction((object, scroll) -> setScroll(scroll.intValue()));
 	}
 
 	@Override
@@ -129,12 +130,13 @@ public class UIList extends UIWindow {
 	public void setScroll(int scroll) {
 		if (!scrollable)
 			return;
-		this.scroll -= scroll;
-		if (this.scroll < 0)
-			this.scroll = 0;
-		int size = getChilds().size();
-		if (this.scroll > size)
-			this.scroll = size;
+		scroll = this.scroll - scroll;
+		if (scroll < 0)
+			return;
+		int maxY = (int) (1.0f / elementHeight);
+		if (scroll + maxY > getChilds().size())
+			return;
+		this.scroll = scroll;
 		placeChilds(0);
 	}
 

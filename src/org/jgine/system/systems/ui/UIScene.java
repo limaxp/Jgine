@@ -23,6 +23,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	float mouseX, mouseY;
 	private List<UIObject> focusObjects;
 	private UIObject clickedObject;
+	private int clickedKey;
 
 	public UIScene(UISystem system, Scene scene) {
 		super(system, scene, UIWindow.class);
@@ -84,7 +85,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 			}
 		}
 		focus(focusObject);
-		clickCheck(focusObject, mouseX, mouseY);
+		clickCheck(focusObject);
 		scrollCheck(focusObject);
 	}
 
@@ -119,23 +120,24 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		focusObjects = focusObjectsNew;
 	}
 
-	private void clickCheck(UIObject focusObject, float mouseX, float mouseY) {
+	private void clickCheck(UIObject focusObject) {
 		if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_LEFT))
-			click(focusObject, mouseX, mouseY);
+			click(focusObject, Key.MOUSE_BUTTON_LEFT);
 		else if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_RIGHT))
-			click(focusObject, mouseX, mouseY);
+			click(focusObject, Key.MOUSE_BUTTON_RIGHT);
 		else if (clickedObject != null) {
-			clickedObject.onRelease(mouseX, mouseY);
+			clickedObject.onRelease(clickedKey);
 			clickedObject = null;
 		}
 	}
 
-	private void click(UIObject focusObject, float mouseX, float mouseY) {
+	private void click(UIObject focusObject, int key) {
 		if (clickedObject != null || focusObject == null)
 			return;
 
-		focusObject.onClick(mouseX, mouseY);
+		focusObject.onClick(key);
 		clickedObject = focusObject;
+		clickedKey = key;
 		UIWindow topWindow = objects[size - 1];
 		if (topWindow.isFloating())
 			return;

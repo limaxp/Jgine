@@ -54,16 +54,16 @@ public class UIHotbar extends UIGrid {
 	}
 
 	@Override
-	public void onClick(float mouseX, float mouseY) {
-		super.onClick(mouseX, mouseY);
+	public void onClick(int key) {
+		super.onClick(key);
 		UIWindow window = getWindow();
 		if (window != null && window.isMoveAble())
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(getWindow()));
 	}
 
 	@Override
-	public void onRelease(float mouseX, float mouseY) {
-		super.onRelease(mouseX, mouseY);
+	public void onRelease(int key) {
+		super.onRelease(key);
 		if (dragTask != null && !dragTask.isCanceled())
 			dragTask.cancel();
 	}
@@ -118,5 +118,13 @@ public class UIHotbar extends UIGrid {
 
 	public float getThickness() {
 		return thickness;
+	}
+
+	@Override
+	protected void placeChildReverse(UIObject child, int index) {
+		float widthSize = elementWidth * index;
+		int height = (int) widthSize;
+		child.set(1 - elementWidth - widthSize - height, elementHeight * (height - scroll), elementWidth,
+				elementHeight);
 	}
 }

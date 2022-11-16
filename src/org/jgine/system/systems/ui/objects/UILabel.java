@@ -27,6 +27,8 @@ import org.jgine.system.systems.ui.UIObjectTypes;
 public class UILabel extends UIObject {
 
 	private Material background;
+	private Material backgroundFocused;
+	private Material usedBackground;
 	private Text text;
 	private float textOffsetX;
 	private float textOffsetY;
@@ -34,6 +36,8 @@ public class UILabel extends UIObject {
 
 	public UILabel() {
 		background = new Material(Color.TRANSLUCENT_WEAK);
+		backgroundFocused = new Material(Color.TRANSLUCENT_STRONG);
+		usedBackground = background;
 		textTransform = new Matrix();
 	}
 
@@ -41,6 +45,8 @@ public class UILabel extends UIObject {
 	public UILabel clone() {
 		UILabel obj = (UILabel) super.clone();
 		obj.background = background.clone();
+		obj.backgroundFocused = backgroundFocused.clone();
+		obj.usedBackground = obj.background;
 		if (text instanceof TrueTypeText)
 			obj.text = new TrueTypeText((TrueTypeFont) text.getFont(), text.getSize(), text.getText());
 		else if (text instanceof BitmapText)
@@ -57,9 +63,21 @@ public class UILabel extends UIObject {
 
 	@Override
 	public void render() {
-		UIRenderer.renderQuad(getTransform(), background);
+		UIRenderer.renderQuad(getTransform(), usedBackground);
 		if (text != null)
 			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial());
+	}
+
+	@Override
+	public void onFocus() {
+		super.onFocus();
+		usedBackground = backgroundFocused;
+	}
+
+	@Override
+	public void onDefocus() {
+		super.onDefocus();
+		usedBackground = background;
 	}
 
 	@Override
@@ -87,6 +105,13 @@ public class UILabel extends UIObject {
 				background.setTexture(texture);
 		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
+		Object backgroundFocusedData = data.get("focused");
+		if (backgroundFocusedData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) backgroundFocusedData);
+			if (texture != null)
+				backgroundFocused.setTexture(texture);
+		} else if (backgroundData instanceof Map)
+			backgroundFocused.load((Map<String, Object>) backgroundFocusedData);
 
 		Object textData = data.get("text");
 		if (textData instanceof String) {
@@ -136,6 +161,7 @@ public class UILabel extends UIObject {
 	public void load(DataInput in) throws IOException {
 		super.load(in);
 		background.load(in);
+		backgroundFocused.load(in);
 		if (in.readBoolean()) {
 			TrueTypeFont font = TrueTypeFont.get(in.readUTF());
 			if (font == null)
@@ -155,6 +181,7 @@ public class UILabel extends UIObject {
 	public void save(DataOutput out) throws IOException {
 		super.save(out);
 		background.save(out);
+		backgroundFocused.save(out);
 		out.writeBoolean(text instanceof TrueTypeText);
 		out.writeUTF(text.getFont().getName());
 		out.writeInt(text.getSize());
@@ -174,6 +201,14 @@ public class UILabel extends UIObject {
 
 	public Material getBackground() {
 		return background;
+	}
+
+	public void setBackgroundFocused(Material backgroundFocused) {
+		this.backgroundFocused = backgroundFocused;
+	}
+
+	public Material getBackgroundFocused() {
+		return backgroundFocused;
 	}
 
 	public void setText(@Nullable Text text) {

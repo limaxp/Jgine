@@ -4,6 +4,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
@@ -14,6 +18,21 @@ import org.jgine.system.SystemObject;
 
 public abstract class UIObject implements SystemObject, Cloneable {
 
+	public static final Consumer<UIObject> NULL_FUNCTION = new Consumer<UIObject>() {
+
+		@Override
+		public void accept(UIObject t) {
+		}
+	};
+
+	@SuppressWarnings("rawtypes")
+	public static final BiConsumer NULL_VALUE_FUNCTION = new BiConsumer() {
+
+		@Override
+		public void accept(Object t, Object u) {
+		}
+	};
+
 	UIWindow window;
 	private float x;
 	private float y;
@@ -21,17 +40,25 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	private float height;
 	private Matrix transform;
 	boolean isFocused;
-	public String enableFunction;
-	public String disableFunction;
-	public String focusFunction;
-	public String defocusFunction;
-	public String clickFunction;
-	public String releaseFunction;
-	public String scrollFunction;
+	public Consumer<UIObject> enableFunction;
+	public Consumer<UIObject> disableFunction;
+	public Consumer<UIObject> focusFunction;
+	public Consumer<UIObject> defocusFunction;
+	public BiConsumer<UIObject, Integer> clickFunction;
+	public BiConsumer<UIObject, Integer> releaseFunction;
+	public BiConsumer<UIObject, Float> scrollFunction;
 
+	@SuppressWarnings("unchecked")
 	public UIObject() {
 		transform = new Matrix();
 		isFocused = false;
+		enableFunction = NULL_FUNCTION;
+		disableFunction = NULL_FUNCTION;
+		focusFunction = NULL_FUNCTION;
+		defocusFunction = NULL_FUNCTION;
+		clickFunction = NULL_VALUE_FUNCTION;
+		releaseFunction = NULL_VALUE_FUNCTION;
+		scrollFunction = NULL_VALUE_FUNCTION;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,38 +86,31 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	public abstract UIObjectType<?> getType();
 
 	public void onEnable() {
-		if (enableFunction != null)
-			ScriptManager.invoke(window.scriptEngine, enableFunction, this);
+		enableFunction.accept(this);
 	}
 
 	public void onDisable() {
-		if (disableFunction != null)
-			ScriptManager.invoke(window.scriptEngine, disableFunction, this);
+		disableFunction.accept(this);
 	}
 
 	public void onFocus() {
-		if (focusFunction != null)
-			ScriptManager.invoke(window.scriptEngine, focusFunction, this);
+		focusFunction.accept(this);
 	}
 
 	public void onDefocus() {
-		if (defocusFunction != null)
-			ScriptManager.invoke(window.scriptEngine, defocusFunction, this);
+		defocusFunction.accept(this);
 	}
 
-	public void onClick(float mouseX, float mouseY) {
-		if (clickFunction != null)
-			ScriptManager.invoke(window.scriptEngine, clickFunction, this);
+	public void onClick(int key) {
+		clickFunction.accept(this, key);
 	}
 
-	public void onRelease(float mouseX, float mouseY) {
-		if (releaseFunction != null)
-			ScriptManager.invoke(window.scriptEngine, releaseFunction, this);
+	public void onRelease(int key) {
+		releaseFunction.accept(this, key);
 	}
 
 	public void onScroll(float scroll) {
-		if (scrollFunction != null)
-			ScriptManager.invoke(window.scriptEngine, scrollFunction, this);
+		scrollFunction.accept(this, scroll);
 	}
 
 	public void load(Map<String, Object> data) {
@@ -111,25 +131,25 @@ public abstract class UIObject implements SystemObject, Cloneable {
 			setScale(YamlHelper.toFloat(scaleData));
 		Object enableFunctionData = data.get("onEnable");
 		if (enableFunctionData != null)
-			enableFunction = YamlHelper.toString(enableFunctionData);
+			enableFunction = new ScriptFunction(YamlHelper.toString(enableFunctionData));
 		Object disableFunctionData = data.get("onDisable");
 		if (disableFunctionData != null)
-			disableFunction = YamlHelper.toString(disableFunctionData);
+			disableFunction = new ScriptFunction(YamlHelper.toString(disableFunctionData));
 		Object focusFunctionData = data.get("onFocus");
 		if (focusFunctionData != null)
-			focusFunction = YamlHelper.toString(focusFunctionData);
+			focusFunction = new ScriptFunction(YamlHelper.toString(focusFunctionData));
 		Object defocusFunctionData = data.get("onDefocus");
 		if (defocusFunctionData != null)
-			defocusFunction = YamlHelper.toString(defocusFunctionData);
+			defocusFunction = new ScriptFunction(YamlHelper.toString(defocusFunctionData));
 		Object clickFunctionData = data.get("onClick");
 		if (clickFunctionData != null)
-			clickFunction = YamlHelper.toString(clickFunctionData);
+			clickFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(clickFunctionData));
 		Object releaseFunctionData = data.get("onRelease");
 		if (releaseFunctionData != null)
-			releaseFunction = YamlHelper.toString(releaseFunctionData);
+			releaseFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(releaseFunctionData));
 		Object scrollFunctionData = data.get("onScroll");
 		if (scrollFunctionData != null)
-			scrollFunction = YamlHelper.toString(scrollFunctionData);
+			scrollFunction = new ScriptValueFunction<Float>(YamlHelper.toString(scrollFunctionData));
 		calculateTransform();
 	}
 
@@ -138,14 +158,29 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		y = in.readFloat();
 		width = in.readFloat();
 		height = in.readFloat();
-		enableFunction = in.readUTF();
-		disableFunction = in.readUTF();
-		focusFunction = in.readUTF();
-		defocusFunction = in.readUTF();
-		clickFunction = in.readUTF();
-		releaseFunction = in.readUTF();
-		scrollFunction = in.readUTF();
+		enableFunction = loadFunction(in);
+		disableFunction = loadFunction(in);
+		focusFunction = loadFunction(in);
+		defocusFunction = loadFunction(in);
+		clickFunction = loadValueFunction(in);
+		releaseFunction = loadValueFunction(in);
+		scrollFunction = loadValueFunction(in);
 		calculateTransform();
+	}
+
+	private static Consumer<UIObject> loadFunction(DataInput in) throws IOException {
+		String funcName = in.readUTF();
+		if (funcName.isEmpty())
+			return NULL_FUNCTION;
+		return new ScriptFunction(funcName);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> BiConsumer<UIObject, T> loadValueFunction(DataInput in) throws IOException {
+		String funcName = in.readUTF();
+		if (funcName.isEmpty())
+			return NULL_VALUE_FUNCTION;
+		return new ScriptValueFunction<T>(funcName);
 	}
 
 	public void save(DataOutput out) throws IOException {
@@ -153,13 +188,27 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		out.writeFloat(y);
 		out.writeFloat(width);
 		out.writeFloat(height);
-		out.writeUTF(enableFunction);
-		out.writeUTF(disableFunction);
-		out.writeUTF(focusFunction);
-		out.writeUTF(defocusFunction);
-		out.writeUTF(clickFunction);
-		out.writeUTF(releaseFunction);
-		out.writeUTF(scrollFunction);
+		saveFunction(out, enableFunction);
+		saveFunction(out, disableFunction);
+		saveFunction(out, focusFunction);
+		saveFunction(out, defocusFunction);
+		saveFunction(out, clickFunction);
+		saveFunction(out, releaseFunction);
+		saveFunction(out, scrollFunction);
+	}
+
+	private static void saveFunction(DataOutput out, Consumer<UIObject> func) throws IOException {
+		if (func instanceof ScriptFunction)
+			out.writeUTF(((ScriptFunction) func).functionName);
+		else
+			out.writeUTF("");
+	}
+
+	private static void saveFunction(DataOutput out, BiConsumer<UIObject, ?> func) throws IOException {
+		if (func instanceof ScriptFunction)
+			out.writeUTF(((ScriptFunction) func).functionName);
+		else
+			out.writeUTF("");
 	}
 
 	public Matrix getTransform() {
@@ -248,59 +297,117 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		return isFocused;
 	}
 
-	public String getEnableFunction() {
+	protected ScriptEngine getScriptEngine() {
+		return window.getScriptEngine();
+	}
+
+	public Consumer<UIObject> getEnableFunction() {
 		return enableFunction;
 	}
 
 	public void setEnableFunction(String enableFunction) {
+		this.enableFunction = new ScriptFunction(enableFunction);
+	}
+
+	public void setEnableFunction(Consumer<UIObject> enableFunction) {
 		this.enableFunction = enableFunction;
 	}
 
-	public String getDisableFunction() {
+	public Consumer<UIObject> getDisableFunction() {
 		return disableFunction;
 	}
 
 	public void setDisableFunction(String disableFunction) {
+		this.disableFunction = new ScriptFunction(disableFunction);
+	}
+
+	public void setDisableFunction(Consumer<UIObject> disableFunction) {
 		this.disableFunction = disableFunction;
 	}
 
-	public String getFocusFunction() {
+	public Consumer<UIObject> getFocusFunction() {
 		return focusFunction;
 	}
 
 	public void setFocusFunction(String focusFunction) {
+		this.focusFunction = new ScriptFunction(focusFunction);
+	}
+
+	public void setFocusFunction(Consumer<UIObject> focusFunction) {
 		this.focusFunction = focusFunction;
 	}
 
-	public String getDefocusFunction() {
+	public Consumer<UIObject> getDefocusFunction() {
 		return defocusFunction;
 	}
 
 	public void setDefocusFunction(String defocusFunction) {
+		this.defocusFunction = new ScriptFunction(defocusFunction);
+	}
+
+	public void setDefocusFunction(Consumer<UIObject> defocusFunction) {
 		this.defocusFunction = defocusFunction;
 	}
 
-	public String getClickFunction() {
+	public BiConsumer<UIObject, Integer> getClickFunction() {
 		return clickFunction;
 	}
 
 	public void setClickFunction(String clickFunction) {
+		this.clickFunction = new ScriptValueFunction<Integer>(clickFunction);
+	}
+
+	public void setClickFunction(BiConsumer<UIObject, Integer> clickFunction) {
 		this.clickFunction = clickFunction;
 	}
 
-	public String getReleaseFunction() {
+	public BiConsumer<UIObject, Integer> getReleaseFunction() {
 		return releaseFunction;
 	}
 
 	public void setReleaseFunction(String releaseFunction) {
+		this.releaseFunction = new ScriptValueFunction<Integer>(releaseFunction);
+	}
+
+	public void setReleaseFunction(BiConsumer<UIObject, Integer> releaseFunction) {
 		this.releaseFunction = releaseFunction;
 	}
 
+	public BiConsumer<UIObject, Float> getScrollFunction() {
+		return scrollFunction;
+	}
+
 	public void setScrollFunction(String scrollFunction) {
+		this.scrollFunction = new ScriptValueFunction<Float>(scrollFunction);
+	}
+
+	public void setScrollFunction(BiConsumer<UIObject, Float> scrollFunction) {
 		this.scrollFunction = scrollFunction;
 	}
 
-	public String getScrollFunction() {
-		return scrollFunction;
+	public static class ScriptFunction implements Consumer<UIObject> {
+
+		public String functionName;
+
+		public ScriptFunction(String functionName) {
+			this.functionName = functionName;
+		}
+
+		@Override
+		public void accept(UIObject object) {
+			ScriptManager.invoke(object.getScriptEngine(), functionName, object);
+		}
+	}
+
+	public static class ScriptValueFunction<E> extends ScriptFunction implements BiConsumer<UIObject, E> {
+
+		public ScriptValueFunction(String functionName) {
+			super(functionName);
+		}
+
+		@Override
+		public void accept(UIObject object, E value) {
+			ScriptManager.invoke(object.getScriptEngine(), functionName, object, value);
+		}
 	}
 }
