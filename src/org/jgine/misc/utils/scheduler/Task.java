@@ -4,7 +4,7 @@ public abstract class Task implements Runnable {
 
 	int tickTime;
 	TaskBuffer taskBuffer;
-	boolean canceled;
+	private boolean canceled;
 
 	public void cancel() {
 		synchronized (taskBuffer) {
