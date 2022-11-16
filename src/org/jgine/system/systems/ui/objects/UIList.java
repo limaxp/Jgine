@@ -17,6 +17,7 @@ public class UIList extends UIWindow {
 	protected float elementHeight = 0.05f;
 	protected boolean reverse;
 	protected int scroll;
+	protected boolean scrollable;
 
 	public UIList() {
 	}
@@ -45,13 +46,7 @@ public class UIList extends UIWindow {
 	@Override
 	public void onScroll(float scroll) {
 		super.onScroll(scroll);
-		this.scroll -= scroll;
-		if (this.scroll < 0)
-			this.scroll = 0;
-		int size = getChilds().size();
-		if (this.scroll > size)
-			this.scroll = size;
-		placeChilds(0);
+		setScroll((int) scroll);
 	}
 
 	@Override
@@ -62,6 +57,9 @@ public class UIList extends UIWindow {
 		Object reverseData = data.get("reverse");
 		if (reverseData != null)
 			this.reverse = YamlHelper.toBoolean(reverseData);
+		Object scrollableData = data.get("scrollable");
+		if (scrollableData != null)
+			this.scrollable = YamlHelper.toBoolean(scrollableData);
 		super.load(data);
 	}
 
@@ -69,6 +67,7 @@ public class UIList extends UIWindow {
 	public void load(DataInput in) throws IOException {
 		this.elementHeight = in.readFloat();
 		this.reverse = in.readBoolean();
+		this.scrollable = in.readBoolean();
 		super.load(in);
 	}
 
@@ -76,6 +75,7 @@ public class UIList extends UIWindow {
 	public void save(DataOutput out) throws IOException {
 		out.writeFloat(elementHeight);
 		out.writeBoolean(reverse);
+		out.writeBoolean(scrollable);
 		super.save(out);
 	}
 
@@ -124,6 +124,30 @@ public class UIList extends UIWindow {
 
 	public boolean isReversed() {
 		return reverse;
+	}
+
+	public void setScroll(int scroll) {
+		if (!scrollable)
+			return;
+		this.scroll -= scroll;
+		if (this.scroll < 0)
+			this.scroll = 0;
+		int size = getChilds().size();
+		if (this.scroll > size)
+			this.scroll = size;
+		placeChilds(0);
+	}
+
+	public int getScroll() {
+		return scroll;
+	}
+
+	public void setScrollable(boolean scrollable) {
+		this.scrollable = scrollable;
+	}
+
+	public boolean isScrollable() {
+		return scrollable;
 	}
 
 	protected void placeChilds(int index) {
