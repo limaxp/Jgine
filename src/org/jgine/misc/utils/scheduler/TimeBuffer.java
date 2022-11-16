@@ -1,40 +1,51 @@
 package org.jgine.misc.utils.scheduler;
 
-public class TimeBuffer {
+import java.util.function.Consumer;
 
-	protected static final int DEFAULT_CAPACITY = 1024;
+public class TimeBuffer<E> {
 
 	protected long[] timeArray;
-	protected Runnable[] taskArray;
+	protected Object[] objectArray;
 	protected int size;
-
-	public TimeBuffer() {
-		this(DEFAULT_CAPACITY);
-	}
 
 	public TimeBuffer(int capacity) {
 		timeArray = new long[capacity];
-		taskArray = new Runnable[capacity];
+		objectArray = new Object[capacity];
 		size = 0;
 	}
 
-	public void add(long time, Runnable task) {
+	public int add(long time, E element) {
 		if (size == timeArray.length)
 			ensureCapacity(size + 1);
-		add(time, task, getIndex(time));
+		int index = getIndex(time);
+		add(time, element, index);
+		return index;
 	}
 
-	private void add(long time, Runnable task, int index) {
+	protected void add(long time, E element, int index) {
 		if (index != 0 && index != size) {
 			System.arraycopy(timeArray, index, timeArray, index + 1, size - index);
-			System.arraycopy(taskArray, index, taskArray, index + 1, size - index);
+			System.arraycopy(objectArray, index, objectArray, index + 1, size - index);
 		}
 		timeArray[index] = time;
-		taskArray[index] = task;
+		objectArray[index] = element;
 		size++;
 	}
 
-	private int getIndex(long time) {
+	public int remove(E element) {
+		int index = getIndex(element);
+		if (index != -1)
+			remove(index);
+		return index;
+	}
+
+	public void remove(int index) {
+		size--;
+		System.arraycopy(timeArray, index + 1, timeArray, index, size - index);
+		System.arraycopy(objectArray, index + 1, objectArray, index, size - index);
+	}
+
+	public int getIndex(long time) {
 		if (size == 0)
 			return 0;
 		if (time <= timeArray[0])
@@ -44,37 +55,47 @@ public class TimeBuffer {
 		return searchIndex(time);
 	}
 
-	private int searchIndex(long time) {
+	protected int searchIndex(long time) {
 		for (int i = 0; i < size; i++) {
 			if (timeArray[i] > time)
 				return i;
 		}
-		return 0;
+		return -1;
 	}
 
-	public void update(long time) {
+	public int getIndex(E element) {
+		for (int i = 0; i < size; i++) {
+			if (element == objectArray[i])
+				return i;
+		}
+		return -1;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void update(long time, Consumer<E> func) {
 		if (size == 0)
 			return;
-		if (time <= timeArray[0])
+		if (time < timeArray[0])
 			return;
 		if (time >= timeArray[size - 1]) {
-			callRunnables(size);
+			for (int i = 0; i < size; i++)
+				func.accept((E) objectArray[i]);
 			this.size = 0;
 			return;
 		}
-		updateIndex(searchIndex(time));
+		int index = 0;
+		for (; index < size; index++) {
+			if (timeArray[index] > time)
+				break;
+			func.accept((E) objectArray[index]);
+		}
+		updateElements(index);
 	}
 
-	private void updateIndex(int index) {
-		callRunnables(index);
+	protected void updateElements(int index) {
 		System.arraycopy(timeArray, index, timeArray, 0, size - index);
-		System.arraycopy(taskArray, index, taskArray, 0, size - index);
+		System.arraycopy(objectArray, index, objectArray, 0, size - index);
 		size -= index;
-	}
-
-	private void callRunnables(int index) {
-		for (int i = 0; i < index; i++)
-			taskArray[i].run();
 	}
 
 	public void clear() {
@@ -93,8 +114,8 @@ public class TimeBuffer {
 		timeArray = newArray;
 
 		Runnable[] newArray2 = new Runnable[size];
-		System.arraycopy(taskArray, 0, newArray2, 0, this.size);
-		taskArray = newArray2;
+		System.arraycopy(objectArray, 0, newArray2, 0, this.size);
+		objectArray = newArray2;
 	}
 
 	public void trimToSize() {
@@ -104,8 +125,8 @@ public class TimeBuffer {
 			timeArray = newArray;
 
 			Runnable[] newArray2 = new Runnable[size];
-			System.arraycopy(taskArray, 0, newArray2, 0, size);
-			taskArray = newArray2;
+			System.arraycopy(objectArray, 0, newArray2, 0, size);
+			objectArray = newArray2;
 		}
 	}
 
