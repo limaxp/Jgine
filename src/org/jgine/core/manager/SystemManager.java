@@ -23,9 +23,12 @@ public class SystemManager {
 			Logger.warn("SystemManager: System '" + system.name + "' does already exist!");
 			return system;
 		}
+		if (CLASS_MAP.containsKey(system.getClass())) {
+			Logger.warn("SystemManager: System class '" + system.getClass().getName() + "' does already exist!");
+			return system;
+		}
 		NAME_MAP.put(system.name, system);
-		if (!CLASS_MAP.containsKey(system.getClass()))
-			CLASS_MAP.put(system.getClass(), system);
+		CLASS_MAP.put(system.getClass(), system);
 		int id = size++;
 		ID_MAP[id] = system;
 		system.init(id);

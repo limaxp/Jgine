@@ -81,8 +81,7 @@ public class Scene {
 	public final <T extends SystemScene<?, ?>> T addSystem(EngineSystem system) {
 		SystemScene<?, ?> systemScene = system.createScene(this);
 		systemMap.put(system, systemScene);
-		if (!systemClassMap.containsKey(system.getClass()))
-			systemClassMap.put(system.getClass(), systemScene);
+		systemClassMap.put(system.getClass(), systemScene);
 		Scheduler.runTaskSynchron(() -> systemList.add(systemScene));
 		return (T) systemScene;
 	}
@@ -103,25 +102,12 @@ public class Scene {
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem system) {
 		SystemScene<?, ?> systemScene = systemMap.remove(system);
-		removeFromClassMap(system, systemScene);
+		systemClassMap.remove(system.getClass());
 		Scheduler.runTaskSynchron(() -> {
 			systemList.remove(systemScene);
 			systemScene.free();
 		});
 		return (T) systemScene;
-	}
-
-	private final void removeFromClassMap(EngineSystem system, SystemScene<?, ?> systemScene) {
-		Class<? extends EngineSystem> clazz = system.getClass();
-		if (systemClassMap.get(clazz) != systemScene)
-			return;
-		systemClassMap.remove(clazz);
-		for (SystemScene<?, ?> activeSystemScene : getSystems()) {
-			if (activeSystemScene.system.getClass() == clazz) {
-				systemClassMap.put(clazz, activeSystemScene);
-				break;
-			}
-		}
 	}
 
 	public final void addSystems(String... names) {
