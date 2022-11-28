@@ -46,8 +46,8 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return (point.x >= (pos.x - this.w / 2) && point.x <= (pos.x + this.w / 2))
-				&& (point.y >= (pos.y - this.h) && point.y <= (pos.y + this.h));
+		return (point.x >= (pos.x - this.w * 0.5f) && point.x <= (pos.x + this.w * 0.5f))
+				&& (point.y >= (pos.y - this.h * 0.5f) && point.y <= (pos.y + this.h * 0.5f));
 	}
 
 	@Override
