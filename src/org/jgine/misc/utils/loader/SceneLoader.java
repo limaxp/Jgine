@@ -44,9 +44,8 @@ public class SceneLoader {
 		}
 	}
 
-	// TODO transform calculates Matrix 2 times on load!
-
 	public static Scene load(DataInput in) throws IOException {
+		// TODO transform calculates Matrix 2 times!
 		String name = in.readUTF();
 		Scene scene = Engine.getInstance().createScene(name);
 
@@ -74,8 +73,15 @@ public class SceneLoader {
 		return scene;
 	}
 
+	/**
+	 * Should be called synchronized (Scheduler.runTaskSynchron()) otherwise might
+	 * interfere with updating!
+	 * 
+	 * @param scene
+	 * @param out
+	 * @throws FileNotFoundException
+	 */
 	public static void write(Scene scene, DataOutput out) throws IOException {
-		// TODO write must be synchronized! Scheduler.runTaskSynchron()
 		out.writeUTF(scene.name);
 
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
@@ -83,7 +89,7 @@ public class SceneLoader {
 		for (SystemScene<?, ?> systemScene : systems)
 			out.writeInt(systemScene.system.getId());
 
-		List<Entity> entities = scene.getEntities();
+		List<Entity> entities = scene.getTopEntities();
 		out.writeInt(entities.size());
 		for (Entity entity : entities)
 			entity.save(out);

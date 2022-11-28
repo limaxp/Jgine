@@ -35,6 +35,7 @@ public class Scene {
 	private final Map<Class<? extends EngineSystem>, SystemScene<?, ?>> systemClassMap;
 	private final List<SystemScene<?, ?>> systemList;
 	private final List<Entity> entities;
+	private final List<Entity> topEntities;
 	private final Map<Object, List<BiConsumer<Entity, Object>>> recieverMap;
 	private UpdateOrder updateOrder;
 	private UpdateOrder renderOrder;
@@ -49,6 +50,7 @@ public class Scene {
 		systemClassMap = new ConcurrentHashMap<Class<? extends EngineSystem>, SystemScene<?, ?>>();
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
+		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		recieverMap = new ConcurrentHashMap<Object, List<BiConsumer<Entity, Object>>>();
 		paused = false;
 	}
@@ -58,6 +60,7 @@ public class Scene {
 		for (Entity entity : entities)
 			Entity.freeId(entity.id);
 		entities.clear();
+		topEntities.clear();
 		for (SystemScene<?, ?> systemScene : systemList)
 			systemScene.free();
 		systemMap.clear();
@@ -240,13 +243,24 @@ public class Scene {
 			removeEntityIntern(child);
 			Entity.freeId(child.id);
 		}
-		entity.setParent(null);
-		entity.clearChilds();
+		entity.cleanupChildTree();
 		entity.transform.cleanupEntity();
 	}
 
 	public final List<Entity> getEntities() {
 		return Collections.unmodifiableList(entities);
+	}
+
+	public final List<Entity> getTopEntities() {
+		return Collections.unmodifiableList(topEntities);
+	}
+
+	public final void addTopEntity(Entity entity) {
+		topEntities.add(entity);
+	}
+
+	public final void removeTopEntity(Entity entity) {
+		topEntities.remove(entity);
 	}
 
 	public final Entity getEntity(float x, float y, Entity defaultValue) {

@@ -98,6 +98,7 @@ public class Entity {
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		transform = new Transform(this, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 		scene.addEntity(this);
+		scene.addTopEntity(this);
 	}
 
 	public void delete() {
@@ -312,11 +313,17 @@ public class Entity {
 	}
 
 	public final void setParent(@Nullable Entity parent) {
+		if (parent == this.parent)
+			return;
 		if (this.parent != null)
 			this.parent.childs.remove(this);
-		this.parent = parent;
+		else
+			scene.removeTopEntity(this);
 		if (parent != null)
 			parent.childs.add(this);
+		else
+			scene.addTopEntity(this);
+		this.parent = parent;
 		updateChild();
 	}
 
@@ -329,13 +336,11 @@ public class Entity {
 		return parent != null;
 	}
 
-	public final boolean isParent(Entity parent) {
-		return this.parent != parent;
-	}
-
 	public final void addChild(Entity child) {
 		if (child.parent != null)
 			child.parent.childs.remove(this);
+		else
+			scene.removeTopEntity(this);
 		child.parent = this;
 		childs.add(child);
 		child.updateChild();
@@ -344,6 +349,7 @@ public class Entity {
 	public final void removeChild(Entity child) {
 		child.parent = null;
 		childs.remove(child);
+		scene.addTopEntity(this);
 		child.updateChild();
 	}
 
@@ -361,19 +367,33 @@ public class Entity {
 			removeChild(child);
 	}
 
-	public final void clearChilds() {
-		for (Entity child : childs) {
-			child.parent = null;
-			child.updateChild();
-		}
-		childs.clear();
-	}
-
 	public final void setChilds(Collection<Entity> childs) {
 		if (!childs.isEmpty())
 			clearChilds();
 		for (Entity child : childs)
 			addChild(child);
+	}
+
+	public final void clearChilds() {
+		for (Entity child : childs) {
+			child.parent = null;
+			scene.addTopEntity(this);
+			child.updateChild();
+		}
+		childs.clear();
+	}
+
+	public final void cleanupChildTree() {
+		if (this.parent != null)
+			this.parent.childs.remove(this);
+		else
+			scene.removeTopEntity(this);
+
+		for (Entity child : childs) {
+			child.parent = null;
+			child.updateChild();
+		}
+		childs.clear();
 	}
 
 	public final List<Entity> getChilds() {
@@ -389,7 +409,6 @@ public class Entity {
 		int prefabId = in.readInt();
 		if (prefabId != -1)
 			prefab = Prefab.get(prefabId);
-		// TODO parent, childs
 		transform.load(in);
 
 		int systemSize = in.readInt();
@@ -398,6 +417,13 @@ public class Entity {
 			SystemScene systemScene = scene.getSystem(in.readInt());
 			addSystem(systemScene, systemScene.load(in));
 		}
+
+		int childSize = in.readInt();
+		for (int i = 0; i < childSize; i++) {
+			Entity entity = new Entity(scene);
+			entity.load(in);
+			addChild(entity);
+		}
 	}
 
 	public void save(DataOutput out) throws IOException {
@@ -405,7 +431,6 @@ public class Entity {
 			out.writeInt(prefab.id);
 		else
 			out.writeInt(-1);
-		// TODO parent, childs
 		transform.save(out);
 
 		out.writeInt(systems.size());
@@ -416,6 +441,10 @@ public class Entity {
 			out.writeInt(systemScene.system.getId());
 			systemScene.save_(entry.getValue()[0], out);
 		}
+
+		out.writeInt(childs.size());
+		for (Entity child : childs)
+			child.save(out);
 	}
 
 	@Nullable
