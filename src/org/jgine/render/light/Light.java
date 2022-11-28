@@ -15,12 +15,10 @@ public abstract class Light implements SystemObject {
 
 	private int color;
 	private float intensity;
-	protected boolean hasChanged;
 
 	public Light() {
 		color = Color.WHITE;
 		intensity = 1.0f;
-		hasChanged = true;
 	}
 
 	public abstract void setEntity(Entity entity);
@@ -48,7 +46,6 @@ public abstract class Light implements SystemObject {
 
 	public void setColor(int color) {
 		this.color = color;
-		hasChanged = true;
 	}
 
 	public int getColor() {
@@ -57,20 +54,9 @@ public abstract class Light implements SystemObject {
 
 	public void setIntensity(float intensity) {
 		this.intensity = intensity;
-		hasChanged = true;
 	}
 
 	public float getIntensity() {
 		return intensity;
-	}
-
-	public void setChanged() {
-		hasChanged = true;
-	}
-
-	public boolean checkChanged() {
-		boolean result = hasChanged;
-		hasChanged = false;
-		return result;
 	}
 }

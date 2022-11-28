@@ -26,7 +26,6 @@ public class PointLight extends Light {
 
 	public void setAttenuation(Attenuation attenuation) {
 		this.attenuation = attenuation;
-		hasChanged = true;
 	}
 
 	public Attenuation getAttenuation() {
@@ -39,7 +38,6 @@ public class PointLight extends Light {
 
 	public void setRange(float range) {
 		this.range = range;
-		hasChanged = true;
 	}
 
 	public float getRange() {

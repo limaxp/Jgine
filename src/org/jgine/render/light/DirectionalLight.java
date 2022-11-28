@@ -21,7 +21,6 @@ public class DirectionalLight extends Light {
 
 	public void setDirection(Vector3f direction) {
 		this.direction = direction;
-		hasChanged = true;
 	}
 
 	public Vector3f getDirection() {

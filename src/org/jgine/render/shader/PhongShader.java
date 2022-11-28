@@ -59,29 +59,24 @@ public class PhongShader extends TextureShader {
 			setUniform3f(uniform_ambientLight, ambientLight);
 		}
 
-		if (directionalLight.checkChanged()) {
-			// TODO color?
-			Vector4f color = Color.toVector(directionalLight.getColor());
-			setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
-			setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
-			setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
-		}
+		Vector4f color = Color.toVector(directionalLight.getColor());
+		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
+		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
+		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
 
 		int pointLightSize = FastMath.min(pointLights.size(), MAX_POINT_LIGHTS);
 		setUniformi(uniform_pointLightSize, pointLightSize);
 		for (int i = 0; i < pointLightSize; i++) {
 			PointLight pointLight = pointLights.get(i);
-			if (pointLight.checkChanged()) {
-				int[] pointLightUniforms = uniforms_pointLights[i];
-				Vector4f color = Color.toVector(pointLight.getColor());
-				setUniform3f(pointLightUniforms[0], color.x, color.y, color.z);
-				setUniformf(pointLightUniforms[1], pointLight.getIntensity());
-				setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
-				setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
-				setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
-				setUniform3f(pointLightUniforms[5], pointLight.getPosition());
-				setUniformf(pointLightUniforms[6], pointLight.getRange());
-			}
+			int[] pointLightUniforms = uniforms_pointLights[i];
+			Vector4f color2 = Color.toVector(pointLight.getColor());
+			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
+			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
+			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
+			setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
+			setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
+			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
+			setUniformf(pointLightUniforms[6], pointLight.getRange());
 		}
 	}
 
@@ -118,12 +113,10 @@ public class PhongShader extends TextureShader {
 
 	public void addPointLight(PointLight pointLight) {
 		pointLights.add(pointLight);
-		pointLight.setChanged();
 	}
 
 	public void removePointLight(PointLight pointLight) {
 		pointLights.remove(pointLight);
-		pointLight.setChanged();
 	}
 
 	public List<PointLight> getPointLights() {
