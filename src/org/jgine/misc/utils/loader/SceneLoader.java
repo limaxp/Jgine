@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
+import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.system.SystemScene;
@@ -56,9 +57,21 @@ public class SceneLoader {
 		int entitySize = in.readInt();
 		for (int i = 0; i < entitySize; i++)
 			new Entity(scene).load(in);
-		return scene;
 
-		// TODO updateOrder, renderOrder, spacePartitioning
+		boolean hasUpdateOrder = in.readBoolean();
+		if (hasUpdateOrder) {
+			UpdateOrder updateOrder = new UpdateOrder();
+			updateOrder.load(in);
+			scene.setUpdateOrder(updateOrder);
+		}
+		boolean hasRenderOrder = in.readBoolean();
+		if (hasRenderOrder) {
+			UpdateOrder renderOrder = new UpdateOrder();
+			renderOrder.load(in);
+			scene.setRenderOrder(renderOrder);
+		}
+		// TODO spacePartitioning
+		return scene;
 	}
 
 	public static void write(Scene scene, DataOutput out) throws IOException {
@@ -75,6 +88,18 @@ public class SceneLoader {
 		for (Entity entity : entities)
 			entity.save(out);
 
-		// TODO updateOrder, renderOrder, spacePartitioning
+		UpdateOrder updateOrder = scene.getUpdateOrder();
+		if (updateOrder != null) {
+			out.writeBoolean(true);
+			updateOrder.save(out);
+		} else
+			out.writeBoolean(false);
+		UpdateOrder renderOrder = scene.getRenderOrder();
+		if (renderOrder != null) {
+			out.writeBoolean(true);
+			renderOrder.save(out);
+		} else
+			out.writeBoolean(false);
+		// TODO spacePartitioning
 	}
 }

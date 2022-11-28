@@ -3,7 +3,11 @@ package org.jgine.core;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -11,12 +15,14 @@ import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
+import org.jgine.misc.collection.list.IntList;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
+import org.jgine.misc.utils.logger.Logger;
 import org.jgine.misc.utils.options.OptionFile;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.net.game.ConnectionManager;
@@ -30,8 +36,30 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
+import org.jgine.system.systems.collision.CollisionSystem;
+import org.jgine.system.systems.graphic.Graphic2DSystem;
+import org.jgine.system.systems.graphic.GraphicSystem;
+import org.jgine.system.systems.input.InputSystem;
+import org.jgine.system.systems.light.LightSystem;
+import org.jgine.system.systems.particle.ParticleSystem;
+import org.jgine.system.systems.physic.PhysicSystem;
+import org.jgine.system.systems.script.ScriptSystem;
+import org.jgine.system.systems.tileMap.TileMapSystem;
+import org.jgine.system.systems.ui.UISystem;
 
 public abstract class Engine {
+
+	public static final CameraSystem CAMERA_SYSTEM = SystemManager.register(new CameraSystem());
+	public static final CollisionSystem COLLISION_SYSTEM = SystemManager.register(new CollisionSystem());
+	public static final GraphicSystem GRAPHIC_SYSTEM = SystemManager.register(new GraphicSystem());
+	public static final Graphic2DSystem GRAPHIC_2D_SYSTEM = SystemManager.register(new Graphic2DSystem());
+	public static final InputSystem INPUT_SYSTEM = SystemManager.register(new InputSystem());
+	public static final LightSystem LIGHT_SYSTEM = SystemManager.register(new LightSystem());
+	public static final ParticleSystem PARTICLE_SYSTEM = SystemManager.register(new ParticleSystem());
+	public static final PhysicSystem PHYSIC_SYSTEM = SystemManager.register(new PhysicSystem());
+	public static final ScriptSystem SCRIPT_SYSTEM = SystemManager.register(new ScriptSystem());
+	public static final TileMapSystem TILEMAP_SYSTEM = SystemManager.register(new TileMapSystem());
+	public static final UISystem UI_SYSTEM = SystemManager.register(new UISystem());
 
 	private static Engine instance;
 
@@ -110,8 +138,11 @@ public abstract class Engine {
 	private final void update() {
 		ConnectionManager.update();
 		for (Scene scene : scenes)
-			if (!scene.isPaused())
+			if (!scene.isPaused()) {
+				UpdateManager.distributeChanges();
 				updateScene(scene);
+			}
+		UpdateManager.distributeChanges();
 		ServiceManager.distributeChanges();
 		Scheduler.update();
 		TaskExecutor.execute(Scheduler::updateAsync);
@@ -121,24 +152,12 @@ public abstract class Engine {
 	}
 
 	private final void updateScene(Scene scene) {
-		UpdateManager.distributeChanges();
-		if (scene.hasUpdateOrder()) {
-			UpdateOrder updateOrder = scene.getUpdateOrder();
-			for (int i = 0; i < updateOrder.size(); i++) {
-				List<EngineSystem> updateOrderSystems = updateOrder.get(i);
-				if (updateOrderSystems.size() == 1)
-					scene.getSystem(updateOrderSystems.get(0)).update();
-				else
-					TaskManager.execute(updateOrderSystems.size(),
-							(j) -> scene.getSystem(updateOrderSystems.get(j))::update);
-				UpdateManager.distributeChanges();
-			}
-		} else {
-			for (SystemScene<?, ?> systemScene : scene.getSystems()) {
+		if (!scene.hasUpdateOrder()) {
+			for (SystemScene<?, ?> systemScene : scene.getSystems())
 				systemScene.update();
-				UpdateManager.distributeChanges();
-			}
+			return;
 		}
+		new SceneUpdate(scene, scene.getUpdateOrder()).start();
 	}
 
 	public abstract void onRender();
@@ -171,15 +190,12 @@ public abstract class Engine {
 	}
 
 	private final void renderScene(Scene scene) {
-		if (scene.hasRenderOrder()) {
-			UpdateOrder renderOrder = scene.getRenderOrder();
-			for (int i = 0; i < renderOrder.size(); i++)
-				for (EngineSystem system : renderOrder.get(i))
-					scene.getSystem(system).render();
-		} else {
+		if (!scene.hasRenderOrder()) {
 			for (SystemScene<?, ?> systemScene : scene.getSystems())
 				systemScene.render();
+			return;
 		}
+		new SceneRender(scene, scene.getRenderOrder()).start();
 	}
 
 	public final Window getWindow() {
@@ -244,5 +260,93 @@ public abstract class Engine {
 
 	public final RenderConfiguration getRenderConfig() {
 		return renderConfigs.get(0);
+	}
+
+	private static class SceneUpdate extends SceneRender {
+
+		protected int updatedSize;
+		protected final CompletionService<Object> completionService;
+
+		public SceneUpdate(Scene scene, UpdateOrder updateOrder) {
+			super(scene, updateOrder);
+			completionService = new ExecutorCompletionService<Object>(TaskExecutor.getExecutor());
+		}
+
+		@Override
+		public void start() {
+			super.start();
+			if (Options.SYNCHRONIZED)
+				return;
+			while (updatedSize != updateOrder.size()) {
+				try {
+					completionService.take().get();
+				} catch (InterruptedException | ExecutionException e) {
+					Logger.err("SceneUpdate: Error on getting future!", e);
+					break;
+				}
+				updatedSize++;
+			}
+		}
+
+		protected void update(int system) {
+			if (Options.SYNCHRONIZED) {
+				scene.getSystem(system).update();
+				updated[system] = true;
+				checkUpdate(updated, system);
+				return;
+			}
+			completionService.submit(new Callable<Object>() {
+				@Override
+				public Object call() throws Exception {
+					scene.getSystem(system).update();
+					boolean[] updatedCopy;
+					synchronized (updated) {
+						updated[system] = true;
+						updatedCopy = updated.clone();
+					}
+					checkUpdate(updatedCopy, system);
+					return system;
+				}
+			});
+		}
+	}
+
+	private static class SceneRender {
+
+		protected final Scene scene;
+		protected final UpdateOrder updateOrder;
+		protected final boolean[] updated;
+
+		public SceneRender(Scene scene, UpdateOrder updateOrder) {
+			this.scene = scene;
+			this.updateOrder = updateOrder;
+			updated = new boolean[SystemManager.getSize()];
+		}
+
+		public void start() {
+			IntList start = updateOrder.getStart();
+			for (int i = 0; i < start.size(); i++)
+				update(start.getInt(i));
+		}
+
+		protected void update(int system) {
+			scene.getSystem(system).render();
+			updated[system] = true;
+			checkUpdate(updated, system);
+		}
+
+		protected void checkUpdate(boolean[] updated, int system) {
+			for (int currentAfter : updateOrder.getAfter(system)) {
+				boolean finished = true;
+				for (int before : updateOrder.getBefore(currentAfter)) {
+					if (!updated[before]) {
+						finished = false;
+						break;
+					}
+				}
+				if (finished)
+					update(currentAfter);
+			}
+		}
 	}
 }

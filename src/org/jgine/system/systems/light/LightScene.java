@@ -4,13 +4,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.UpdateManager;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
@@ -19,26 +16,17 @@ import org.jgine.system.data.ListSystemScene;
 
 public class LightScene extends ListSystemScene<LightSystem, Light> {
 
-	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> {
-		Light light = entity.getSystem(this);
-		if (light instanceof PointLight)
-			((PointLight) light).setPosition((Vector3f) pos);
-	};
-
 	public LightScene(LightSystem system, Scene scene) {
 		super(system, scene, Light.class);
-		UpdateManager.register(scene, "transformPosition", positionUpdate);
-		UpdateManager.register(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, "transformPosition", positionUpdate);
-		UpdateManager.unregister(scene, "physicPosition", positionUpdate);
 	}
 
 	@Override
 	public void initObject(Entity entity, Light object) {
+		object.setEntity(entity);
 	}
 
 	@Override

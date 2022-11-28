@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
+import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.light.LightType;
@@ -13,6 +14,10 @@ import org.jgine.system.systems.light.LightTypes;
 public class DirectionalLight extends Light {
 
 	private Vector3f direction = Vector3f.Z_AXIS;
+
+	@Override
+	public void setEntity(Entity entity) {
+	}
 
 	public void setDirection(Vector3f direction) {
 		this.direction = direction;

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.jgine.core.Transform;
+import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.light.LightType;
@@ -13,9 +15,14 @@ import org.jgine.system.systems.light.LightTypes;
 
 public class PointLight extends Light {
 
+	private Transform transform;
 	private Attenuation attenuation = Attenuation.DEFAULT;
-	private Vector3f pos = Vector3f.NULL;
 	private float range = 1.0f;
+
+	@Override
+	public void setEntity(Entity entity) {
+		transform = entity.transform;
+	}
 
 	public void setAttenuation(Attenuation attenuation) {
 		this.attenuation = attenuation;
@@ -26,13 +33,8 @@ public class PointLight extends Light {
 		return attenuation;
 	}
 
-	public void setPosition(Vector3f pos) {
-		this.pos = pos;
-		hasChanged = true;
-	}
-
 	public Vector3f getPosition() {
-		return pos;
+		return transform.getPosition();
 	}
 
 	public void setRange(float range) {
@@ -61,9 +63,6 @@ public class PointLight extends Light {
 				attenuation = new Attenuation(YamlHelper.toFloat(attenuationList.get(0)),
 						YamlHelper.toFloat(attenuationList.get(1)), YamlHelper.toFloat(attenuationList.get(2)));
 		}
-		Object posData = data.get("pos");
-		if (posData != null)
-			pos = YamlHelper.toVector3f(posData);
 		Object rangeData = data.get("range");
 		if (rangeData != null)
 			range = YamlHelper.toFloat(rangeData, 1.0f);
@@ -73,7 +72,6 @@ public class PointLight extends Light {
 	public void load(DataInput in) throws IOException {
 		super.load(in);
 		attenuation = new Attenuation(in.readFloat(), in.readFloat(), in.readFloat());
-		pos = new Vector3f(in.readFloat(), in.readFloat(), in.readFloat());
 		range = in.readFloat();
 	}
 
@@ -83,9 +81,6 @@ public class PointLight extends Light {
 		out.writeFloat(attenuation.constant);
 		out.writeFloat(attenuation.linear);
 		out.writeFloat(attenuation.exponent);
-		out.writeFloat(pos.x);
-		out.writeFloat(pos.y);
-		out.writeFloat(pos.z);
 		out.writeFloat(range);
 	}
 

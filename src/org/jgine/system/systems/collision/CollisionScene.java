@@ -22,12 +22,12 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	public CollisionScene(CollisionSystem system, Scene scene) {
 		super(system, scene, Collider.class);
-		UpdateManager.register(scene, "transformScale", scaleUpdate);
+		UpdateManager.register(scene, UpdateManager.TRANSFORM_SCALE_IDENTIFIER, scaleUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, "transformScale", scaleUpdate);
+		UpdateManager.unregister(scene, UpdateManager.TRANSFORM_SCALE_IDENTIFIER, scaleUpdate);
 	}
 
 	@Override

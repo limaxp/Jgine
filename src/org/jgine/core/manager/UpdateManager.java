@@ -15,8 +15,11 @@ import org.jgine.misc.utils.scheduler.TaskExecutor;
 
 public class UpdateManager {
 
-	private static final int QUEUE_SIZE = 100000;
+	public static final Object TRANSFORM_POSITION_IDENTIFIER = new Object();
+	public static final Object TRANSFORM_SCALE_IDENTIFIER = new Object();
+	public static final Object PHYSIC_POSITION_IDENTIFIER = new Object();
 
+	private static final int QUEUE_SIZE = 100000;
 	@SuppressWarnings("unchecked") // extra slot so start thread can do updates
 	private static final List<Update>[] THREAD_LISTS = new List[TaskExecutor.getPoolSize() + 1];
 	private static int listSize;

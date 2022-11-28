@@ -51,8 +51,8 @@ public class TaskExecutor {
 		return THREAD_POOL.invokeAll(tasks, timeout, unit);
 	}
 
-	public static <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException,
-			ExecutionException {
+	public static <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+			throws InterruptedException, ExecutionException {
 		return THREAD_POOL.invokeAny(tasks);
 	}
 
@@ -103,6 +103,10 @@ public class TaskExecutor {
 
 	public static BlockingQueue<Runnable> getQueue() {
 		return THREAD_POOL.getQueue();
+	}
+
+	public static ThreadPoolExecutor getExecutor() {
+		return THREAD_POOL;
 	}
 
 	private static class WorkerThreadFactory implements ThreadFactory {

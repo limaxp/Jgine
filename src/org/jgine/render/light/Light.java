@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
+import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
@@ -21,6 +22,8 @@ public abstract class Light implements SystemObject {
 		intensity = 1.0f;
 		hasChanged = true;
 	}
+
+	public abstract void setEntity(Entity entity);
 
 	public abstract LightType<? extends Light> getType();
 
