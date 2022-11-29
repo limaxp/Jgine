@@ -14,7 +14,6 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.scheduler.Task;
@@ -33,7 +32,7 @@ public class UIWindow extends UIObject {
 	private boolean hide;
 	private boolean floating;
 	private Material background;
-	private Vector3f borderColor;
+	private Material border;
 	ScriptEngine scriptEngine;
 
 	public UIWindow() {
@@ -60,7 +59,7 @@ public class UIWindow extends UIObject {
 		floating = false;
 		setScale(width, height);
 		background = new Material(Color.TRANSLUCENT_WEAK);
-		borderColor = Vector3f.NULL;
+		border = new Material(Color.BLACK);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 	}
 
@@ -84,8 +83,7 @@ public class UIWindow extends UIObject {
 		if (hide)
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
-		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, new Material(borderColor),
-				true);
+		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, border, true);
 		renderChilds();
 	}
 
@@ -115,6 +113,14 @@ public class UIWindow extends UIObject {
 				background.setTexture(texture);
 		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
+
+		Object borderData = data.get("border");
+		if (borderData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) borderData);
+			if (texture != null)
+				border.setTexture(texture);
+		} else if (borderData instanceof Map)
+			border.load((Map<String, Object>) borderData);
 
 		Object childs = data.get("childs");
 		if (childs instanceof List) {
@@ -160,6 +166,7 @@ public class UIWindow extends UIObject {
 		hide = in.readBoolean();
 		floating = in.readBoolean();
 		background.load(in);
+		border.load(in);
 		int childSize = in.readInt();
 		for (int i = 0; i < childSize; i++) {
 			UIObject object = UIObjectTypes.get(in.readInt()).get();
@@ -178,6 +185,7 @@ public class UIWindow extends UIObject {
 		out.writeBoolean(hide);
 		out.writeBoolean(floating);
 		background.save(out);
+		border.save(out);
 		out.writeInt(childs.size());
 		for (UIObject child : childs) {
 			out.writeInt(child.getType().getId());
@@ -296,12 +304,12 @@ public class UIWindow extends UIObject {
 		return background;
 	}
 
-	public void setBorderColor(Vector3f borderColor) {
-		this.borderColor = borderColor;
+	public void setBorder(Material border) {
+		this.border = border;
 	}
 
-	public Vector3f getBorderColor() {
-		return borderColor;
+	public Material getBorder() {
+		return border;
 	}
 
 	public Entity getEntity() {
