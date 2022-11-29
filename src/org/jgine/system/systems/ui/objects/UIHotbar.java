@@ -29,7 +29,7 @@ public class UIHotbar extends UIGrid {
 
 	public UIHotbar(float thickness) {
 		setThickness(thickness);
-		background = new Material(Color.TRANSLUCENT_MID);
+		background = new Material(Color.DARK_GRAY);
 	}
 
 	@Override

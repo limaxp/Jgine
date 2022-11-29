@@ -58,7 +58,7 @@ public class UIWindow extends UIObject {
 		hide = false;
 		floating = false;
 		setScale(width, height);
-		background = new Material(Color.TRANSLUCENT_WEAK);
+		background = new Material(Color.DARK_GRAY);
 		border = new Material(Color.BLACK);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 	}

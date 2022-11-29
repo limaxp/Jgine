@@ -35,8 +35,8 @@ public class UILabel extends UIObject {
 	private Matrix textTransform;
 
 	public UILabel() {
-		background = new Material(Color.TRANSLUCENT_WEAK);
-		backgroundFocused = new Material(Color.TRANSLUCENT_STRONG);
+		background = new Material(Color.DARK_GRAY);
+		backgroundFocused = new Material(Color.GRAY);
 		usedBackground = background;
 		textTransform = new Matrix();
 	}
