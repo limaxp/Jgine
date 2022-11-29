@@ -118,6 +118,14 @@ public class UIList extends UIWindow {
 	}
 
 	@Override
+	public void onClick(int key) {
+	}
+
+	@Override
+	public void onRelease(int key) {
+	}
+
+	@Override
 	public void setClickFunction(BiConsumer<UIObject, Integer> clickFunction) {
 		super.setClickFunction(clickFunction);
 		for (UIObject child : getChilds())
