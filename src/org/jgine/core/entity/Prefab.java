@@ -11,7 +11,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.TransformData;
-import org.jgine.misc.collection.iterator.ArrayIterator;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -156,7 +155,7 @@ public class Prefab {
 	}
 
 	public final Iterator<EngineSystem> systemIterator() {
-		return new ArrayIterator<EngineSystem>(systems);
+		return new SystemIterator();
 	}
 
 	public final Iterator<String> nameIterator() {
@@ -400,6 +399,21 @@ public class Prefab {
 		public SystemObject next() {
 			super.next();
 			return objects[index][subIndex++];
+		}
+	}
+
+	private class SystemIterator implements Iterator<EngineSystem> {
+
+		protected int index;
+
+		@Override
+		public boolean hasNext() {
+			return index < size;
+		}
+
+		@Override
+		public EngineSystem next() {
+			return systems[index++];
 		}
 	}
 }
