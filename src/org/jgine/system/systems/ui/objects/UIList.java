@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -90,7 +91,16 @@ public class UIList extends UIWindow {
 			else
 				placeChild(child, index);
 		}
-		child.setScrollFunction((object, scroll2) -> setScroll(scroll2.intValue()));
+		setChildFunctions(child);
+	}
+
+	protected void setChildFunctions(UIObject child) {
+		if (!child.hasClickFunction())
+			child.setClickFunction(getClickFunction());
+		if (!child.hasReleaseFunction())
+			child.setReleaseFunction(getReleaseFunction());
+		if (!child.hasScrollFunction())
+			child.setScrollFunction((object, scroll2) -> setScroll(scroll2.intValue()));
 	}
 
 	@Override
@@ -105,6 +115,27 @@ public class UIList extends UIWindow {
 		UIObject child = super.removeChild(index);
 		placeChilds(index);
 		return child;
+	}
+
+	@Override
+	public void setClickFunction(BiConsumer<UIObject, Integer> clickFunction) {
+		super.setClickFunction(clickFunction);
+		for (UIObject child : getChilds())
+			child.setClickFunction(clickFunction);
+	}
+
+	@Override
+	public void setReleaseFunction(BiConsumer<UIObject, Integer> releaseFunction) {
+		super.setReleaseFunction(releaseFunction);
+		for (UIObject child : getChilds())
+			child.setReleaseFunction(releaseFunction);
+	}
+
+	@Override
+	public void setScrollFunction(BiConsumer<UIObject, Float> scrollFunction) {
+		super.setScrollFunction(scrollFunction);
+		for (UIObject child : getChilds())
+			child.setScrollFunction(scrollFunction);
 	}
 
 	public void setElementHeight(float elementHeight) {
@@ -154,11 +185,21 @@ public class UIList extends UIWindow {
 		return scrollable;
 	}
 
-	protected int getScrollIndex() {
+	public int getScrollIndex() {
 		return scroll;
 	}
 
-	protected void placeChilds(int index) {
+	public int getIndex(UIObject child) {
+		return getIndex(child.getX(), child.getY());
+	}
+
+	public int getIndex(float x, float y) {
+		int maxElements = (int) (1.0f / elementHeight);
+		int index = maxElements - 1 - FastMath.round(y / elementHeight);
+		return scroll + index;
+	}
+
+	public void placeChilds(int index) {
 		List<UIObject> childs = getVisibleChilds();
 		int scroll = getScrollIndex();
 		int overflow = FastMath.max(0, index - scroll);
@@ -170,11 +211,11 @@ public class UIList extends UIWindow {
 				placeChild(childs.get(i), scroll + i);
 	}
 
-	protected void placeChild(UIObject child, int index) {
+	public void placeChild(UIObject child, int index) {
 		child.set(0, 1 - (elementHeight * (index + 1 - scroll)), 1, elementHeight);
 	}
 
-	protected void placeChildReverse(UIObject child, int index) {
+	public void placeChildReverse(UIObject child, int index) {
 		child.set(0, elementHeight * (index - scroll), 1, elementHeight);
 	}
 }

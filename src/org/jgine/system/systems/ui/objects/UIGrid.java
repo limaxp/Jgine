@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
@@ -79,20 +80,29 @@ public class UIGrid extends UIList {
 	}
 
 	@Override
-	protected int getScrollIndex() {
+	public int getScrollIndex() {
 		int maxX = (int) (1.0f / elementWidth);
 		return scroll * maxX;
 	}
 
 	@Override
-	protected void placeChild(UIObject child, int index) {
+	public int getIndex(float x, float y) {
+		int maxX = (int) (1.0f / elementWidth);
+		int maxY = (int) (1.0f / elementHeight);
+		int xIndex = FastMath.round(x / elementWidth);
+		int yIndex = maxY - 1 - FastMath.round(y / elementHeight);
+		return scroll * maxX + xIndex + yIndex * maxX;
+	}
+
+	@Override
+	public void placeChild(UIObject child, int index) {
 		float widthSize = elementWidth * index;
 		int height = (int) widthSize;
 		child.set(widthSize - height, 1 - (elementHeight * (1 + height - scroll)), elementWidth, elementHeight);
 	}
 
 	@Override
-	protected void placeChildReverse(UIObject child, int index) {
+	public void placeChildReverse(UIObject child, int index) {
 		float widthSize = elementWidth * index;
 		int height = (int) widthSize;
 		child.set(widthSize - height, elementHeight * (height - scroll), elementWidth, elementHeight);

@@ -121,7 +121,7 @@ public class UIHotbar extends UIGrid {
 	}
 
 	@Override
-	protected void placeChildReverse(UIObject child, int index) {
+	public void placeChildReverse(UIObject child, int index) {
 		float widthSize = elementWidth * index;
 		int height = (int) widthSize;
 		child.set(1 - elementWidth - widthSize - height, elementHeight * (height - scroll), elementWidth,

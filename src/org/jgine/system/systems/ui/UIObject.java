@@ -305,6 +305,10 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		return enableFunction;
 	}
 
+	public boolean hasEnableFunction() {
+		return enableFunction != NULL_FUNCTION;
+	}
+
 	public void setEnableFunction(String enableFunction) {
 		this.enableFunction = new ScriptFunction(enableFunction);
 	}
@@ -313,8 +317,16 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.enableFunction = enableFunction;
 	}
 
+	public void removeEnableFunction() {
+		this.enableFunction = NULL_FUNCTION;
+	}
+
 	public Consumer<UIObject> getDisableFunction() {
 		return disableFunction;
+	}
+
+	public boolean hasDisableFunction() {
+		return disableFunction != NULL_FUNCTION;
 	}
 
 	public void setDisableFunction(String disableFunction) {
@@ -325,8 +337,16 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.disableFunction = disableFunction;
 	}
 
+	public void removeDisableFunction() {
+		this.disableFunction = NULL_FUNCTION;
+	}
+
 	public Consumer<UIObject> getFocusFunction() {
 		return focusFunction;
+	}
+
+	public boolean hasFocusFunction() {
+		return focusFunction != NULL_FUNCTION;
 	}
 
 	public void setFocusFunction(String focusFunction) {
@@ -337,8 +357,16 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.focusFunction = focusFunction;
 	}
 
+	public void removeFocusFunction() {
+		this.focusFunction = NULL_FUNCTION;
+	}
+
 	public Consumer<UIObject> getDefocusFunction() {
 		return defocusFunction;
+	}
+
+	public boolean hasDefocusFunction() {
+		return defocusFunction != NULL_FUNCTION;
 	}
 
 	public void setDefocusFunction(String defocusFunction) {
@@ -349,8 +377,16 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.defocusFunction = defocusFunction;
 	}
 
+	public void removeDefocusFunction() {
+		this.defocusFunction = NULL_FUNCTION;
+	}
+
 	public BiConsumer<UIObject, Integer> getClickFunction() {
 		return clickFunction;
+	}
+
+	public boolean hasClickFunction() {
+		return clickFunction != NULL_VALUE_FUNCTION;
 	}
 
 	public void setClickFunction(String clickFunction) {
@@ -361,8 +397,17 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.clickFunction = clickFunction;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void removeClickFunction() {
+		this.clickFunction = NULL_VALUE_FUNCTION;
+	}
+
 	public BiConsumer<UIObject, Integer> getReleaseFunction() {
 		return releaseFunction;
+	}
+
+	public boolean hasReleaseFunction() {
+		return releaseFunction != NULL_VALUE_FUNCTION;
 	}
 
 	public void setReleaseFunction(String releaseFunction) {
@@ -373,8 +418,17 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		this.releaseFunction = releaseFunction;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void removeReleaseFunction() {
+		this.releaseFunction = NULL_VALUE_FUNCTION;
+	}
+
 	public BiConsumer<UIObject, Float> getScrollFunction() {
 		return scrollFunction;
+	}
+
+	public boolean hasScrollFunction() {
+		return scrollFunction != NULL_VALUE_FUNCTION;
 	}
 
 	public void setScrollFunction(String scrollFunction) {
@@ -383,6 +437,11 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public void setScrollFunction(BiConsumer<UIObject, Float> scrollFunction) {
 		this.scrollFunction = scrollFunction;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void removeScrollFunction() {
+		this.scrollFunction = NULL_VALUE_FUNCTION;
 	}
 
 	public static class ScriptFunction implements Consumer<UIObject> {
