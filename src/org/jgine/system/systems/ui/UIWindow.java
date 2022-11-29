@@ -90,7 +90,7 @@ public class UIWindow extends UIObject {
 	}
 
 	protected void renderChilds() {
-		for (UIObject child : childs)
+		for (UIObject child : getVisibleChilds())
 			child.render();
 	}
 
@@ -250,6 +250,10 @@ public class UIWindow extends UIObject {
 
 	public List<UIObject> getChilds() {
 		return childsView;
+	}
+
+	public List<UIObject> getVisibleChilds() {
+		return getChilds();
 	}
 
 	public void setMoveAble(boolean moveAble) {

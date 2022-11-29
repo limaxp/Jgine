@@ -3,7 +3,6 @@ package org.jgine.system.systems.ui.objects;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -24,23 +23,6 @@ public class UIGrid extends UIList {
 
 	public UIGrid(float width, float height) {
 		super(width, height);
-	}
-
-	@Override
-	protected void renderChilds() {
-		List<UIObject> childs = getChilds();
-		int size = childs.size();
-		int maxX = (int) (1.0f / elementWidth);
-		int maxY = (int) (1.0f / elementHeight);
-
-		for (int x = 0; x < maxX; x++) {
-			for (int y = 0; y < maxY; y++) {
-				int index = x + ((y + scroll) * maxX);
-				if (index >= size)
-					break;
-				childs.get(index).render();
-			}
-		}
 	}
 
 	@Override
@@ -89,6 +71,17 @@ public class UIGrid extends UIList {
 
 	public float getElementWidth() {
 		return elementWidth;
+	}
+
+	@Override
+	public int getMaxElements() {
+		return (int) (1.0f / elementWidth) * (int) (1.0f / elementHeight);
+	}
+
+	@Override
+	protected int getScrollIndex() {
+		int maxX = (int) (1.0f / elementWidth);
+		return scroll * maxX;
 	}
 
 	@Override

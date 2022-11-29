@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
@@ -31,16 +32,10 @@ public class UIList extends UIWindow {
 	}
 
 	@Override
-	protected void renderChilds() {
+	public List<UIObject> getVisibleChilds() {
 		List<UIObject> childs = getChilds();
-		int size = childs.size();
-		int maxElements = (int) (1.0f / elementHeight);
-		for (int i = 0; i < maxElements; i++) {
-			int j = i + scroll;
-			if (j >= size)
-				break;
-			childs.get(j).render();
-		}
+		int index = getScrollIndex();
+		return childs.subList(index, index + FastMath.min(childs.size() - index, getMaxElements()));
 	}
 
 	@Override
@@ -87,12 +82,15 @@ public class UIList extends UIWindow {
 	@Override
 	public void addChild(UIObject child) {
 		super.addChild(child);
-		int size = getChilds().size();
-		if (reverse)
-			placeChildReverse(child, size - 1);
-		else
-			placeChild(child, size - 1);
-		child.setScrollFunction((object, scroll) -> setScroll(scroll.intValue()));
+		int index = getChilds().size() - 1;
+		int scroll = getScrollIndex();
+		if (index >= scroll && index <= scroll + getMaxElements()) {
+			if (reverse)
+				placeChildReverse(child, index);
+			else
+				placeChild(child, index);
+		}
+		child.setScrollFunction((object, scroll2) -> setScroll(scroll2.intValue()));
 	}
 
 	@Override
@@ -116,6 +114,10 @@ public class UIList extends UIWindow {
 
 	public float getElementHeight() {
 		return elementHeight;
+	}
+
+	public int getMaxElements() {
+		return (int) (1.0f / elementHeight);
 	}
 
 	public void setReverse(boolean reversed) {
@@ -152,15 +154,20 @@ public class UIList extends UIWindow {
 		return scrollable;
 	}
 
+	protected int getScrollIndex() {
+		return scroll;
+	}
+
 	protected void placeChilds(int index) {
-		List<UIObject> childs = getChilds();
-		int size = childs.size();
+		List<UIObject> childs = getVisibleChilds();
+		int scroll = getScrollIndex();
+		int overflow = FastMath.max(0, index - scroll);
 		if (reverse)
-			for (int i = index; i < size; i++)
-				placeChildReverse(childs.get(i), i);
+			for (int i = overflow; i < childs.size(); i++)
+				placeChildReverse(childs.get(i), scroll + i);
 		else
-			for (int i = index; i < size; i++)
-				placeChild(childs.get(i), i);
+			for (int i = overflow; i < childs.size(); i++)
+				placeChild(childs.get(i), scroll + i);
 	}
 
 	protected void placeChild(UIObject child, int index) {

@@ -203,7 +203,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	private static UIObject focusCheck(UIWindow window, float mouseX, float mouseY) {
 		float windowX = (mouseX - window.getX()) / window.getWidth();
 		float windowY = (mouseY - window.getY()) / window.getHeight();
-		for (UIObject child : window.getChilds()) {
+		for (UIObject child : window.getVisibleChilds()) {
 			if (!insideCheck(child, windowX, windowY))
 				continue;
 			if (child instanceof UIWindow)
