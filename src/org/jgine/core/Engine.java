@@ -1,5 +1,6 @@
 package org.jgine.core;
 
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -294,21 +295,20 @@ public abstract class Engine {
 			}
 		}
 
+		@Override
 		protected void update(int system) {
 			if (Options.SYNCHRONIZED) {
 				scene.getSystem(system).update(dt);
-				updated[system] = true;
-				checkUpdate(updated, system);
+				updated.set(system, true);
+				checkUpdates(system);
 				return;
 			}
 			completionService.submit(() -> {
 				scene.getSystem(system).update(dt);
-				boolean[] updatedCopy;
 				synchronized (updated) {
-					updated[system] = true;
-					updatedCopy = updated.clone();
+					updated.set(system, true);
+					checkUpdates(system);
 				}
-				checkUpdate(updatedCopy, system);
 				return system;
 			});
 		}
@@ -318,12 +318,12 @@ public abstract class Engine {
 
 		protected final Scene scene;
 		protected final UpdateOrder updateOrder;
-		protected final boolean[] updated;
+		protected final BitSet updated;
 
 		public SceneRender(Scene scene, UpdateOrder updateOrder) {
 			this.scene = scene;
 			this.updateOrder = updateOrder;
-			updated = new boolean[SystemManager.getSize()];
+			updated = new BitSet(SystemManager.getSize());
 		}
 
 		public void start() {
@@ -334,22 +334,20 @@ public abstract class Engine {
 
 		protected void update(int system) {
 			scene.getSystem(system).render();
-			updated[system] = true;
-			checkUpdate(updated, system);
+			updated.set(system, true);
+			checkUpdates(system);
 		}
 
-		protected void checkUpdate(boolean[] updated, int system) {
-			for (int currentAfter : updateOrder.getAfter(system)) {
-				boolean finished = true;
-				for (int before : updateOrder.getBefore(currentAfter)) {
-					if (!updated[before]) {
-						finished = false;
-						break;
-					}
-				}
-				if (finished)
-					update(currentAfter);
-			}
+		protected void checkUpdates(int system) {
+			for (int currentAfter : updateOrder.getAfter(system))
+				checkUpdate(currentAfter);
+		}
+
+		protected void checkUpdate(int system) {
+			for (int before : updateOrder.getBefore(system))
+				if (!updated.get(before))
+					return;
+			update(system);
 		}
 	}
 }
