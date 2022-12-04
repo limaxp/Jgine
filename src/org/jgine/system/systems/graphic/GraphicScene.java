@@ -38,7 +38,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 		renderQueue.clear();
 		Camera camera = SystemManager.get(CameraSystem.class).getMainCamera();
 		frustumCulling.applyCamera(camera, 0);

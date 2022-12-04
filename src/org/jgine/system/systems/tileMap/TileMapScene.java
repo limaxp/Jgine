@@ -25,7 +25,7 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 	}
 
 	@Override

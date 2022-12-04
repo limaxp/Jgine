@@ -36,7 +36,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 	}
 
 	@Override

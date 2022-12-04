@@ -35,11 +35,11 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 	}
 
 	@Override
-	public void update() {
-		TaskManager.execute(size, this::update);
+	public void update(float dt) {
+		TaskManager.execute(size, this::updateParticle);
 	}
 
-	private void update(int index, int size) {
+	private void updateParticle(int index, int size) {
 		size = index + size;
 		for (; index < size; index++) {
 			ParticleObject object = objects[index];

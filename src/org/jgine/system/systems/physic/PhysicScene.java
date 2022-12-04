@@ -58,14 +58,10 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		object.initPosition(pos);
 	}
 
-	private long lastTime = System.currentTimeMillis();
 	private float subDt;
 
 	@Override
-	public void update() {
-		long time = System.currentTimeMillis();
-		float dt = (time - lastTime) / 1000.0f;
-		lastTime = time;
+	public void update(float dt) {
 		int subSteps = 4;
 		subDt = dt / subSteps;
 

@@ -53,7 +53,7 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package org.jgine.core;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -75,6 +74,7 @@ public abstract class Engine {
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
 	private final List<RenderConfiguration> renderConfigs;
+	private long lastUpdateTime = System.currentTimeMillis();
 
 	public Engine(String name) {
 		instance = this;
@@ -136,11 +136,15 @@ public abstract class Engine {
 	public abstract void onUpdate();
 
 	private final void update() {
+		long time = System.currentTimeMillis();
+		float dt = (time - lastUpdateTime) / 1000.0f;
+		lastUpdateTime = time;
+
 		ConnectionManager.update();
 		for (Scene scene : scenes)
 			if (!scene.isPaused()) {
 				UpdateManager.distributeChanges();
-				updateScene(scene);
+				updateScene(scene, dt);
 			}
 		UpdateManager.distributeChanges();
 		ServiceManager.distributeChanges();
@@ -151,13 +155,13 @@ public abstract class Engine {
 		onUpdate();
 	}
 
-	private final void updateScene(Scene scene) {
+	private final void updateScene(Scene scene, float dt) {
 		if (!scene.hasUpdateOrder()) {
 			for (SystemScene<?, ?> systemScene : scene.getSystems())
-				systemScene.update();
+				systemScene.update(dt);
 			return;
 		}
-		new SceneUpdate(scene, scene.getUpdateOrder()).start();
+		new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
 	public abstract void onRender();
@@ -266,10 +270,12 @@ public abstract class Engine {
 
 		protected int updatedSize;
 		protected final CompletionService<Object> completionService;
+		protected final float dt;
 
-		public SceneUpdate(Scene scene, UpdateOrder updateOrder) {
+		public SceneUpdate(Scene scene, UpdateOrder updateOrder, float dt) {
 			super(scene, updateOrder);
 			completionService = new ExecutorCompletionService<Object>(TaskExecutor.getExecutor());
+			this.dt = dt;
 		}
 
 		@Override
@@ -290,23 +296,20 @@ public abstract class Engine {
 
 		protected void update(int system) {
 			if (Options.SYNCHRONIZED) {
-				scene.getSystem(system).update();
+				scene.getSystem(system).update(dt);
 				updated[system] = true;
 				checkUpdate(updated, system);
 				return;
 			}
-			completionService.submit(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					scene.getSystem(system).update();
-					boolean[] updatedCopy;
-					synchronized (updated) {
-						updated[system] = true;
-						updatedCopy = updated.clone();
-					}
-					checkUpdate(updatedCopy, system);
-					return system;
+			completionService.submit(() -> {
+				scene.getSystem(system).update(dt);
+				boolean[] updatedCopy;
+				synchronized (updated) {
+					updated[system] = true;
+					updatedCopy = updated.clone();
 				}
+				checkUpdate(updatedCopy, system);
+				return system;
 			});
 		}
 	}

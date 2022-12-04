@@ -37,7 +37,7 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract T2 getObject(int index);
 
-	public abstract void update();
+	public abstract void update(float dt);
 
 	public abstract void render();
 

@@ -37,7 +37,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 		for (int i = 0; i < size; i++)
 			objects[i].scriptInterface.update();
 	}

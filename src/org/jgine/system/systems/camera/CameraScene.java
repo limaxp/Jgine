@@ -35,7 +35,7 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 	}
 
 	@Override
