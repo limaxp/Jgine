@@ -39,13 +39,8 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public void update() {
-		TaskManager.execute(size, this::update);
-	}
-
-	public void update(int index, int size) {
-		size = index + size;
-		for (; index < size; index++)
-			objects[index].scriptInterface.update();
+		for (int i = 0; i < size; i++)
+			objects[i].scriptInterface.update();
 	}
 
 	@Override
