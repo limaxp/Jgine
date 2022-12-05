@@ -14,16 +14,30 @@ public class Benchmark {
 		return data;
 	}
 
-	public static void start(Object identifier) {
-		get(identifier).startTimer();
+	public static BenchmarkData start(Object identifier) {
+		BenchmarkData benchmark = get(identifier);
+		benchmark.startTimer();
+		return benchmark;
 	}
 
-	public static void stop(Object identifier) {
-		get(identifier).stopTimer();
+	public static BenchmarkData stop(Object identifier) {
+		BenchmarkData benchmark = get(identifier);
+		benchmark.stopTimer();
+		return benchmark;
 	}
 
-	public static void clear(Object identifier) {
-		get(identifier).clear();
+	public static BenchmarkData clear(Object identifier) {
+		BenchmarkData benchmark = get(identifier);
+		benchmark.clear();
+		return benchmark;
+	}
+
+	public static BenchmarkData benchmark(Object identifier, Runnable func) {
+		BenchmarkData benchmark = get(identifier);
+		benchmark.startTimer();
+		func.run();
+		benchmark.stopTimer();
+		return benchmark;
 	}
 
 	public static long benchmark(Runnable func) {
