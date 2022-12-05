@@ -12,7 +12,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.core.manager.TaskManager;
+import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.render.FrustumCulling2D;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
@@ -43,7 +43,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 		renderQueue.clear();
 		Camera camera = SystemManager.get(CameraSystem.class).getMainCamera();
 		frustumCulling.applyCamera(camera, 50);
-		TaskManager.execute(size, (index, size) -> update(frustumCulling, index, size));
+		TaskHelper.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}
 
 	private void update(FrustumCulling2D frustumCulling, int index, int size) {

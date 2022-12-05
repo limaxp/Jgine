@@ -9,10 +9,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.TaskManager;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.misc.utils.script.EventManager;
 import org.jgine.system.SystemObject;
 import org.jgine.system.data.EntityListSystemScene;
@@ -66,9 +66,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		subDt = dt / subSteps;
 
 		for (int i = 0; i < subSteps; i++) {
-//			TaskManager.execute(size, this::applyConstraint);
-			TaskManager.execute(size, this::solveCollisions);
-			TaskManager.execute(size, this::updatePositions);
+//			TaskHelper.execute(size, this::applyConstraint);
+			TaskHelper.execute(size, this::solveCollisions);
+			TaskHelper.execute(size, this::updatePositions);
 		}
 	}
 

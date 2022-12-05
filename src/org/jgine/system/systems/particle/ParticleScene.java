@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.TaskManager;
+import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.TransformListSystemScene;
 
@@ -36,7 +36,7 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 
 	@Override
 	public void update(float dt) {
-		TaskManager.execute(size, this::updateParticle);
+		TaskHelper.execute(size, this::updateParticle);
 	}
 
 	private void updateParticle(int index, int size) {
