@@ -9,14 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
 import org.jgine.misc.math.vector.Vector2f;
@@ -36,7 +33,6 @@ public class Scene {
 	private final List<SystemScene<?, ?>> systemList;
 	private final List<Entity> entities;
 	private final List<Entity> topEntities;
-	private final Map<Object, List<BiConsumer<Entity, Object>>> recieverMap;
 	private UpdateOrder updateOrder;
 	private UpdateOrder renderOrder;
 	private SpacePartitioning<Entity> spacePartitioning;
@@ -51,12 +47,10 @@ public class Scene {
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
-		recieverMap = new ConcurrentHashMap<Object, List<BiConsumer<Entity, Object>>>();
 		paused = false;
 	}
 
 	final void free() {
-		UpdateManager.unregister(this);
 		for (Entity entity : entities)
 			Entity.freeId(entity.id);
 		entities.clear();
@@ -299,17 +293,6 @@ public class Scene {
 				result.add(entity);
 		}
 		return result;
-	}
-
-	public final List<BiConsumer<Entity, Object>> getUpdateReciever(Object identifier) {
-		List<BiConsumer<Entity, Object>> reciever = recieverMap.get(identifier);
-		if (reciever == null)
-			recieverMap.put(identifier, reciever = new UnorderedArrayList<BiConsumer<Entity, Object>>());
-		return reciever;
-	}
-
-	public final Set<Object> getUpdateIdentifiers() {
-		return recieverMap.keySet();
 	}
 
 	public void setUpdateOrder(@Nullable UpdateOrder updateOrder) {

@@ -15,7 +15,6 @@ import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.core.manager.UpdateManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
 import org.jgine.misc.collection.list.IntList;
@@ -143,11 +142,8 @@ public abstract class Engine {
 
 		ConnectionManager.update();
 		for (Scene scene : scenes)
-			if (!scene.isPaused()) {
-				UpdateManager.distributeChanges();
+			if (!scene.isPaused())
 				updateScene(scene, dt);
-			}
-		UpdateManager.distributeChanges();
 		ServiceManager.distributeChanges();
 		Scheduler.update();
 		TaskExecutor.execute(Scheduler::updateAsync);

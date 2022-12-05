@@ -3,9 +3,9 @@ package org.jgine.system.systems.physic;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
@@ -30,11 +30,13 @@ import org.jgine.system.systems.script.IScript;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
-	private final BiConsumer<Entity, Object> positionUpdate = (entity, pos) -> {
-		PhysicObject physic = entity.getSystem(this);
-		if (physic != null)
-			physic.setPosition((Vector3f) pos);
-	};
+	static {
+		UpdateManager.addTransformPosiiton((entity, pos) -> {
+			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
+			if (physic != null)
+				physic.setPosition(pos);
+		});
+	}
 
 	private float gravity;
 	private float airResistanceFactor;
@@ -43,12 +45,10 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		super(system, scene, PhysicObject.class);
 		this.gravity = system.getGravity();
 		this.airResistanceFactor = system.getAirResistanceFactor();
-		UpdateManager.register(scene, UpdateManager.TRANSFORM_POSITION_IDENTIFIER, positionUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, UpdateManager.TRANSFORM_POSITION_IDENTIFIER, positionUpdate);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			PhysicObject object = objects[index];
 			if (object.updatePosition(subDt, gravity, airResistanceFactor)) {
 				Entity entity = entities[index];
-				UpdateManager.update(entity, UpdateManager.PHYSIC_POSITION_IDENTIFIER,
+				UpdateManager.getPhysicPosiiton().accept(entity,
 						entity.transform.setPositionIntern(object.x, object.y, object.z));
 			}
 		}

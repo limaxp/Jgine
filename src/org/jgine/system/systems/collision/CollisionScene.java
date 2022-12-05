@@ -3,31 +3,30 @@ package org.jgine.system.systems.collision;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.function.BiConsumer;
 
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.EntityListSystemScene;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
-	private final BiConsumer<Entity, Object> scaleUpdate = (entity, scale) -> {
-		Collider collider = entity.getSystem(this);
-		if (collider != null)
-			collider.scale((Vector3f) scale);
-	};
+	static {
+		UpdateManager.addTransformScale((entity, scale) -> {
+			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
+			if (collider != null)
+				collider.scale(scale);
+		});
+	}
 
 	public CollisionScene(CollisionSystem system, Scene scene) {
 		super(system, scene, Collider.class);
-		UpdateManager.register(scene, UpdateManager.TRANSFORM_SCALE_IDENTIFIER, scaleUpdate);
 	}
 
 	@Override
 	public void free() {
-		UpdateManager.unregister(scene, UpdateManager.TRANSFORM_SCALE_IDENTIFIER, scaleUpdate);
 	}
 
 	@Override

@@ -1,103 +1,55 @@
 package org.jgine.core.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
-import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.logger.Logger;
-import org.jgine.misc.utils.options.Options;
-import org.jgine.misc.utils.scheduler.TaskExecutor;
+import org.jgine.misc.math.vector.Vector3f;
 
 public class UpdateManager {
 
-	public static final Object TRANSFORM_POSITION_IDENTIFIER = new Object();
-	public static final Object TRANSFORM_SCALE_IDENTIFIER = new Object();
-	public static final Object PHYSIC_POSITION_IDENTIFIER = new Object();
-
-	private static final int QUEUE_SIZE = 100000;
-	@SuppressWarnings("unchecked") // extra slot so start thread can do updates
-	private static final List<Update>[] THREAD_LISTS = new List[TaskExecutor.getPoolSize() + 1];
-	private static int listSize;
-	private static final ThreadLocal<List<Update>> THREAD_LIST = new ThreadLocal<List<Update>>() {
+	@SuppressWarnings("rawtypes")
+	public static final BiConsumer NULL_FUNCTION = new BiConsumer() {
 
 		@Override
-		protected List<Update> initialValue() {
-			List<Update> list = new ArrayList<Update>(QUEUE_SIZE);
-			THREAD_LISTS[listSize++] = list;
-			return list;
+		public void accept(Object t, Object u) {
 		}
 	};
-	private static final List<Future<?>> UPDATE_TASKS = new ArrayList<Future<?>>();
 
-	public static void distributeChanges() {
-		if (Options.SYNCHRONIZED) {
-			for (int i = 0; i < listSize; i++)
-				distributeChanges(THREAD_LISTS[i]);
-			return;
-		}
+	@SuppressWarnings("unchecked")
+	private static BiConsumer<Entity, Vector3f> transformPosition = NULL_FUNCTION;
+	@SuppressWarnings("unchecked")
+	private static BiConsumer<Entity, Vector3f> transformScale = NULL_FUNCTION;
+	@SuppressWarnings("unchecked")
+	private static BiConsumer<Entity, Vector3f> physicPosition = NULL_FUNCTION;
 
-		for (int i = 0; i < listSize; i++) {
-			int treadIndex = i;
-			UPDATE_TASKS.add(TaskExecutor.submit(() -> distributeChanges(THREAD_LISTS[treadIndex])));
-		}
-		try {
-			for (Future<?> future : UPDATE_TASKS)
-				future.get();
-		} catch (InterruptedException | ExecutionException e) {
-			Logger.err("UpdateManager: Error on running update tasks!", e);
-		}
-		UPDATE_TASKS.clear();
+	public static void addTransformPosiiton(BiConsumer<Entity, Vector3f> func) {
+		transformPosition = addUpdate(transformPosition, func);
 	}
 
-	private static void distributeChanges(List<Update> list) {
-		for (Update update : list)
-			update.update();
-		list.clear();
+	public static BiConsumer<Entity, Vector3f> getTransformPosiiton() {
+		return transformPosition;
 	}
 
-	public static void register(Scene scene, Object identifier, BiConsumer<Entity, Object> func) {
-		scene.getUpdateReciever(identifier).add(func);
+	public static void addTransformScale(BiConsumer<Entity, Vector3f> func) {
+		transformScale = addUpdate(transformScale, func);
 	}
 
-	public static void unregister(Scene scene, Object identifier, BiConsumer<Entity, Object> func) {
-		scene.getUpdateReciever(identifier).remove(func);
+	public static BiConsumer<Entity, Vector3f> getTransformScale() {
+		return transformScale;
 	}
 
-	public static void unregister(Scene scene) {
+	public static void addPhysicPosiiton(BiConsumer<Entity, Vector3f> func) {
+		physicPosition = addUpdate(physicPosition, func);
 	}
 
-	public static void update(Entity entity, Object identifier, Object value) {
-		THREAD_LIST.get().add(new Update(entity, identifier, value));
+	public static BiConsumer<Entity, Vector3f> getPhysicPosiiton() {
+		return physicPosition;
 	}
 
-	public final List<BiConsumer<Entity, Object>> getReciever(Scene scene, Object identifier) {
-		return scene.getUpdateReciever(identifier);
-	}
-
-	public static Set<Object> getIdentifiers(Scene scene) {
-		return scene.getUpdateIdentifiers();
-	}
-
-	public static class Update {
-
-		public final Entity entity;
-		public final Object identifier;
-		public final Object value;
-
-		public Update(Entity entity, Object identifier, Object value) {
-			this.entity = entity;
-			this.identifier = identifier;
-			this.value = value;
-		}
-
-		public final void update() {
-			for (BiConsumer<Entity, Object> reciever : entity.scene.getUpdateReciever(identifier))
-				reciever.accept(entity, value);
-		}
+	public static <T> BiConsumer<Entity, T> addUpdate(BiConsumer<Entity, T> old, BiConsumer<Entity, T> func) {
+		if (old != NULL_FUNCTION)
+			return old.andThen(func);
+		else
+			return func;
 	}
 }
