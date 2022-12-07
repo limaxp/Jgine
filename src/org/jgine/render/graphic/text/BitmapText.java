@@ -4,8 +4,11 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 
 import java.nio.charset.Charset;
 
+import org.jgine.core.window.DisplayManager;
 import org.jgine.misc.collection.list.FloatList;
 import org.jgine.misc.collection.list.arrayList.FloatArrayList;
+import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.mesh.BaseMesh2D;
 
@@ -61,43 +64,69 @@ public class BitmapText extends Text {
 		FloatList textCoords = new FloatArrayList();
 		byte[] chars = text.getBytes(Charset.forName("ISO-8859-1"));
 		int numChars = chars.length;
-		int currentWidth = 0;
-		int currentHeight = 0;
+		float x0 = 0;
+		float y0 = 0;
+		Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
+		float factorX = 1.0f / contentScale.x;
+		float factorY = 1.0f / contentScale.y;
 		for (int i = 0; i < numChars; i++) {
 			byte currChar = chars[i];
 			if (currChar == '\n') {
-				currentHeight += tileHeight;
-				currentWidth = 0;
+				positions.add(x0);
+				positions.add(y0);
+				textCoords.add(0);
+				textCoords.add(0);
+				positions.add(x0);
+				positions.add(y0);
+				textCoords.add(0);
+				textCoords.add(0);
+				
+				x0 = 0;
+				y0 -= tileHeight * factorY;
+				
+				positions.add(x0);
+				positions.add(y0);
+				textCoords.add(0);
+				textCoords.add(0);
+				positions.add(x0);
+				positions.add(y0);
+				textCoords.add(0);
+				textCoords.add(0);
 				continue;
 			}
 
 			int col = currChar % colums;
 			int row = currChar / colums;
+			float x1 = x0 + tileWidth * factorX;
+			float y1 = y0 + tileHeight * factorY;
+			float s0 = (float) col / colums;
+			float s1 = ((float) col + 1) / colums;
+			float t0 = (float) row /  rows;
+			float t1 = ((float) row + 1) / rows;
+			
+			positions.add(x0);
+			positions.add(y0);
+			textCoords.add(s0);
+			textCoords.add(t1);
 
-			positions.add((float) currentWidth * tileWidth);
-			positions.add(-currentHeight);
-			textCoords.add((float) col / (float) colums);
-			textCoords.add((float) (row + 1) / (float) rows);
+			positions.add(x0);
+			positions.add(y1);
+			textCoords.add(s0);
+			textCoords.add(t0);
 
-			positions.add((float) currentWidth * tileWidth);
-			positions.add(tileHeight - currentHeight);
-			textCoords.add((float) col / (float) colums);
-			textCoords.add((float) row / (float) rows);
+			positions.add(x1);
+			positions.add(y0);
+			textCoords.add(s1);
+			textCoords.add(t1);
 
-			positions.add((float) currentWidth * tileWidth + tileWidth);
-			positions.add(-currentHeight);
-			textCoords.add((float) (col + 1) / (float) colums);
-			textCoords.add((float) (row + 1) / (float) rows);
-
-			positions.add((float) currentWidth * tileWidth + tileWidth);
-			positions.add(tileHeight - currentHeight);
-			textCoords.add((float) (col + 1) / (float) colums);
-			textCoords.add((float) row / (float) rows);
-			currentWidth++;
+			positions.add(x1);
+			positions.add(y1);
+			textCoords.add(s1);
+			textCoords.add(t0);
+			x0 += tileWidth * factorX;
 		}
 		BaseMesh2D mesh = new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
 		mesh.setMode(GL_TRIANGLE_STRIP);
 		return mesh;
 	}
-
 }

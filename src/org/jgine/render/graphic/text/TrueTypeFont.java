@@ -1,5 +1,6 @@
 package org.jgine.render.graphic.text;
 
+import static org.lwjgl.stb.STBTruetype.*;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_InitFont;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -60,6 +61,30 @@ public class TrueTypeFont implements Font {
 	public String getName() {
 		return name;
 	}
+	
+	public float getStringWidth(String text, int from, int to, int fontHeight) {
+        int width = 0;
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer pCodePoint       = stack.mallocInt(1);
+            IntBuffer pAdvancedWidth   = stack.mallocInt(1);
+            IntBuffer pLeftSideBearing = stack.mallocInt(1);
+
+            int i = from;
+            while (i < to) {
+                i += TrueTypeText.getCP(text, to, i, pCodePoint);
+                int cp = pCodePoint.get(0);
+
+                stbtt_GetCodepointHMetrics(info, cp, pAdvancedWidth, pLeftSideBearing);
+                width += pAdvancedWidth.get(0);
+
+                if (TrueTypeText.IS_KERNING && i < to) {
+                	TrueTypeText.getCP(text, to, i, pCodePoint);
+                    width += stbtt_GetCodepointKernAdvance(info, cp, pCodePoint.get(0));
+                }
+            }
+        }
+        return width * stbtt_ScaleForPixelHeight(info, fontHeight);
+    }
 
 	@Nullable
 	public static TrueTypeFont load(String name, File file) {

@@ -1,6 +1,5 @@
 package org.jgine.render.graphic.text;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetBakedQuad;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointKernAdvance;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -8,8 +7,11 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.jgine.core.window.DisplayManager;
 import org.jgine.misc.collection.list.FloatList;
 import org.jgine.misc.collection.list.arrayList.FloatArrayList;
+import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.mesh.BaseMesh2D;
 import org.lwjgl.stb.STBTTAlignedQuad;
@@ -17,7 +19,6 @@ import org.lwjgl.system.MemoryStack;
 
 public class TrueTypeText extends Text implements AutoCloseable {
 
-	public static final int CONTENT_SCALE = 1;
 	public static boolean IS_KERNING = true;
 
 	public TrueTypeText(TrueTypeFont font, int size, String text) {
@@ -70,8 +71,9 @@ public class TrueTypeText extends Text implements AutoCloseable {
 			FloatBuffer y = stack.floats(0.0f);
 			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
 
-			float factorX = 1.0f / CONTENT_SCALE;
-			float factorY = 1.0f / CONTENT_SCALE;
+			Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
+			float factorX = 1.0f / contentScale.x;
+			float factorY = 1.0f / contentScale.y;
 			float lineY = 0.0f;
 
 			for (int i = 0, to = text.length(); i < to;) {
@@ -95,44 +97,50 @@ public class TrueTypeText extends Text implements AutoCloseable {
 					x.put(0, x.get(0) + stbtt_GetCodepointKernAdvance(font.info, cp, pCodePoint.get(0)) * scale);
 				}
 
-				float x0 = scale(cpX, q.x0(), factorX), x1 = scale(cpX, q.x1(), factorX),
-						y0 = scale(lineY, -q.y1(), factorY), y1 = scale(lineY, -q.y0(), factorY);
-
-				// Left Top vertex
-				positions.add(x0);
-				positions.add(y1);
-				textCoords.add(q.s0());
-				textCoords.add(q.t0());
-
-				// Left Bottom vertex
-				positions.add(x1);
-				positions.add(y1);
-				textCoords.add(q.s1());
-				textCoords.add(q.t0());
-
-				// Right Bottom vertex
+				float x0 = scale(cpX, q.x0(), factorX);
+				float x1 = scale(cpX, q.x1(), factorX);
+				float y0 = scale(lineY, -q.y1(), factorY);
+				float y1 = scale(lineY, -q.y0(), factorY);
+				
 				positions.add(x0);
 				positions.add(y0);
 				textCoords.add(q.s0());
 				textCoords.add(q.t1());
-
-				// Right Top vertex
+				
+				positions.add(x0);
+				positions.add(y1);
+				textCoords.add(q.s0());
+				textCoords.add(q.t0());
+				
 				positions.add(x1);
 				positions.add(y0);
 				textCoords.add(q.s1());
 				textCoords.add(q.t1());
+				
+				positions.add(x1);
+				positions.add(y0);
+				textCoords.add(q.s1());
+				textCoords.add(q.t1());
+				
+				positions.add(x0);
+				positions.add(y1);
+				textCoords.add(q.s0());
+				textCoords.add(q.t0());
+				
+				positions.add(x1);
+				positions.add(y1);
+				textCoords.add(q.s1());
+				textCoords.add(q.t0());
 			}
 		}
-		BaseMesh2D mesh = new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
-		mesh.setMode(GL_TRIANGLE_STRIP);
-		return mesh;
+		return new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
 	}
 
 	private static float scale(float center, float offset, float factor) {
 		return (offset - center) * factor + center;
 	}
 
-	private static int getCP(String text, int to, int i, IntBuffer cpOut) {
+	public static int getCP(String text, int to, int i, IntBuffer cpOut) {
 		char c1 = text.charAt(i);
 		if (Character.isHighSurrogate(c1) && i + 1 < to) {
 			char c2 = text.charAt(i + 1);

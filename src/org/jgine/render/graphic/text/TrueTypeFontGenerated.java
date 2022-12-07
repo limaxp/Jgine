@@ -10,7 +10,10 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jgine.core.window.DisplayManager;
 import org.jgine.misc.math.FastMath;
+import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Texture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -34,11 +37,12 @@ public class TrueTypeFontGenerated implements AutoCloseable {
 	protected TrueTypeFontGenerated(TrueTypeFont font, int size, int width, int height) {
 		this.font = font;
 		this.size = size;
-		this.width = FastMath.round(width * TrueTypeText.CONTENT_SCALE);
-		this.height = FastMath.round(height * TrueTypeText.CONTENT_SCALE);
+		Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
+		this.width = width = FastMath.round(width * contentScale.x);
+		this.height = height = FastMath.round(height * contentScale.y);
 		buffer = STBTTBakedChar.malloc(96);
 		ByteBuffer bitmap = BufferUtils.createByteBuffer(width * height);
-		stbtt_BakeFontBitmap(font.ttf, size * TrueTypeText.CONTENT_SCALE, bitmap, width, height, 32, buffer);
+		stbtt_BakeFontBitmap(font.ttf, size * contentScale.y, bitmap, width, height, 32, buffer);
 		texture = new Texture();
 		texture.load(bitmap, width, height, GL11.GL_RED);
 		texture.setParameteriv(GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_ZERO, GL_ZERO, GL_ZERO, GL_RED });
