@@ -55,7 +55,6 @@ public class BitmapText extends Text {
 	}
 
 	public static BaseMesh2D buildMesh(BitmapFont font, int size, String text) {
-		// TODO size!
 		int colums = font.colums;
 		int rows = font.rows;
 		float tileWidth = font.getTileWidth();
@@ -66,6 +65,7 @@ public class BitmapText extends Text {
 		int numChars = chars.length;
 		float x0 = 0;
 		float y0 = 0;
+		float scale = (float) size / 42;
 		Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
 		float factorX = 1.0f / contentScale.x;
 		float factorY = 1.0f / contentScale.y;
@@ -82,7 +82,7 @@ public class BitmapText extends Text {
 				textCoords.add(0);
 				
 				x0 = 0;
-				y0 -= tileHeight * factorY;
+				y0 -= tileHeight * scale * factorY;
 				
 				positions.add(x0);
 				positions.add(y0);
@@ -97,8 +97,8 @@ public class BitmapText extends Text {
 
 			int col = currChar % colums;
 			int row = currChar / colums;
-			float x1 = x0 + tileWidth * factorX;
-			float y1 = y0 + tileHeight * factorY;
+			float x1 = x0 + tileWidth * scale * factorX;
+			float y1 = y0 + tileHeight * scale * factorY;
 			float s0 = (float) col / colums;
 			float s1 = ((float) col + 1) / colums;
 			float t0 = (float) row /  rows;
@@ -123,7 +123,7 @@ public class BitmapText extends Text {
 			positions.add(y1);
 			textCoords.add(s1);
 			textCoords.add(t0);
-			x0 += tileWidth * factorX;
+			x0 += tileWidth * scale * factorX;
 		}
 		BaseMesh2D mesh = new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
 		mesh.setMode(GL_TRIANGLE_STRIP);

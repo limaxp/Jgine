@@ -91,7 +91,7 @@ public class UILabel extends UIObject {
 				getWidth(), getHeight(), 0);
 		if (hasWindow())
 			textTransform.mult(getWindow().getTransform());
-		textTransform.scaling(0.001f, 0.001f, 0.001f);
+		textTransform.scaling(0.003f, 0.003f, 0.003f);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,7 +116,7 @@ public class UILabel extends UIObject {
 		Object textData = data.get("text");
 		if (textData instanceof String) {
 			int type = YamlHelper.toTextType(data.get("textType"));
-			int textSize = YamlHelper.toInt(data.get("textSize"), 64);
+			int textSize = YamlHelper.toInt(data.get("textSize"), 24);
 			if (type == Text.TYPE_TRUETYPE) {
 				TrueTypeFont font = TrueTypeFont.ARIAL;
 				Object fontData = data.get("font");
