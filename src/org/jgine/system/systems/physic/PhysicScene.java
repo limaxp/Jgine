@@ -31,7 +31,7 @@ import org.jgine.system.systems.script.IScript;
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
 	static {
-		UpdateManager.addTransformPosiiton((entity, pos) -> {
+		UpdateManager.addTransformPosition((entity, pos) -> {
 			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
 			if (physic != null)
 				physic.setPosition(pos);

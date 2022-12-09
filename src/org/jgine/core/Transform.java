@@ -92,19 +92,19 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setPosition(Vector2f position) {
-		UpdateManager.getTransformPosiiton().accept(entity, setPositionIntern(position.x, position.y, 0));
+		UpdateManager.getTransformPosition().accept(entity, setPositionIntern(position.x, position.y, 0));
 	}
 
 	public final void setPosition(float x, float y) {
-		UpdateManager.getTransformPosiiton().accept(entity, setPositionIntern(x, y, 0));
+		UpdateManager.getTransformPosition().accept(entity, setPositionIntern(x, y, 0));
 	}
 
 	public final void setPosition(Vector3f position) {
-		UpdateManager.getTransformPosiiton().accept(entity, setPositionIntern(position.x, position.y, position.z));
+		UpdateManager.getTransformPosition().accept(entity, setPositionIntern(position.x, position.y, position.z));
 	}
 
 	public final void setPosition(float x, float y, float z) {
-		UpdateManager.getTransformPosiiton().accept(entity, setPositionIntern(x, y, z));
+		UpdateManager.getTransformPosition().accept(entity, setPositionIntern(x, y, z));
 	}
 
 	public final Vector3f setPositionIntern(float x, float y, float z) {
@@ -154,23 +154,23 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setScale(Vector2f scale) {
-		UpdateManager.getTransformPosiiton().accept(entity, setScaleIntern(scale.x, scale.y, 0));
+		UpdateManager.getTransformScale().accept(entity, setScaleIntern(scale.x, scale.y, 0));
 	}
 
 	public final void setScale(float x, float y) {
-		UpdateManager.getTransformPosiiton().accept(entity, setScaleIntern(x, y, 0));
+		UpdateManager.getTransformScale().accept(entity, setScaleIntern(x, y, 0));
 	}
 
 	public final void setScale(Vector3f scale) {
-		UpdateManager.getTransformPosiiton().accept(entity, setScaleIntern(scale.x, scale.y, scale.z));
+		UpdateManager.getTransformScale().accept(entity, setScaleIntern(scale.x, scale.y, scale.z));
 	}
 
 	public final void setScale(float scale) {
-		UpdateManager.getTransformPosiiton().accept(entity, setScaleIntern(scale, scale, scale));
+		UpdateManager.getTransformScale().accept(entity, setScaleIntern(scale, scale, scale));
 	}
 
 	public final void setScale(float x, float y, float z) {
-		UpdateManager.getTransformPosiiton().accept(entity, setScaleIntern(x, y, z));
+		UpdateManager.getTransformScale().accept(entity, setScaleIntern(x, y, z));
 	}
 
 	public final Vector3f setScaleIntern(float x, float y, float z) {
@@ -178,7 +178,7 @@ public class Transform implements Cloneable {
 		scaleY = y;
 		scaleZ = z;
 		calculateMatrix();
-		return matrix.getPosition();
+		return matrix.getScale();
 	}
 
 	public final Vector3f getScale() {

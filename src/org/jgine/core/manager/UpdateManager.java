@@ -22,11 +22,11 @@ public class UpdateManager {
 	@SuppressWarnings("unchecked")
 	private static BiConsumer<Entity, Vector3f> physicPosition = NULL_FUNCTION;
 
-	public static void addTransformPosiiton(BiConsumer<Entity, Vector3f> func) {
+	public static void addTransformPosition(BiConsumer<Entity, Vector3f> func) {
 		transformPosition = addUpdate(transformPosition, func);
 	}
 
-	public static BiConsumer<Entity, Vector3f> getTransformPosiiton() {
+	public static BiConsumer<Entity, Vector3f> getTransformPosition() {
 		return transformPosition;
 	}
 
