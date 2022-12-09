@@ -15,11 +15,11 @@ public class RenderConfiguration {
 	private Matrix matrix;
 
 	public RenderConfiguration() {
-		this(new RenderTarget(), 0, 0, 1, 1);
+		this(RenderTarget.createDefault(), 0, 0, 1, 1);
 	}
 
 	public RenderConfiguration(float x, float y, float width, float height) {
-		this(new RenderTarget(), x, y, width, height);
+		this(RenderTarget.createDefault(), x, y, width, height);
 	}
 
 	public RenderConfiguration(RenderTarget renderTarget, float x, float y, float width, float height) {

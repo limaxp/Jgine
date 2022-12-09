@@ -1,5 +1,6 @@
 package org.jgine.render;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
@@ -36,6 +37,7 @@ public class Renderer {
 
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
+	protected static RenderTarget renderTarget;
 
 	protected static final BaseMesh2D QUAD_MESH;
 	protected static final Mesh CUBE_MESH;
@@ -185,11 +187,26 @@ public class Renderer {
 	public static void setCamera(Camera camera) {
 		if (Renderer.camera != camera)
 			Renderer.camera = camera;
-		camera.getRenderTarget().bindRenderTarget();
+		setRenderTarget(camera.getRenderTarget());
 	}
 
 	public static Camera getCamera() {
 		return camera;
+	}
+
+	public static void setRenderTarget(@Nullable RenderTarget renderTarget) {
+		if (Renderer.renderTarget != renderTarget) {
+			if (renderTarget == null)
+				Renderer.renderTarget.unbindViewport();
+			else
+				renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
+			Renderer.renderTarget = renderTarget;
+		}
+	}
+
+	@Nullable
+	public static RenderTarget getRenderTarget() {
+		return renderTarget;
 	}
 
 	public static void enableWireframeMode() {

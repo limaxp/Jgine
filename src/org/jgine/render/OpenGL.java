@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glFrontFace;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 
 import org.jgine.misc.utils.options.Options;
 import org.lwjgl.opengl.GL;
@@ -50,6 +51,7 @@ public class OpenGL {
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
+		glEnable(GL_MULTISAMPLE);  
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (Options.DEBUG)
 			GLUtil.setupDebugMessageCallback();

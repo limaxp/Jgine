@@ -171,7 +171,6 @@ public abstract class Engine {
 	}
 
 	private final void renderCameras() {
-		// TODO this should not access systems!
 		for (Camera camera : SystemManager.get(CameraSystem.class).getCameras()) {
 			Scene scene = camera.getTransform().getEntity().scene;
 			if (scene.isPaused())
@@ -183,11 +182,12 @@ public abstract class Engine {
 
 	private final void renderFrames() {
 		Renderer.setShader(Renderer.POST_PROCESS_SHADER);
-		RenderTarget renderTarget = Renderer.getCamera().getRenderTarget();
-		renderTarget.unbindRenderTarget();
+		RenderTarget renderTarget = Renderer.getRenderTarget();
+		Renderer.setRenderTarget(null);
 		for (RenderConfiguration renderConfig : renderConfigs)
-			UIRenderer.renderQuad(renderConfig.getMatrix(), new Material(renderConfig.getRenderTarget()));
-		renderTarget.bindRenderTarget();
+			UIRenderer.renderQuad(renderConfig.getMatrix(),
+					new Material(renderConfig.getRenderTarget().getTexture(RenderTarget.COLOR_ATTACHMENT0)));
+		Renderer.setRenderTarget(renderTarget);
 	}
 
 	private final void renderScene(Scene scene) {

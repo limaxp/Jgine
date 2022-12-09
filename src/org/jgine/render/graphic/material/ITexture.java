@@ -1,6 +1,8 @@
 package org.jgine.render.graphic.material;
 
-public interface ITexture extends AutoCloseable {
+import org.jgine.render.RenderTarget.Attachment;
+
+public interface ITexture extends AutoCloseable, Attachment {
 
 	public String getName();
 

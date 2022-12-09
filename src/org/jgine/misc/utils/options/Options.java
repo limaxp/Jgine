@@ -73,6 +73,8 @@ public class Options {
 	public static final Option MONITOR = a("jgine.graphic.monitor", 0);
 
 	public static final Option WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.WINDOWED);
+	
+	public static final Option ANTI_ALIASING = a("jgine.graphic.antialiasing", 4);
 
 	public static final boolean USE_COMPRESSED_OOPS = a("UseCompressedOops", false).getBoolean();
 

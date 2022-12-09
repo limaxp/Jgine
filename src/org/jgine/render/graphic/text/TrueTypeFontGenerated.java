@@ -45,7 +45,9 @@ public class TrueTypeFontGenerated implements AutoCloseable {
 		stbtt_BakeFontBitmap(font.ttf, size * contentScale.y, bitmap, width, height, 32, buffer);
 		texture = new Texture();
 		texture.load(bitmap, width, height, GL11.GL_RED);
+		texture.bind();
 		texture.setParameteriv(GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_ZERO, GL_ZERO, GL_ZERO, GL_RED });
+		texture.unbind();
 	}
 
 	@Override
