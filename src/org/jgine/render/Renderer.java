@@ -60,7 +60,7 @@ public class Renderer {
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		CIRCLE_SHADER = new CircleShader("Circle");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
-		
+
 		POST_PROCESS_TARGET = new RenderTarget();
 		POST_PROCESS_TARGET.bind();
 		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
@@ -95,10 +95,10 @@ public class Renderer {
 			RenderTarget intermediateTarget = renderConfig.getIntermediateTarget();
 			configTarget.bindRead();
 			intermediateTarget.bindDraw();
-			RenderTarget.blit(0, 0, windowSize.x, windowSize.y,
-					0, 0, windowSize.x, windowSize.y,
+			RenderTarget.blit(0, 0, windowSize.x, windowSize.y, 0, 0, windowSize.x, windowSize.y,
 					RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
-			
+
+			// TODO resize blit does create edges!
 			intermediateTarget.bindRead();
 			POST_PROCESS_TARGET.bindDraw();
 			Attachment attachment = intermediateTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);

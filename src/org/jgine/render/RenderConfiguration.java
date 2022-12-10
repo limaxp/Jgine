@@ -32,7 +32,7 @@ public class RenderConfiguration implements AutoCloseable {
 		this.height = height;
 		setRenderTarget(renderTarget);
 	}
-	
+
 	@Override
 	public void close() {
 		renderTarget.close();
@@ -52,7 +52,7 @@ public class RenderConfiguration implements AutoCloseable {
 		Attachment attachment = renderTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
 		this.intermediateTarget = new RenderTarget();
 		this.intermediateTarget.bind();
-		this.intermediateTarget.setTexture(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, attachment.getWidth(),
+		this.intermediateTarget.setRenderBuffer(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, attachment.getWidth(),
 				attachment.getHeight());
 		this.intermediateTarget.checkStatus();
 		this.intermediateTarget.unbind();
