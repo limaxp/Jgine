@@ -3,13 +3,12 @@ package org.jgine.render;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
@@ -63,8 +62,8 @@ public class Renderer {
 
 		POST_PROCESS_TARGET = new RenderTarget();
 		POST_PROCESS_TARGET.bind();
-		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
-		POST_PROCESS_TARGET.setTexture(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, windowSize.x, windowSize.y);
+		POST_PROCESS_TARGET.setTexture(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, Options.RESOLUTION_X.getInt(),
+				Options.RESOLUTION_Y.getInt());
 		POST_PROCESS_TARGET.checkStatus();
 		POST_PROCESS_TARGET.unbind();
 
