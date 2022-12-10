@@ -8,6 +8,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
@@ -20,11 +21,16 @@ import static org.lwjgl.opengl.GL11.glFrontFace;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
+
+import java.util.function.Consumer;
 
 import org.jgine.misc.utils.options.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.MemoryUtil;
 
 /**
  * @author Maximilian Paar
@@ -51,7 +57,7 @@ public class OpenGL {
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
-		glEnable(GL_MULTISAMPLE);  
+		glEnable(GL_MULTISAMPLE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (Options.DEBUG)
 			GLUtil.setupDebugMessageCallback();
@@ -103,5 +109,20 @@ public class OpenGL {
 
 	public static int getError() {
 		return glGetError();
+	}
+
+	public static void checkError(Consumer<Integer> func) {
+		int err;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			func.accept(err);
+		}
+	}
+
+	public static void setDebugMessageCallback(GLDebugMessageCallbackI callback) {
+		glDebugMessageCallback(callback, 0);
+	}
+
+	public static String pointerToString(long message, int length) {
+		return MemoryUtil.memUTF8(MemoryUtil.memByteBuffer(message, length));
 	}
 }
