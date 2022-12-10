@@ -60,7 +60,7 @@ public class Renderer {
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		CIRCLE_SHADER = new CircleShader("Circle");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
-
+		
 		POST_PROCESS_TARGET = new RenderTarget();
 		POST_PROCESS_TARGET.bind();
 		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
@@ -81,7 +81,6 @@ public class Renderer {
 	}
 
 	public static void terminate() {
-		POST_PROCESS_TARGET.close();
 		QUAD_MESH.close();
 		CUBE_MESH.close();
 		BillboardParticle.free();
@@ -91,11 +90,18 @@ public class Renderer {
 
 	public static void renderFrame(List<RenderConfiguration> renderConfigs) {
 		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
-		POST_PROCESS_TARGET.bindDraw();
 		for (RenderConfiguration renderConfig : renderConfigs) {
 			RenderTarget configTarget = renderConfig.getRenderTarget();
+			RenderTarget intermediateTarget = renderConfig.getIntermediateTarget();
 			configTarget.bindRead();
-			Attachment attachment = configTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
+			intermediateTarget.bindDraw();
+			RenderTarget.blit(0, 0, windowSize.x, windowSize.y,
+					0, 0, windowSize.x, windowSize.y,
+					RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
+			
+			intermediateTarget.bindRead();
+			POST_PROCESS_TARGET.bindDraw();
+			Attachment attachment = intermediateTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
 			RenderTarget.blit(0, 0, attachment.getWidth(), attachment.getHeight(),
 					(int) (renderConfig.getX() * windowSize.x), (int) (renderConfig.getY() * windowSize.y),
 					(int) (renderConfig.getWidth() * windowSize.x), (int) (renderConfig.getHeight() * windowSize.y),

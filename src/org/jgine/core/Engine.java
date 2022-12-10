@@ -97,6 +97,8 @@ public abstract class Engine {
 			scene.free();
 		TaskExecutor.shutdown();
 		ResourceManager.terminate();
+		for (RenderConfiguration renderConfig : renderConfigs)
+			renderConfig.close();
 		Renderer.terminate();
 		SoundManager.terminate();
 		window.delete();
@@ -242,12 +244,29 @@ public abstract class Engine {
 		isRunning = false;
 	}
 
-	public List<RenderConfiguration> getRenderConfigs() {
-		return renderConfigs;
+	public void addRenderConfig(RenderConfiguration renderConfig) {
+		renderConfigs.add(renderConfig);
+	}
+	
+	public void removeRenderConfig(RenderConfiguration renderConfig) {
+		renderConfigs.remove(renderConfig);
+		renderConfig.close();
+	}
+	
+	public void removeRenderConfig(int index) {
+		renderConfigs.remove(index).close();
 	}
 
 	public final RenderConfiguration getRenderConfig() {
 		return renderConfigs.get(0);
+	}
+	
+	public final RenderConfiguration getRenderConfig(int index) {
+		return renderConfigs.get(index);
+	}
+	
+	public final int getRenderConfigSize() {
+		return renderConfigs.size();
 	}
 
 	private static class SceneUpdate extends SceneRender {
