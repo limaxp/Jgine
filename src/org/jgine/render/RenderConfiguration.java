@@ -1,9 +1,8 @@
 package org.jgine.render;
 
-import org.jgine.core.Transform;
-import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector4f;
+import org.jgine.misc.utils.options.Options;
 
 public class RenderConfiguration {
 
@@ -12,14 +11,15 @@ public class RenderConfiguration {
 	private float y;
 	private float width;
 	private float height;
-	private Matrix matrix;
 
 	public RenderConfiguration() {
-		this(RenderTarget.createDefault(), 0, 0, 1, 1);
+		this(RenderTarget.createDefaultRenderBuffer(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt()), 0, 0,
+				1, 1);
 	}
 
 	public RenderConfiguration(float x, float y, float width, float height) {
-		this(RenderTarget.createDefault(), x, y, width, height);
+		this(RenderTarget.createDefaultRenderBuffer(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt()), x, y,
+				width, height);
 	}
 
 	public RenderConfiguration(RenderTarget renderTarget, float x, float y, float width, float height) {
@@ -28,8 +28,6 @@ public class RenderConfiguration {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		matrix = new Matrix();
-		updateMatrix();
 	}
 
 	public RenderTarget getRenderTarget() {
@@ -42,7 +40,6 @@ public class RenderConfiguration {
 
 	public void setX(float x) {
 		this.x = x;
-		updateMatrix();
 	}
 
 	public float getX() {
@@ -51,7 +48,6 @@ public class RenderConfiguration {
 
 	public void setY(float y) {
 		this.y = y;
-		updateMatrix();
 	}
 
 	public float getY() {
@@ -65,12 +61,10 @@ public class RenderConfiguration {
 	public void setPosition(float x, float y) {
 		this.x = x;
 		this.y = y;
-		updateMatrix();
 	}
 
 	public void setWidth(float width) {
 		this.width = width;
-		updateMatrix();
 	}
 
 	public float getWidth() {
@@ -79,7 +73,6 @@ public class RenderConfiguration {
 
 	public void setHeight(float height) {
 		this.height = height;
-		updateMatrix();
 	}
 
 	public float getHeight() {
@@ -93,7 +86,6 @@ public class RenderConfiguration {
 	public void setScale(float width, float height) {
 		this.width = width;
 		this.height = height;
-		updateMatrix();
 	}
 
 	public void set(Vector4f values) {
@@ -105,15 +97,5 @@ public class RenderConfiguration {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		updateMatrix();
-	}
-
-	public Matrix getMatrix() {
-		return matrix;
-	}
-
-	private void updateMatrix() {
-		Transform.calculateMatrix(matrix, -1 + (x + width * 0.5f) * 2, -1 + (y + height * 0.5f) * 2, 0, width, height,
-				0);
 	}
 }

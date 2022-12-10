@@ -26,10 +26,7 @@ import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.render.RenderConfiguration;
-import org.jgine.render.RenderTarget;
 import org.jgine.render.Renderer;
-import org.jgine.render.UIRenderer;
-import org.jgine.render.graphic.material.Material;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
@@ -165,7 +162,7 @@ public abstract class Engine {
 
 	private final void render() {
 		renderCameras();
-		renderFrames();
+		Renderer.renderFrame(renderConfigs);
 		window.swapBuffers();
 		onRender();
 	}
@@ -178,16 +175,6 @@ public abstract class Engine {
 			Renderer.setCamera(camera);
 			renderScene(scene);
 		}
-	}
-
-	private final void renderFrames() {
-		Renderer.setShader(Renderer.POST_PROCESS_SHADER);
-		RenderTarget renderTarget = Renderer.getRenderTarget();
-		Renderer.setRenderTarget(null);
-		for (RenderConfiguration renderConfig : renderConfigs)
-			UIRenderer.renderQuad(renderConfig.getMatrix(),
-					new Material(renderConfig.getRenderTarget().getTexture(RenderTarget.COLOR_ATTACHMENT0)));
-		Renderer.setRenderTarget(renderTarget);
 	}
 
 	private final void renderScene(Scene scene) {

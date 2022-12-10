@@ -1,12 +1,19 @@
 package org.jgine.render;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.Engine;
+import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
+import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
+import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.BaseMesh;
 import org.jgine.render.graphic.mesh.BaseMesh2D;
 import org.jgine.render.graphic.mesh.Mesh;
@@ -35,12 +42,13 @@ public class Renderer {
 	public static final CircleShader CIRCLE_SHADER;
 	public static final PostProcessShader POST_PROCESS_SHADER;
 
+	protected static final RenderTarget POST_PROCESS_TARGET;
+	protected static final BaseMesh2D QUAD_MESH;
+	protected static final Mesh CUBE_MESH;
+
 	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
 	protected static RenderTarget renderTarget;
-
-	protected static final BaseMesh2D QUAD_MESH;
-	protected static final Mesh CUBE_MESH;
 
 	static {
 		OpenGL.init();
@@ -52,6 +60,13 @@ public class Renderer {
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		CIRCLE_SHADER = new CircleShader("Circle");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
+
+		POST_PROCESS_TARGET = new RenderTarget();
+		POST_PROCESS_TARGET.bind();
+		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
+		POST_PROCESS_TARGET.setTexture(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, windowSize.x, windowSize.y);
+		POST_PROCESS_TARGET.checkStatus();
+		POST_PROCESS_TARGET.unbind();
 
 		QUAD_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
 		QUAD_MESH.setMode(MeshMode.TRIANGLE_STRIP);
@@ -66,11 +81,33 @@ public class Renderer {
 	}
 
 	public static void terminate() {
+		POST_PROCESS_TARGET.close();
 		QUAD_MESH.close();
 		CUBE_MESH.close();
 		BillboardParticle.free();
 
 		OpenGL.terminate();
+	}
+
+	public static void renderFrame(List<RenderConfiguration> renderConfigs) {
+		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
+		POST_PROCESS_TARGET.bindDraw();
+		for (RenderConfiguration renderConfig : renderConfigs) {
+			RenderTarget configTarget = renderConfig.getRenderTarget();
+			configTarget.bindRead();
+			Attachment attachment = configTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
+			RenderTarget.blit(0, 0, attachment.getWidth(), attachment.getHeight(),
+					(int) (renderConfig.getX() * windowSize.x), (int) (renderConfig.getY() * windowSize.y),
+					(int) (renderConfig.getWidth() * windowSize.x), (int) (renderConfig.getHeight() * windowSize.y),
+					RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
+		}
+
+		setShader(POST_PROCESS_SHADER);
+		RenderTarget temp = Renderer.renderTarget;
+		setRenderTarget(null);
+		UIRenderer.renderQuad(Transform.calculateMatrix(new Matrix(), 0, 0, 0, 1, 1, 0),
+				new Material(POST_PROCESS_TARGET.getTexture(RenderTarget.COLOR_ATTACHMENT0)));
+		setRenderTarget(temp);
 	}
 
 	public static void render(Matrix transform, Model model) {

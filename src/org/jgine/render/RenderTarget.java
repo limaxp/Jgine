@@ -57,18 +57,18 @@ import static org.lwjgl.opengl.GL30.glBindRenderbuffer;
 import static org.lwjgl.opengl.GL30.glBlitFramebuffer;
 import static org.lwjgl.opengl.GL30.glCheckFramebufferStatus;
 import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
+import static org.lwjgl.opengl.GL30.glDeleteRenderbuffers;
 import static org.lwjgl.opengl.GL30.glFramebufferRenderbuffer;
 import static org.lwjgl.opengl.GL30.glFramebufferTexture2D;
 import static org.lwjgl.opengl.GL30.glGenFramebuffers;
 import static org.lwjgl.opengl.GL30.glGenRenderbuffers;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.opengl.GL30.glRenderbufferStorageMultisample;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Engine;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Texture;
 
 public class RenderTarget implements AutoCloseable {
@@ -125,22 +125,48 @@ public class RenderTarget implements AutoCloseable {
 	public static final int DEPTH32F_STENCIL8 = GL_DEPTH32F_STENCIL8;
 	public static final int STENCIL_INDEX8 = GL_STENCIL_INDEX8;
 
-	public int fbo;
-	protected Attachment[] attachments;
-
-	public static RenderTarget createDefault() {
-		return createDefault(Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt());
-	}
-
 	public static RenderTarget createDefault(int width, int height) {
 		RenderTarget renderTarget = new RenderTarget();
 		renderTarget.bind();
 		renderTarget.setTexture(Texture.RGB, COLOR_ATTACHMENT0, width, height);
-		renderTarget.setRenderBuffer(Texture.DEPTH_COMPONENT, DEPTH_ATTACHMENT, width, height);
+		renderTarget.setRenderBuffer(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, width, height);
 		renderTarget.checkStatus();
 		renderTarget.unbind();
 		return renderTarget;
 	}
+
+	public static RenderTarget createDefaultMultisample(int width, int height, int samples) {
+		RenderTarget renderTarget = new RenderTarget();
+		renderTarget.bind();
+		renderTarget.setTextureMultisample(Texture.RGB, COLOR_ATTACHMENT0, samples, width, height);
+		renderTarget.setRenderBufferMultisample(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, samples, width, height);
+		renderTarget.checkStatus();
+		renderTarget.unbind();
+		return renderTarget;
+	}
+
+	public static RenderTarget createDefaultRenderBuffer(int width, int height) {
+		RenderTarget renderTarget = new RenderTarget();
+		renderTarget.bind();
+		renderTarget.setRenderBuffer(Texture.RGB, COLOR_ATTACHMENT0, width, height);
+		renderTarget.setRenderBuffer(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, width, height);
+		renderTarget.checkStatus();
+		renderTarget.unbind();
+		return renderTarget;
+	}
+
+	public static RenderTarget createDefaultRenderBufferMultisample(int width, int height, int samples) {
+		RenderTarget renderTarget = new RenderTarget();
+		renderTarget.bind();
+		renderTarget.setRenderBufferMultisample(Texture.RGB, COLOR_ATTACHMENT0, samples, width, height);
+		renderTarget.setRenderBufferMultisample(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, samples, width, height);
+		renderTarget.checkStatus();
+		renderTarget.unbind();
+		return renderTarget;
+	}
+
+	protected int fbo;
+	protected Attachment[] attachments;
 
 	public RenderTarget() {
 		fbo = glGenFramebuffers();
@@ -150,6 +176,8 @@ public class RenderTarget implements AutoCloseable {
 	@Override
 	public void close() {
 		for (int i = 0; i < attachments.length; i++) {
+			if (attachments[i] == null)
+				continue;
 			attachments[i].close();
 			attachments[i] = null;
 		}
