@@ -1,7 +1,7 @@
 package org.jgine.render.graphic.text;
 
-import static org.lwjgl.stb.STBTruetype.stbtt_GetBakedQuad;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointKernAdvance;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 import java.nio.FloatBuffer;
@@ -15,6 +15,7 @@ import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.mesh.BaseMesh2D;
 import org.lwjgl.stb.STBTTAlignedQuad;
+import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 
 public class TrueTypeText extends Text implements AutoCloseable {
@@ -30,9 +31,9 @@ public class TrueTypeText extends Text implements AutoCloseable {
 	protected void buildMesh() {
 		if (mesh != null)
 			close();
-		TrueTypeFontGenerated generatedFont = TrueTypeFontGenerated.get((TrueTypeFont) font, size);
+		TrueTypeFontGenerated generatedFont = TrueTypeFontGenerated.get((TrueTypeFont) font);
 		material.setTexture(generatedFont.texture);
-		mesh = buildMesh(generatedFont, text);
+		mesh = buildMesh(generatedFont, size, text);
 	}
 
 	@Override
@@ -60,9 +61,9 @@ public class TrueTypeText extends Text implements AutoCloseable {
 		buildMesh();
 	}
 
-	public static BaseMesh2D buildMesh(TrueTypeFontGenerated generatedFont, String text) {
+	public static BaseMesh2D buildMesh(TrueTypeFontGenerated generatedFont, int size, String text) {
 		TrueTypeFont font = generatedFont.font;
-		float scale = generatedFont.getScaleForPixelHeight();
+		float scale = generatedFont.getScaleForPixelHeight(size);
 		FloatList positions = new FloatArrayList();
 		FloatList textCoords = new FloatArrayList();
 		try (MemoryStack stack = stackPush()) {
@@ -76,6 +77,7 @@ public class TrueTypeText extends Text implements AutoCloseable {
 			float factorY = 1.0f / contentScale.y;
 			float lineY = 0.0f;
 
+			STBTTPackedchar.Buffer buffer = generatedFont.getBuffer(size);
 			for (int i = 0, to = text.length(); i < to;) {
 				i += getCP(text, to, i, pCodePoint);
 
@@ -89,8 +91,7 @@ public class TrueTypeText extends Text implements AutoCloseable {
 				}
 
 				float cpX = x.get(0);
-				stbtt_GetBakedQuad(generatedFont.buffer, generatedFont.width, generatedFont.height, cp - 32, x, y, q,
-						true);
+				stbtt_GetPackedQuad(buffer, generatedFont.width, generatedFont.height, cp, x, y, q, true);
 				x.put(0, scale(cpX, x.get(0), factorX));
 				if (IS_KERNING && i < to) {
 					getCP(text, to, i, pCodePoint);
@@ -101,32 +102,32 @@ public class TrueTypeText extends Text implements AutoCloseable {
 				float x1 = scale(cpX, q.x1(), factorX);
 				float y0 = scale(lineY, -q.y1(), factorY);
 				float y1 = scale(lineY, -q.y0(), factorY);
-				
+
 				positions.add(x0);
 				positions.add(y0);
 				textCoords.add(q.s0());
 				textCoords.add(q.t1());
-				
-				positions.add(x0);
-				positions.add(y1);
-				textCoords.add(q.s0());
-				textCoords.add(q.t0());
-				
-				positions.add(x1);
-				positions.add(y0);
-				textCoords.add(q.s1());
-				textCoords.add(q.t1());
-				
-				positions.add(x1);
-				positions.add(y0);
-				textCoords.add(q.s1());
-				textCoords.add(q.t1());
-				
+
 				positions.add(x0);
 				positions.add(y1);
 				textCoords.add(q.s0());
 				textCoords.add(q.t0());
-				
+
+				positions.add(x1);
+				positions.add(y0);
+				textCoords.add(q.s1());
+				textCoords.add(q.t1());
+
+				positions.add(x1);
+				positions.add(y0);
+				textCoords.add(q.s1());
+				textCoords.add(q.t1());
+
+				positions.add(x0);
+				positions.add(y1);
+				textCoords.add(q.s0());
+				textCoords.add(q.t0());
+
 				positions.add(x1);
 				positions.add(y1);
 				textCoords.add(q.s1());

@@ -31,6 +31,10 @@ public class BitmapFont implements Font {
 		this.rows = rows;
 		NAME_MAP.put(name, this);
 		ID_MAP[id] = this;
+		
+		texture.bind();
+		texture.setFilter(Texture.LINEAR);
+		texture.unbind();
 	}
 
 	@Override

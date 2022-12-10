@@ -91,7 +91,7 @@ public class UILabel extends UIObject {
 				getWidth(), getHeight(), 0);
 		if (hasWindow())
 			textTransform.mult(getWindow().getTransform());
-		textTransform.scaling(0.003f, 0.003f, 0.003f);
+		textTransform.scaling(0.004f, 0.004f, 0.004f);
 	}
 
 	@SuppressWarnings("unchecked")

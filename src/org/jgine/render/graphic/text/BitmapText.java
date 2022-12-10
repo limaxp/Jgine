@@ -65,7 +65,7 @@ public class BitmapText extends Text {
 		int numChars = chars.length;
 		float x0 = 0;
 		float y0 = 0;
-		float scale = (float) size / 42;
+		float scale = (float) size / 64;
 		Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
 		float factorX = 1.0f / contentScale.x;
 		float factorY = 1.0f / contentScale.y;
