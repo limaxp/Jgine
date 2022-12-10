@@ -89,23 +89,23 @@ public class Renderer {
 	}
 
 	public static void renderFrame(List<RenderConfiguration> renderConfigs) {
-		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
 		for (RenderConfiguration renderConfig : renderConfigs) {
 			RenderTarget configTarget = renderConfig.getRenderTarget();
 			RenderTarget intermediateTarget = renderConfig.getIntermediateTarget();
+			Attachment attachment = configTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
+			int resolutionX = attachment.getWidth();
+			int resolutionY = attachment.getHeight();
+
 			configTarget.bindRead();
 			intermediateTarget.bindDraw();
-			RenderTarget.blit(0, 0, windowSize.x, windowSize.y, 0, 0, windowSize.x, windowSize.y,
+			RenderTarget.blit(0, 0, resolutionX, resolutionY, 0, 0, resolutionX, resolutionY,
 					RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
 
-			// TODO resize blit does create edges!
 			intermediateTarget.bindRead();
 			POST_PROCESS_TARGET.bindDraw();
-			Attachment attachment = intermediateTarget.getAttachment(RenderTarget.COLOR_ATTACHMENT0);
-			RenderTarget.blit(0, 0, attachment.getWidth(), attachment.getHeight(),
-					(int) (renderConfig.getX() * windowSize.x), (int) (renderConfig.getY() * windowSize.y),
-					(int) (renderConfig.getWidth() * windowSize.x), (int) (renderConfig.getHeight() * windowSize.y),
-					RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
+			RenderTarget.blit(0, 0, resolutionX, resolutionY, (int) (renderConfig.getX() * resolutionX),
+					(int) (renderConfig.getY() * resolutionY), (int) (renderConfig.getWidth() * resolutionX),
+					(int) (renderConfig.getHeight() * resolutionY), RenderTarget.COLOR_BUFFER_BIT, Texture.NEAREST);
 		}
 
 		setShader(POST_PROCESS_SHADER);
