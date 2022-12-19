@@ -4,14 +4,15 @@ public class TextBuilder {
 
 	public static TrueTypeText createText(String text, TrueTypeFont font, int size, int width, int height) {
 		size = calculateSize(text, font, size, width, height);
-		text = formatString(text, font, size, width);
-		return new TrueTypeText(font, size, text);
+		text = formatString(text, font, size, (int) (width * 0.5f));
+		return new TrueTypeText(font, size, text, 0, -height + (font.getStringHeight(size) * 2));
 	}
 
 	public static BitmapText createText(String text, BitmapFont font, int size, int width, int height) {
 		size = calculateSize(text, font, size, width, height);
-		text = formatString(text, font, size, width);
-		return new BitmapText(font, size, text);
+		text = formatString(text, font, size, (int) (width * 0.5f));
+		float scale = (float) size / 64;
+		return new BitmapText(font, size, text, 0, height * scale  + font.getStringHeight(size));
 	}
 
 	public static String formatString(String text, Font font, int size, int width) {
@@ -26,6 +27,7 @@ public class TextBuilder {
 			if (currentWidth + splitWidth > width) {
 				stringBuilder.append('\n');
 				stringBuilder.append(split);
+				stringBuilder.append(' ');
 				currentWidth = splitWidth;
 			} else {
 				stringBuilder.append(split);

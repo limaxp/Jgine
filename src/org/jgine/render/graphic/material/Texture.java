@@ -332,8 +332,8 @@ public class Texture implements ITexture, AutoCloseable {
 		glBindTexture(target, 0);
 	}
 
-	public final void update(int xOffset, int yOffset, ByteBuffer buffer) {
-		glTexSubImage2D(target, 0, xOffset, yOffset, width, height, RGBA, UNSIGNED_BYTE, buffer);
+	public final void update(int xOffset, int yOffset, ByteBuffer buffer, int format) {
+		glTexSubImage2D(target, 0, xOffset, yOffset, width, height, format, UNSIGNED_BYTE, buffer);
 	}
 
 	public final int getId() {

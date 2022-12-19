@@ -1,12 +1,12 @@
 package org.jgine.render.graphic.text;
 
 import static org.lwjgl.opengl.GL11.GL_RED;
-import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL33.GL_TEXTURE_SWIZZLE_RGBA;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackBegin;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackEnd;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackFontRange;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackSetOversampling;
+
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +73,7 @@ public class TrueTypeFontGenerated implements AutoCloseable {
 			texture = new Texture();
 			texture.load(bitmap, width, height, GL_RED);
 			texture.bind();
-			texture.setParameteriv(GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_ZERO, GL_ZERO, GL_ZERO, GL_RED });
+			texture.setParameteriv(GL_TEXTURE_SWIZZLE_RGBA, new int[] { GL_RED, GL_RED, GL_RED, GL_RED });
 			texture.setFilter(Texture.LINEAR);
 			texture.unbind();
 		}

@@ -154,8 +154,8 @@ public class UIWindow extends UIObject {
 			} else
 				uiObjectType = UIObjectTypes.LABEL;
 			UIObject object = uiObjectType.get();
+			addChildIntern(object);
 			object.load(childData);
-			addChild(object);
 		}
 	}
 
@@ -170,8 +170,8 @@ public class UIWindow extends UIObject {
 		int childSize = in.readInt();
 		for (int i = 0; i < childSize; i++) {
 			UIObject object = UIObjectTypes.get(in.readInt()).get();
+			addChildIntern(object);
 			object.load(in);
-			addChild(object);
 		}
 		ScriptEngine loadedScript = ResourceManager.getScript(in.readUTF());
 		if (loadedScript != null)
@@ -210,6 +210,11 @@ public class UIWindow extends UIObject {
 		child.window = this;
 		childs.add(child);
 		child.calculateTransform();
+	}
+	
+	private void addChildIntern(UIObject child) {
+		child.window = this;
+		childs.add(child);
 	}
 
 	public int removeChild(UIObject child) {

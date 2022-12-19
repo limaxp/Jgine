@@ -10,6 +10,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.UIRenderer;
@@ -18,6 +19,7 @@ import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.text.BitmapFont;
 import org.jgine.render.graphic.text.BitmapText;
 import org.jgine.render.graphic.text.Text;
+import org.jgine.render.graphic.text.TextBuilder;
 import org.jgine.render.graphic.text.TrueTypeFont;
 import org.jgine.render.graphic.text.TrueTypeText;
 import org.jgine.system.systems.ui.UIObject;
@@ -35,7 +37,7 @@ public class UILabel extends UIObject {
 	private Matrix textTransform;
 
 	public UILabel() {
-		background = new Material(Color.RED);
+		background = new Material(Color.DARK_GRAY);
 		backgroundFocused = new Material(Color.GRAY);
 		usedBackground = background;
 		textTransform = new Matrix();
@@ -48,9 +50,11 @@ public class UILabel extends UIObject {
 		obj.backgroundFocused = backgroundFocused.clone();
 		obj.usedBackground = obj.background;
 		if (text instanceof TrueTypeText)
-			obj.text = new TrueTypeText((TrueTypeFont) text.getFont(), text.getSize(), text.getText());
+			obj.text = new TrueTypeText((TrueTypeFont) text.getFont(), text.getSize(), text.getText(),
+					text.getxOffset(), text.getyOffset());
 		else if (text instanceof BitmapText)
-			obj.text = new BitmapText((BitmapFont) text.getFont(), text.getSize(), text.getText());
+			obj.text = new BitmapText((BitmapFont) text.getFont(), text.getSize(), text.getText(), text.getxOffset(),
+					text.getyOffset());
 		obj.textTransform = new Matrix(textTransform);
 		return obj;
 	}
@@ -125,7 +129,10 @@ public class UILabel extends UIObject {
 					if (font2 != null)
 						font = font2;
 				}
-				this.text = new TrueTypeText(font, textSize, (String) textData);
+				Vector3f scale = getTransform().getScaling();
+				int width = (int) (1000.0f * scale.x);
+				int height = (int) (1000.0f * scale.y);
+				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
 			} else if (textType == Text.TYPE_BITMAP) {
 				BitmapFont font = BitmapFont.CONSOLAS;
 				Object fontData = data.get("font");
@@ -134,7 +141,10 @@ public class UILabel extends UIObject {
 					if (font2 != null)
 						font = font2;
 				}
-				this.text = new BitmapText(font, textSize, (String) textData);
+				Vector3f scale = getTransform().getScaling();
+				int width = (int) (1000.0f * scale.x);
+				int height = (int) (1000.0f * scale.y);
+				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
 			}
 		}
 		Object textOffsetXData = data.get("textOffsetX");
