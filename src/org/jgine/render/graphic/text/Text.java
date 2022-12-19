@@ -1,7 +1,9 @@
 package org.jgine.render.graphic.text;
 
+import java.nio.IntBuffer;
+
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.BaseMesh2D;
+import org.jgine.render.graphic.mesh.BaseMesh;
 
 public abstract class Text implements AutoCloseable {
 
@@ -12,7 +14,7 @@ public abstract class Text implements AutoCloseable {
 	protected int size;
 	protected String text;
 	protected Material material;
-	protected BaseMesh2D mesh;
+	protected BaseMesh mesh;
 
 	public Text(Font font, int size, String text, Material material) {
 		this.font = font;
@@ -25,6 +27,8 @@ public abstract class Text implements AutoCloseable {
 	public void close() {
 		mesh.close();
 	}
+
+	public abstract int getType();
 
 	public void setFont(Font font) {
 		this.font = font;
@@ -58,7 +62,20 @@ public abstract class Text implements AutoCloseable {
 		return material;
 	}
 
-	public BaseMesh2D getMesh() {
+	public BaseMesh getMesh() {
 		return mesh;
+	}
+
+	public static int getCP(String text, int to, int i, IntBuffer cpOut) {
+		char c1 = text.charAt(i);
+		if (Character.isHighSurrogate(c1) && i + 1 < to) {
+			char c2 = text.charAt(i + 1);
+			if (Character.isLowSurrogate(c2)) {
+				cpOut.put(0, Character.toCodePoint(c1, c2));
+				return 2;
+			}
+		}
+		cpOut.put(0, c1);
+		return 1;
 	}
 }

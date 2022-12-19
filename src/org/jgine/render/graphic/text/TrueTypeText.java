@@ -13,7 +13,7 @@ import org.jgine.misc.collection.list.arrayList.FloatArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.BaseMesh2D;
+import org.jgine.render.graphic.mesh.BaseMesh;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
@@ -24,16 +24,20 @@ public class TrueTypeText extends Text implements AutoCloseable {
 
 	public TrueTypeText(TrueTypeFont font, int size, String text) {
 		super(font, size, text, new Material());
-		this.font = font;
 		buildMesh();
 	}
-
+	
 	protected void buildMesh() {
 		if (mesh != null)
 			close();
 		TrueTypeFontGenerated generatedFont = TrueTypeFontGenerated.get((TrueTypeFont) font);
 		material.setTexture(generatedFont.texture);
 		mesh = buildMesh(generatedFont, size, text);
+	}
+	
+	@Override
+	public int getType() {
+		return TYPE_TRUETYPE;
 	}
 
 	@Override
@@ -61,12 +65,12 @@ public class TrueTypeText extends Text implements AutoCloseable {
 		buildMesh();
 	}
 
-	public static BaseMesh2D buildMesh(TrueTypeFontGenerated generatedFont, int size, String text) {
-		TrueTypeFont font = generatedFont.font;
-		float scale = generatedFont.getScaleForPixelHeight(size);
-		FloatList positions = new FloatArrayList();
-		FloatList textCoords = new FloatArrayList();
+	public static BaseMesh buildMesh(TrueTypeFontGenerated generatedFont, int size, String text) {
 		try (MemoryStack stack = stackPush()) {
+			TrueTypeFont font = generatedFont.font;
+			float scale = font.getScaleForPixelHeight(size);
+			FloatList positions = new FloatArrayList();
+			FloatList textCoords = new FloatArrayList();
 			IntBuffer pCodePoint = stack.mallocInt(1);
 			FloatBuffer x = stack.floats(0.0f);
 			FloatBuffer y = stack.floats(0.0f);
@@ -133,24 +137,13 @@ public class TrueTypeText extends Text implements AutoCloseable {
 				textCoords.add(q.s1());
 				textCoords.add(q.t0());
 			}
+			BaseMesh mesh = new BaseMesh();
+			mesh.loadData(2, positions.toFloatArray(), textCoords.toFloatArray());
+			return mesh;
 		}
-		return new BaseMesh2D(positions.toFloatArray(), textCoords.toFloatArray());
 	}
 
 	private static float scale(float center, float offset, float factor) {
 		return (offset - center) * factor + center;
-	}
-
-	public static int getCP(String text, int to, int i, IntBuffer cpOut) {
-		char c1 = text.charAt(i);
-		if (Character.isHighSurrogate(c1) && i + 1 < to) {
-			char c2 = text.charAt(i + 1);
-			if (Character.isLowSurrogate(c2)) {
-				cpOut.put(0, Character.toCodePoint(c1, c2));
-				return 2;
-			}
-		}
-		cpOut.put(0, c1);
-		return 1;
 	}
 }

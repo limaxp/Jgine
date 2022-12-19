@@ -14,6 +14,7 @@ import static org.lwjgl.assimp.Assimp.aiImportFileEx;
 import static org.lwjgl.assimp.Assimp.aiImportFileFromMemory;
 import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
 import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static org.lwjgl.assimp.Assimp.aiReleaseImport;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memCopy;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
@@ -98,7 +99,10 @@ public class ModelLoader {
 		AIScene scene = aiImportFileEx(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
-		return new Model(name, scene);
+		Model model = new Model(name);
+		model.setMeshes(scene);
+		aiReleaseImport(scene);
+		return model;
 	}
 
 	/**
@@ -124,7 +128,10 @@ public class ModelLoader {
 				(ByteBuffer) null);
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
-		return new Model(name, scene);
+		Model model = new Model(name);
+		model.setMeshes(scene);
+		aiReleaseImport(scene);
+		return model;
 	}
 
 	public static String getAiLegalString() {

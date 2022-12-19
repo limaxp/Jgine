@@ -7,8 +7,6 @@ import static org.lwjgl.stb.STBTruetype.stbtt_PackBegin;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackEnd;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackFontRange;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackSetOversampling;
-import static org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight;
-
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,10 +83,6 @@ public class TrueTypeFontGenerated implements AutoCloseable {
 	public void close() {
 		buffer.free();
 		texture.close();
-	}
-
-	public float getScaleForPixelHeight(int size) {
-		return stbtt_ScaleForPixelHeight(font.info, size);
 	}
 
 	public STBTTPackedchar.Buffer getBuffer(int size) {

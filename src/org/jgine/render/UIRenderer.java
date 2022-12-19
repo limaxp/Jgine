@@ -5,12 +5,8 @@ import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.mesh.BaseMesh;
-import org.jgine.render.graphic.mesh.BaseMesh2D;
 import org.jgine.render.graphic.mesh.Mesh;
-import org.jgine.render.graphic.mesh.Mesh2D;
-import org.jgine.render.graphic.mesh.MeshMode;
 import org.jgine.render.graphic.mesh.Model;
-import org.jgine.render.graphic.mesh.Model2D;
 import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.Shader;
 
@@ -20,32 +16,16 @@ public class UIRenderer extends Renderer {
 
 	public static void render(Matrix transform, Model model) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		for (Mesh mesh : model) {
-			mesh.material.bind(shader);
-			mesh.render();
-		}
+		model.render(shader);
 	}
 
-	public static void render(Matrix transform, Mesh mesh) {
-		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		mesh.material.bind(shader);
-		mesh.render();
-	}
-
-	public static void render(Matrix transform, Model2D model, Material material) {
-		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		material.bind(shader);
-		for (Mesh2D mesh : model)
-			mesh.render();
-	}
-
-	public static void render(Matrix transform, Mesh2D mesh, Material material) {
+	public static void render(Matrix transform, Mesh mesh, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		mesh.render();
 	}
 
-	public static void render(Matrix transform, BaseMesh2D mesh, Material material) {
+	public static void render(Matrix transform, BaseMesh mesh, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		mesh.render();
@@ -87,8 +67,9 @@ public class UIRenderer extends Renderer {
 	public static void renderLine(Matrix transform, Vector3f start, Vector3f end, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh(new float[] { start.x, start.y, start.z, end.x, end.y, end.z })) {
-			lineMesh.setMode(MeshMode.LINES);
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z });
+			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
 	}
@@ -96,11 +77,12 @@ public class UIRenderer extends Renderer {
 	public static void renderLine3d(Matrix transform, float[] points, Material material, boolean loop) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh(points)) {
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(3, points);
 			if (loop)
-				lineMesh.setMode(MeshMode.LINE_LOOP);
+				lineMesh.mode = Mesh.LINE_LOOP;
 			else
-				lineMesh.setMode(MeshMode.LINE_STRIP);
+				lineMesh.mode = Mesh.LINE_STRIP;
 			lineMesh.render();
 		}
 	}
@@ -108,11 +90,12 @@ public class UIRenderer extends Renderer {
 	public static void renderLine2d(Matrix transform, float[] points, Material material, boolean loop) {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
-		try (BaseMesh2D lineMesh = new BaseMesh2D(points)) {
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(2, points);
 			if (loop)
-				lineMesh.setMode(MeshMode.LINE_LOOP);
+				lineMesh.mode = Mesh.LINE_LOOP;
 			else
-				lineMesh.setMode(MeshMode.LINE_STRIP);
+				lineMesh.mode = Mesh.LINE_STRIP;
 			lineMesh.render();
 		}
 	}

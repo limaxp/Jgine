@@ -63,14 +63,24 @@ public class TrueTypeFont implements Font {
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public float getStringHeight(int fontHeight) {
+		return (ascent - descent + lineGap) * getScaleForPixelHeight(fontHeight);
+	}
+	
+	@Override
+	public float getStringWidth(String text, int fontHeight) {
+		return getStringWidth(text, 0, text.length(), fontHeight);
+	}
 
+	@Override
 	public float getStringWidth(String text, int from, int to, int fontHeight) {
-		int width = 0;
 		try (MemoryStack stack = stackPush()) {
+			int width = 0;
 			IntBuffer pCodePoint = stack.mallocInt(1);
 			IntBuffer pAdvancedWidth = stack.mallocInt(1);
 			IntBuffer pLeftSideBearing = stack.mallocInt(1);
-
 			int i = from;
 			while (i < to) {
 				i += TrueTypeText.getCP(text, to, i, pCodePoint);
@@ -84,8 +94,12 @@ public class TrueTypeFont implements Font {
 					width += stbtt_GetCodepointKernAdvance(info, cp, pCodePoint.get(0));
 				}
 			}
+			return width * stbtt_ScaleForPixelHeight(info, fontHeight);
 		}
-		return width * stbtt_ScaleForPixelHeight(info, fontHeight);
+	}
+	
+	public float getScaleForPixelHeight(int size) {
+		return stbtt_ScaleForPixelHeight(info, size);
 	}
 
 	@Nullable

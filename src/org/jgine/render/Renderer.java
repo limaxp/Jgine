@@ -14,12 +14,9 @@ import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.BaseMesh;
-import org.jgine.render.graphic.mesh.BaseMesh2D;
 import org.jgine.render.graphic.mesh.Mesh;
-import org.jgine.render.graphic.mesh.Mesh2D;
-import org.jgine.render.graphic.mesh.MeshMode;
 import org.jgine.render.graphic.mesh.Model;
-import org.jgine.render.graphic.mesh.Model2D;
+import org.jgine.render.graphic.mesh.ModelGenerator;
 import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
@@ -42,7 +39,7 @@ public class Renderer {
 	public static final PostProcessShader POST_PROCESS_SHADER;
 
 	protected static final RenderTarget POST_PROCESS_TARGET;
-	protected static final BaseMesh2D QUAD_MESH;
+	protected static final BaseMesh QUAD_MESH;
 	protected static final Mesh CUBE_MESH;
 
 	protected static Shader shader = Shader.NULL;
@@ -67,13 +64,8 @@ public class Renderer {
 		POST_PROCESS_TARGET.checkStatus();
 		POST_PROCESS_TARGET.unbind();
 
-		QUAD_MESH = new BaseMesh2D(new float[] { -1, 1, 1, 1, -1, -1, 1, -1 }, new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
-		QUAD_MESH.setMode(MeshMode.TRIANGLE_STRIP);
-
-		CUBE_MESH = new Mesh(
-				new float[] { 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1 },
-				new int[] { 2, 1, 0, 3, 1, 2, 0, 1, 4, 5, 4, 1, 6, 3, 2, 6, 7, 3, 1, 3, 5, 5, 3, 7, 0, 4, 6, 0, 6, 2, 4,
-						5, 6, 7, 6, 5, });
+		QUAD_MESH = ModelGenerator.quad(1.0f);
+		CUBE_MESH = ModelGenerator.cube(1.0f);
 	}
 
 	public static void init() {
@@ -117,32 +109,16 @@ public class Renderer {
 
 	public static void render(Matrix transform, Model model) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		for (Mesh mesh : model) {
-			mesh.material.bind(shader);
-			mesh.render();
-		}
+		model.render(shader);
 	}
 
-	public static void render(Matrix transform, Mesh mesh) {
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		mesh.material.bind(shader);
-		mesh.render();
-	}
-
-	public static void render(Matrix transform, Model2D model, Material material) {
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		material.bind(shader);
-		for (Mesh2D mesh : model)
-			mesh.render();
-	}
-
-	public static void render(Matrix transform, Mesh2D mesh, Material material) {
+	public static void render(Matrix transform, Mesh mesh, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		mesh.render();
 	}
 
-	public static void render(Matrix transform, BaseMesh2D mesh, Material material) {
+	public static void render(Matrix transform, BaseMesh mesh, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		mesh.render();
@@ -184,8 +160,9 @@ public class Renderer {
 	public static void renderLine(Matrix transform, Vector3f start, Vector3f end, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh(new float[] { start.x, start.y, start.z, end.x, end.y, end.z })) {
-			lineMesh.setMode(MeshMode.LINES);
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z });
+			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
 	}
@@ -193,11 +170,12 @@ public class Renderer {
 	public static void renderLine3d(Matrix transform, float[] points, Material material, boolean loop) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh(points)) {
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(3, points);
 			if (loop)
-				lineMesh.setMode(MeshMode.LINE_LOOP);
+				lineMesh.mode = Mesh.LINE_LOOP;
 			else
-				lineMesh.setMode(MeshMode.LINE_STRIP);
+				lineMesh.mode = Mesh.LINE_STRIP;
 			lineMesh.render();
 		}
 	}
@@ -205,11 +183,12 @@ public class Renderer {
 	public static void renderLine2d(Matrix transform, float[] points, Material material, boolean loop) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh2D lineMesh = new BaseMesh2D(points)) {
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(2, points);
 			if (loop)
-				lineMesh.setMode(MeshMode.LINE_LOOP);
+				lineMesh.mode = Mesh.LINE_LOOP;
 			else
-				lineMesh.setMode(MeshMode.LINE_STRIP);
+				lineMesh.mode = Mesh.LINE_STRIP;
 			lineMesh.render();
 		}
 	}

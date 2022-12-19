@@ -35,7 +35,7 @@ public class UILabel extends UIObject {
 	private Matrix textTransform;
 
 	public UILabel() {
-		background = new Material(Color.DARK_GRAY);
+		background = new Material(Color.RED);
 		backgroundFocused = new Material(Color.GRAY);
 		usedBackground = background;
 		textTransform = new Matrix();
@@ -115,9 +115,9 @@ public class UILabel extends UIObject {
 
 		Object textData = data.get("text");
 		if (textData instanceof String) {
-			int type = YamlHelper.toTextType(data.get("textType"));
+			int textType = YamlHelper.toTextType(data.get("textType"));
 			int textSize = YamlHelper.toInt(data.get("textSize"), 24);
-			if (type == Text.TYPE_TRUETYPE) {
+			if (textType == Text.TYPE_TRUETYPE) {
 				TrueTypeFont font = TrueTypeFont.ARIAL;
 				Object fontData = data.get("font");
 				if (fontData instanceof String) {
@@ -126,7 +126,7 @@ public class UILabel extends UIObject {
 						font = font2;
 				}
 				this.text = new TrueTypeText(font, textSize, (String) textData);
-			} else if (type == Text.TYPE_BITMAP) {
+			} else if (textType == Text.TYPE_BITMAP) {
 				BitmapFont font = BitmapFont.CONSOLAS;
 				Object fontData = data.get("font");
 				if (fontData instanceof String) {
@@ -162,12 +162,13 @@ public class UILabel extends UIObject {
 		super.load(in);
 		background.load(in);
 		backgroundFocused.load(in);
-		if (in.readBoolean()) {
+		int textType = in.readInt();
+		if (textType == Text.TYPE_TRUETYPE) {
 			TrueTypeFont font = TrueTypeFont.get(in.readUTF());
 			if (font == null)
 				font = TrueTypeFont.ARIAL;
 			this.text = new TrueTypeText(font, in.readInt(), in.readUTF());
-		} else {
+		} else if (textType == Text.TYPE_BITMAP) {
 			BitmapFont font = BitmapFont.get(in.readUTF());
 			if (font == null)
 				font = BitmapFont.CONSOLAS;
@@ -182,7 +183,7 @@ public class UILabel extends UIObject {
 		super.save(out);
 		background.save(out);
 		backgroundFocused.save(out);
-		out.writeBoolean(text instanceof TrueTypeText);
+		out.writeInt(text.getType());
 		out.writeUTF(text.getFont().getName());
 		out.writeInt(text.getSize());
 		out.writeUTF(text.getText());

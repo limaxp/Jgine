@@ -1,11 +1,15 @@
 package org.jgine.render.graphic.text;
 
+import static org.lwjgl.system.MemoryStack.stackPush;
+
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.graphic.material.Texture;
+import org.lwjgl.system.MemoryStack;
 
 public class BitmapFont implements Font {
 
@@ -40,6 +44,32 @@ public class BitmapFont implements Font {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public float getStringHeight(int fontHeight) {
+		float scale = (float) fontHeight / 64;
+		return getTileHeight() * scale;
+	}
+	
+	@Override
+	public float getStringWidth(String text, int fontHeight) {
+		return getStringWidth(text, 0, text.length(), fontHeight);
+	}
+	
+	@Override
+	public float getStringWidth(String text, int from, int to, int fontHeight) {
+		try (MemoryStack stack = stackPush()) {
+			float scale = (float) fontHeight / 64;
+			float width = 0;
+			IntBuffer pCodePoint = stack.mallocInt(1);
+			int i = from;
+			while (i < to) {
+				i += BitmapText.getCP(text, to, i, pCodePoint);
+				width++;
+			}
+			return width * getTileWidth() * scale;
+		}
 	}
 
 	public float getTileWidth() {
