@@ -75,6 +75,7 @@ import static org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE;
 import static org.lwjgl.opengl.GL32.GL_PROXY_TEXTURE_2D_MULTISAMPLE;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE;
 import static org.lwjgl.opengl.GL32.glTexImage2DMultisample;
+import static org.lwjgl.opengl.GL42.glBindImageTexture;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImageResize.STBIR_ALPHA_CHANNEL_NONE;
 import static org.lwjgl.stb.STBImageResize.STBIR_COLORSPACE_SRGB;
@@ -327,6 +328,10 @@ public class Texture implements ITexture, AutoCloseable {
 		glBindTexture(target, id);
 	}
 
+	public final void bind(int unit, int level, boolean layered, int layer, int access, int format) {
+		glBindImageTexture(unit, id, level, layered, layer, access, format);
+	}
+
 	@Override
 	public final void unbind() {
 		glBindTexture(target, 0);
@@ -339,7 +344,7 @@ public class Texture implements ITexture, AutoCloseable {
 	public final int getId() {
 		return id;
 	}
-	
+
 	public int getTarget() {
 		return target;
 	}

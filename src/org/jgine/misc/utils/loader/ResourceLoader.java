@@ -132,6 +132,7 @@ public abstract class ResourceLoader {
 
 		case "fs":
 		case "vs":
+		case "cs":
 			shaderCallback(name, loadShader(is));
 			is.close();
 			break;
@@ -177,6 +178,7 @@ public abstract class ResourceLoader {
 
 		case "fs":
 		case "vs":
+		case "cs":
 			shaderCallback(name, loadShader(file));
 			break;
 

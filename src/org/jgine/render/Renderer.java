@@ -21,6 +21,7 @@ import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
 import org.jgine.render.shader.CircleShader;
+import org.jgine.render.shader.ComputeShader;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.render.shader.PostProcessShader;
 import org.jgine.render.shader.Shader;
@@ -37,6 +38,7 @@ public class Renderer {
 	public static final TileMapShader TILE_MAP_SHADER;
 	public static final CircleShader CIRCLE_SHADER;
 	public static final PostProcessShader POST_PROCESS_SHADER;
+	public static final ComputeShader BASIC_COMPUTE_SHADER;
 
 	protected static final RenderTarget POST_PROCESS_TARGET;
 	protected static final BaseMesh QUAD_MESH;
@@ -56,6 +58,7 @@ public class Renderer {
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		CIRCLE_SHADER = new CircleShader("Circle");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
+		BASIC_COMPUTE_SHADER = new ComputeShader("BasicCompute");
 
 		POST_PROCESS_TARGET = new RenderTarget();
 		POST_PROCESS_TARGET.bind();
