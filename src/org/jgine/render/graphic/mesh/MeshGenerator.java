@@ -1,6 +1,5 @@
 package org.jgine.render.graphic.mesh;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointKernAdvance;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -21,7 +20,7 @@ import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 
-public class ModelGenerator {
+public class MeshGenerator {
 
 	public static BaseMesh quad(float size) {
 		BaseMesh mesh = new BaseMesh();
@@ -37,10 +36,30 @@ public class ModelGenerator {
 				new float[] { size, size, size, -size, size, size, size, size, -size, -size, size, -size, size, -size,
 						size, -size, -size, size, size, -size, -size, -size, -size, -size },
 				new int[] { 2, 1, 0, 3, 1, 2, 0, 1, 4, 5, 4, 1, 6, 3, 2, 6, 7, 3, 1, 3, 5, 5, 3, 7, 0, 4, 6, 0, 6, 2, 4,
-						5, 6, 7, 6, 5, });
+						5, 6, 7, 6, 5, },
+				null, null);
 		return mesh;
 	}
-	
+
+	public static BaseMesh hexagon(float radius) {
+		FloatBuffer vertices = BufferUtils.createFloatBuffer(32);
+		float radiusHalf = radius * 0.5f;
+		addVertice(vertices, 0.0f, 0.0f); // center
+		addVertice(vertices, -radiusHalf, radius); // left top
+		addVertice(vertices, radiusHalf, radius); // right top
+		addVertice(vertices, radius, 0.0f); // right
+		addVertice(vertices, radiusHalf, -radius); // right bottom
+		addVertice(vertices, -radiusHalf, -radius); // left bottom
+		addVertice(vertices, -radius, 0.0f); // left
+		addVertice(vertices, -radiusHalf, radius); // left top
+		vertices.flip();
+
+		BaseMesh mesh = new BaseMesh();
+		mesh.loadDataNoNormals(2, vertices);
+		mesh.mode = Mesh.TRIANGLE_FAN;
+		return mesh;
+	}
+
 	public static BaseMesh text(BitmapFont font, int size, String text) {
 		return text(font, size, text, 0.0f, 0.0f);
 	}
@@ -63,26 +82,12 @@ public class ModelGenerator {
 				i += Text.getCP(text, to, i, pCodePoint);
 				int cp = pCodePoint.get(0);
 				if (cp == '\n') {
-					vertices.put(x0);
-					vertices.put(y0);
-					vertices.put(0);
-					vertices.put(0);
-					vertices.put(x0);
-					vertices.put(y0);
-					vertices.put(0);
-					vertices.put(0);
-
+					addVertice(vertices, x0, x0);
+					addVertice(vertices, x0, x0);
 					x0 = xOffset;
 					y0 -= tileHeight * scale * factorY;
-
-					vertices.put(x0);
-					vertices.put(y0);
-					vertices.put(0);
-					vertices.put(0);
-					vertices.put(x0);
-					vertices.put(y0);
-					vertices.put(0);
-					vertices.put(0);
+					addVertice(vertices, x0, x0);
+					addVertice(vertices, x0, x0);
 					continue;
 				} else if (cp < 32 || 128 <= cp) {
 					continue;
@@ -102,16 +107,17 @@ public class ModelGenerator {
 			vertices.flip();
 			BaseMesh mesh = new BaseMesh();
 			mesh.loadDataNoNormals(2, vertices);
-			mesh.mode = GL_TRIANGLE_STRIP;
+			mesh.mode = Mesh.TRIANGLE_STRIP;
 			return mesh;
 		}
 	}
-	
+
 	public static BaseMesh text(TrueTypeFontGenerated generatedFont, int size, String text) {
 		return text(generatedFont, size, text, 0.0f, 0.0f);
 	}
 
-	public static BaseMesh text(TrueTypeFontGenerated generatedFont, int size, String text, float xOffset, float yOffset) {
+	public static BaseMesh text(TrueTypeFontGenerated generatedFont, int size, String text, float xOffset,
+			float yOffset) {
 		try (MemoryStack stack = stackPush()) {
 			TrueTypeFont font = generatedFont.font;
 			float scale = font.getScaleForPixelHeight(size);
@@ -161,61 +167,47 @@ public class ModelGenerator {
 			return mesh;
 		}
 	}
-	
-	public static void addTriangleStrip(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0, float s1,
-			float t0, float t1) {
-		vertices.put(x0);
-		vertices.put(y0);
-		vertices.put(s0);
-		vertices.put(t1);
 
-		vertices.put(x0);
-		vertices.put(y1);
-		vertices.put(s0);
-		vertices.put(t0);
-
-		vertices.put(x1);
-		vertices.put(y0);
-		vertices.put(s1);
-		vertices.put(t1);
-
-		vertices.put(x1);
-		vertices.put(y1);
-		vertices.put(s1);
-		vertices.put(t0);
+	public static void addTriangleStrip(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0,
+			float s1, float t0, float t1) {
+		addVertice(vertices, x0, y0, s0, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x1, y1, s1, t0);
 	}
 
 	public static void addQuad(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0, float s1,
 			float t0, float t1) {
-		vertices.put(x0);
-		vertices.put(y0);
-		vertices.put(s0);
-		vertices.put(t1);
+		addVertice(vertices, x0, y0, s0, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y1, s1, t0);
+	}
 
-		vertices.put(x0);
-		vertices.put(y1);
-		vertices.put(s0);
-		vertices.put(t0);
+	public static void addVertice(FloatBuffer vertices, float x, float y) {
+		addVertice(vertices, x, y, 0.0f, 0.0f);
+	}
 
-		vertices.put(x1);
-		vertices.put(y0);
-		vertices.put(s1);
-		vertices.put(t1);
+	public static void addVertice(FloatBuffer vertices, float x, float y, float s, float t) {
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(s);
+		vertices.put(t);
+	}
 
-		vertices.put(x1);
-		vertices.put(y0);
-		vertices.put(s1);
-		vertices.put(t1);
+	public static void addVertice(FloatBuffer vertices, float x, float y, float z) {
+		addVertice(vertices, x, y, z, 0.0f, 0.0f, 0.0f);
+	}
 
-		vertices.put(x0);
-		vertices.put(y1);
-		vertices.put(s0);
-		vertices.put(t0);
-
-		vertices.put(x1);
-		vertices.put(y1);
-		vertices.put(s1);
-		vertices.put(t0);
+	public static void addVertice(FloatBuffer vertices, float x, float y, float z, float s, float t, float v) {
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(z);
+		vertices.put(s);
+		vertices.put(t);
+		vertices.put(v);
 	}
 
 	public static float scale(float center, float offset, float factor) {

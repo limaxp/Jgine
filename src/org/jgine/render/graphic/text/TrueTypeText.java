@@ -1,7 +1,7 @@
 package org.jgine.render.graphic.text;
 
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.ModelGenerator;
+import org.jgine.render.graphic.mesh.MeshGenerator;
 
 public class TrueTypeText extends Text {
 
@@ -22,7 +22,7 @@ public class TrueTypeText extends Text {
 			close();
 		TrueTypeFontGenerated generatedFont = TrueTypeFontGenerated.get((TrueTypeFont) font);
 		material.setTexture(generatedFont.texture);
-		mesh = ModelGenerator.text(generatedFont, size, text, xOffset, yOffset);
+		mesh = MeshGenerator.text(generatedFont, size, text, xOffset, yOffset);
 	}
 
 	@Override

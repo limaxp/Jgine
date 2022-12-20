@@ -56,7 +56,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 
 	@Override
 	public void render() {
-		Renderer.setShader(Renderer.PHONG_SHADER);
+		Renderer.setShader(Renderer.TEXTURE_SHADER);
 		Renderer.enableDepthTest();
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())

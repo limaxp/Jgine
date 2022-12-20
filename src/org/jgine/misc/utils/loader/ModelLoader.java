@@ -100,7 +100,7 @@ public class ModelLoader {
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
 		Model model = new Model(name);
-		model.setMeshes(scene);
+		model.setAIMeshes(scene);
 		aiReleaseImport(scene);
 		return model;
 	}
@@ -129,7 +129,7 @@ public class ModelLoader {
 		if (scene == null)
 			throw new IllegalStateException(aiGetErrorString());
 		Model model = new Model(name);
-		model.setMeshes(scene);
+		model.setAIMeshes(scene);
 		aiReleaseImport(scene);
 		return model;
 	}

@@ -68,7 +68,7 @@ public class UIRenderer extends Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z });
+			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z }, null);
 			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
@@ -78,7 +78,7 @@ public class UIRenderer extends Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, points);
+			lineMesh.loadData(3, points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else
@@ -91,7 +91,7 @@ public class UIRenderer extends Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(2, points);
+			lineMesh.loadData(2, points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else

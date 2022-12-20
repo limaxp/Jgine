@@ -40,6 +40,10 @@ public class Model implements SystemObject, AutoCloseable {
 			meshes[i].render();
 		}
 	}
+	
+	public Mesh[] setMeshes(Mesh mesh, Material material) {
+		return setMeshes(new Mesh[] { mesh }, new Material[] { material });
+	}
 
 	public Mesh[] setMeshes(Mesh[] meshes, Material material) {
 		return setMeshes(meshes, new Material[] { material });
@@ -52,7 +56,7 @@ public class Model implements SystemObject, AutoCloseable {
 		return old;
 	}
 
-	public Mesh[] setMeshes(AIScene scene) {
+	public Mesh[] setAIMeshes(AIScene scene) {
 		Mesh[] old = this.meshes;
 		int meshCount = scene.mNumMeshes();
 		meshes = new Mesh[meshCount];

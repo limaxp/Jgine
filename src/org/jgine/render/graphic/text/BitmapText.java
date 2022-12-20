@@ -1,7 +1,7 @@
 package org.jgine.render.graphic.text;
 
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.ModelGenerator;
+import org.jgine.render.graphic.mesh.MeshGenerator;
 
 public class BitmapText extends Text {
 
@@ -18,7 +18,7 @@ public class BitmapText extends Text {
 	protected void buildMesh() {
 		if (mesh != null)
 			close();
-		mesh = ModelGenerator.text((BitmapFont) font, size, text, xOffset, yOffset);
+		mesh = MeshGenerator.text((BitmapFont) font, size, text, xOffset, yOffset);
 	}
 
 	@Override

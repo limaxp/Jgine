@@ -16,7 +16,7 @@ import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.BaseMesh;
 import org.jgine.render.graphic.mesh.Mesh;
 import org.jgine.render.graphic.mesh.Model;
-import org.jgine.render.graphic.mesh.ModelGenerator;
+import org.jgine.render.graphic.mesh.MeshGenerator;
 import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
@@ -64,8 +64,8 @@ public class Renderer {
 		POST_PROCESS_TARGET.checkStatus();
 		POST_PROCESS_TARGET.unbind();
 
-		QUAD_MESH = ModelGenerator.quad(1.0f);
-		CUBE_MESH = ModelGenerator.cube(1.0f);
+		QUAD_MESH = MeshGenerator.quad(1.0f);
+		CUBE_MESH = MeshGenerator.cube(1.0f);
 	}
 
 	public static void init() {
@@ -161,7 +161,7 @@ public class Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z });
+			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z }, null);
 			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
@@ -171,7 +171,7 @@ public class Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, points);
+			lineMesh.loadData(3, points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else
@@ -184,7 +184,7 @@ public class Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(2, points);
+			lineMesh.loadData(2, points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else

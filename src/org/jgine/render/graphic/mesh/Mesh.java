@@ -35,6 +35,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.BufferHelper;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
@@ -45,23 +46,23 @@ import org.lwjgl.assimp.AIVector3D;
 import org.lwjgl.system.MemoryUtil;
 
 public class Mesh implements AutoCloseable {
-	
-	public static final int STATIC  = GL_STATIC_DRAW;
-	public static final int DYNAMIC  = GL_DYNAMIC_DRAW;
-	
+
+	public static final int STATIC = GL_STATIC_DRAW;
+	public static final int DYNAMIC = GL_DYNAMIC_DRAW;
+
 	public static final int POINTS = GL_POINTS;
 	public static final int LINES = GL_LINES;
 	public static final int LINE_LOOP = GL_LINE_LOOP;
 	public static final int LINE_STRIP = GL_LINE_STRIP;
 	public static final int TRIANGLES = GL_TRIANGLES;
 	public static final int TRIANGLE_STRIP = GL_TRIANGLE_STRIP;
-	public static final int TRIANGLE_FAN =  GL_TRIANGLE_FAN;
+	public static final int TRIANGLE_FAN = GL_TRIANGLE_FAN;
 	public static final int QUADS = GL_QUADS;
 	public static final int LINES_ADJACENCY = GL_LINES_ADJACENCY;
-	public static final int LINE_STRIP_ADJACENCY =  GL_LINE_STRIP_ADJACENCY;
-	public static final int TRIANGLES_ADJACENCY  =  GL_TRIANGLES_ADJACENCY ;
+	public static final int LINE_STRIP_ADJACENCY = GL_LINE_STRIP_ADJACENCY;
+	public static final int TRIANGLES_ADJACENCY = GL_TRIANGLES_ADJACENCY;
 	public static final int TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY;
-	public static final int PATCHES  = GL_PATCHES ;
+	public static final int PATCHES = GL_PATCHES;
 
 	public static final int TEXT_CORD_SIZE = 2;
 
@@ -71,11 +72,11 @@ public class Mesh implements AutoCloseable {
 	protected int vbo;
 	protected int ibo;
 	protected int size;
-	
+
 	public Mesh() {
 		this(STATIC);
 	}
-	
+
 	public Mesh(int type) {
 		this.type = type;
 	}
@@ -89,7 +90,7 @@ public class Mesh implements AutoCloseable {
 		vbo = 0;
 		ibo = 0;
 	}
-	
+
 	public void render() {
 		drawElements();
 	}
@@ -105,44 +106,51 @@ public class Mesh implements AutoCloseable {
 		glDrawElements(mode, size, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-	
-	public void loadData(int dimension, float[] vertices) {
-		loadData(dimension, vertices, (float[]) null);
-	}
-	
-	public void loadData(int dimension, float[] vertices, @Nullable float[] textureChords) {
-		if (textureChords == null || textureChords.length == 0)
-			textureChords = BufferHelper.generateTextureChords(vertices);
-
-		FloatBuffer verticesBuffer = BufferHelper.createFloatBuffer(dimension, TEXT_CORD_SIZE, vertices, textureChords);
-		loadDataNoNormals(dimension, verticesBuffer);
-	}
-	
-	public void loadData(int dimension, float[] vertices, int[] indices) {
-		loadData(dimension, vertices, indices, null, null);
-	}
-
-	public void loadData(int dimension, float[] vertices, int[] indices, @Nullable float[] textureChords) {
-		loadData(dimension, vertices, indices, textureChords, null);
-	}
 
 	public void loadData(int dimension, float[] vertices, int[] indices, @Nullable float[] textureChords,
 			@Nullable float[] normals) {
-		IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.length);
-		indicesBuffer.put(indices).flip();
-		
-		if (textureChords == null || textureChords.length == 0)
-			textureChords = BufferHelper.generateTextureChords(vertices);
+		loadData(dimension, FloatBuffer.wrap(vertices), IntBuffer.wrap(indices),
+				textureChords != null ? FloatBuffer.wrap(textureChords) : null,
+				normals != null ? FloatBuffer.wrap(normals) : null);
+	}
 
-		if (normals == null || normals.length == 0) {
-			FloatBuffer verticesBuffer = BufferHelper.createFloatBuffer(dimension, TEXT_CORD_SIZE, vertices,
-					textureChords);
-			loadDataNoNormals(dimension, verticesBuffer, indicesBuffer);
-		} else {
-			FloatBuffer verticesBuffer = BufferHelper.createFloatBuffer(dimension, TEXT_CORD_SIZE, dimension, vertices,
-					textureChords, normals);
-			loadData(dimension, verticesBuffer, indicesBuffer);
+	public void loadData(int dimension, FloatBuffer vertices, IntBuffer indices, @Nullable FloatBuffer textureChords,
+			@Nullable FloatBuffer normals) {
+		if (textureChords == null || textureChords.remaining() == 0)
+			textureChords = generateTextureChords(dimension, vertices);
+
+		if (normals == null || normals.remaining() == 0)
+			if (dimension == 3)
+				normals = calculateNormals3d(vertices, indices);
+			else if (dimension == 2)
+				normals = calculateNormals2d(vertices, indices);
+
+		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
+		int vertexSize = vertices.remaining() / dimension;
+		FloatBuffer combinedVertices = BufferUtils.createFloatBuffer(dataSize * vertexSize);
+		if (dimension == 3) {
+			for (int i = 0; i < vertexSize; i++) {
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+			}
+		} else if (dimension == 2) {
+			for (int i = 0; i < vertexSize; i++) {
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+			}
 		}
+		combinedVertices.flip();
+		loadData(dimension, combinedVertices, indices);
 	}
 
 	public void loadData(AIMesh mesh) {
@@ -190,7 +198,7 @@ public class Mesh implements AutoCloseable {
 	public void loadData(AIVector3D.Buffer vertices, IntBuffer indices, AIVector3D.Buffer textureChords,
 			AIVector3D.Buffer normals) {
 		if (normals == null || normals.remaining() == 0) {
-			normals = BufferHelper.calculateNormals(vertices, indices);
+			normals = calculateNormals(vertices, indices);
 			loadData_(vertices, indices, textureChords, normals);
 			MemoryUtil.memFree(normals);
 			return;
@@ -285,5 +293,129 @@ public class Mesh implements AutoCloseable {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
 
 		glBindVertexArray(0);
+	}
+
+	public static FloatBuffer calculateNormals2d(FloatBuffer vertices, IntBuffer indices) {
+		float[] normals = new float[vertices.remaining()];
+		while (indices.hasRemaining()) {
+			int i0 = indices.get();
+			int i1 = indices.get();
+			int i2 = indices.get();
+
+			Vector3f pos0 = new Vector3f(vertices.get(i0 * 3), vertices.get(i0 * 3 + 1), vertices.get(i0 * 3 + 2));
+			Vector3f pos1 = new Vector3f(vertices.get(i1 * 3), vertices.get(i1 * 3 + 1), vertices.get(i1 * 3 + 2));
+			Vector3f pos2 = new Vector3f(vertices.get(i2 * 3), vertices.get(i2 * 3 + 1), vertices.get(i2 * 3 + 2));
+			Vector3f v1 = Vector3f.sub(pos1, pos0);
+			Vector3f v2 = Vector3f.sub(pos2, pos0);
+			Vector3f normal = Vector3f.cross(v1, v2);
+			normal = Vector3f.normalize(normal);
+
+			normals[i0 * 3] += normal.x;
+			normals[i0 * 3 + 1] += normal.y;
+
+			normals[i1 * 3] += normal.x;
+			normals[i1 * 3 + 1] += normal.y;
+
+			normals[i2 * 3] += normal.x;
+			normals[i2 * 3 + 1] += normal.y;
+		}
+
+		for (int i = 0; i < normals.length; i += 3) {
+			float x = normals[i];
+			float y = normals[i + 1];
+			float length = (float) Math.sqrt(x * x + y * y);
+			normals[i] /= length;
+			normals[i + 1] /= length;
+		}
+		return FloatBuffer.wrap(normals);
+	}
+
+	public static FloatBuffer calculateNormals3d(FloatBuffer vertices, IntBuffer indices) {
+		float[] normals = new float[vertices.remaining()];
+		while (indices.hasRemaining()) {
+			int i0 = indices.get();
+			int i1 = indices.get();
+			int i2 = indices.get();
+
+			Vector3f pos0 = new Vector3f(vertices.get(i0 * 3), vertices.get(i0 * 3 + 1), vertices.get(i0 * 3 + 2));
+			Vector3f pos1 = new Vector3f(vertices.get(i1 * 3), vertices.get(i1 * 3 + 1), vertices.get(i1 * 3 + 2));
+			Vector3f pos2 = new Vector3f(vertices.get(i2 * 3), vertices.get(i2 * 3 + 1), vertices.get(i2 * 3 + 2));
+			Vector3f v1 = Vector3f.sub(pos1, pos0);
+			Vector3f v2 = Vector3f.sub(pos2, pos0);
+			Vector3f normal = Vector3f.cross(v1, v2);
+			normal = Vector3f.normalize(normal);
+
+			normals[i0 * 3] += normal.x;
+			normals[i0 * 3 + 1] += normal.y;
+			normals[i0 * 3 + 2] += normal.z;
+
+			normals[i1 * 3] += normal.x;
+			normals[i1 * 3 + 1] += normal.y;
+			normals[i1 * 3 + 2] += normal.z;
+
+			normals[i2 * 3] += normal.x;
+			normals[i2 * 3 + 1] += normal.y;
+			normals[i2 * 3 + 2] += normal.z;
+		}
+
+		for (int i = 0; i < normals.length; i += 3) {
+			float x = normals[i];
+			float y = normals[i + 1];
+			float z = normals[i + 2];
+			float length = (float) Math.sqrt(x * x + y * y + z * z);
+			normals[i] /= length;
+			normals[i + 1] /= length;
+			normals[i + 2] /= length;
+		}
+		return FloatBuffer.wrap(normals);
+	}
+
+	public static AIVector3D.Buffer calculateNormals(AIVector3D.Buffer vertices, IntBuffer indices) {
+		AIVector3D.Buffer normals = AIVector3D.malloc(vertices.remaining());
+		int indicesSize = indices.remaining();
+		for (int i = 0; i < indicesSize; i += 3) {
+			int i0 = indices.get(i);
+			int i1 = indices.get(i + 1);
+			int i2 = indices.get(i + 2);
+			AIVector3D pos0 = vertices.get(i0);
+			AIVector3D pos1 = vertices.get(i1);
+			AIVector3D pos2 = vertices.get(i2);
+
+			Vector3f v1 = Vector3f.sub(pos1.x(), pos1.y(), pos1.z(), pos0.x(), pos0.y(), pos0.z());
+			Vector3f v2 = Vector3f.sub(pos2.x(), pos2.y(), pos2.z(), pos0.x(), pos0.y(), pos0.z());
+			Vector3f normal = Vector3f.cross(v1, v2);
+			normal = Vector3f.normalize(normal);
+
+			AIVector3D n0 = normals.get(i0);
+			n0.set(n0.x() + normal.x, n0.y() + normal.y, n0.z() + normal.z);
+			AIVector3D n1 = normals.get(i1);
+			n1.set(n1.x() + normal.x, n1.y() + normal.y, n1.z() + normal.z);
+			AIVector3D n2 = normals.get(i2);
+			n2.set(n2.x() + normal.x, n2.y() + normal.y, n2.z() + normal.z);
+		}
+
+		int normalsSize = normals.remaining();
+		for (int i = 0; i < normalsSize; i++) {
+			AIVector3D normal = vertices.get(i);
+			float x = normal.x();
+			float y = normal.y();
+			float z = normal.z();
+			float length = (float) Math.sqrt(x * x + y * y + z * z);
+			normal.set(x / length, y / length, z / length);
+		}
+		return normals;
+	}
+
+	public static FloatBuffer generateTextureChords(int dimension, FloatBuffer vertices) {
+		int vertexSize = vertices.remaining() / dimension;
+		FloatBuffer textureCords = BufferUtils.createFloatBuffer(vertexSize * 2);
+		for (int i = 0; i < vertexSize; i += 2) {
+			textureCords.put(0);
+			textureCords.put(0);
+			textureCords.put(1);
+			textureCords.put(1);
+		}
+		textureCords.flip();
+		return textureCords;
 	}
 }
