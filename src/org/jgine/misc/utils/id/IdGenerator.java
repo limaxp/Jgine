@@ -3,6 +3,8 @@ package org.jgine.misc.utils.id;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.jgine.misc.math.FastMath;
+
 public class IdGenerator {
 
 	public static final int MAX_ID = 16777215;
@@ -16,6 +18,7 @@ public class IdGenerator {
 	private final byte[] generation;
 	private int size;
 	private final Queue<Integer> freeIndices;
+	private int minimumFreeIndices;
 
 	public IdGenerator() {
 		this(MAX_ID);
@@ -24,12 +27,13 @@ public class IdGenerator {
 	public IdGenerator(int maxId) {
 		generation = new byte[maxId];
 		size = 1;
-		freeIndices = new ArrayBlockingQueue<Integer>(MINIMUM_FREE_INDICES + 1000);
+		minimumFreeIndices = FastMath.min(maxId - 2, MINIMUM_FREE_INDICES);
+		freeIndices = new ArrayBlockingQueue<Integer>(minimumFreeIndices + 1000);
 	}
 
 	public int generate() {
 		int index;
-		if (freeIndices.size() > MINIMUM_FREE_INDICES) {
+		if (freeIndices.size() > minimumFreeIndices) {
 			index = freeIndices.poll();
 			return id(index, generation[index]);
 		} else {

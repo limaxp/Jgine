@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
+import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 
 public class GameServer implements Runnable {
 
@@ -143,11 +145,12 @@ public class GameServer implements Runnable {
 			return null;
 		}
 		player = new PlayerConnection(address, port, paket.getName(), idGenerator.generate());
+		sendDataToAll(new PlayerListPacket(PlayerListAction.ADD, Arrays.asList(player)));
 		this.player.add(player);
 		nameMap.put(player.name, player);
 		idMap[IdGenerator.index(player.id)] = player;
 		sendData(new ConnectResponsePacket(true, player.id), player);
-		sendData(new PlayerListPacket(this.player), player);
+		sendData(new PlayerListPacket(PlayerListAction.ADD, this.player), player);
 		return player;
 	}
 
@@ -160,10 +163,11 @@ public class GameServer implements Runnable {
 		player = nameMap.remove(paket.getName());
 		idMap[idGenerator.free(player.id)] = null;
 		this.player.remove(player);
+		sendDataToAll(new PlayerListPacket(PlayerListAction.REMOVE, Arrays.asList(player)));
 		return player;
 	}
 
-	public List<PlayerConnection> getPlayer() {
+	public List<PlayerConnection> getPlayerList() {
 		return Collections.unmodifiableList(player);
 	}
 
@@ -174,7 +178,7 @@ public class GameServer implements Runnable {
 
 	@Nullable
 	public PlayerConnection getPlayer(int id) {
-		return idMap[id];
+		return idMap[IdGenerator.index(id)];
 	}
 
 	public int getMaxPlayer() {

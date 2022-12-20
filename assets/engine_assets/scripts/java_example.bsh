@@ -21,7 +21,7 @@ class JavaBehavour implements IScript {
 	}
 	
 	public void update() { 
-		print(entity);
+		//print(entity);
 	}
 	
 	public void onCollision(Collision collision) { 

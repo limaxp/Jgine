@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
@@ -92,10 +93,22 @@ public class GameClient implements Runnable {
 				this.id = connectResponsePacket.getId();
 		} else if (paketId == PacketManager.PLAYER_LIST) {
 			PlayerListPacket playerListPacket = (PlayerListPacket) gamePacket;
-			for (PlayerConnection p : playerListPacket.getPlayers()) {
-				player.add(p);
-				nameMap.put(p.name, p);
-				idMap[p.id] = p;
+			switch (playerListPacket.getAction()) {
+			case ADD:
+				for (PlayerConnection p : playerListPacket.getPlayers()) {
+					player.add(p);
+					nameMap.put(p.name, p);
+					idMap[IdGenerator.index(p.id)] = p;
+				}
+				break;
+
+			case REMOVE:
+				for (PlayerConnection p : playerListPacket.getPlayers()) {
+					player.remove(p);
+					nameMap.remove(p.name);
+					idMap[IdGenerator.index(p.id)] = null;
+				}
+				break;
 			}
 		}
 
@@ -149,7 +162,7 @@ public class GameClient implements Runnable {
 		this.listener.remove(listener);
 	}
 
-	public List<PlayerConnection> getPlayer() {
+	public List<PlayerConnection> getPlayerList() {
 		return Collections.unmodifiableList(player);
 	}
 
@@ -160,7 +173,11 @@ public class GameClient implements Runnable {
 
 	@Nullable
 	public PlayerConnection getPlayer(int id) {
-		return idMap[id];
+		return idMap[IdGenerator.index(id)];
+	}
+
+	public PlayerConnection getPlayer() {
+		return idMap[IdGenerator.index(id)];
 	}
 
 	public int getMaxPlayer() {

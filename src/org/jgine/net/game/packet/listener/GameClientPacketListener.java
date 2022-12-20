@@ -32,13 +32,8 @@ public class GameClientPacketListener implements ClientPacketListener {
 
 	@Override
 	public void on(PositionPacket packet) {
-		// TODO this will throw errors sometime because UpdateManager call in
-		// setPosition()
-//		System.out.println("hi"); // important for testing this error
-//		Entity entity = Entity.getById(packet.getEntityId());
-//		Vector3f pos = entity.transform.getPosition();
-//		if (Vector3f.distance(pos.x, pos.y, pos.z, packet.getX(), packet.getY(), packet.getZ()) > 10)
-//			entity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
+		Entity entity = Entity.getById(packet.getEntityId());
+		entity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
 	}
 
 	@Override

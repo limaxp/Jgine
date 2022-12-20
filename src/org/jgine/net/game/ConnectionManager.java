@@ -3,45 +3,69 @@ package org.jgine.net.game;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
-import org.jgine.net.game.packet.packets.PingPacket;
 
 public class ConnectionManager {
 
 	private static GameServer server;
 	private static GameClient client;
-	private static boolean isServer = true;
-
+	
 	public static void init() {
-		if (isServer) {
-			server = new GameServer(1331, 100);
-			server.addListener(new GameServerPacketListener());
-			new Thread(server).start();
-		}
-		client = new GameClient("localhost", 1331, 100);
-		client.addListener(new GameClientPacketListener());
-		new Thread(client).start();
-
-		client.sendData(new ConnectPacket("testName"));
-		Scheduler.runTaskLater(100, () -> client.sendData(new PingPacket()));
 	}
 
 	public static void terminate() {
-		client.sendData(new DisconnectPacket("testName"));
-
-		if (isServer)
-			server.stop();
-		client.stop();
+		if (isClient())
+			stopClient();
+		if (isServer())
+			stopServer();
 	}
 
 	public static void update() {
-		if (isServer)
+		if (isClient())
+			client.update();
+		if (isServer())
 			server.update();
-		client.update();
+	}
+
+	public static GameServer startServer(int port, int maxConnections) {
+		if (isClient())
+			throw new IllegalStateException("Can not start a server while already connected!");
+		if (isServer())
+			throw new IllegalStateException("Can not start a server while already hosting!");
+		server = new GameServer(port, maxConnections);
+		server.addListener(new GameServerPacketListener());
+		new Thread(server).start();
+		return server;
+	}
+
+	public static void stopServer() {
+		if (!isServer())
+			return;
+		server.stop();
+		server = null;
+	}
+
+	public static GameClient startClient(String serverIpAddress, int serverPort, int maxConnections) {
+		if (isClient())
+			throw new IllegalStateException("Can not start a client while already connected!");
+		if (isServer())
+			throw new IllegalStateException("Can not start a client while already hosting!");
+		client = new GameClient(serverIpAddress, serverPort, maxConnections);
+		client.addListener(new GameClientPacketListener());
+		new Thread(client).start();
+		client.sendData(new ConnectPacket("testName"));
+		return client;
+	}
+
+	public static void stopClient() {
+		if (!isClient())
+			return;
+		client.sendData(new DisconnectPacket("testName"));
+		client.stop();
+		client = null;
 	}
 
 	@Nullable
@@ -49,21 +73,36 @@ public class ConnectionManager {
 		return server;
 	}
 
+	@Nullable
 	public static GameClient getClient() {
 		return client;
 	}
 
-	public List<PlayerConnection> getPlayer() {
-		return isServer ? server.getPlayer() : client.getPlayer();
+	public static boolean isServer() {
+		return server != null;
+	}
+
+	public static boolean isClient() {
+		return client != null;
+	}
+
+	@Nullable
+	public List<PlayerConnection> getPlayerList() {
+		return isClient() ? client.getPlayerList() : isServer() ? server.getPlayerList() : null;
 	}
 
 	@Nullable
 	public PlayerConnection getPlayer(String name) {
-		return isServer ? server.getPlayer(name) : client.getPlayer(name);
+		return isClient() ? client.getPlayer(name) : isServer() ? server.getPlayer(name) : null;
 	}
 
 	@Nullable
 	public PlayerConnection getPlayer(int id) {
-		return isServer ? server.getPlayer(id) : client.getPlayer(id);
+		return isClient() ? client.getPlayer(id) : isServer() ? server.getPlayer(id) : null;
 	}
+	
+	// TODO
+//	public PlayerConnection getPlayer() {
+//		return isClient() ? client.getPlayer() : isServer() ? server.getPlayer() : null;
+//	}
 }

@@ -10,17 +10,24 @@ import org.jgine.net.game.packet.PacketManager;
 
 public class PlayerListPacket extends Packet {
 
+	public static enum PlayerListAction {
+		ADD, REMOVE
+	}
+	 
+	private PlayerListAction action;
 	private List<PlayerConnection> players;
 
 	public PlayerListPacket() {
 	}
 
-	public PlayerListPacket(List<PlayerConnection> players) {
+	public PlayerListPacket(PlayerListAction action, List<PlayerConnection> players) {
+		this.action = action;
 		this.players = players;
 	}
 
 	@Override
 	public void read(ByteBuffer buffer) {
+		action = PlayerListAction.values()[buffer.getInt()];
 		int size = buffer.getInt();
 		players = new FastArrayList<PlayerConnection>(size);
 		for (int i = 0; i < size; i++) {
@@ -34,6 +41,7 @@ public class PlayerListPacket extends Packet {
 	@Override
 	public void write(ByteBuffer buffer) {
 		buffer.putInt(PacketManager.PLAYER_LIST);
+		buffer.putInt(action.ordinal());
 		int size = players.size();
 		buffer.putInt(size);
 		for (int i = 0; i < size; i++) {
@@ -42,6 +50,10 @@ public class PlayerListPacket extends Packet {
 			buffer.putInt(player.name.length());
 			buffer.put(player.name.getBytes());
 		}
+	}
+	
+	public PlayerListAction getAction() {
+		return action;
 	}
 
 	public List<PlayerConnection> getPlayers() {
