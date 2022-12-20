@@ -19,6 +19,8 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
 public class Prefab {
+	
+	public static final int MAX_SYSTEMS	= 20;
 
 	private static final SystemObject[] EMPTY_OBJECTS = new SystemObject[0];
 
@@ -35,9 +37,9 @@ public class Prefab {
 	public Prefab(String name) {
 		this.name = name;
 		id = name.hashCode();
-		systems = new EngineSystem[5];
-		objects = new SystemObject[5][];
-		names = new String[5][];
+		systems = new EngineSystem[MAX_SYSTEMS];
+		objects = new SystemObject[MAX_SYSTEMS][];
+		names = new String[MAX_SYSTEMS][];
 		data = new HashMap<Object, Object>();
 		childs = new UnorderedIdentityArrayList<Prefab>();
 		transform = new TransformData();
