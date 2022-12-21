@@ -31,6 +31,9 @@ public class SpawnPrefabPacket extends Packet {
 	public void read(ByteBuffer buffer) {
 		prefab = Prefab.get(buffer.getInt());
 		scene = Engine.getInstance().getScene(buffer.getInt());
+		x = buffer.getFloat();
+		y = buffer.getFloat();
+		z = buffer.getFloat();
 	}
 
 	@Override
@@ -38,6 +41,9 @@ public class SpawnPrefabPacket extends Packet {
 		buffer.putInt(PacketManager.SPAWN_PREFAB);
 		buffer.putInt(prefab.id);
 		buffer.putInt(scene.id);
+		buffer.putFloat(x);
+		buffer.putFloat(y);
+		buffer.putFloat(z);
 	}
 
 	public Prefab getPrefab() {

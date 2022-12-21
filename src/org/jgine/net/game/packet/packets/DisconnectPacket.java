@@ -7,30 +7,27 @@ import org.jgine.net.game.packet.PacketManager;
 
 public class DisconnectPacket extends Packet {
 
-	private String name;
+	private int id;
 
 	public DisconnectPacket() {
 	}
 
-	public DisconnectPacket(String name) {
-		this.name = name;
+	public DisconnectPacket(int id) {
+		this.id = id;
 	}
 
 	@Override
 	public void read(ByteBuffer buffer) {
-		byte[] nameBytes = new byte[buffer.getInt()];
-		buffer.get(nameBytes);
-		name = new String(nameBytes);
+		id = buffer.getInt();
 	}
 
 	@Override
 	public void write(ByteBuffer buffer) {
 		buffer.putInt(PacketManager.DISCONNECT);
-		buffer.putInt(name.length());
-		buffer.put(name.getBytes());
+		buffer.putInt(id);
 	}
 
-	public String getName() {
-		return name;
+	public int getId() {
+		return id;
 	}
 }

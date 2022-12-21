@@ -3,6 +3,7 @@ package org.jgine.net.game;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.entity.Entity;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
@@ -63,7 +64,7 @@ public class ConnectionManager {
 	public static void stopClient() {
 		if (!isClient())
 			return;
-		client.sendData(new DisconnectPacket("testName"));
+		client.sendData(new DisconnectPacket(client.getId()));
 		client.stop();
 		client = null;
 	}
@@ -101,8 +102,12 @@ public class ConnectionManager {
 		return isClient() ? client.getPlayer(id) : isServer() ? server.getPlayer(id) : null;
 	}
 	
-	// TODO
-//	public PlayerConnection getPlayer() {
-//		return isClient() ? client.getPlayer() : isServer() ? server.getPlayer() : null;
-//	}
+	public PlayerConnection getPlayer() {
+		return isClient() ? client.getPlayer() : isServer() ? server.getPlayer() : null;
+	}
+
+	public static void setTrackedEntity(Entity player) {
+		if(isClient())
+			client.setTrackedEntity(player);
+	}
 }

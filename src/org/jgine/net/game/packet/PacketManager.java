@@ -14,6 +14,7 @@ import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
+import org.jgine.net.game.packet.packets.SpawnEntityPacket;
 import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
 
 public class PacketManager {
@@ -55,6 +56,9 @@ public class PacketManager {
 			ServerPacketListener::on);
 
 	public static final int SPAWN_PREFAB = register(7, SpawnPrefabPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
+	
+	public static final int SPAWN_ENTITY = register(8, SpawnEntityPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,

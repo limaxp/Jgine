@@ -5,19 +5,19 @@ import java.net.InetAddress;
 public class PlayerConnection {
 
 	public final int id;
+	public final String name;
 	public final InetAddress address;
 	public final int port;
-	public final String name;
 
-	public PlayerConnection(InetAddress address, int port, String name, int id) {
+	public PlayerConnection(int id, String name, InetAddress address, int port) {
 		this.id = id;
+		this.name = name;
 		this.address = address;
 		this.port = port;
-		this.name = name;
 	}
 
 	@Override
 	public String toString() {
-		return super.toString() + " [name=" + name + ", id=" + id + ", address=" + address + ", port" + port + "]";
+		return super.toString() + " [id=" + id + ", name=" + name + ", address=" + address + ", port" + port + "]";
 	}
 }

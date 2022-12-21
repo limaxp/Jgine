@@ -8,6 +8,7 @@ import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
+import org.jgine.net.game.packet.packets.SpawnEntityPacket;
 import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
 
 public class GameClientPacketListener implements ClientPacketListener {
@@ -32,13 +33,17 @@ public class GameClientPacketListener implements ClientPacketListener {
 
 	@Override
 	public void on(PositionPacket packet) {
+		// TODO entity id is not the same between clients
 		Entity entity = Entity.getById(packet.getEntityId());
 		entity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
 	}
 
 	@Override
 	public void on(SpawnPrefabPacket packet) {
-		Entity entity = packet.getPrefab().create(packet.getScene());
-		entity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
+		packet.getPrefab().create(packet.getScene(), packet.getX(), packet.getY(), packet.getZ());
+	}
+	
+	@Override
+	public void on(SpawnEntityPacket packet) {
 	}
 }

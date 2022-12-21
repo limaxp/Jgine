@@ -7,14 +7,16 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.core.entity.Entity;
+import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.utils.function.TriConsumer;
 import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.logger.Logger;
@@ -29,13 +31,21 @@ import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 
 public class GameServer implements Runnable {
 
+	public static final Consumer<PlayerConnection> NULL_PLAYER_CALLBACK = (player) -> {
+	};
+
 	private DatagramSocket socket;
 	private boolean isRunning;
 	private final List<ServerPacketListener> listener;
-	private final List<PlayerConnection> player;
+	private final List<PlayerConnection> playerList;
+	private final List<PlayerConnection> clientList;
 	private final Map<String, PlayerConnection> nameMap;
 	private final IdGenerator idGenerator;
 	private final PlayerConnection[] idMap;
+	private final PlayerConnection player;
+	private final List<Entity> trackedEntities;
+	private Consumer<PlayerConnection> addPlayerCallback;
+	private Consumer<PlayerConnection> removePlayerCallback;
 
 	public GameServer(int port, int maxConnections) {
 		try {
@@ -44,11 +54,21 @@ public class GameServer implements Runnable {
 		} catch (SocketException e) {
 			Logger.err("GameServer: Error creating socket!", e);
 		}
-		listener = new ArrayList<ServerPacketListener>();
-		player = new ArrayList<PlayerConnection>(maxConnections);
+		listener = new IdentityArrayList<ServerPacketListener>();
+		playerList = new IdentityArrayList<PlayerConnection>(maxConnections);
+		clientList = new IdentityArrayList<PlayerConnection>(maxConnections - 1);
 		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
 		idGenerator = new IdGenerator(maxConnections);
-		idMap = new PlayerConnection[maxConnections];
+		idMap = new PlayerConnection[maxConnections + 1];
+
+		player = new PlayerConnection(idGenerator.generate(), "host", getIp(), port);
+		nameMap.put(player.name, player);
+		idMap[IdGenerator.index(player.id)] = player;
+		playerList.add(player);
+
+		trackedEntities = new IdentityArrayList<Entity>(1000);
+		addPlayerCallback = NULL_PLAYER_CALLBACK;
+		removePlayerCallback = NULL_PLAYER_CALLBACK;
 	}
 
 	public void stop() {
@@ -91,10 +111,44 @@ public class GameServer implements Runnable {
 		else
 			connection = getPlayer(playerId);
 
-		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager
-				.getServerListenerFunction(paketId);
+		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager.getServerListenerFunction(paketId);
 		for (ServerPacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket, connection);
+	}
+
+	private PlayerConnection addConnection(ConnectPacket paket, InetAddress address, int port) {
+		PlayerConnection player = getPlayer(paket.getName());
+		if (player != null) {
+			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
+			return null;
+		}
+		player = new PlayerConnection(idGenerator.generate(), paket.getName(), address, port);
+		sendDataToAll(new PlayerListPacket(PlayerListAction.ADD, Arrays.asList(player)));
+		idMap[IdGenerator.index(player.id)] = player;
+		nameMap.put(player.name, player);
+		playerList.add(player);
+		clientList.add(player);
+		sendData(new ConnectResponsePacket(true, player.id), player);
+		sendData(new PlayerListPacket(PlayerListAction.ADD, playerList), player);
+		addPlayerCallback.accept(player);
+		return player;
+	}
+
+	private PlayerConnection removeConnection(DisconnectPacket paket) {
+		PlayerConnection player = getPlayer(paket.getId());
+		if (player == null) {
+			Logger.warn("GameServer: Disconnect error! Player does not exist '" + paket.getId() + "'");
+			return null;
+		}
+		int idIndex = idGenerator.free(paket.getId());
+		player = idMap[idIndex];
+		idMap[idIndex] = null;
+		nameMap.remove(player.name);
+		playerList.remove(player);
+		clientList.remove(player);
+		sendDataToAll(new PlayerListPacket(PlayerListAction.REMOVE, Arrays.asList(player)));
+		removePlayerCallback.accept(player);
+		return player;
 	}
 
 	private void sendData(byte[] data, InetAddress ipAddress, int port) {
@@ -118,7 +172,7 @@ public class GameServer implements Runnable {
 	}
 
 	public void sendDataToAll(Packet packet) {
-		for (PlayerConnection p : player)
+		for (PlayerConnection p : clientList)
 			sendData(packet, p.address, p.port);
 	}
 
@@ -138,37 +192,12 @@ public class GameServer implements Runnable {
 		this.listener.remove(listener);
 	}
 
-	private PlayerConnection addConnection(ConnectPacket paket, InetAddress address, int port) {
-		PlayerConnection player = getPlayer(paket.getName());
-		if (player != null) {
-			Logger.warn("GameServer: Connect error! Duplicate player name '" + paket.getName() + "'");
-			return null;
-		}
-		player = new PlayerConnection(address, port, paket.getName(), idGenerator.generate());
-		sendDataToAll(new PlayerListPacket(PlayerListAction.ADD, Arrays.asList(player)));
-		this.player.add(player);
-		nameMap.put(player.name, player);
-		idMap[IdGenerator.index(player.id)] = player;
-		sendData(new ConnectResponsePacket(true, player.id), player);
-		sendData(new PlayerListPacket(PlayerListAction.ADD, this.player), player);
-		return player;
-	}
-
-	private PlayerConnection removeConnection(DisconnectPacket paket) {
-		PlayerConnection player = getPlayer(paket.getName());
-		if (player == null) {
-			Logger.warn("GameServer: Disconnect error! Player does not exist '" + paket.getName() + "'");
-			return null;
-		}
-		player = nameMap.remove(paket.getName());
-		idMap[idGenerator.free(player.id)] = null;
-		this.player.remove(player);
-		sendDataToAll(new PlayerListPacket(PlayerListAction.REMOVE, Arrays.asList(player)));
-		return player;
-	}
-
 	public List<PlayerConnection> getPlayerList() {
-		return Collections.unmodifiableList(player);
+		return Collections.unmodifiableList(playerList);
+	}
+
+	public List<PlayerConnection> getClientList() {
+		return Collections.unmodifiableList(clientList);
 	}
 
 	@Nullable
@@ -181,11 +210,35 @@ public class GameServer implements Runnable {
 		return idMap[IdGenerator.index(id)];
 	}
 
+	public PlayerConnection getPlayer() {
+		return player;
+	}
+
 	public int getMaxPlayer() {
 		return idMap.length;
 	}
 
 	public boolean isAlive(PlayerConnection connection) {
 		return idGenerator.isAlive(connection.id);
+	}
+
+	public List<Entity> getTrackedEntities() {
+		return trackedEntities;
+	}
+
+	public void setAddPlayerCallback(Consumer<PlayerConnection> addPlayerCallback) {
+		this.addPlayerCallback = addPlayerCallback;
+	}
+
+	public Consumer<PlayerConnection> getAddPlayerCallback() {
+		return addPlayerCallback;
+	}
+
+	public void setRemovePlayerCallback(Consumer<PlayerConnection> removePlayerCallback) {
+		this.removePlayerCallback = removePlayerCallback;
+	}
+
+	public Consumer<PlayerConnection> getRemovePlayerCallback() {
+		return removePlayerCallback;
 	}
 }

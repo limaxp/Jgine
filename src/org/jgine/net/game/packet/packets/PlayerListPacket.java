@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import org.jgine.misc.collection.list.arrayList.FastArrayList;
+import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
@@ -13,7 +14,7 @@ public class PlayerListPacket extends Packet {
 	public static enum PlayerListAction {
 		ADD, REMOVE
 	}
-	 
+
 	private PlayerListAction action;
 	private List<PlayerConnection> players;
 
@@ -34,7 +35,10 @@ public class PlayerListPacket extends Packet {
 			int id = buffer.getInt();
 			byte[] nameBytes = new byte[buffer.getInt()];
 			buffer.get(nameBytes);
-			players.add(new PlayerConnection(null, -1, new String(nameBytes), id));
+			PlayerConnection player = ConnectionManager.getClient().getPlayer(id);
+			if(player == null) 
+				player = new PlayerConnection(id, new String(nameBytes), null, -1);
+			players.add(player);
 		}
 	}
 
@@ -51,7 +55,7 @@ public class PlayerListPacket extends Packet {
 			buffer.put(player.name.getBytes());
 		}
 	}
-	
+
 	public PlayerListAction getAction() {
 		return action;
 	}

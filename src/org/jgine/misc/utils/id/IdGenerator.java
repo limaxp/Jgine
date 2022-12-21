@@ -25,7 +25,7 @@ public class IdGenerator {
 	}
 
 	public IdGenerator(int maxId) {
-		generation = new byte[maxId];
+		generation = new byte[maxId + 1];
 		size = 1;
 		minimumFreeIndices = FastMath.min(maxId - 2, MINIMUM_FREE_INDICES);
 		freeIndices = new ArrayBlockingQueue<Integer>(minimumFreeIndices + 1000);
