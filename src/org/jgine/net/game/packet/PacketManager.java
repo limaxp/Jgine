@@ -62,7 +62,7 @@ public class PacketManager {
 	public static final int ENTITY_SPAWN = register(8, EntitySpawnPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int ENTITY_DELETE = register(8, EntityDeletePacket::new, ClientPacketListener::on,
+	public static final int ENTITY_DELETE = register(9, EntityDeletePacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,

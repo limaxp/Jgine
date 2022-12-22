@@ -26,6 +26,7 @@ import org.jgine.net.game.packet.ServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 
@@ -135,6 +136,10 @@ public class GameServer implements Runnable {
 		clientList.add(player);
 		sendData(new ConnectResponsePacket(true, player.id), player);
 		sendData(new PlayerListPacket(PlayerListAction.ADD, playerList), player);
+
+		for (Entity entity : trackedEntities)
+			sendData(EntitySpawnPacket.fromEntity(entity), player);
+
 		addPlayerCallback.accept(player);
 		return player;
 	}
@@ -246,7 +251,7 @@ public class GameServer implements Runnable {
 	public Consumer<PlayerConnection> getRemovePlayerCallback() {
 		return removePlayerCallback;
 	}
-	
+
 	public int generateEntityId() {
 		int id;
 		synchronized (entityIdGenerator) {

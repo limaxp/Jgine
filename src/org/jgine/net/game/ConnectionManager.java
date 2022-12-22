@@ -178,6 +178,7 @@ public class ConnectionManager {
 		} else if (isServer()) {
 			if (!entity.isRemote())
 				throw new IllegalStateException("entity must have remote id to be spawned this way!");
+			server.getTrackedEntities().add(entity);
 			server.sendDataToAll(EntitySpawnPacket.fromEntity(entity));
 		}
 	}
@@ -190,6 +191,7 @@ public class ConnectionManager {
 		} else if (isServer()) {
 			int id = server.generateEntityId();
 			entity = prefab.create(id, scene, x, y, z, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+			server.getTrackedEntities().add(entity);
 			server.sendDataToAll(new PrefabSpawnPacket(id, prefab, scene, x, y, z));
 		}
 		return entity;

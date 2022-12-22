@@ -6,8 +6,10 @@ import java.io.IOException;
 
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
+import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
+import org.jgine.render.graphic.material.Texture;
 import org.jgine.system.data.TransformListSystemScene;
 
 public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMapObject> {
@@ -39,7 +41,7 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 
 	@Override
 	public TileMapObject load(DataInput in) throws IOException {
-		return null;
+		return new TileMapObject(new TileMapData(), Texture.NONE);
 	}
 
 	@Override

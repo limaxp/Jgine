@@ -45,6 +45,7 @@ import org.jgine.system.systems.ui.UISystem;
 
 public abstract class Engine {
 
+	public static final PhysicSystem PHYSIC_SYSTEM = SystemManager.register(new PhysicSystem());
 	public static final CameraSystem CAMERA_SYSTEM = SystemManager.register(new CameraSystem());
 	public static final CollisionSystem COLLISION_SYSTEM = SystemManager.register(new CollisionSystem());
 	public static final GraphicSystem GRAPHIC_SYSTEM = SystemManager.register(new GraphicSystem());
@@ -52,7 +53,6 @@ public abstract class Engine {
 	public static final InputSystem INPUT_SYSTEM = SystemManager.register(new InputSystem());
 	public static final LightSystem LIGHT_SYSTEM = SystemManager.register(new LightSystem());
 	public static final ParticleSystem PARTICLE_SYSTEM = SystemManager.register(new ParticleSystem());
-	public static final PhysicSystem PHYSIC_SYSTEM = SystemManager.register(new PhysicSystem());
 	public static final ScriptSystem SCRIPT_SYSTEM = SystemManager.register(new ScriptSystem());
 	public static final TileMapSystem TILEMAP_SYSTEM = SystemManager.register(new TileMapSystem());
 	public static final UISystem UI_SYSTEM = SystemManager.register(new UISystem());

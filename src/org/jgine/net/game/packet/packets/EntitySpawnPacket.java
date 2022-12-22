@@ -48,6 +48,7 @@ public class EntitySpawnPacket extends Packet {
 		data = BufferUtils.createByteBuffer(dataSize);
 		for (int i = 0; i < dataSize; i++)
 			data.put(buffer.get());
+		data.flip();
 	}
 
 	@Override

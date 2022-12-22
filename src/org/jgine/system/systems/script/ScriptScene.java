@@ -9,6 +9,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.systems.collision.Collision;
 
 public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
@@ -48,7 +49,24 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public ScriptObject load(DataInput in) throws IOException {
-		return null;
+		return new ScriptObjectJava(new ScriptJava() {
+
+			@Override
+			public void update() {
+			}
+
+			@Override
+			public void onEnable() {
+			}
+
+			@Override
+			public void onDisable() {
+			}
+
+			@Override
+			public void onCollision(Collision collision) {
+			}
+		});
 	}
 
 	@Override
