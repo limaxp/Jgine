@@ -30,7 +30,7 @@ public class Entity {
 	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
-	private static final Entity[] ID_MAP = new Entity[ID_GENERATOR.getMaxId()];
+	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
 
 	private static int generateId() {
 		int id;
