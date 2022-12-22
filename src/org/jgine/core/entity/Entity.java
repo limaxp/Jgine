@@ -478,6 +478,6 @@ public class Entity {
 
 	@Nullable
 	public static Entity getById(int id) {
-		return ID_MAP[id];
+		return ID_MAP[IdGenerator.index(id)];
 	}
 }

@@ -93,7 +93,7 @@ public class GameClient implements Runnable {
 			Vector3f pos = trackedEntity.transform.getPosition();
 			sendData(new PositionPacket(trackedEntity, pos.x, pos.y, pos.z));
 		} else {
-			sendData(new PositionPacket(-1, 0, 0, 0));
+			sendData(new PositionPacket(0, 0, 0, 0));
 		}
 	}
 

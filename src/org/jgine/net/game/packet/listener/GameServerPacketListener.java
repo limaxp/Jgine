@@ -9,9 +9,9 @@ import org.jgine.net.game.packet.ServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.EntityDeletePacket;
+import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
-import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
 
 public class GameServerPacketListener implements ServerPacketListener {
@@ -35,6 +35,10 @@ public class GameServerPacketListener implements ServerPacketListener {
 
 	@Override
 	public void on(PositionPacket packet, PlayerConnection connection) {
+		Entity senderEntity = Entity.getById(packet.getId());
+		if (senderEntity != null)
+			senderEntity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
+
 		for (Entity entity : ConnectionManager.getServer().getTrackedEntities()) {
 			Vector3f pos = entity.transform.getPosition();
 			ConnectionManager.getServer().sendData(new PositionPacket(entity, pos.x, pos.y, pos.z), connection);
@@ -44,8 +48,9 @@ public class GameServerPacketListener implements ServerPacketListener {
 	@Override
 	public void on(PrefabSpawnPacket packet, PlayerConnection connection) {
 		int id = ConnectionManager.getServer().generateEntityId();
-		packet.getPrefab().create(id, packet.getScene(), packet.getX(), packet.getY(), packet.getZ(), 0.0f, 0.0f, 0.0f,
-				1.0f, 1.0f, 1.0f);
+		Entity entity = packet.getPrefab().create(id, packet.getScene(), packet.getX(), packet.getY(), packet.getZ(),
+				0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		ConnectionManager.getServer().getTrackedEntities().add(entity);
 		ConnectionManager.getServer().sendDataToAll(new PrefabSpawnPacket(id, packet.getPrefab(), packet.getScene(),
 				packet.getX(), packet.getY(), packet.getZ()));
 	}
@@ -53,7 +58,8 @@ public class GameServerPacketListener implements ServerPacketListener {
 	@Override
 	public void on(EntitySpawnPacket packet, PlayerConnection connection) {
 		int id = ConnectionManager.getServer().generateEntityId();
-		EntitySpawnPacket.toEntity(packet, id);
+		Entity entity = EntitySpawnPacket.toEntity(packet, id);
+		ConnectionManager.getServer().getTrackedEntities().add(entity);
 		ConnectionManager.getServer().sendDataToAll(new EntitySpawnPacket(id, packet.getScene(), packet.getX(),
 				packet.getY(), packet.getZ(), packet.getData()));
 	}
