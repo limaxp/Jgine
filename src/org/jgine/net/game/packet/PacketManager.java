@@ -11,11 +11,12 @@ import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
+import org.jgine.net.game.packet.packets.EntityDeletePacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
-import org.jgine.net.game.packet.packets.SpawnEntityPacket;
-import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
+import org.jgine.net.game.packet.packets.EntitySpawnPacket;
+import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
 
 public class PacketManager {
 
@@ -55,10 +56,13 @@ public class PacketManager {
 	public static final int POSITION = register(6, PositionPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
-	public static final int SPAWN_PREFAB = register(7, SpawnPrefabPacket::new, ClientPacketListener::on,
+	public static final int PREFAB_SPAWN = register(7, PrefabSpawnPacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
-	
-	public static final int SPAWN_ENTITY = register(8, SpawnEntityPacket::new, ClientPacketListener::on,
+
+	public static final int ENTITY_SPAWN = register(8, EntitySpawnPacket::new, ClientPacketListener::on,
+			ServerPacketListener::on);
+
+	public static final int ENTITY_DELETE = register(8, EntityDeletePacket::new, ClientPacketListener::on,
 			ServerPacketListener::on);
 
 	public static <T extends Packet> int register(int id, Supplier<T> supplier,

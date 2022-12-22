@@ -31,6 +31,8 @@ import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 
 public class GameServer implements Runnable {
 
+	public static final int MAX_ENTITIES = 10000;
+
 	public static final Consumer<PlayerConnection> NULL_PLAYER_CALLBACK = (player) -> {
 	};
 
@@ -44,6 +46,7 @@ public class GameServer implements Runnable {
 	private final PlayerConnection[] idMap;
 	private final PlayerConnection player;
 	private final List<Entity> trackedEntities;
+	private final IdGenerator entityIdGenerator;
 	private Consumer<PlayerConnection> addPlayerCallback;
 	private Consumer<PlayerConnection> removePlayerCallback;
 
@@ -58,7 +61,7 @@ public class GameServer implements Runnable {
 		playerList = new IdentityArrayList<PlayerConnection>(maxConnections);
 		clientList = new IdentityArrayList<PlayerConnection>(maxConnections - 1);
 		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
-		idGenerator = new IdGenerator(maxConnections);
+		idGenerator = new IdGenerator(1, maxConnections + 1);
 		idMap = new PlayerConnection[maxConnections + 1];
 
 		player = new PlayerConnection(idGenerator.generate(), "host", getIp(), port);
@@ -66,7 +69,8 @@ public class GameServer implements Runnable {
 		idMap[IdGenerator.index(player.id)] = player;
 		playerList.add(player);
 
-		trackedEntities = new IdentityArrayList<Entity>(1000);
+		trackedEntities = new IdentityArrayList<Entity>(MAX_ENTITIES);
+		entityIdGenerator = new IdGenerator(0, Entity.MAX_ENTITIES);
 		addPlayerCallback = NULL_PLAYER_CALLBACK;
 		removePlayerCallback = NULL_PLAYER_CALLBACK;
 	}
@@ -111,7 +115,8 @@ public class GameServer implements Runnable {
 		else
 			connection = getPlayer(playerId);
 
-		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager.getServerListenerFunction(paketId);
+		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager
+				.getServerListenerFunction(paketId);
 		for (ServerPacketListener currentListener : listener)
 			function.accept(currentListener, gamePacket, connection);
 	}
@@ -240,5 +245,20 @@ public class GameServer implements Runnable {
 
 	public Consumer<PlayerConnection> getRemovePlayerCallback() {
 		return removePlayerCallback;
+	}
+	
+	public int generateEntityId() {
+		int id;
+		synchronized (entityIdGenerator) {
+			id = entityIdGenerator.generate();
+		}
+		return IdGenerator.id(IdGenerator.index(id) + Entity.MAX_ENTITIES + 2, IdGenerator.generation(id));
+	}
+
+	public void freeEntityId(int id) {
+		int realId = IdGenerator.id(IdGenerator.index(id) - Entity.MAX_ENTITIES - 2, IdGenerator.generation(id));
+		synchronized (entityIdGenerator) {
+			entityIdGenerator.free(realId);
+		}
 	}
 }

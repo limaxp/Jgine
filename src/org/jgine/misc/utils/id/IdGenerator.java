@@ -21,13 +21,17 @@ public class IdGenerator {
 	private int minimumFreeIndices;
 
 	public IdGenerator() {
-		this(MAX_ID);
+		this(0, MAX_ID);
 	}
 
 	public IdGenerator(int maxId) {
-		generation = new byte[maxId + 1];
-		size = 1;
-		minimumFreeIndices = FastMath.min(maxId - 2, MINIMUM_FREE_INDICES);
+		this(0, maxId);
+	}
+
+	public IdGenerator(int startId, int maxId) {
+		generation = new byte[maxId];
+		size = startId;
+		minimumFreeIndices = FastMath.min(maxId - 2 - startId, MINIMUM_FREE_INDICES);
 		freeIndices = new ArrayBlockingQueue<Integer>(minimumFreeIndices + 1000);
 	}
 

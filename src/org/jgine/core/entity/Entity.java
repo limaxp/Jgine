@@ -19,30 +19,45 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.id.IdGenerator;
 import org.jgine.misc.utils.scheduler.Scheduler;
+import org.jgine.net.game.ConnectionManager;
+import org.jgine.net.game.GameServer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
 public class Entity {
 
-	private static final IdGenerator ID_GENERATOR = new IdGenerator();
+	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
+
+	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[ID_GENERATOR.getMaxId()];
 
-	private static int generateId(Entity entity) {
+	private static int generateId() {
 		int id;
 		synchronized (ID_GENERATOR) {
 			id = ID_GENERATOR.generate();
 		}
-		ID_MAP[IdGenerator.index(id)] = entity;
 		return id;
 	}
 
 	public static void freeId(int id) {
-		int index;
-		synchronized (ID_GENERATOR) {
-			index = ID_GENERATOR.free(id);
+		int index = IdGenerator.index(id);
+		if (index <= MAX_ENTITIES + 1) {
+			synchronized (ID_GENERATOR) {
+				ID_GENERATOR.free(id);
+			}
+		} else {
+			ConnectionManager.freeEntityId(id);
 		}
 		ID_MAP[index] = null;
+	}
+
+	public static boolean isLocal(int id) {
+		return IdGenerator.index(id) <= MAX_ENTITIES + 1;
+	}
+
+	public static boolean isRemote(int id) {
+		return IdGenerator.index(id) > MAX_ENTITIES + 1;
 	}
 
 	public final int id;
@@ -54,7 +69,7 @@ public class Entity {
 	private List<Entity> childs;
 
 	public Entity(Scene scene) {
-		this(scene, Vector3f.NULL, Vector3f.NULL, Vector3f.FULL);
+		this(scene, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	public Entity(Scene scene, TransformData transform) {
@@ -92,13 +107,19 @@ public class Entity {
 
 	public Entity(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX,
 			float scaleY, float scaleZ) {
-		this.id = generateId(this);
+		this(generateId(), scene, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
+	}
+
+	public Entity(int id, Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
+			float scaleX, float scaleY, float scaleZ) {
+		this.id = id;
 		this.scene = scene;
 		systems = new SystemMap();
 		childs = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		transform = new Transform(this, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 		scene.addEntity(this);
 		scene.addTopEntity(this);
+		ID_MAP[IdGenerator.index(id)] = this;
 	}
 
 	public void delete() {
@@ -107,6 +128,14 @@ public class Entity {
 
 	public final boolean isAlive() {
 		return ID_GENERATOR.isAlive(id);
+	}
+
+	public final boolean isLocal() {
+		return isLocal(id);
+	}
+
+	public final boolean isRemote() {
+		return isRemote(id);
 	}
 
 	public final <T extends SystemObject> T addSystem(String name, T object) {

@@ -19,8 +19,8 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
 public class Prefab {
-	
-	public static final int MAX_SYSTEMS	= 20;
+
+	public static final int MAX_SYSTEMS = 20;
 
 	private static final SystemObject[] EMPTY_OBJECTS = new SystemObject[0];
 
@@ -314,6 +314,11 @@ public class Prefab {
 	public final Entity create(Scene scene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
 			float scaleX, float scaleY, float scaleZ) {
 		return create_(scene, new Entity(scene, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ));
+	}
+
+	public final Entity create(int id, Scene scene, float posX, float posY, float posZ, float rotX, float rotY,
+			float rotZ, float scaleX, float scaleY, float scaleZ) {
+		return create_(scene, new Entity(id, scene, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ));
 	}
 
 	private final Entity create_(Scene scene, Entity entity) {

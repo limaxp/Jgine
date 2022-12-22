@@ -8,7 +8,7 @@ import org.jgine.net.game.packet.PacketManager;
 
 public class PositionPacket extends Packet {
 
-	private int entityId;
+	private int id;
 	private float x;
 	private float y;
 	private float z;
@@ -20,8 +20,8 @@ public class PositionPacket extends Packet {
 		this(entity.id, x, y, z);
 	}
 
-	public PositionPacket(int entityId, float x, float y, float z) {
-		this.entityId = entityId;
+	public PositionPacket(int id, float x, float y, float z) {
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -29,7 +29,7 @@ public class PositionPacket extends Packet {
 
 	@Override
 	public void read(ByteBuffer buffer) {
-		entityId = buffer.getInt();
+		id = buffer.getInt();
 		x = buffer.getFloat();
 		y = buffer.getFloat();
 		z = buffer.getFloat();
@@ -38,14 +38,14 @@ public class PositionPacket extends Packet {
 	@Override
 	public void write(ByteBuffer buffer) {
 		buffer.putInt(PacketManager.POSITION);
-		buffer.putInt(entityId);
+		buffer.putInt(id);
 		buffer.putFloat(x);
 		buffer.putFloat(y);
 		buffer.putFloat(z);
 	}
 
-	public int getEntityId() {
-		return entityId;
+	public int getId() {
+		return id;
 	}
 
 	public float getX() {

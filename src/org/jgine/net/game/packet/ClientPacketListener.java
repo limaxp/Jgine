@@ -1,11 +1,12 @@
 package org.jgine.net.game.packet;
 
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
+import org.jgine.net.game.packet.packets.EntityDeletePacket;
+import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
-import org.jgine.net.game.packet.packets.SpawnEntityPacket;
-import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
+import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
 
 public interface ClientPacketListener {
 
@@ -19,7 +20,9 @@ public interface ClientPacketListener {
 
 	public void on(PositionPacket packet);
 
-	public void on(SpawnPrefabPacket packet);
-	
-	public void on(SpawnEntityPacket packet);
+	public void on(PrefabSpawnPacket packet);
+
+	public void on(EntitySpawnPacket packet);
+
+	public void on(EntityDeletePacket packet);
 }

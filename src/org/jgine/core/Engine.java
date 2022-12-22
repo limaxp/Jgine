@@ -89,7 +89,6 @@ public abstract class Engine {
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		gameLoop.setRenderFunction(this::render);
-		ConnectionManager.init();
 	}
 
 	private final void terminate() {

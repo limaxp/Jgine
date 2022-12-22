@@ -5,11 +5,12 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
+import org.jgine.net.game.packet.packets.EntityDeletePacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
-import org.jgine.net.game.packet.packets.SpawnEntityPacket;
-import org.jgine.net.game.packet.packets.SpawnPrefabPacket;
+import org.jgine.net.game.packet.packets.EntitySpawnPacket;
+import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
 
 public class GameClientPacketListener implements ClientPacketListener {
 
@@ -33,17 +34,23 @@ public class GameClientPacketListener implements ClientPacketListener {
 
 	@Override
 	public void on(PositionPacket packet) {
-		// TODO entity id is not the same between clients
-		Entity entity = Entity.getById(packet.getEntityId());
+		Entity entity = Entity.getById(packet.getId());
 		entity.transform.setPosition(packet.getX(), packet.getY(), packet.getZ());
 	}
 
 	@Override
-	public void on(SpawnPrefabPacket packet) {
-		packet.getPrefab().create(packet.getScene(), packet.getX(), packet.getY(), packet.getZ());
+	public void on(PrefabSpawnPacket packet) {
+		packet.getPrefab().create(packet.getId(), packet.getScene(), packet.getX(), packet.getY(), packet.getZ(), 0.0f,
+				0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 	}
-	
+
 	@Override
-	public void on(SpawnEntityPacket packet) {
+	public void on(EntitySpawnPacket packet) {
+		EntitySpawnPacket.toEntity(packet);
+	}
+
+	@Override
+	public void on(EntityDeletePacket packet) {
+		Entity.getById(packet.getId()).delete();
 	}
 }
