@@ -10,8 +10,6 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
-import org.jgine.net.game.packet.packets.ConnectPacket;
-import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.EntityDeletePacket;
 import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
@@ -21,18 +19,18 @@ public class ConnectionManager {
 	private static GameServer server;
 	private static GameClient client;
 
-	public static GameServer startServer(int port, int maxConnections) {
+	public static GameServer startServer(String name, int port, int maxConnections) {
 		if (isClient())
 			throw new IllegalStateException("Can not start a server while already connected!");
 		else if (isServer())
 			throw new IllegalStateException("Can not start a server while already hosting!");
-		server = new GameServer(port, maxConnections);
+		server = new GameServer(name, port, maxConnections);
 		server.addListener(new GameServerPacketListener());
 		new Thread(server).start();
 		return server;
 	}
 
-	public static GameClient startClient(String serverIpAddress, int serverPort, int maxConnections) {
+	public static GameClient startClient(String name, String serverIpAddress, int serverPort, int maxConnections) {
 		if (isClient())
 			throw new IllegalStateException("Can not start a client while already connected!");
 		else if (isServer())
@@ -40,7 +38,7 @@ public class ConnectionManager {
 		client = new GameClient(serverIpAddress, serverPort, maxConnections);
 		client.addListener(new GameClientPacketListener());
 		new Thread(client).start();
-		client.sendData(new ConnectPacket("testName"));
+		client.connect(name);
 		return client;
 	}
 
@@ -54,7 +52,7 @@ public class ConnectionManager {
 	public static void stopClient() {
 		if (!isClient())
 			return;
-		client.sendData(new DisconnectPacket(client.getId()));
+		client.disconnect();
 		client.stop();
 		client = null;
 	}

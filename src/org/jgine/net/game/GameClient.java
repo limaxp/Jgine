@@ -24,7 +24,9 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
+import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
+import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 
@@ -41,6 +43,7 @@ public class GameClient implements Runnable {
 	private final List<PlayerConnection> playerList;
 	private final Map<String, PlayerConnection> nameMap;
 	private final PlayerConnection[] idMap;
+	private PlayerConnection player;
 	private int id;
 	private Entity trackedEntity;
 	private Consumer<PlayerConnection> addPlayerCallback;
@@ -61,7 +64,6 @@ public class GameClient implements Runnable {
 		playerList = new IdentityArrayList<PlayerConnection>(maxConnections);
 		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
 		idMap = new PlayerConnection[maxConnections + 1];
-		id = -1;
 		addPlayerCallback = NULL_PLAYER_CALLBACK;
 		removePlayerCallback = NULL_PLAYER_CALLBACK;
 	}
@@ -105,19 +107,26 @@ public class GameClient implements Runnable {
 
 		if (paketId == PacketManager.CONNECT_RESPONSE) {
 			ConnectResponsePacket connectResponsePacket = (ConnectResponsePacket) gamePacket;
-			if (connectResponsePacket.isAccepted())
+			if (connectResponsePacket.isAccepted()) {
 				this.id = connectResponsePacket.getId();
+				this.player = new PlayerConnection(this.id, this.player.name, getIp(), getPort());
+				registerConnection(this.player);
+			}
 		} else if (paketId == PacketManager.PLAYER_LIST) {
 			PlayerListPacket playerListPacket = (PlayerListPacket) gamePacket;
 			switch (playerListPacket.getAction()) {
 			case ADD:
-				for (PlayerConnection player : playerListPacket.getPlayers())
-					addConnection(player);
+				for (PlayerConnection player : playerListPacket.getPlayers()) {
+					registerConnection(player);
+					addPlayerCallback.accept(player);
+				}
 				break;
 
 			case REMOVE:
-				for (PlayerConnection player : playerListPacket.getPlayers())
-					removeConnection(player);
+				for (PlayerConnection player : playerListPacket.getPlayers()) {
+					unregisterConnection(player);
+					removePlayerCallback.accept(player);
+				}
 				break;
 			}
 		}
@@ -127,18 +136,25 @@ public class GameClient implements Runnable {
 			function.accept(currentListener, gamePacket);
 	}
 
-	private void addConnection(PlayerConnection player) {
+	public void connect(String name) {
+		player = new PlayerConnection(0, name, getIp(), getPort());
+		sendData(new ConnectPacket(name));
+	}
+
+	public void disconnect() {
+		sendData(new DisconnectPacket(id));
+	}
+
+	private void registerConnection(PlayerConnection player) {
 		idMap[IdGenerator.index(player.id)] = player;
 		nameMap.put(player.name, player);
 		playerList.add(player);
-		addPlayerCallback.accept(player);
 	}
 
-	private void removeConnection(PlayerConnection player) {
+	private void unregisterConnection(PlayerConnection player) {
 		idMap[IdGenerator.index(player.id)] = null;
 		nameMap.remove(player.name);
 		playerList.remove(player);
-		removePlayerCallback.accept(player);
 	}
 
 	private void sendData(byte[] data) {
@@ -201,7 +217,7 @@ public class GameClient implements Runnable {
 	}
 
 	public PlayerConnection getPlayer() {
-		return idMap[IdGenerator.index(id)];
+		return player;
 	}
 
 	public int getMaxPlayer() {
