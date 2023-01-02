@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
@@ -32,9 +31,6 @@ import org.jgine.net.game.packet.packets.PositionPacket;
 
 public class GameClient implements Runnable {
 
-	public static final Consumer<PlayerConnection> NULL_PLAYER_CALLBACK = (player) -> {
-	};
-
 	private InetAddress serverIpAddress;
 	private int serverPort;
 	private DatagramSocket socket;
@@ -46,8 +42,6 @@ public class GameClient implements Runnable {
 	private PlayerConnection player;
 	private int id;
 	private Entity trackedEntity;
-	private Consumer<PlayerConnection> addPlayerCallback;
-	private Consumer<PlayerConnection> removePlayerCallback;
 
 	public GameClient(String serverIpAddress, int serverPort, int maxConnections) {
 		try {
@@ -64,8 +58,6 @@ public class GameClient implements Runnable {
 		playerList = new IdentityArrayList<PlayerConnection>(maxConnections);
 		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
 		idMap = new PlayerConnection[maxConnections + 1];
-		addPlayerCallback = NULL_PLAYER_CALLBACK;
-		removePlayerCallback = NULL_PLAYER_CALLBACK;
 	}
 
 	public void stop() {
@@ -85,7 +77,7 @@ public class GameClient implements Runnable {
 			} catch (IOException e) {
 				Logger.err("GameClient: Error listening for packets!", e);
 			}
-			parsePacket(data);
+			parsePacket(data, packet.getAddress(), packet.getPort());
 		}
 		socket.close();
 	}
@@ -99,7 +91,9 @@ public class GameClient implements Runnable {
 		}
 	}
 
-	private <T extends Packet> void parsePacket(byte[] data) {
+	private <T extends Packet> void parsePacket(byte[] data, InetAddress address, int port) {
+		if (!address.equals(serverIpAddress) || port != serverPort)
+			return;
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		int paketId = buffer.getInt();
 		T gamePacket = PacketManager.get(paketId);
@@ -116,17 +110,13 @@ public class GameClient implements Runnable {
 			PlayerListPacket playerListPacket = (PlayerListPacket) gamePacket;
 			switch (playerListPacket.getAction()) {
 			case ADD:
-				for (PlayerConnection player : playerListPacket.getPlayers()) {
+				for (PlayerConnection player : playerListPacket.getPlayers())
 					registerConnection(player);
-					addPlayerCallback.accept(player);
-				}
 				break;
 
 			case REMOVE:
-				for (PlayerConnection player : playerListPacket.getPlayers()) {
+				for (PlayerConnection player : playerListPacket.getPlayers())
 					unregisterConnection(player);
-					removePlayerCallback.accept(player);
-				}
 				break;
 			}
 		}
@@ -230,21 +220,5 @@ public class GameClient implements Runnable {
 
 	public Entity getTrackedEntity() {
 		return trackedEntity;
-	}
-
-	public void setAddPlayerCallback(Consumer<PlayerConnection> addPlayerCallback) {
-		this.addPlayerCallback = addPlayerCallback;
-	}
-
-	public Consumer<PlayerConnection> getAddPlayerCallback() {
-		return addPlayerCallback;
-	}
-
-	public void setRemovePlayerCallback(Consumer<PlayerConnection> removePlayerCallback) {
-		this.removePlayerCallback = removePlayerCallback;
-	}
-
-	public Consumer<PlayerConnection> getRemovePlayerCallback() {
-		return removePlayerCallback;
 	}
 }

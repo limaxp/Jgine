@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
@@ -26,16 +25,12 @@ import org.jgine.net.game.packet.ServerPacketListener;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
-import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 
 public class GameServer implements Runnable {
 
 	public static final int MAX_ENTITIES = 10000;
-
-	public static final Consumer<PlayerConnection> NULL_PLAYER_CALLBACK = (player) -> {
-	};
 
 	private DatagramSocket socket;
 	private boolean isRunning;
@@ -48,8 +43,6 @@ public class GameServer implements Runnable {
 	private final PlayerConnection player;
 	private final List<Entity> trackedEntities;
 	private final IdGenerator entityIdGenerator;
-	private Consumer<PlayerConnection> addPlayerCallback;
-	private Consumer<PlayerConnection> removePlayerCallback;
 
 	public GameServer(String name, int port, int maxConnections) {
 		try {
@@ -68,8 +61,6 @@ public class GameServer implements Runnable {
 		registerConnection(player);
 		trackedEntities = new IdentityArrayList<Entity>(MAX_ENTITIES);
 		entityIdGenerator = new IdGenerator(0, Entity.MAX_ENTITIES);
-		addPlayerCallback = NULL_PLAYER_CALLBACK;
-		removePlayerCallback = NULL_PLAYER_CALLBACK;
 	}
 
 	public void stop() {
@@ -114,6 +105,8 @@ public class GameServer implements Runnable {
 
 		if (connection == null)
 			return;
+		if (!address.equals(connection.address) || port != connection.port)
+			return;
 		TriConsumer<ServerPacketListener, T, PlayerConnection> function = PacketManager
 				.getServerListenerFunction(paketId);
 		for (ServerPacketListener currentListener : listener)
@@ -133,9 +126,6 @@ public class GameServer implements Runnable {
 		sendDataToAll(new PlayerListPacket(PlayerListAction.ADD, Arrays.asList(player)));
 		registerConnection(player);
 		clientList.add(player);
-		for (Entity entity : trackedEntities)
-			sendData(EntitySpawnPacket.fromEntity(entity), player);
-		addPlayerCallback.accept(player);
 		return player;
 	}
 
@@ -149,7 +139,6 @@ public class GameServer implements Runnable {
 		unregisterConnection(player);
 		clientList.remove(player);
 		sendDataToAll(new PlayerListPacket(PlayerListAction.REMOVE, Arrays.asList(player)));
-		removePlayerCallback.accept(player);
 		return player;
 	}
 
@@ -187,9 +176,20 @@ public class GameServer implements Runnable {
 		sendData(data, ipAddress, port);
 	}
 
+	public void sendDataToAll(Packet packet, PlayerConnection... connections) {
+		for (PlayerConnection p : connections)
+			sendData(packet, p.address, p.port);
+	}
+
 	public void sendDataToAll(Packet packet) {
 		for (PlayerConnection p : clientList)
 			sendData(packet, p.address, p.port);
+	}
+
+	public void sendDataToAllExcept(Packet packet, PlayerConnection except) {
+		for (PlayerConnection p : clientList)
+			if (p != except)
+				sendData(packet, p.address, p.port);
 	}
 
 	public InetAddress getIp() {
@@ -240,22 +240,6 @@ public class GameServer implements Runnable {
 
 	public List<Entity> getTrackedEntities() {
 		return trackedEntities;
-	}
-
-	public void setAddPlayerCallback(Consumer<PlayerConnection> addPlayerCallback) {
-		this.addPlayerCallback = addPlayerCallback;
-	}
-
-	public Consumer<PlayerConnection> getAddPlayerCallback() {
-		return addPlayerCallback;
-	}
-
-	public void setRemovePlayerCallback(Consumer<PlayerConnection> removePlayerCallback) {
-		this.removePlayerCallback = removePlayerCallback;
-	}
-
-	public Consumer<PlayerConnection> getRemovePlayerCallback() {
-		return removePlayerCallback;
 	}
 
 	public int generateEntityId() {

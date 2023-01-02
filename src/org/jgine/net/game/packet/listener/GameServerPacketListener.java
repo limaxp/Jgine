@@ -48,9 +48,8 @@ public class GameServerPacketListener implements ServerPacketListener {
 	@Override
 	public void on(PrefabSpawnPacket packet, PlayerConnection connection) {
 		int id = ConnectionManager.getServer().generateEntityId();
-		Entity entity = packet.getPrefab().create(id, packet.getScene(), packet.getX(), packet.getY(), packet.getZ(),
-				0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-		ConnectionManager.getServer().getTrackedEntities().add(entity);
+		packet.getPrefab().create(id, packet.getScene(), packet.getX(), packet.getY(), packet.getZ(), 0.0f, 0.0f, 0.0f,
+				1.0f, 1.0f, 1.0f);
 		ConnectionManager.getServer().sendDataToAll(new PrefabSpawnPacket(id, packet.getPrefab(), packet.getScene(),
 				packet.getX(), packet.getY(), packet.getZ()));
 	}
@@ -58,8 +57,7 @@ public class GameServerPacketListener implements ServerPacketListener {
 	@Override
 	public void on(EntitySpawnPacket packet, PlayerConnection connection) {
 		int id = ConnectionManager.getServer().generateEntityId();
-		Entity entity = EntitySpawnPacket.toEntity(packet, id);
-		ConnectionManager.getServer().getTrackedEntities().add(entity);
+		EntitySpawnPacket.toEntity(packet, id);
 		ConnectionManager.getServer().sendDataToAll(new EntitySpawnPacket(id, packet.getScene(), packet.getX(),
 				packet.getY(), packet.getZ(), packet.getData()));
 	}
