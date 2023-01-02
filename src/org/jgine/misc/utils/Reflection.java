@@ -72,6 +72,21 @@ public class Reflection {
 		return field;
 	}
 
+	public static Object getFieldValue(Object obj, String name) {
+		try {
+			return getFieldValue_(obj, name);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			Logger.err("Reflection: Error on getting field value '" + name + "' for class '" + obj.getClass().getName()
+					+ "'", e);
+			return null;
+		}
+	}
+
+	public static Object getFieldValue_(Object obj, String name)
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		return getField_(obj.getClass(), name).get(obj);
+	}
+
 	public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		try {
 			return getMethod_(clazz, name, parameterTypes);
