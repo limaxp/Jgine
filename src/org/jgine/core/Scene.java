@@ -62,6 +62,10 @@ public class Scene {
 		systemList.clear();
 	}
 
+	public final void delete() {
+		engine.deleteScene(this);
+	}
+
 	public final <T extends SystemScene<?, ?>> T addSystem(String name) {
 		return addSystem(SystemManager.get(name));
 	}
@@ -216,13 +220,17 @@ public class Scene {
 	}
 
 	public final void removeEntity(Entity entity) {
-		if (entity.isAlive()) {
+		if (entity.isAlive())
 			Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
-			Entity.freeId(entity.id);
-		}
 	}
 
 	private final void removeEntityIntern(Entity entity) {
+		removeChildIntern(entity);
+		entity.cleanupParent();
+		Entity.freeId(entity.id);
+	}
+
+	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
 		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = entity.getEntryIterator();
 		while (entryIterator.hasNext()) {
@@ -234,10 +242,10 @@ public class Scene {
 		}
 
 		for (Entity child : entity.getChilds()) {
-			removeEntityIntern(child);
+			removeChildIntern(child);
 			Entity.freeId(child.id);
 		}
-		entity.cleanupChildTree();
+		entity.cleanupChilds();
 		entity.transform.cleanupEntity();
 	}
 

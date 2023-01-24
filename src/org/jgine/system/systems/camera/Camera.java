@@ -51,6 +51,10 @@ public class Camera implements SystemObject, Cloneable {
 				DEFAULT_FOV, Vector3f.Z_AXIS);
 	}
 
+	public static Camera create(byte mode, int width, int height, float zNear, float zFar) {
+		return create(mode, width, height, zNear, zFar, DEFAULT_FOV, Vector3f.Z_AXIS);
+	}
+
 	public static Camera create(byte mode, int width, int height, float zNear, float zFar, float fov) {
 		return create(mode, width, height, zNear, zFar, fov, Vector3f.Z_AXIS);
 	}

@@ -412,16 +412,14 @@ public class Entity {
 		childs.clear();
 	}
 
-	public final void cleanupChildTree() {
+	public final void cleanupParent() {
 		if (this.parent != null)
 			this.parent.childs.remove(this);
 		else
 			scene.removeTopEntity(this);
+	}
 
-		for (Entity child : childs) {
-			child.parent = null;
-			child.updateChild();
-		}
+	public final void cleanupChilds() {
 		childs.clear();
 	}
 
