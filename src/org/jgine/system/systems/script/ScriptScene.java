@@ -24,7 +24,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	@Override
 	public void initObject(Entity entity, ScriptObject object) {
 		if (object instanceof ScriptObjectJava)
-			((ScriptJava) ((ScriptObjectJava) object).scriptInterface).entity = entity;
+			((ScriptObjectJava) object).entity = entity;
 		else
 			object.scriptInterface = (IScript) ScriptManager.invoke(object.engine, "create", entity);
 		object.scriptInterface.onEnable();
@@ -49,7 +49,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public ScriptObject load(DataInput in) throws IOException {
-		return new ScriptObjectJava(new ScriptJava() {
+		return new ScriptObjectJava() {
 
 			@Override
 			public void update() {
@@ -66,7 +66,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 			@Override
 			public void onCollision(Collision collision) {
 			}
-		});
+		};
 	}
 
 	@Override
