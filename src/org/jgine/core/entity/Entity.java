@@ -431,6 +431,24 @@ public class Entity {
 		transform.calculateMatrix();
 	}
 
+	public final long getTag() {
+		if (prefab == null)
+			return 0;
+		return prefab.getTagBits();
+	}
+
+	public final boolean getTag(String name) {
+		if (prefab == null)
+			return false;
+		return prefab.getTag(name);
+	}
+
+	public final boolean getTag(int id) {
+		if (prefab == null)
+			return false;
+		return prefab.getTag(id);
+	}
+
 	@SuppressWarnings("unchecked")
 	public void load(DataInput in) throws IOException {
 		int prefabId = in.readInt();

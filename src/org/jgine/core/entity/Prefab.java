@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.TransformData;
+import org.jgine.misc.collection.bitSet.LongBitSet;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -33,6 +34,7 @@ public class Prefab {
 	int size;
 	private final Map<Object, Object> data;
 	private final List<Prefab> childs;
+	private LongBitSet tag;
 
 	public Prefab(String name) {
 		this.name = name;
@@ -43,6 +45,7 @@ public class Prefab {
 		data = new HashMap<Object, Object>();
 		childs = new UnorderedIdentityArrayList<Prefab>();
 		transform = new TransformData();
+		tag = new LongBitSet();
 	}
 
 	public final void set(EngineSystem system, String name, SystemObject object) {
@@ -181,6 +184,7 @@ public class Prefab {
 			}
 		}
 		setData(parent.data);
+		tag.or(parent.tag.getBits());
 	}
 
 	public final void removeParent(Prefab parent) {
@@ -193,6 +197,7 @@ public class Prefab {
 				remove(parentSystem, subNames[j]);
 		}
 		removeData(parent.data);
+		tag.andNot(parent.tag.getBits());
 	}
 
 	private final int indexOf(EngineSystem system) {
@@ -272,6 +277,34 @@ public class Prefab {
 	@Nullable
 	public final Object getData(Object identifier) {
 		return data.get(identifier);
+	}
+
+	public final LongBitSet getTag() {
+		return tag;
+	}
+
+	public final void setTagBits(long bits) {
+		tag.setBits(bits);
+	}
+
+	public final long getTagBits() {
+		return tag.getBits();
+	}
+
+	public final void setTag(String name) {
+		tag.set(EntityTag.get(name));
+	}
+
+	public final void setTag(int id) {
+		tag.set(id);
+	}
+
+	public final boolean getTag(String name) {
+		return tag.get(EntityTag.get(name));
+	}
+
+	public final boolean getTag(int id) {
+		return tag.get(id);
 	}
 
 	public final Entity create(Scene scene) {
