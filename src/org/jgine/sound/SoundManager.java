@@ -245,6 +245,21 @@ public class SoundManager {
 		return source;
 	}
 
+	public static SoundSource play(SoundBuffer buffer, float gain) {
+		Vector3f pos = listener.getPosition();
+		return play(buffer, pos.x, pos.y, pos.z, gain, false, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float gain, boolean loop) {
+		Vector3f pos = listener.getPosition();
+		return play(buffer, pos.x, pos.y, pos.z, gain, loop, false);
+	}
+
+	public static SoundSource play(SoundBuffer buffer, float gain, boolean loop, boolean sourceRelative) {
+		Vector3f pos = listener.getPosition();
+		return play(buffer, pos.x, pos.y, pos.z, gain, loop, sourceRelative);
+	}
+
 	public static SoundSource play(SoundBuffer buffer, Vector2f pos, float gain) {
 		return play(buffer, pos, gain, false, false);
 	}
