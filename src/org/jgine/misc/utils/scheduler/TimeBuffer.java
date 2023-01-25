@@ -56,7 +56,7 @@ public class TimeBuffer<E> {
 	}
 
 	private int searchIndex(long time) {
-		for (int i = 1; i < size - 1; i++) {
+		for (int i = 0; i < size; i++) {
 			if (timeArray[i] > time)
 				return i;
 		}
