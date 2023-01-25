@@ -48,15 +48,15 @@ public class TimeBuffer<E> {
 	public int getIndex(long time) {
 		if (size == 0)
 			return 0;
-		if (time <= timeArray[0])
-			return 0;
 		if (time >= timeArray[size - 1])
 			return size;
+		if (time <= timeArray[0])
+			return 0;
 		return searchIndex(time);
 	}
 
-	protected int searchIndex(long time) {
-		for (int i = 0; i < size; i++) {
+	private int searchIndex(long time) {
+		for (int i = 1; i < size - 1; i++) {
 			if (timeArray[i] > time)
 				return i;
 		}
