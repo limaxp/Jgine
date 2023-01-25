@@ -449,6 +449,18 @@ public class Entity {
 		return prefab.getTag(id);
 	}
 
+	public final boolean getTag(String... names) {
+		if (prefab == null)
+			return false;
+		return prefab.getTag(names);
+	}
+
+	public final boolean getTag(int... ids) {
+		if (prefab == null)
+			return false;
+		return prefab.getTag(ids);
+	}
+
 	@SuppressWarnings("unchecked")
 	public void load(DataInput in) throws IOException {
 		int prefabId = in.readInt();

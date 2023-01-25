@@ -307,6 +307,30 @@ public class Prefab {
 		return tag.get(id);
 	}
 
+	public final void setTag(String... names) {
+		for (String name : names)
+			setTag(name);
+	}
+
+	public final void setTag(int... ids) {
+		for (int id : ids)
+			setTag(id);
+	}
+
+	public final boolean getTag(String... names) {
+		long result = 0L;
+		for (String name : names)
+			result = LongBitSet.set(result, EntityTag.get(name));
+		return LongBitSet.and(result, tag.getBits()) == tag.getBits();
+	}
+
+	public final boolean getTag(int... ids) {
+		long result = 0L;
+		for (int id : ids)
+			result = LongBitSet.set(result, id);
+		return LongBitSet.and(result, tag.getBits()) == tag.getBits();
+	}
+
 	public final Entity create(Scene scene) {
 		return create_(scene, new Entity(scene, transform));
 	}
