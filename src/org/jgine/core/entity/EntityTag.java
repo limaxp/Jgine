@@ -27,4 +27,8 @@ public class EntityTag {
 	public static int get(String name) {
 		return NAME_MAP.getOrDefault(name, 0);
 	}
+
+	public static int size() {
+		return size;
+	}
 }
