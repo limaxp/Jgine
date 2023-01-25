@@ -92,6 +92,10 @@ public class SystemMap {
 							break;
 						}
 					}
+					if (subId != -1) {
+						id = i;
+						break;
+					}
 				}
 			}
 			if (id == -1)
