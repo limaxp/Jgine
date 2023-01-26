@@ -65,6 +65,38 @@ public class TileMap implements AutoCloseable {
 		return material;
 	}
 
+	public TileMapLayer getLayer(int index) {
+		return layers[index];
+	}
+
+	public int getLayerSize() {
+		return layers.length;
+	}
+
+	public final void setTile(int layer, int index, TileMapTile tile) {
+		layers[layer].setTile(index, tile);
+	}
+
+	public final TileMapTile getTile(int layer, int index) {
+		return layers[layer].getTile(index);
+	}
+
+	public int getTilewidth() {
+		return tilewidth;
+	}
+
+	public int getTileheight() {
+		return tileheight;
+	}
+
+	public int getTileswidth() {
+		return tileswidth;
+	}
+
+	public int getTilesheight() {
+		return tilesheight;
+	}
+
 	public class TileMapLayer implements AutoCloseable {
 
 		public static final int VERTEX_SIZE = 2;
@@ -76,13 +108,11 @@ public class TileMap implements AutoCloseable {
 		public static final int TILE_DATA_SIZE = 2; // rot, flipX
 		public static final int TILE_SIZE = TILE_POS_SIZE + TILE_TEXT_SIZE + TILE_DATA_SIZE;
 
-		public String name;
 		protected int vao;
 		protected int vbo;
 		protected int databo;
 
 		public TileMapLayer(TileMapDataLayer layerData) {
-			name = layerData.name;
 			vao = glGenVertexArrays();
 			glBindVertexArray(vao);
 
@@ -145,10 +175,6 @@ public class TileMap implements AutoCloseable {
 			}
 			buffer.flip();
 			return buffer;
-		}
-
-		public final void setTile(TileMapTile tile) {
-			setTile(0, tile);
 		}
 
 		public final void setTile(int index, TileMapTile tile) {

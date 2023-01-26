@@ -4,14 +4,19 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
+import org.jgine.render.graphic.TileMap.TileMapLayer;
+import org.jgine.render.graphic.TileMap.TileMapTile;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.system.data.TransformListSystemScene;
+import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
+import org.jgine.system.systems.physic.PhysicObject;
 
 public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMapObject> {
 
@@ -25,6 +30,30 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 
 	@Override
 	public void initObject(Entity entity, TileMapObject object) {
+		// TODO implement this!
+//		for (int i = 0; i < object.getLayerSize(); i++) {
+		for (int i = 0; i < 1; i++) {
+			TileMapLayer layer = object.getLayer(i);
+
+			for (int x = 0; x < object.getTileswidth(); x++) {
+				for (int y = 0; y < object.getTilesheight(); y++) {
+					TileMapTile tile = layer.getTile(x * object.getTileswidth() + y);
+					if (x == 0 || y == 0 || x == object.getTileswidth() - 1 || y == object.getTilesheight() - 1)
+						createCollider(entity, x, y, object.getTilewidth(), object.getTileheight());
+				}
+			}
+		}
+	}
+
+	private void createCollider(Entity parent, int x, int y, int width, int height) {
+		Entity entity = new Entity(scene, x * width, -y * height);
+		entity.setParent(parent);
+		PhysicObject physic = new PhysicObject(); // TODO remove physic later
+		physic.hasGravity = false;
+		physic.stiffness = 0.0f;
+		entity.addSystem(Engine.PHYSIC_SYSTEM, physic);
+		AxisAlignedBoundingQuad collider = new AxisAlignedBoundingQuad(width * 0.5f, height * 0.5f);
+		entity.addSystem(Engine.COLLISION_SYSTEM, collider);
 	}
 
 	@Override
