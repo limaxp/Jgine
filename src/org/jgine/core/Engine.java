@@ -30,6 +30,7 @@ import org.jgine.render.Renderer;
 import org.jgine.sound.SoundManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.system.systems.ai.AiSystem;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.collision.CollisionSystem;
@@ -56,6 +57,7 @@ public abstract class Engine {
 	public static final ScriptSystem SCRIPT_SYSTEM = SystemManager.register(new ScriptSystem());
 	public static final TileMapSystem TILEMAP_SYSTEM = SystemManager.register(new TileMapSystem());
 	public static final UISystem UI_SYSTEM = SystemManager.register(new UISystem());
+	public static final AiSystem AI_SYSTEM = SystemManager.register(new AiSystem());
 
 	private static Engine instance;
 
@@ -246,12 +248,12 @@ public abstract class Engine {
 	public void addRenderConfig(RenderConfiguration renderConfig) {
 		renderConfigs.add(renderConfig);
 	}
-	
+
 	public void removeRenderConfig(RenderConfiguration renderConfig) {
 		renderConfigs.remove(renderConfig);
 		renderConfig.close();
 	}
-	
+
 	public void removeRenderConfig(int index) {
 		renderConfigs.remove(index).close();
 	}
@@ -259,11 +261,11 @@ public abstract class Engine {
 	public final RenderConfiguration getRenderConfig() {
 		return renderConfigs.get(0);
 	}
-	
+
 	public final RenderConfiguration getRenderConfig(int index) {
 		return renderConfigs.get(index);
 	}
-	
+
 	public final int getRenderConfigSize() {
 		return renderConfigs.size();
 	}

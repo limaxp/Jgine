@@ -1,5 +1,6 @@
 package org.jgine.misc.utils.registry;
 
+import org.jgine.system.systems.ai.AiGoalType;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.light.LightType;
@@ -16,6 +17,8 @@ public abstract class Registry<T> implements Iterable<T> {
 			1000);
 
 	public static final Registry<LightType<?>> LIGHT_TYPES = new GenIdRegistry<LightType<?>>("light", 1000);
+	
+	public static final Registry<AiGoalType<?>> AI_GOAL_TYPES = new GenIdRegistry<AiGoalType<?>>("ai_goals", 1000);
 
 	public final String name;
 
