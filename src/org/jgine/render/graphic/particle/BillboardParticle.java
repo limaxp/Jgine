@@ -51,7 +51,6 @@ public class BillboardParticle implements AutoCloseable {
 		glDeleteBuffers(vbo);
 	}
 
-	protected int mode = GL_TRIANGLE_STRIP;
 	protected int vao;
 	protected int posbo;
 	protected int size;
@@ -103,7 +102,7 @@ public class BillboardParticle implements AutoCloseable {
 	public final void setData(int index, float x, float y, float z, float size) {
 		glBindBuffer(GL_ARRAY_BUFFER, posbo);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer buffer = stack.mallocFloat(4);
+			FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
 			buffer.put(x);
 			buffer.put(y);
 			buffer.put(z);
@@ -116,9 +115,14 @@ public class BillboardParticle implements AutoCloseable {
 	public final ParticleData getData(int index) {
 		glBindBuffer(GL_ARRAY_BUFFER, posbo);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer buffer = stack.mallocFloat(4);
+			FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
 			glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
-			return new ParticleData(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+			ParticleData data = new ParticleData();
+			data.x = buffer.get();
+			data.y = buffer.get();
+			data.z = buffer.get();
+			data.size = buffer.get();
+			return data;
 		}
 	}
 
@@ -160,26 +164,11 @@ public class BillboardParticle implements AutoCloseable {
 		return animation;
 	}
 
-	public void setMode(int mode) {
-		this.mode = mode;
-	}
-
-	public int getMode() {
-		return mode;
-	}
-
 	public static class ParticleData {
 
-		public final float x;
-		public final float y;
-		public final float z;
-		public final float size;
-
-		public ParticleData(float x, float y, float z, float size) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.size = size;
-		}
+		public float x;
+		public float y;
+		public float z;
+		public float size;
 	}
 }

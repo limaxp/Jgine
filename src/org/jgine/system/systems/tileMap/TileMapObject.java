@@ -3,16 +3,12 @@ package org.jgine.system.systems.tileMap;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.graphic.TileMap;
 import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
 import org.jgine.system.SystemObject;
 
 public class TileMapObject extends TileMap implements SystemObject {
 
-	protected Material material;
-
-	public TileMapObject(TileMapData data, Texture texture) {
-		super(data, texture);
-		material = new Material(texture);
+	public TileMapObject(TileMapData data, Material material) {
+		super(data, material);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,9 +27,5 @@ public class TileMapObject extends TileMap implements SystemObject {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public Material getMaterial() {
-		return material;
 	}
 }

@@ -3,6 +3,8 @@ package org.jgine.misc.utils.loader;
 import java.io.File;
 import java.io.InputStream;
 
+import org.jgine.render.graphic.TileMap.TileMapTile;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class TileMapLoader {
@@ -51,14 +53,19 @@ public class TileMapLoader {
 		if (!tiles.isArray())
 			return layerData;
 		int tileSize = tiles.size();
-		layerData.tiles = new TileMapDataTile[tileSize];
-		for (int j = 0; j < tileSize; j++)
-			layerData.tiles[j] = loadTile(tiles.get(j));
+		layerData.tiles = new TileMapTile[tileSize];
+		for (int j = 0; j < tileSize; j++) {
+			JsonNode tile = tiles.get(j);
+			int index = j;
+			if (tile.has("index"))
+				index = tile.get("index").intValue();
+			layerData.tiles[index] = loadTile(tile);
+		}
 		return layerData;
 	}
 
-	public static TileMapDataTile loadTile(JsonNode tile) {
-		TileMapDataTile tileData = new TileMapDataTile();
+	public static TileMapTile loadTile(JsonNode tile) {
+		TileMapTile tileData = new TileMapTile();
 		if (tile.has("tile"))
 			tileData.tile = tile.get("tile").intValue();
 		if (tile.has("rot"))
@@ -67,8 +74,6 @@ public class TileMapLoader {
 			tileData.y = tile.get("y").intValue();
 		if (tile.has("flipX"))
 			tileData.flipX = tile.get("flipX").booleanValue();
-		if (tile.has("index"))
-			tileData.index = tile.get("index").intValue();
 		if (tile.has("x"))
 			tileData.x = tile.get("x").intValue();
 		return tileData;
@@ -87,16 +92,6 @@ public class TileMapLoader {
 
 		public String name = "";
 		public int number = 0;
-		public TileMapDataTile[] tiles;
-	}
-
-	public static class TileMapDataTile {
-
-		public int tile;
-		public int rotation;
-		public int x;
-		public int y;
-		public boolean flipX;
-		public int index;
+		public TileMapTile[] tiles;
 	}
 }
