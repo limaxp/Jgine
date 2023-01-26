@@ -177,7 +177,8 @@ public class TileMap implements AutoCloseable {
 				data.y = (int) buffer.get() / tileheight;
 				int colum = (int) buffer.get();
 				int row = (int) buffer.get();
-				data.tile = row * tileswidth + colum;
+				int colums = material.getTexture().getColums();
+				data.tile = row * colums + colum;
 				data.rotation = (int) buffer.get();
 				data.flipX = buffer.get() == 1.0f ? true : false;
 				return data;
