@@ -3,13 +3,14 @@ package org.jgine.render.graphic.particle;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGetBufferSubData;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -23,7 +24,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.BufferHelper;
-import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryStack;
 
 public class BillboardParticle implements AutoCloseable {
 
@@ -35,7 +36,7 @@ public class BillboardParticle implements AutoCloseable {
 	public static final int VERTEX_SIZE = 2;
 	public static final int TEXT_CORD_SIZE = 2;
 	public static final int SIZE = VERTEX_SIZE + TEXT_CORD_SIZE;
-	public static final int POSITION_SIZE = 4; // x,y,z,size
+	public static final int DATA_SIZE = 4; // x,y,z,size
 
 	protected static final int vbo;
 
@@ -53,9 +54,7 @@ public class BillboardParticle implements AutoCloseable {
 	protected int mode = GL_TRIANGLE_STRIP;
 	protected int vao;
 	protected int posbo;
-	protected FloatBuffer posBuffer;
 	protected int size;
-	protected boolean changedPosition;
 	protected Consumer<BillboardParticle> animation = NULL_ANIMATION;
 
 	public BillboardParticle() {
@@ -70,11 +69,9 @@ public class BillboardParticle implements AutoCloseable {
 
 		posbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, posbo);
-		int posBufferSize = MAX_PARTICLES * POSITION_SIZE * Float.BYTES;
-		posBuffer = BufferUtils.createFloatBuffer(posBufferSize);
-		glBufferData(GL_ARRAY_BUFFER, posBufferSize, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLES * DATA_SIZE * Float.BYTES, GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, POSITION_SIZE, GL_FLOAT, false, POSITION_SIZE * Float.BYTES, 0 * Float.BYTES);
+		glVertexAttribPointer(2, DATA_SIZE, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 0 * Float.BYTES);
 		glVertexAttribDivisor(2, 1);
 
 		glBindVertexArray(0);
@@ -89,10 +86,6 @@ public class BillboardParticle implements AutoCloseable {
 	}
 
 	public final void render() {
-		if (changedPosition) { // because openGL only single core 
-			changedPosition = false;
-			updatePositions();
-		}
 		glBindVertexArray(vao);
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, size);
 		glBindVertexArray(0);
@@ -103,50 +96,60 @@ public class BillboardParticle implements AutoCloseable {
 		return true;
 	}
 
-	public final void setPositions(float[] positions) {
-		posBuffer.position(0);
-		posBuffer.put(positions);
-		posBuffer.flip();
-		changedPosition = true;
+	public final void setData(int index, ParticleData data) {
+		setData(index, data.x, data.y, data.z, data.size);
 	}
 
-	public final void setPositions(FloatBuffer positions) {
-		posBuffer.position(0);
-		posBuffer.put(positions);
-		posBuffer.flip();
-		changedPosition = true;
-	}
-
-	public final void setPositions(double[] vec3f, float size) {
-		posBuffer.position(0);
-		for (int i = 0; i < vec3f.length; i += 3) {
-			posBuffer.put((float) vec3f[i]);
-			posBuffer.put((float) vec3f[i + 1]);
-			posBuffer.put((float) vec3f[i + 2]);
-			posBuffer.put(size);
-		}
-		posBuffer.flip();
-		changedPosition = true;
-	}
-
-	protected final void updatePositions() {
-		size = posBuffer.remaining() / POSITION_SIZE;
+	public final void setData(int index, float x, float y, float z, float size) {
 		glBindBuffer(GL_ARRAY_BUFFER, posbo);
-		glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLES * POSITION_SIZE * Float.BYTES, GL_STREAM_DRAW);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, posBuffer);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = stack.mallocFloat(4);
+			buffer.put(x);
+			buffer.put(y);
+			buffer.put(z);
+			buffer.put(size);
+			buffer.flip();
+			glBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
+		}
 	}
 
-	public final void setPosition(int index, float position) {
-		posBuffer.put(index, position);
-		changedPosition = true;
+	public final ParticleData getData(int index) {
+		glBindBuffer(GL_ARRAY_BUFFER, posbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = stack.mallocFloat(4);
+			glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
+			return new ParticleData(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+		}
 	}
 
-	public final float getPosition(int index) {
-		return posBuffer.get(index);
+	public final void setData(FloatBuffer data) {
+		setData(0, data);
 	}
 
-	public final FloatBuffer getPositionBuffer() {
-		return posBuffer;
+	public final void setData(int index, FloatBuffer data) {
+		size = data.remaining() / DATA_SIZE;
+		glBindBuffer(GL_ARRAY_BUFFER, posbo);
+		glBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, data);
+	}
+
+	public final FloatBuffer getData(int index, FloatBuffer target) {
+		glBindBuffer(GL_ARRAY_BUFFER, posbo);
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, target);
+		return target;
+	}
+
+	public final void setData(double[] vec3f, float size) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = stack.mallocFloat(vec3f.length / 3 * DATA_SIZE);
+			for (int i = 0; i < vec3f.length; i += 3) {
+				buffer.put((float) vec3f[i]);
+				buffer.put((float) vec3f[i + 1]);
+				buffer.put((float) vec3f[i + 2]);
+				buffer.put(size);
+			}
+			buffer.flip();
+			setData(buffer);
+		}
 	}
 
 	public void setAnimation(@Nullable Consumer<BillboardParticle> animation) {
@@ -163,5 +166,20 @@ public class BillboardParticle implements AutoCloseable {
 
 	public int getMode() {
 		return mode;
+	}
+
+	public static class ParticleData {
+
+		public final float x;
+		public final float y;
+		public final float z;
+		public final float size;
+
+		public ParticleData(float x, float y, float z, float size) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.size = size;
+		}
 	}
 }
