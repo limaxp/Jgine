@@ -11,16 +11,14 @@ out vec3 position;
 
 uniform mat4 transform;
 uniform mat4 transformProjected;
-uniform vec2 textureOffsets;
-uniform int textureColums;
-uniform int textureRows;
+uniform vec4 textureOffsets;
 
 void main() {
 	normal = (transform * vec4(norm, 0.0)).xyz;
 	position = (transform * vec4(pos, 0.0)).xyz;
 	gl_Position = transformProjected * vec4(pos, 1.0);
 	
-	float textX = (textCoordinates.x / textureColums + textureOffsets.x);
-    float textY = (textCoordinates.y / textureRows + textureOffsets.y);
+	float textX = textureOffsets.x + textCoordinates.x * textureOffsets.z;
+    float textY = textureOffsets.y + textCoordinates.y * textureOffsets.w;
 	textCoord = vec2(textX, textY);
 }

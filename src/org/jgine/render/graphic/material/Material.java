@@ -33,6 +33,8 @@ public class Material implements SystemObject, Cloneable {
 	// this here makes every entity to move at same time
 	private TextureAnimationHandler animationHandler = TextureAnimationHandler.NONE;
 	private int texturePos = 1;
+	private float flipX = 1.0f;
+	private float flipY = 1.0f;
 
 	public Material() {
 		this.color = Color.WHITE;
@@ -99,14 +101,7 @@ public class Material implements SystemObject, Cloneable {
 	}
 
 	public final void set(Material material) {
-		color = material.color;
-		specularIntesity = material.specularIntesity;
-		specularPower = material.specularPower;
-		ambientColor = material.ambientColor;
-		diffuseColor = material.diffuseColor;
-		specularColor = material.specularColor;
-		emissiveColor = material.emissiveColor;
-		transparentColor = material.transparentColor;
+		apply(material);
 		texture = material.texture;
 		texturePos = material.texturePos;
 	}
@@ -120,6 +115,8 @@ public class Material implements SystemObject, Cloneable {
 		specularColor = material.specularColor;
 		emissiveColor = material.emissiveColor;
 		transparentColor = material.transparentColor;
+		flipX = material.flipX;
+		flipY = material.flipY;
 	}
 
 	public final void setTexture(ITexture texture) {
@@ -132,8 +129,29 @@ public class Material implements SystemObject, Cloneable {
 		return texture;
 	}
 
-	public int getTexturePosition() {
-		return texturePos;
+	public Vector4f getTextureOffsets() {
+		int colums = texture.getColums();
+		int rows = texture.getRows();
+		int colum = texturePos % colums;
+		int row = texturePos / colums;
+		// x, y, width, height
+		return new Vector4f((float) colum / colums, (float) row / rows, flipX / colums, flipY / rows);
+	}
+
+	public void flipX() {
+		flipX *= -1.0f;
+	}
+
+	public boolean isflippedX() {
+		return flipX < 0;
+	}
+
+	public void flipY() {
+		flipY *= -1.0f;
+	}
+
+	public boolean isflippedY() {
+		return flipY < 0;
 	}
 
 	public void load(AIMaterial material) {
@@ -169,6 +187,14 @@ public class Material implements SystemObject, Cloneable {
 		Object texture = data.get("texture");
 		if (texture instanceof String)
 			setTexture(ResourceManager.getTexture((String) texture));
+		Object flipX = data.get("flipX");
+		if (flipX instanceof Boolean)
+			if ((Boolean) flipX)
+				flipX();
+		Object flipY = data.get("flipY");
+		if (flipY instanceof Boolean)
+			if ((Boolean) flipY)
+				flipY();
 	}
 
 	public void load(DataInput in) throws IOException {
@@ -181,6 +207,8 @@ public class Material implements SystemObject, Cloneable {
 		String textureName = in.readUTF();
 		if (!textureName.isEmpty())
 			setTexture(ResourceManager.getTexture(textureName));
+		flipX = in.readFloat();
+		flipY = in.readFloat();
 	}
 
 	public void save(DataOutput out) throws IOException {
@@ -191,6 +219,8 @@ public class Material implements SystemObject, Cloneable {
 		out.writeInt(emissiveColor);
 		out.writeInt(transparentColor);
 		out.writeUTF(texture.getName());
+		out.writeFloat(flipX);
+		out.writeFloat(flipY);
 	}
 
 	@SuppressWarnings("unchecked")
