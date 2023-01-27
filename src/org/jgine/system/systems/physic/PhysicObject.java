@@ -13,13 +13,14 @@ import org.jgine.system.SystemObject;
 
 public class PhysicObject implements SystemObject {
 
-	private static final float SLOP_VALUE = 0.01f;
+	private static final float SLOP_VALUE = 0.05f;
 
 	public boolean hasGravity = true;
 	public float stiffness = 0.5f;
 	float x, y, z;
 	private float oldX, oldY, oldZ;
 	private float motX, motY, motZ;
+	private boolean isMoving;
 
 	final boolean updatePosition(float dt, float gravity, float airResistanceFactor) {
 		float velX = x - oldX + motX * dt * dt;
@@ -38,8 +39,10 @@ public class PhysicObject implements SystemObject {
 			x += velX * airResistanceFactor;
 			y += velY * airResistanceFactor;
 			z += velZ * airResistanceFactor;
+			isMoving = true;
 			return true;
 		}
+		isMoving = false;
 		return false;
 	}
 
@@ -109,6 +112,10 @@ public class PhysicObject implements SystemObject {
 
 	public final Vector3f getVelocity() {
 		return new Vector3f(x - oldX, y - oldY, z - oldZ);
+	}
+
+	public boolean isMoving() {
+		return isMoving;
 	}
 
 	public void load(Map<String, Object> data) {
