@@ -7,38 +7,39 @@ import java.util.List;
 import java.util.Map;
 
 import org.jgine.core.entity.Entity;
+import org.jgine.misc.collection.list.IntList;
+import org.jgine.misc.collection.list.arrayList.IntArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.FastMath;
+import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
 
 public class AiObject implements SystemObject, Cloneable {
 
+	public static final int DEFAULT_PRIORITY = 5;
+
 	protected Entity entity;
 	protected AiGoal currentGoal;
 	protected List<AiGoal> goals;
+	protected IntList priorities;
 
 	public AiObject() {
 		goals = new UnorderedIdentityArrayList<AiGoal>();
+		priorities = new IntArrayList();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
-	@Override
-	public AiObject clone() {
-		try {
-			AiObject object = (AiObject) super.clone();
-			object.currentGoal = null;
-			object.goals = new UnorderedIdentityArrayList<AiGoal>();
-			for (AiGoal goal : goals)
-				object.goals.add(goal.clone());
-			return object;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
+	public void update(float dt) {
+		if (currentGoal == null) {
+			int index = randomBiased(goals.size(), 0.4f);
+			AiGoal nextGoal;
+			do {
+				nextGoal = goals.get(index--);
+			} while (!nextGoal.start() && index >= 0);
+			currentGoal = nextGoal;
+		}
+		if (!currentGoal.update(dt)) {
+			currentGoal.finish();
+			currentGoal = null;
 		}
 	}
 
@@ -69,15 +70,18 @@ public class AiObject implements SystemObject, Cloneable {
 					aiGoalType = AiGoalTypes.IDLE;
 			} else
 				aiGoalType = AiGoalTypes.IDLE;
+
+			int priority = YamlHelper.toInt(childData.get("priority"), DEFAULT_PRIORITY);
 			AiGoal goal = aiGoalType.get();
 			goal.load(childData);
-			goals.add(goal);
+			addGoalIntern(priority, goal);
 		}
 	}
 
 	public void load(DataInput in) throws IOException {
 		int goalSize = in.readInt();
 		for (int i = 0; i < goalSize; i++) {
+			priorities.add(in.readInt());
 			AiGoal goal = AiGoalTypes.get(in.readInt()).get();
 			goal.load(in);
 			goals.add(goal);
@@ -88,28 +92,33 @@ public class AiObject implements SystemObject, Cloneable {
 		int goalSize = goals.size();
 		out.writeInt(goalSize);
 		for (int i = 0; i < goalSize; i++) {
+			out.writeInt(priorities.getInt(i));
 			AiGoal goal = goals.get(i);
 			out.writeInt(goal.getType().getId());
 			goal.save(out);
 		}
 	}
 
-	public void update(float dt) {
-		if (currentGoal == null) {
-			AiGoal nextGoal = rollGoal();
-			if (nextGoal.start())
-				currentGoal = nextGoal;
-			else
-				return;
-		}
-		if (!currentGoal.update(dt)) {
-			currentGoal.finish();
-			currentGoal = null;
-		}
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
 	}
 
-	private AiGoal rollGoal() {
-		return goals.get(FastMath.random(goals.size() - 1));
+	@Override
+	public AiObject clone() {
+		try {
+			AiObject object = (AiObject) super.clone();
+			object.currentGoal = null;
+			object.goals = new UnorderedIdentityArrayList<AiGoal>();
+			for (AiGoal goal : goals)
+				object.goals.add(goal.clone());
+			object.priorities = new IntArrayList(priorities);
+			return object;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	void setEntity(Entity entity) {
@@ -126,12 +135,59 @@ public class AiObject implements SystemObject, Cloneable {
 		return currentGoal;
 	}
 
-	public void addGoal(AiGoal goal) {
-		goals.add(goal);
+	public void addGoal(int priority) {
+		addGoal(DEFAULT_PRIORITY, currentGoal);
+	}
+
+	public void addGoal(int priority, AiGoal goal) {
+		addGoalIntern(priority, goal);
 		goal.setEntity(entity);
 	}
 
+	protected void addGoalIntern(int priority, AiGoal goal) {
+		int index = getIndex(priority);
+		goals.add(index, goal);
+		priorities.add(index, priority);
+	}
+
 	public void removeGoal(AiGoal goal) {
-		goals.remove(goal);
+		int index = goals.indexOf(goal);
+		if (index == -1)
+			return;
+		goals.remove(index);
+		priorities.removeInt(index);
+	}
+
+	private int getIndex(int priority) {
+		int size = priorities.size();
+		if (size == 0)
+			return 0;
+		if (priority >= priorities.getInt(size - 1))
+			return size;
+		if (priority <= priorities.getInt(0))
+			return 0;
+		return searchIndex(priority);
+	}
+
+	private int searchIndex(int priority) {
+		int size = priorities.size();
+		for (int i = 0; i < size; i++) {
+			if (priorities.getInt(i) > priority)
+				return i;
+		}
+		return -1;
+	}
+
+	/**
+	 * This is useful because you can adjust bias to tweak the "rareness" of rarer
+	 * items. A bias > 1 will favor lower numbers, < 1 will favor higher numbers, 1
+	 * will be uniform.
+	 * 
+	 * @param max
+	 * @param bias
+	 * @return
+	 */
+	private static int randomBiased(int max, float bias) {
+		return (int) (max * Math.pow(FastMath.random(), bias));
 	}
 }

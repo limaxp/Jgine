@@ -24,6 +24,7 @@ public class GoalRandomWalk extends AiGoal {
 	protected PhysicObject physic;
 	protected Vector2f targetPos;
 	protected float range;
+	protected float time;
 
 	public GoalRandomWalk() {
 	}
@@ -42,6 +43,7 @@ public class GoalRandomWalk extends AiGoal {
 	public boolean start() {
 		Vector2f pos = transform.getPosition();
 		targetPos = new Vector2f(pos.x + FastMath.random(-range, range), pos.y + FastMath.random(-range, range));
+		time = 0.0f;
 		return true;
 	}
 
@@ -51,10 +53,10 @@ public class GoalRandomWalk extends AiGoal {
 
 	@Override
 	public boolean update(float dt) {
-		Vector2f pos = transform.getPosition();
-		if (Vector2f.distance(pos, targetPos) < 50.0f)
+		time += dt;
+		if (time > 5.0f)
 			return false;
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(targetPos, pos));
+		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(targetPos, transform.getPosition()));
 		physic.accelerate(Vector2f.mult(dirToTarget, 1000.0f));
 		return true;
 	}

@@ -36,7 +36,7 @@ public class GoalIdle extends AiGoal {
 
 	@Override
 	public boolean start() {
-		time = minTime + FastMath.random(maxTime - minTime);
+		time = FastMath.random(minTime, maxTime);
 		counter = 0;
 		return true;
 	}

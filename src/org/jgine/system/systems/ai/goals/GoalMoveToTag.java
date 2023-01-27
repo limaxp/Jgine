@@ -26,7 +26,7 @@ public class GoalMoveToTag extends AiGoal {
 	protected Transform target;
 	protected int targetTag;
 	protected float range;
-	protected float agroTime;
+	protected float time;
 
 	public GoalMoveToTag() {
 	}
@@ -48,6 +48,7 @@ public class GoalMoveToTag extends AiGoal {
 		for (Entity entity : entity.scene.getEntitiesNear(transform.getPosition(), range)) {
 			if (entity.getTag(targetTag)) {
 				this.target = entity.transform;
+				time = 0.0f;
 				return true;
 			}
 		}
@@ -60,14 +61,13 @@ public class GoalMoveToTag extends AiGoal {
 
 	@Override
 	public boolean update(float dt) {
-		agroTime += dt;
-		if (agroTime > 10.0f)
-			return false;
-		Vector2f pos = transform.getPosition();
-		Vector2f targetPos = target.getPosition();
-		if (Vector2f.distance(pos, targetPos) < 50.0f)
-			return false;
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(targetPos, pos));
+		time += dt;
+		if (time > 10.0f)
+			if (Vector2f.distance(transform.getPosition(), target.getPosition()) > range)
+				return false;
+			else
+				time = 0.0f;
+		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(target.getPosition(), transform.getPosition()));
 		physic.accelerate(Vector2f.mult(dirToTarget, 1000.0f));
 		return true;
 	}
