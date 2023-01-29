@@ -3,6 +3,7 @@ package org.jgine.misc.utils.loader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -111,19 +112,41 @@ public class TextureLoader {
 		if (rows != null && rows instanceof Number)
 			texture.setRows((int) rows);
 
-		Object frames = data.get("frames");
-		if (frames == null || !(frames instanceof List))
-			return null;
-
 		int baseFrameTime = 100;
 		Object frameTime = data.get("frameTime");
 		if (frameTime != null && frameTime instanceof Number)
 			baseFrameTime = (int) frameTime;
 
-		List<Integer> frameList = (List<Integer>) frames;
-		AnimationFrame[] animationFrames = new AnimationFrame[frameList.size()];
-		for (int i = 0; i < animationFrames.length; i++)
-			animationFrames[i] = new AnimationFrame(baseFrameTime, frameList.get(i));
+		Object frames = data.get("frames");
+		AnimationFrame[] animationFrames;
+		if (frames != null && frames instanceof List) {
+			List<Object> frameList = (List<Object>) frames;
+			List<AnimationFrame> animationFrameList = new ArrayList<AnimationFrame>(frameList.size());
+			for (Object frame : frameList) {
+				if (frame instanceof Integer)
+					animationFrameList.add(new AnimationFrame(baseFrameTime, ((Integer) frame).intValue()));
+				else if (frame instanceof String) {
+					String frameString = (String) frame;
+					int index = frameString.indexOf(" to ");
+					int size;
+					if (index != -1)
+						size = Integer.parseUnsignedInt(frameString, index + 4, frameString.length(), 10);
+					else if ((index = frameString.indexOf(" - ")) != -1)
+						size = Integer.parseUnsignedInt(frameString, index + 3, frameString.length(), 10);
+					else
+						continue;
+					int i = Integer.parseUnsignedInt(frameString, 0, index, 10);
+					for (; i <= size; i++)
+						animationFrameList.add(new AnimationFrame(baseFrameTime, i));
+				}
+			}
+			animationFrames = animationFrameList.toArray(new AnimationFrame[animationFrameList.size()]);
+		} else {
+			int size = texture.getColums() * texture.getRows();
+			animationFrames = new AnimationFrame[size];
+			for (int i = 0; i < size; i++)
+				animationFrames[i] = new AnimationFrame(baseFrameTime, i + 1);
+		}
 
 		Object frameTimes = data.get("frameTimes");
 		if (frameTimes != null && frameTimes instanceof Map) {
