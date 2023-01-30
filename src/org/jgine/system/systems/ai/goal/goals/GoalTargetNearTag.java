@@ -1,4 +1,4 @@
-package org.jgine.system.systems.ai.goals;
+package org.jgine.system.systems.ai.goal.goals;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -8,10 +8,10 @@ import java.util.Map;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.entity.EntityTag;
 import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.system.systems.ai.AiGoal;
-import org.jgine.system.systems.ai.AiGoalType;
-import org.jgine.system.systems.ai.AiGoalTypes;
 import org.jgine.system.systems.ai.AiObject;
+import org.jgine.system.systems.ai.goal.AiGoal;
+import org.jgine.system.systems.ai.goal.AiGoalType;
+import org.jgine.system.systems.ai.goal.AiGoalTypes;
 
 public class GoalTargetNearTag extends AiGoal {
 

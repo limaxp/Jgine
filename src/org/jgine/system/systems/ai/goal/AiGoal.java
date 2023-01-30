@@ -1,9 +1,11 @@
-package org.jgine.system.systems.ai;
+package org.jgine.system.systems.ai.goal;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
+
+import org.jgine.system.systems.ai.AiObject;
 
 public abstract class AiGoal implements Cloneable {
 

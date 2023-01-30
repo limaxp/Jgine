@@ -8,6 +8,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
+import org.jgine.system.systems.ai.goal.AiGoal;
+import org.jgine.system.systems.ai.goal.GoalSelector;
 
 public class AiObject implements SystemObject, Cloneable {
 
@@ -27,10 +29,12 @@ public class AiObject implements SystemObject, Cloneable {
 
 	protected void init(Entity entity) {
 		this.entity = entity;
-		for (AiGoal goal : goalSelector.goals)
-			goal.init(this);
-		for (AiGoal goal : targetSelector.goals)
-			goal.init(this);
+		int size = goalSelector.size();
+		for (int i = 0; i < size; i++)
+			goalSelector.getGoal(i).init(this);
+		size = targetSelector.size();
+		for (int i = 0; i < size; i++)
+			targetSelector.getGoal(i).init(this);
 		chooseTarget();
 		chooseGoal();
 	}

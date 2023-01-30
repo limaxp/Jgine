@@ -1,4 +1,4 @@
-package org.jgine.system.systems.ai;
+package org.jgine.system.systems.ai.goal;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,6 +10,7 @@ import org.jgine.misc.collection.list.IntList;
 import org.jgine.misc.collection.list.arrayList.IntArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.utils.loader.YamlHelper;
+import org.jgine.system.systems.ai.AiObject;
 
 public class GoalSelector implements Cloneable {
 

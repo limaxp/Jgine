@@ -1,6 +1,6 @@
 package org.jgine.misc.utils.registry;
 
-import org.jgine.system.systems.ai.AiGoalType;
+import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.light.LightType;

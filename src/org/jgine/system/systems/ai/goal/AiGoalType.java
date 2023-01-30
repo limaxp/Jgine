@@ -1,4 +1,4 @@
-package org.jgine.system.systems.ai;
+package org.jgine.system.systems.ai.goal;
 
 import java.util.function.Supplier;
 

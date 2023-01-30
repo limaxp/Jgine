@@ -1,13 +1,13 @@
-package org.jgine.system.systems.ai;
+package org.jgine.system.systems.ai.goal;
 
 import java.util.function.Supplier;
 
 import org.jgine.misc.utils.registry.Registry;
-import org.jgine.system.systems.ai.goals.GoalIdle;
-import org.jgine.system.systems.ai.goals.GoalMeleeAttackTarget;
-import org.jgine.system.systems.ai.goals.GoalMoveToTarget;
-import org.jgine.system.systems.ai.goals.GoalRandomWalk;
-import org.jgine.system.systems.ai.goals.GoalTargetNearTag;
+import org.jgine.system.systems.ai.goal.goals.GoalIdle;
+import org.jgine.system.systems.ai.goal.goals.GoalMeleeAttackTarget;
+import org.jgine.system.systems.ai.goal.goals.GoalMoveToTarget;
+import org.jgine.system.systems.ai.goal.goals.GoalRandomWalk;
+import org.jgine.system.systems.ai.goal.goals.GoalTargetNearTag;
 
 public class AiGoalTypes {
 
