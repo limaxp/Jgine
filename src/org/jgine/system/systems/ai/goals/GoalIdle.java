@@ -5,12 +5,12 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiGoal;
 import org.jgine.system.systems.ai.AiGoalType;
 import org.jgine.system.systems.ai.AiGoalTypes;
+import org.jgine.system.systems.ai.AiObject;
 
 public class GoalIdle extends AiGoal {
 
@@ -31,18 +31,18 @@ public class GoalIdle extends AiGoal {
 	}
 
 	@Override
-	public void setEntity(Entity entity) {
+	public void init(AiObject ai) {
 	}
-
+	
 	@Override
-	public boolean start() {
-		time = FastMath.random(minTime, maxTime);
-		counter = 0;
+	public boolean canStart() {
 		return true;
 	}
 
 	@Override
-	public void finish() {
+	public void start() {
+		time = FastMath.random(minTime, maxTime);
+		counter = 0;
 	}
 
 	@Override

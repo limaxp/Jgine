@@ -5,85 +5,90 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.Engine;
-import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.core.entity.EntityTag;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiGoal;
 import org.jgine.system.systems.ai.AiGoalType;
 import org.jgine.system.systems.ai.AiGoalTypes;
 import org.jgine.system.systems.ai.AiObject;
-import org.jgine.system.systems.physic.PhysicObject;
 
-public class GoalRandomWalk extends AiGoal {
+public class GoalTargetNearTag extends AiGoal {
 
-	public static final float START_CHANCE = 0.3f;
 	public static final float DEFAULT_RANGE = 200.0f;
 
-	protected Transform transform;
-	protected PhysicObject physic;
-	protected Vector2f targetPos;
+	protected AiObject ai;
+	protected Entity entity;
+	protected int targetTag;
 	protected float range;
-	protected float time;
 
-	public GoalRandomWalk() {
+	public GoalTargetNearTag() {
 	}
 
-	public GoalRandomWalk(float range) {
+	public GoalTargetNearTag(int targetTag, float range) {
+		this.targetTag = targetTag;
 		this.range = range;
 	}
 
 	@Override
 	public void init(AiObject ai) {
-		Entity entity = ai.getEntity();
-		this.transform = entity.transform;
-		this.physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
+		this.ai = ai;
+		this.entity = ai.getEntity();
 	}
 
 	@Override
 	public boolean canStart() {
-		if (FastMath.random() > START_CHANCE)
-			return false;
-		return true;
+		for (Entity entity : entity.scene.getEntitiesNear(entity.transform.getPosition(), range)) {
+			if (entity.getTag(targetTag)) {
+				ai.setTarget(entity);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public void start() {
-		Vector2f pos = transform.getPosition();
-		targetPos = new Vector2f(pos.x + FastMath.random(-range, range), pos.y + FastMath.random(-range, range));
-		time = 0.0f;
 	}
 
 	@Override
 	public boolean update(float dt) {
-		time += dt;
-		if (time > 5.0f)
-			return false;
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(targetPos, transform.getPosition()));
-		physic.accelerate(Vector2f.mult(dirToTarget, 1000.0f));
-		return true;
+		return false;
 	}
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object tagData = data.get("tag");
+		if (tagData instanceof Number)
+			targetTag = ((Number) tagData).intValue();
+		if (tagData instanceof String)
+			targetTag = EntityTag.get((String) tagData);
 		range = YamlHelper.toFloat(data.get("range"), DEFAULT_RANGE);
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		targetTag = in.readInt();
 		range = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeInt(targetTag);
 		out.writeFloat(range);
 	}
 
 	@Override
-	public AiGoalType<GoalRandomWalk> getType() {
-		return AiGoalTypes.RANDOM_WALK;
+	public AiGoalType<GoalTargetNearTag> getType() {
+		return AiGoalTypes.TARGET_NEAR_TAG;
+	}
+
+	public void setTargetTag(int targetTag) {
+		this.targetTag = targetTag;
+	}
+
+	public int getTargetTag() {
+		return targetTag;
 	}
 
 	public void setRange(float range) {

@@ -4,16 +4,22 @@ import java.util.function.Supplier;
 
 import org.jgine.misc.utils.registry.Registry;
 import org.jgine.system.systems.ai.goals.GoalIdle;
-import org.jgine.system.systems.ai.goals.GoalMoveToTag;
+import org.jgine.system.systems.ai.goals.GoalMeleeAttackTarget;
+import org.jgine.system.systems.ai.goals.GoalMoveToTarget;
 import org.jgine.system.systems.ai.goals.GoalRandomWalk;
+import org.jgine.system.systems.ai.goals.GoalTargetNearTag;
 
 public class AiGoalTypes {
 
 	public static final AiGoalType<GoalIdle> IDLE = a("idle", GoalIdle::new);
 
-	public static final AiGoalType<GoalMoveToTag> MOVE = a("move", GoalMoveToTag::new);
+	public static final AiGoalType<GoalRandomWalk> RANDOM_WALK = a("random_walk", GoalRandomWalk::new);
 
-	public static final AiGoalType<GoalRandomWalk> WALK_AROUND = a("walk_around", GoalRandomWalk::new);
+	public static final AiGoalType<GoalTargetNearTag> TARGET_NEAR_TAG = a("target_near_tag", GoalTargetNearTag::new);
+
+	public static final AiGoalType<GoalMoveToTarget> MOVE_TO_TARGET = a("move_to_target", GoalMoveToTarget::new);
+
+	public static final AiGoalType<GoalMeleeAttackTarget> MELEE_ATTACK_TARGET = a("melee_attack_target", GoalMeleeAttackTarget::new);
 
 	public static <T extends AiGoal> AiGoalType<T> a(String name, Supplier<T> supplier) {
 		AiGoalType<T> type = new AiGoalType<T>(name, supplier);

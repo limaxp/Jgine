@@ -28,7 +28,6 @@ import org.jgine.misc.utils.options.Options;
  * THE SOFTWARE.
  */
 
-
 public class FastMath {
 
 	public static final boolean HAS_Math_fma = Options.USE_MATH_FMA && hasMathFma();
@@ -55,8 +54,7 @@ public class FastMath {
 				double d = i * pi2OverLookupSize;
 				sinTable[i] = (float) java.lang.Math.sin(d);
 			}
-		}
-		else {
+		} else {
 			sinTable = null;
 		}
 	}
@@ -634,7 +632,8 @@ public class FastMath {
 
 	public static class RoundingMode {
 
-		private RoundingMode() {}
+		private RoundingMode() {
+		}
 
 		/**
 		 * Discards the fractional part.
@@ -707,5 +706,18 @@ public class FastMath {
 		for (int i = 0; i < ints.length; i++)
 			packSize += ints[i];
 		return packSize;
+	}
+
+	/**
+	 * This is useful because you can adjust bias to tweak the "rareness" of rarer
+	 * items. A bias > 1 will favor lower numbers, < 1 will favor higher numbers, 1
+	 * will be uniform.
+	 * 
+	 * @param max
+	 * @param bias
+	 * @return
+	 */
+	public static int randomBiased(int max, float bias) {
+		return (int) (max * Math.pow(FastMath.random(), bias));
 	}
 }

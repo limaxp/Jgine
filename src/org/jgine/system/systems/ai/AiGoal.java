@@ -5,15 +5,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.entity.Entity;
-
 public abstract class AiGoal implements Cloneable {
 
-	public abstract void setEntity(Entity entity);
+	public abstract void init(AiObject object);
 
-	public abstract boolean start();
+	public abstract boolean canStart();
 
-	public abstract void finish();
+	public abstract void start();
 
 	public abstract boolean update(float dt);
 

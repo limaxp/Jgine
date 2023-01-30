@@ -8,7 +8,6 @@ import java.util.Map;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiGoal;
@@ -17,26 +16,26 @@ import org.jgine.system.systems.ai.AiGoalTypes;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.physic.PhysicObject;
 
-public class GoalRandomWalk extends AiGoal {
+public class GoalMeleeAttackTarget extends AiGoal {
 
-	public static final float START_CHANCE = 0.3f;
-	public static final float DEFAULT_RANGE = 200.0f;
+	public static final float DEFAULT_RANGE = 100.0f;
 
+	protected AiObject ai;
 	protected Transform transform;
 	protected PhysicObject physic;
-	protected Vector2f targetPos;
 	protected float range;
 	protected float time;
 
-	public GoalRandomWalk() {
+	public GoalMeleeAttackTarget() {
 	}
 
-	public GoalRandomWalk(float range) {
+	public GoalMeleeAttackTarget(float range) {
 		this.range = range;
 	}
 
 	@Override
 	public void init(AiObject ai) {
+		this.ai = ai;
 		Entity entity = ai.getEntity();
 		this.transform = entity.transform;
 		this.physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
@@ -44,25 +43,25 @@ public class GoalRandomWalk extends AiGoal {
 
 	@Override
 	public boolean canStart() {
-		if (FastMath.random() > START_CHANCE)
+		if (ai.getTarget() == null)
+			return false;
+		if (Vector2f.distance(transform.getPosition(), ai.getTarget().transform.getPosition()) > range)
 			return false;
 		return true;
 	}
 
 	@Override
 	public void start() {
-		Vector2f pos = transform.getPosition();
-		targetPos = new Vector2f(pos.x + FastMath.random(-range, range), pos.y + FastMath.random(-range, range));
+		Transform target = ai.getTarget().transform;
+		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(target.getPosition(), transform.getPosition()));
+		physic.accelerate(Vector2f.mult(dirToTarget, 200000.0f));
 		time = 0.0f;
 	}
 
 	@Override
 	public boolean update(float dt) {
-		time += dt;
-		if (time > 5.0f)
+		if ((time += dt) > 2.0f)
 			return false;
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(targetPos, transform.getPosition()));
-		physic.accelerate(Vector2f.mult(dirToTarget, 1000.0f));
 		return true;
 	}
 
@@ -82,8 +81,8 @@ public class GoalRandomWalk extends AiGoal {
 	}
 
 	@Override
-	public AiGoalType<GoalRandomWalk> getType() {
-		return AiGoalTypes.RANDOM_WALK;
+	public AiGoalType<GoalMeleeAttackTarget> getType() {
+		return AiGoalTypes.MELEE_ATTACK_TARGET;
 	}
 
 	public void setRange(float range) {

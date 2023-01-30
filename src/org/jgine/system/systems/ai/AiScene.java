@@ -20,7 +20,7 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void initObject(Entity entity, AiObject object) {
-		object.setEntity(entity);
+		object.init(entity);
 	}
 
 	@Override
