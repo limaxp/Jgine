@@ -26,7 +26,7 @@ public class Color {
 	public static final int DARK_GRAY = rgb(0.3f, 0.3f, 0.3f);
 	public static final int LIGHT_GRAY = rgb(0.7f, 0.7f, 0.7f);
 	public static final int PINK = rgb(255, 175, 175);
-	public static final int ORANGE = rgb(255, 200, 0);
+	public static final int ORANGE = rgb(255, 125, 0);
 	public static final int MAGENTA = rgb(255, 0, 255);
 
 	public static final int TRANSLUCENT_WEAK = rgba(1.0f, 1.0f, 1.0f, 0.2f);
