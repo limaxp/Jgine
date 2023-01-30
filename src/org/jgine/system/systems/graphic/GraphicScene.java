@@ -49,14 +49,14 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 		size = index + size;
 		for (; index < size; index++) {
 			GraphicObject object = objects[index];
-			if (frustumCulling.containsPoint(transforms[index].getPosition()))
-				renderQueue.addAll(Arrays.asList(transforms[index], object));
+//			if (frustumCulling.containsPoint(transforms[index].getPosition()))
+			renderQueue.addAll(Arrays.asList(transforms[index], object));
 		}
 	}
 
 	@Override
 	public void render() {
-		Renderer.setShader(Renderer.TEXTURE_SHADER);
+		Renderer.setShader(Renderer.PHONG_SHADER);
 		Renderer.enableDepthTest();
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())

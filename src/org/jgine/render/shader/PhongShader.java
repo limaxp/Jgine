@@ -1,10 +1,8 @@
 package org.jgine.render.shader;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
@@ -31,17 +29,14 @@ public class PhongShader extends TextureShader {
 	protected final int uniforms_pointLights[][] = addUniforms("pointLights", MAX_POINT_LIGHTS, new String[] {
 			"base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos", "range" });
 
-	private Vector3f ambientLight;
-	private boolean changedAmbientLight = false;
-	private DirectionalLight directionalLight;
+	private int ambientLight;
 	private List<PointLight> pointLights;
+	private DirectionalLight directionalLight;
 
-	public PhongShader(String name) {
+	public PhongShader(String name, List<PointLight> pointLights) {
 		super(name);
-		pointLights = new UnorderedArrayList<PointLight>(MAX_POINT_LIGHTS);
-
-		setAmbientLight(new Vector3f(0.0f));
-
+		ambientLight = Color.BLACK;
+		this.pointLights = pointLights;
 		directionalLight = new DirectionalLight();
 		directionalLight.setIntensity(0.8f);
 		directionalLight.setDirection(new Vector3f(1f, 1f, -1f));
@@ -51,18 +46,7 @@ public class PhongShader extends TextureShader {
 	public void bind() {
 		super.bind();
 
-		setUniform3f(uniform_camPos,
-				((CameraSystem) SystemManager.get("camera")).getMainCamera().getTransform().getPosition());
-
-		if (changedAmbientLight) {
-			changedAmbientLight = false;
-			setUniform3f(uniform_ambientLight, ambientLight);
-		}
-
-		Vector4f color = Color.toVector(directionalLight.getColor());
-		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
-		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
-		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
+		setUniform3f(uniform_ambientLight, Color.toVector(ambientLight));
 
 		int pointLightSize = FastMath.min(pointLights.size(), MAX_POINT_LIGHTS);
 		setUniformi(uniform_pointLightSize, pointLightSize);
@@ -78,12 +62,20 @@ public class PhongShader extends TextureShader {
 			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
 			setUniformf(pointLightUniforms[6], pointLight.getRange());
 		}
+
+		Vector4f color = Color.toVector(directionalLight.getColor());
+		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
+		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
+		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
+
+		setUniform3f(uniform_camPos,
+				((CameraSystem) SystemManager.get("camera")).getMainCamera().getTransform().getPosition());
 	}
 
 	@Override
 	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
+		super.setTransform(matrix, projectionMatrix);
 		setUniformMatrix4f(uniform_transform, matrix);
-		setUniformMatrix4f(uniform_transformProjected, projectionMatrix);
 	}
 
 	@Override
@@ -93,33 +85,19 @@ public class PhongShader extends TextureShader {
 		setUniformf(uniform_specularPower, material.specularPower);
 	}
 
-	public void setAmbientLight(Vector3f ambientLight) {
-		this.ambientLight = ambientLight;
-		changedAmbientLight = true;
+	public void setAmbientLight(int color) {
+		this.ambientLight = color;
 	}
 
-	public void setAmbientLight(float r, float g, float b) {
-		this.ambientLight = new Vector3f(r, g, b);
-		changedAmbientLight = true;
-	}
-
-	public Vector3f getAmbientLight() {
+	public int getAmbientLight() {
 		return ambientLight;
+	}
+
+	public List<PointLight> getPointLights() {
+		return pointLights;
 	}
 
 	public DirectionalLight getDirectionalLight() {
 		return directionalLight;
-	}
-
-	public void addPointLight(PointLight pointLight) {
-		pointLights.add(pointLight);
-	}
-
-	public void removePointLight(PointLight pointLight) {
-		pointLights.remove(pointLight);
-	}
-
-	public List<PointLight> getPointLights() {
-		return Collections.unmodifiableList(pointLights);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
@@ -15,13 +16,15 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.mesh.BaseMesh;
 import org.jgine.render.graphic.mesh.Mesh;
-import org.jgine.render.graphic.mesh.Model;
 import org.jgine.render.graphic.mesh.MeshGenerator;
+import org.jgine.render.graphic.mesh.Model;
 import org.jgine.render.graphic.particle.BillboardParticle;
+import org.jgine.render.light.PointLight;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
 import org.jgine.render.shader.CircleShader;
 import org.jgine.render.shader.ComputeShader;
+import org.jgine.render.shader.Phong2dShader;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.render.shader.PostProcessShader;
 import org.jgine.render.shader.Shader;
@@ -34,6 +37,7 @@ public class Renderer {
 	public static final BasicShader BASIC_SHADER;
 	public static final TextureShader TEXTURE_SHADER;
 	public static final PhongShader PHONG_SHADER;
+	public static final Phong2dShader PHONG_2D_SHADER;
 	public static final BillboardParticleShader PARTICLE_SHADER;
 	public static final TileMapShader TILE_MAP_SHADER;
 	public static final CircleShader CIRCLE_SHADER;
@@ -53,7 +57,9 @@ public class Renderer {
 
 		BASIC_SHADER = new BasicShader("Basic");
 		TEXTURE_SHADER = new TextureShader("Texture");
-		PHONG_SHADER = new PhongShader("Phong");
+		List<PointLight> pointLights = new UnorderedArrayList<PointLight>(PhongShader.MAX_POINT_LIGHTS);
+		PHONG_SHADER = new PhongShader("Phong", pointLights);
+		PHONG_2D_SHADER = new Phong2dShader("Phong2d", pointLights);
 		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		CIRCLE_SHADER = new CircleShader("Circle");

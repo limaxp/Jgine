@@ -3,7 +3,6 @@
 
 const int MAX_POINT_LIGHTS = 8;
 
-
 struct BaseLight {
 	vec3 color;
 	float intensity;
@@ -28,24 +27,19 @@ struct PointLight {
 	float range;
 };
 
-
 in vec2 textCoord;
 in vec3 normal;
 in vec3 position;
 
-
 uniform vec4 baseColor;
-uniform vec3 ambientLight;
 uniform sampler2D uTexture;
-
+uniform vec3 ambientLight;
+uniform int pointLightSize;
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform DirectionalLight directionalLight;
 uniform vec3 camPos;
 uniform float specularIntensity;
 uniform float specularPower;
-
-uniform DirectionalLight directionalLight;
-uniform int pointLightSize;
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
-
 
 out vec4 fragColor;
 
@@ -73,11 +67,9 @@ vec4 calcLight(BaseLight base, vec3 direction, vec3 normal) {
 	return diffuseColor + specularColor;
 } 
 
-
 vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 normal) {
 	return calcLight(dirLight.base, -dirLight.direction, normal);
 }
-
 
 vec4 calcPointLight(PointLight pointLight, vec3 normal) {
 	vec3 lightDirection = position - pointLight.pos;
@@ -98,7 +90,6 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal) {
 	return color / attenuation;
 }
 
-
 void main() {
 	vec4 totalLight = vec4(ambientLight, 1.0);
 	
@@ -106,8 +97,7 @@ void main() {
 	totalLight += calcDirectionalLight(directionalLight, normal);
 	
 	for(int i = 0; i < pointLightSize; i++) 
-		//if(pointLights[i].base.intensity > 0)
-			totalLight += calcPointLight(pointLights[i], normal);
+		totalLight += calcPointLight(pointLights[i], normal);
 	
 	fragColor = texture(uTexture, textCoord) * baseColor * totalLight;
 }

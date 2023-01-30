@@ -32,7 +32,7 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	@Override
 	public Light addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
-			Renderer.PHONG_SHADER.addPointLight((PointLight) object);
+			Renderer.PHONG_SHADER.getPointLights().add((PointLight) object);
 		if (object instanceof DirectionalLight)
 			;
 		return super.addObject(entity, object);
@@ -42,7 +42,7 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	@Nullable
 	public Light removeObject(Light object) {
 		if (object instanceof PointLight)
-			Renderer.PHONG_SHADER.removePointLight((PointLight) object);
+			Renderer.PHONG_SHADER.getPointLights().remove((PointLight) object);
 		if (object instanceof DirectionalLight)
 			;
 		return super.removeObject(object);
