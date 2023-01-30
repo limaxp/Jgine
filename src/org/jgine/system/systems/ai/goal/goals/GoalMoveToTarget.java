@@ -5,16 +5,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.ai.goal.AiGoalTypes;
-import org.jgine.system.systems.physic.PhysicObject;
 
 public class GoalMoveToTarget extends AiGoal {
 
@@ -23,7 +21,6 @@ public class GoalMoveToTarget extends AiGoal {
 
 	protected AiObject ai;
 	protected Transform transform;
-	protected PhysicObject physic;
 	protected Transform target;
 	protected float range;
 	protected float time;
@@ -40,7 +37,6 @@ public class GoalMoveToTarget extends AiGoal {
 		this.ai = ai;
 		Entity entity = ai.getEntity();
 		this.transform = entity.transform;
-		this.physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
 	}
 
 	@Override
@@ -60,13 +56,13 @@ public class GoalMoveToTarget extends AiGoal {
 		time += dt;
 		if (time > DISTANCE_CHECK_TIME) {
 			time = 0.0f;
-			if (Vector2f.distance(transform.getPosition(), target.getPosition()) > range) {
+			if (Vector3f.distance(transform.getPosition(), target.getPosition()) > range) {
 				ai.setTarget(null);
 				return false;
 			}
 		}
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(target.getPosition(), transform.getPosition()));
-		physic.accelerate(Vector2f.mult(dirToTarget, 1000.0f)); // TODO use movement speed!
+		Vector3f pos = target.getPosition();
+		ai.getNavigation().move(pos.x, pos.y, pos.z);
 		return true;
 	}
 

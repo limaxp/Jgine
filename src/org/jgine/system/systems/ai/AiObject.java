@@ -10,6 +10,7 @@ import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.GoalSelector;
+import org.jgine.system.systems.ai.navigation.Navigation;
 
 public class AiObject implements SystemObject, Cloneable {
 
@@ -21,20 +22,26 @@ public class AiObject implements SystemObject, Cloneable {
 	protected AiGoal currentGoal;
 	protected Entity target;
 	protected float time;
+	protected Navigation navigation;
 
 	public AiObject() {
-		goalSelector = new GoalSelector(this);
-		targetSelector = new GoalSelector(this);
+		goalSelector = new GoalSelector();
+		targetSelector = new GoalSelector();
+		navigation = new Navigation();
+	}
+
+	protected void free() {
+		goalSelector = null;
+		targetSelector = null;
+		currentGoal = null;
+		navigation = null;
 	}
 
 	protected void init(Entity entity) {
 		this.entity = entity;
-		int size = goalSelector.size();
-		for (int i = 0; i < size; i++)
-			goalSelector.getGoal(i).init(this);
-		size = targetSelector.size();
-		for (int i = 0; i < size; i++)
-			targetSelector.getGoal(i).init(this);
+		goalSelector.init(this);
+		targetSelector.init(this);
+		navigation.init(this);
 		chooseTarget();
 		chooseGoal();
 	}
@@ -105,6 +112,7 @@ public class AiObject implements SystemObject, Cloneable {
 			object.targetSelector = targetSelector.clone();
 			object.currentGoal = null;
 			object.target = null;
+			object.navigation = navigation.clone();
 			return object;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -135,5 +143,9 @@ public class AiObject implements SystemObject, Cloneable {
 	@Nullable
 	public Entity getTarget() {
 		return target;
+	}
+
+	public Navigation getNavigation() {
+		return navigation;
 	}
 }

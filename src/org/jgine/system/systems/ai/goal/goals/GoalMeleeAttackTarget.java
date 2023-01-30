@@ -5,24 +5,24 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.ai.goal.AiGoalTypes;
-import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.system.systems.ai.navigation.Navigation;
 
 public class GoalMeleeAttackTarget extends AiGoal {
 
+	public static final float COOLDOWN_TIME = 2.0f;
 	public static final float DEFAULT_RANGE = 100.0f;
 
 	protected AiObject ai;
+	protected Navigation navigation;
 	protected Transform transform;
-	protected PhysicObject physic;
 	protected float range;
 	protected float time;
 
@@ -36,31 +36,29 @@ public class GoalMeleeAttackTarget extends AiGoal {
 	@Override
 	public void init(AiObject ai) {
 		this.ai = ai;
+		this.navigation = ai.getNavigation();
 		Entity entity = ai.getEntity();
 		this.transform = entity.transform;
-		this.physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
 	}
 
 	@Override
 	public boolean canStart() {
 		if (ai.getTarget() == null)
 			return false;
-		if (Vector2f.distance(transform.getPosition(), ai.getTarget().transform.getPosition()) > range)
+		if (Vector3f.distance(transform.getPosition(), ai.getTarget().transform.getPosition()) > range)
 			return false;
 		return true;
 	}
 
 	@Override
 	public void start() {
-		Transform target = ai.getTarget().transform;
-		Vector2f dirToTarget = Vector2f.normalize(Vector2f.sub(target.getPosition(), transform.getPosition()));
-		physic.accelerate(Vector2f.mult(dirToTarget, 200000.0f));
+		navigation.attack(ai.getTarget());
 		time = 0.0f;
 	}
 
 	@Override
 	public boolean update(float dt) {
-		if ((time += dt) > 2.0f)
+		if ((time += dt) > COOLDOWN_TIME)
 			return false;
 		return true;
 	}

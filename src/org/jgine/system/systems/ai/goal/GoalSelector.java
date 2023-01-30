@@ -14,14 +14,20 @@ import org.jgine.system.systems.ai.AiObject;
 
 public class GoalSelector implements Cloneable {
 
-	public final AiObject ai;
+	protected AiObject ai;
 	protected List<AiGoal> goals;
 	protected IntList priorities;
 
-	public GoalSelector(AiObject ai) {
-		this.ai = ai;
+	public GoalSelector() {
 		goals = new UnorderedIdentityArrayList<AiGoal>();
 		priorities = new IntArrayList();
+	}
+
+	public void init(AiObject ai) {
+		this.ai = ai;
+		int size = goals.size();
+		for (int i = 0; i < size; i++)
+			goals.get(i).init(ai);
 	}
 
 	public void load(Object data) {
@@ -141,6 +147,11 @@ public class GoalSelector implements Cloneable {
 
 	public int getPriority(int index) {
 		return priorities.getInt(index);
+	}
+
+	public void clear() {
+		goals.clear();
+		priorities.clear();
 	}
 
 	public int size() {

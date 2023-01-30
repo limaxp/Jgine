@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
@@ -21,6 +22,13 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 	@Override
 	public void initObject(Entity entity, AiObject object) {
 		object.init(entity);
+	}
+
+	@Override
+	@Nullable
+	public AiObject removeObject(AiObject object) {
+		object.free();
+		return super.removeObject(object);
 	}
 
 	@Override
