@@ -3,16 +3,12 @@ package org.jgine.system.systems.ui;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -22,12 +18,10 @@ import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 
-public class UIWindow extends UIObject {
+public class UIWindow extends UICompound {
 
 	Entity entity;
 	UIScene scene;
-	List<UIObject> childs;
-	private List<UIObject> childsView;
 	private boolean moveAble;
 	private boolean hide;
 	private boolean floating;
@@ -52,8 +46,6 @@ public class UIWindow extends UIObject {
 	}
 
 	public UIWindow(float width, float height, boolean moveAble) {
-		childs = new UnorderedIdentityArrayList<UIObject>();
-		childsView = Collections.unmodifiableList(childs);
 		this.moveAble = moveAble;
 		hide = false;
 		floating = false;
@@ -64,18 +56,14 @@ public class UIWindow extends UIObject {
 	}
 
 	@Override
-	public UIWindow clone() {
-		UIWindow obj = (UIWindow) super.clone();
-		obj.childs = new UnorderedIdentityArrayList<UIObject>();
-		obj.childsView = Collections.unmodifiableList(obj.childs);
-		for (UIObject child : childs)
-			obj.addChild(child.clone());
-		obj.background = background.clone();
-		return obj;
+	protected void free() {
 	}
 
 	@Override
-	protected void free() {
+	public UIWindow clone() {
+		UIWindow obj = (UIWindow) super.clone();
+		obj.background = background.clone();
+		return obj;
 	}
 
 	@Override
@@ -83,13 +71,8 @@ public class UIWindow extends UIObject {
 		if (hide)
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
-		renderChilds();
+		super.render();
 		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, border, true);
-	}
-
-	protected void renderChilds() {
-		for (UIObject child : getVisibleChilds())
-			child.render();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -122,40 +105,11 @@ public class UIWindow extends UIObject {
 		} else if (borderData instanceof Map)
 			border.load((Map<String, Object>) borderData);
 
-		Object childs = data.get("childs");
-		if (childs instanceof List) {
-			List<Object> childList = (List<Object>) childs;
-			for (Object subData : childList)
-				loadChild(subData);
-		} else if (childs instanceof Map) {
-			Map<String, Object> childMap = (Map<String, Object>) childs;
-			for (Object subData : childMap.values())
-				loadChild(subData);
-		}
-
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
 			ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
 			if (scriptEngine != null)
 				this.scriptEngine = scriptEngine;
-		}
-	}
-
-	private void loadChild(Object data) {
-		if (data instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> childData = (Map<String, Object>) data;
-			UIObjectType<?> uiObjectType;
-			Object type = childData.get("type");
-			if (type instanceof String) {
-				uiObjectType = UIObjectTypes.get((String) type);
-				if (uiObjectType == null)
-					uiObjectType = UIObjectTypes.LABEL;
-			} else
-				uiObjectType = UIObjectTypes.LABEL;
-			UIObject object = uiObjectType.get();
-			addChildIntern(object);
-			object.load(childData);
 		}
 	}
 
@@ -167,12 +121,6 @@ public class UIWindow extends UIObject {
 		floating = in.readBoolean();
 		background.load(in);
 		border.load(in);
-		int childSize = in.readInt();
-		for (int i = 0; i < childSize; i++) {
-			UIObject object = UIObjectTypes.get(in.readInt()).get();
-			addChildIntern(object);
-			object.load(in);
-		}
 		ScriptEngine loadedScript = ResourceManager.getScript(in.readUTF());
 		if (loadedScript != null)
 			scriptEngine = loadedScript;
@@ -186,87 +134,12 @@ public class UIWindow extends UIObject {
 		out.writeBoolean(floating);
 		background.save(out);
 		border.save(out);
-		out.writeInt(childs.size());
-		for (UIObject child : childs) {
-			out.writeInt(child.getType().getId());
-			child.save(out);
-		}
 		out.writeUTF(ResourceManager.getScriptName(scriptEngine));
 	}
 
 	@Override
 	public UIObjectType<? extends UIWindow> getType() {
 		return UIObjectTypes.WINDOW;
-	}
-
-	@Override
-	protected void calculateTransform() {
-		super.calculateTransform();
-		for (UIObject child : childs)
-			child.calculateTransform();
-	}
-
-	public void addChild(UIObject child) {
-		child.window = this;
-		childs.add(child);
-		child.calculateTransform();
-	}
-	
-	private void addChildIntern(UIObject child) {
-		child.window = this;
-		childs.add(child);
-	}
-
-	public int removeChild(UIObject child) {
-		int index = childs.indexOf(child);
-		childs.remove(index);
-		child.onDisable();
-		child.free();
-		return index;
-	}
-
-	public UIObject removeChild(int index) {
-		UIObject child = childs.remove(index);
-		child.onDisable();
-		child.free();
-		return child;
-	}
-
-	public void isChild(UIObject child) {
-		childs.contains(child);
-	}
-
-	public final void addChilds(Collection<UIObject> childs) {
-		for (UIObject child : childs)
-			addChild(child);
-	}
-
-	public void removeChilds(Collection<UIObject> childs) {
-		for (UIObject child : childs)
-			removeChild(child);
-	}
-
-	public void clearChilds() {
-		for (UIObject child : childs) {
-			child.onDisable();
-			child.free();
-		}
-		childs.clear();
-	}
-
-	public void setChilds(Collection<UIObject> childs) {
-		if (!childs.isEmpty())
-			clearChilds();
-		for (UIObject child : childs)
-			addChild(child);
-	}
-
-	public List<UIObject> getChilds() {
-		return childsView;
-	}
-
-	public List<UIObject> getVisibleChilds() {
-		return getChilds();
 	}
 
 	public void setMoveAble(boolean moveAble) {

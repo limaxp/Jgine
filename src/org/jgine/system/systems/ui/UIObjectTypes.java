@@ -10,6 +10,8 @@ import org.jgine.system.systems.ui.objects.UILabel;
 import org.jgine.system.systems.ui.objects.UIList;
 
 public class UIObjectTypes {
+	
+	public static final UIObjectType<UICompound> COMPOUND = a("compound", UICompound::new);
 
 	public static final UIObjectType<UIWindow> WINDOW = a("window", UIWindow::new);
 	

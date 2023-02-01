@@ -9,12 +9,12 @@ import java.util.function.BiConsumer;
 
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.utils.loader.YamlHelper;
+import org.jgine.system.systems.ui.UICompound;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-import org.jgine.system.systems.ui.UIWindow;
 
-public class UIList extends UIWindow {
+public class UIList extends UICompound {
 
 	protected float elementHeight = 0.05f;
 	protected boolean reverse;
@@ -22,14 +22,15 @@ public class UIList extends UIWindow {
 	protected boolean scrollable;
 
 	public UIList() {
+		this(0.5f);
 	}
 
 	public UIList(float scale) {
-		super(scale);
+		this(scale, scale);
 	}
 
 	public UIList(float width, float height) {
-		super(width, height);
+		setScale(width, height);
 	}
 
 	@Override

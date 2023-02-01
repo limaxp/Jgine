@@ -16,6 +16,7 @@ import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
+import org.jgine.system.systems.ui.UIWindow.DragTask;
 
 public class UIHotbar extends UIGrid {
 
@@ -46,7 +47,7 @@ public class UIHotbar extends UIGrid {
 
 	@Override
 	public void render() {
-		if (isHidden())
+		if (((UIWindow) getWindow()).isHidden())
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
 		for (UIObject child : getChilds())
@@ -56,9 +57,9 @@ public class UIHotbar extends UIGrid {
 	@Override
 	public void onClick(int key) {
 		super.onClick(key);
-		UIWindow window = getWindow();
+		UIWindow window = (UIWindow) getWindow();
 		if (window != null && window.isMoveAble())
-			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(getWindow()));
+			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(window));
 	}
 
 	@Override

@@ -181,33 +181,31 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	private static void addTopWindows(List<UIObject> result, UIObject object) {
-		UIWindow window = object.window;
+		UICompound window = object.window;
 		if (window == null)
 			return;
-		result.add(window);
-		while (window.window != null) {
-			window = window.window;
+		do {
 			result.add(window);
-		}
+		} while ((window = window.window) != null);
 	}
 
 	private static UIWindow getTopWindow(UIObject object) {
-		UIWindow window = object.window;
+		UICompound window = object.window;
 		if (window == null)
 			return (UIWindow) object;
 		while (window.window != null)
 			window = window.window;
-		return window;
+		return (UIWindow) window;
 	}
 
-	private static UIObject focusCheck(UIWindow window, float mouseX, float mouseY) {
+	private static UIObject focusCheck(UICompound window, float mouseX, float mouseY) {
 		float windowX = (mouseX - window.getX()) / window.getWidth();
 		float windowY = (mouseY - window.getY()) / window.getHeight();
 		for (UIObject child : window.getVisibleChilds()) {
 			if (!insideCheck(child, windowX, windowY))
 				continue;
-			if (child instanceof UIWindow)
-				return focusCheck((UIWindow) child, windowX, windowY);
+			if (child instanceof UICompound)
+				return focusCheck((UICompound) child, windowX, windowY);
 			return child;
 		}
 		return window;

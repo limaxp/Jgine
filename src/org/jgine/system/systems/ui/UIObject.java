@@ -33,7 +33,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		}
 	};
 
-	UIWindow window;
+	UICompound window;
 	private float x;
 	private float y;
 	private float width;
@@ -285,7 +285,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	@Nullable
-	public UIWindow getWindow() {
+	public UICompound getWindow() {
 		return window;
 	}
 
