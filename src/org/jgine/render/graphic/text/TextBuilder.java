@@ -12,12 +12,12 @@ public class TextBuilder {
 		size = calculateSize(text, font, size, width, height);
 		text = formatString(text, font, size, (int) (width * 0.5f));
 		float scale = (float) size / 64;
-		return new BitmapText(font, size, text, 0, height * scale  + font.getStringHeight(size));
+		return new BitmapText(font, size, text, 0, height * scale + font.getStringHeight(size));
 	}
 
 	public static String formatString(String text, Font font, int size, int width) {
 		String[] splits = text.split(" ");
-		if (splits.length == 0)
+		if (splits.length == 1)
 			return text;
 		StringBuilder stringBuilder = new StringBuilder(text.length());
 		float currentWidth = 0;

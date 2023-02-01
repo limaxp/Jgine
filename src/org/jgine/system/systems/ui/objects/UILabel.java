@@ -130,7 +130,7 @@ public class UILabel extends UIObject {
 						font = font2;
 				}
 				Vector3f scale = getTransform().getScaling();
-				int width = (int) (1000.0f * scale.x);
+				int width = (int) (1000.0f * (scale.x + 0.04));
 				int height = (int) (1000.0f * scale.y);
 				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
 			} else if (textType == Text.TYPE_BITMAP) {
@@ -142,7 +142,7 @@ public class UILabel extends UIObject {
 						font = font2;
 				}
 				Vector3f scale = getTransform().getScaling();
-				int width = (int) (1000.0f * scale.x);
+				int width = (int) (1000.0f * (scale.x + 0.04));
 				int height = (int) (1000.0f * scale.y);
 				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
 			}
