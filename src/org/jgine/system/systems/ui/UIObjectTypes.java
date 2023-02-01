@@ -12,6 +12,8 @@ import org.jgine.system.systems.ui.objects.UIList;
 public class UIObjectTypes {
 
 	public static final UIObjectType<UIWindow> WINDOW = a("window", UIWindow::new);
+	
+	public static final UIObjectType<UIWindowExt> WINDOW_EXT = a("window_ext", UIWindowExt::new);
 
 	public static final UIObjectType<UIHotbar> HOTBAR = a("hotbar", UIHotbar::new);
 

@@ -23,9 +23,9 @@ public class UISystem extends EngineSystem {
 		if (type instanceof String) {
 			uiObjectType = UIObjectTypes.get((String) type);
 			if (uiObjectType == null)
-				uiObjectType = UIObjectTypes.LABEL;
+				uiObjectType = UIObjectTypes.WINDOW;
 		} else
-			uiObjectType = UIObjectTypes.LABEL;
+			uiObjectType = UIObjectTypes.WINDOW;
 		UIObject object = uiObjectType.get();
 		object.load(data);
 		return object;

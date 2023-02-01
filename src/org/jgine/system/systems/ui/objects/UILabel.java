@@ -93,8 +93,7 @@ public class UILabel extends UIObject {
 	protected void calculateTextTransform() {
 		Transform.calculateMatrix(textTransform, -1 + (getX() + textOffsetX) * 2, -1 + (getY() + textOffsetY) * 2, 0,
 				getWidth(), getHeight(), 0);
-		if (hasWindow())
-			textTransform.mult(getWindow().getTransform());
+		textTransform.mult(getWindow().getTransform());
 		textTransform.scaling(0.004f, 0.004f, 0.004f);
 	}
 
