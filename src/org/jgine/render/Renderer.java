@@ -217,7 +217,9 @@ public class Renderer {
 	public static void setCamera(Camera camera) {
 		if (Renderer.camera != camera)
 			Renderer.camera = camera;
-		setRenderTarget(camera.getRenderTarget());
+		RenderTarget renderTarget = camera.getRenderTarget();
+		setRenderTarget(renderTarget);
+		renderTarget.clear();
 	}
 
 	public static Camera getCamera() {

@@ -239,9 +239,12 @@ public class RenderTarget implements AutoCloseable {
 		return buffer;
 	}
 
+	public void clear() {
+		glClear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT | STENCIL_BUFFER_BIT);
+	}
+
 	public void bindViewport(int attachment) {
 		bind();
-		glClear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT | STENCIL_BUFFER_BIT);
 		Attachment attach = getAttachment(attachment);
 		glViewport(0, 0, attach.getWidth(), attach.getHeight());
 	}
