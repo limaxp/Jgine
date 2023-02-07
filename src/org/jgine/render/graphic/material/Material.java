@@ -33,8 +33,10 @@ public class Material implements SystemObject, Cloneable {
 	// this here makes every entity to move at same time
 	private TextureAnimationHandler animationHandler = TextureAnimationHandler.NONE;
 	private int texturePos = 1;
-	private float flipX = 1.0f;
-	private float flipY = 1.0f;
+	private float textureX = 0.0f;
+	private float textureY = 0.0f;
+	private float textureWidth = 1.0f;
+	private float textureHeight = 1.0f;
 
 	public Material() {
 		this.color = Color.WHITE;
@@ -91,7 +93,9 @@ public class Material implements SystemObject, Cloneable {
 	}
 
 	public final void bind(Shader shader) {
-		texturePos = animationHandler.getTexturePosition();
+		int texturePos = animationHandler.getTexturePosition();
+		if (texturePos != this.texturePos)
+			setTexturePos(texturePos);
 		texture.bind();
 		shader.setMaterial(this);
 	}
@@ -104,6 +108,10 @@ public class Material implements SystemObject, Cloneable {
 		apply(material);
 		texture = material.texture;
 		texturePos = material.texturePos;
+		textureX = material.textureX;
+		textureY = material.textureY;
+		textureWidth = material.textureWidth;
+		textureHeight = material.textureHeight;
 	}
 
 	public final void apply(Material material) {
@@ -115,43 +123,91 @@ public class Material implements SystemObject, Cloneable {
 		specularColor = material.specularColor;
 		emissiveColor = material.emissiveColor;
 		transparentColor = material.transparentColor;
-		flipX = material.flipX;
-		flipY = material.flipY;
 	}
 
 	public final void setTexture(ITexture texture) {
 		this.texture = texture;
 		this.animationHandler = texture.createAnimationHandler();
-		texturePos = 1;
+		setTexturePos(1);
 	}
 
 	public final ITexture getTexture() {
 		return texture;
 	}
 
+	public void setTextureX(float textureX) {
+		this.textureX = textureX;
+	}
+
+	public float getTextureX() {
+		return textureX;
+	}
+
+	public void setTextureY(float textureY) {
+		this.textureY = textureY;
+	}
+
+	public float getTextureY() {
+		return textureY;
+	}
+
+	public void setTextureWidth(float textureWidth) {
+		this.textureWidth = textureWidth;
+	}
+
+	public float getTextureWidth() {
+		return textureWidth;
+	}
+
+	public void setTextureHeight(float textureHeight) {
+		this.textureHeight = textureHeight;
+	}
+
+	public float getTextureHeight() {
+		return textureHeight;
+	}
+
+	public void setTextureOffsets(float x, float y, float width, float height) {
+		textureX = x;
+		textureY = y;
+		textureWidth = width;
+		textureHeight = height;
+	}
+
 	public Vector4f getTextureOffsets() {
+		return new Vector4f(textureX, textureY, textureWidth, textureHeight);
+	}
+
+	public void setTexturePos(int texturePos) {
+		this.texturePos = texturePos;
 		int colums = texture.getColums();
 		int rows = texture.getRows();
 		int colum = texturePos % colums;
 		int row = texturePos / colums;
 		// x, y, width, height
-		return new Vector4f((float) colum / colums, (float) row / rows, flipX / colums, flipY / rows);
+		float flipX = isflippedX() ? -1.0f : 1.0f;
+		float flipY = isflippedY() ? -1.0f : 1.0f;
+		setTextureOffsets((float) colum / colums, (float) row / rows, flipX / colums, flipY / rows);
+	}
+
+	public int getTexturePos() {
+		return texturePos;
 	}
 
 	public void flipX() {
-		flipX *= -1.0f;
+		textureWidth *= -1.0f;
 	}
 
 	public boolean isflippedX() {
-		return flipX < 0;
+		return textureWidth < 0.0f;
 	}
 
 	public void flipY() {
-		flipY *= -1.0f;
+		textureHeight *= -1.0f;
 	}
 
 	public boolean isflippedY() {
-		return flipY < 0;
+		return textureHeight < 0.0f;
 	}
 
 	public void load(AIMaterial material) {
@@ -187,6 +243,21 @@ public class Material implements SystemObject, Cloneable {
 		Object texture = data.get("texture");
 		if (texture instanceof String)
 			setTexture(ResourceManager.getTexture((String) texture));
+		Object textureX = data.get("textureX");
+		if (textureX != null)
+			this.textureX = YamlHelper.toFloat(textureX, 0.0f);
+		Object textureY = data.get("textureY");
+		if (textureY != null)
+			this.textureY = YamlHelper.toFloat(textureY, 0.0f);
+		Object textureWidth = data.get("textureWidth");
+		if (textureWidth != null)
+			this.textureWidth = YamlHelper.toFloat(textureWidth, 1.0f);
+		Object textureHeight = data.get("textureHeight");
+		if (textureHeight != null)
+			this.textureHeight = YamlHelper.toFloat(textureHeight, 1.0f);
+		Object texturePos = data.get("texturePosition");
+		if (texturePos != null)
+			setTexturePos(YamlHelper.toInt(texturePos, 1));
 		Object flipX = data.get("flipX");
 		if (flipX instanceof Boolean)
 			if ((Boolean) flipX)
@@ -207,8 +278,11 @@ public class Material implements SystemObject, Cloneable {
 		String textureName = in.readUTF();
 		if (!textureName.isEmpty())
 			setTexture(ResourceManager.getTexture(textureName));
-		flipX = in.readFloat();
-		flipY = in.readFloat();
+		texturePos = in.readInt();
+		textureX = in.readFloat();
+		textureY = in.readFloat();
+		textureWidth = in.readFloat();
+		textureHeight = in.readFloat();
 	}
 
 	public void save(DataOutput out) throws IOException {
@@ -219,8 +293,11 @@ public class Material implements SystemObject, Cloneable {
 		out.writeInt(emissiveColor);
 		out.writeInt(transparentColor);
 		out.writeUTF(texture.getName());
-		out.writeFloat(flipX);
-		out.writeFloat(flipY);
+		out.writeInt(texturePos);
+		out.writeFloat(textureX);
+		out.writeFloat(textureY);
+		out.writeFloat(textureWidth);
+		out.writeFloat(textureHeight);
 	}
 
 	@SuppressWarnings("unchecked")
