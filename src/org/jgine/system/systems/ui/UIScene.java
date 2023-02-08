@@ -181,20 +181,20 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	private static void addTopWindows(List<UIObject> result, UIObject object) {
-		UICompound window = object.window;
+		UICompound window = object.parent;
 		if (window == null)
 			return;
 		do {
 			result.add(window);
-		} while ((window = window.window) != null);
+		} while ((window = window.parent) != null);
 	}
 
 	private static UIWindow getTopWindow(UIObject object) {
-		UICompound window = object.window;
+		UICompound window = object.parent;
 		if (window == null)
 			return (UIWindow) object;
-		while (window.window != null)
-			window = window.window;
+		while (window.parent != null)
+			window = window.parent;
 		return (UIWindow) window;
 	}
 

@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.script.ScriptManager;
@@ -33,7 +32,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		}
 	};
 
-	UICompound window;
+	UICompound parent;
 	private float x;
 	private float y;
 	private float width;
@@ -216,10 +215,11 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	protected void calculateTransform() {
-		Transform.calculateMatrix(transform, -1 + (x + width * 0.5f) * 2, -1 + (y + height * 0.5f) * 2, 0, width,
-				height, 0);
-		if (hasWindow())
-			transform.mult(window.getTransform());
+		transform.clear();
+		transform.setPosition(-1.0f + (x + width * 0.5f) * 2.0f, -1.0f + (y + height * 0.5f) * 2.0f, 0.0f);
+		transform.scaling(width, height, 0.0f);
+		if (hasParent())
+			parent.updateTransform(transform);
 	}
 
 	public void set(float x, float y, float width, float height) {
@@ -285,12 +285,20 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	@Nullable
-	public UICompound getWindow() {
-		return window;
+	public UICompound getParent() {
+		return parent;
 	}
 
-	public boolean hasWindow() {
-		return window != null;
+	public boolean hasParent() {
+		return parent != null;
+	}
+
+	public UIWindow getWindow() {
+		UICompound window = parent;
+		while (!(window instanceof UIWindow)) {
+			window = window.parent;
+		}
+		return (UIWindow) window;
 	}
 
 	public boolean isFocused() {
@@ -298,7 +306,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	protected ScriptEngine getScriptEngine() {
-		return window.getScriptEngine();
+		return parent.getScriptEngine();
 	}
 
 	public Consumer<UIObject> getEnableFunction() {

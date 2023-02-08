@@ -47,7 +47,7 @@ public class UIHotbar extends UIGrid {
 
 	@Override
 	public void render() {
-		if (((UIWindow) getWindow()).isHidden())
+		if (((UIWindow) getParent()).isHidden())
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
 		for (UIObject child : getChilds())
@@ -57,7 +57,7 @@ public class UIHotbar extends UIGrid {
 	@Override
 	public void onClick(int key) {
 		super.onClick(key);
-		UIWindow window = (UIWindow) getWindow();
+		UIWindow window = (UIWindow) getParent();
 		if (window != null && window.isMoveAble())
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(window));
 	}
@@ -72,6 +72,9 @@ public class UIHotbar extends UIGrid {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void load(Map<String, Object> data) {
+		Object thicknessData = data.get("thickness");
+		if (thicknessData != null)
+			setThickness(YamlHelper.toFloat(thicknessData, 0.05f));
 		super.load(data);
 		Object backgroundData = data.get("background");
 		if (backgroundData instanceof String) {
@@ -80,9 +83,6 @@ public class UIHotbar extends UIGrid {
 				background.setTexture(texture);
 		} else if (backgroundData instanceof Map)
 			background.load((Map<String, Object>) backgroundData);
-		Object thicknessData = data.get("thickness");
-		if (thicknessData != null)
-			setThickness(YamlHelper.toFloat(thicknessData, 0.05f));
 	}
 
 	@Override

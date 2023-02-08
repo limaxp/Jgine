@@ -114,6 +114,10 @@ public class TrueTypeFontGenerated implements AutoCloseable {
 		return smallestIndex;
 	}
 
+	public static int getSize(int index) {
+		return SCALES[index];
+	}
+
 	public static TrueTypeFontGenerated get(TrueTypeFont font) {
 		TrueTypeFontGenerated result = MAP.get(font);
 		if (result == null) {

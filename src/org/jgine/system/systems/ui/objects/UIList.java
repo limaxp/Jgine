@@ -82,8 +82,8 @@ public class UIList extends UICompound {
 	}
 
 	@Override
-	public void addChild(UIObject child) {
-		super.addChild(child);
+	public void addChildIntern(UIObject child) {
+		super.addChildIntern(child);
 		int index = getChilds().size() - 1;
 		int scroll = getScrollIndex();
 		if (index >= scroll && index <= scroll + getMaxElements()) {

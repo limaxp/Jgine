@@ -67,8 +67,7 @@ public class UIBar extends UIObject {
 		else if (barType == TYPE_MIDDLE)
 			Transform.calculateMatrix(barTransform, -1 + (getX() + getWidth() * 0.5f) * 2,
 					-1 + (getY() + getHeight() * 0.5f) * 2, 0, getWidth() * filled, getHeight(), 0);
-		if (hasWindow())
-			barTransform.mult(getWindow().getTransform());
+		getParent().updateTransform(barTransform);
 	}
 
 	@SuppressWarnings("unchecked")

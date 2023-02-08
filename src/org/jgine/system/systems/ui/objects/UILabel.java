@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.Transform;
+import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
@@ -18,6 +19,7 @@ import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
 import org.jgine.render.graphic.text.BitmapFont;
 import org.jgine.render.graphic.text.BitmapText;
+import org.jgine.render.graphic.text.Font;
 import org.jgine.render.graphic.text.Text;
 import org.jgine.render.graphic.text.TextBuilder;
 import org.jgine.render.graphic.text.TrueTypeFont;
@@ -87,14 +89,29 @@ public class UILabel extends UIObject {
 	@Override
 	protected void calculateTransform() {
 		super.calculateTransform();
-		calculateTextTransform();
+		if (text != null)
+			calculateTextTransform();
 	}
 
 	protected void calculateTextTransform() {
-		Transform.calculateMatrix(textTransform, -1 + (getX() + textOffsetX) * 2, -1 + (getY() + textOffsetY) * 2, 0,
-				getWidth(), getHeight(), 0);
-		textTransform.mult(getWindow().getTransform());
-		textTransform.scaling(0.004f, 0.004f, 0.004f);
+		textTransform.clear();
+		textTransform.setPosition(-1.0f + (getX() + textOffsetX) * 2.0f, -1.0f + (getY() + textOffsetY) * 2.0f, 0.0f);
+		getParent().updateTransform(textTransform);
+		Vector3f windowScale = getWindow().getTransform().getScaling();
+		textTransform.scaling(1 / windowScale.x * 0.00225f, 1 / windowScale.y * 0.004f, 0.0f);
+	}
+
+	public void buildText(String text, Font font) {
+		buildText(text, font, TextBuilder.MAX_SIZE);
+	}
+
+	public void buildText(String text, Font font, int size) {
+		Vector3f scale = getTransform().getScaling();
+		Vector3f windowScale = getWindow().getTransform().getScaling();
+		Vector2i windowSize = Input.getWindow().getSize();
+		int width = (int) (windowSize.x * scale.x * windowScale.x);
+		int height = (int) (windowSize.y * scale.y * windowScale.y);
+		this.text = TextBuilder.createText(text, font, size, width, height);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -119,7 +136,7 @@ public class UILabel extends UIObject {
 		Object textData = data.get("text");
 		if (textData instanceof String) {
 			int textType = YamlHelper.toTextType(data.get("textType"));
-			int textSize = YamlHelper.toInt(data.get("textSize"), 24);
+			int textSize = YamlHelper.toInt(data.get("textSize"), TextBuilder.MAX_SIZE);
 			if (textType == Text.TYPE_TRUETYPE) {
 				TrueTypeFont font = TrueTypeFont.ARIAL;
 				Object fontData = data.get("font");
@@ -128,10 +145,7 @@ public class UILabel extends UIObject {
 					if (font2 != null)
 						font = font2;
 				}
-				Vector3f scale = getTransform().getScaling();
-				int width = (int) (1000.0f * (scale.x + 0.04));
-				int height = (int) (1000.0f * scale.y);
-				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
+				buildText((String) textData, font, textSize);
 			} else if (textType == Text.TYPE_BITMAP) {
 				BitmapFont font = BitmapFont.CONSOLAS;
 				Object fontData = data.get("font");
@@ -140,10 +154,7 @@ public class UILabel extends UIObject {
 					if (font2 != null)
 						font = font2;
 				}
-				Vector3f scale = getTransform().getScaling();
-				int width = (int) (1000.0f * (scale.x + 0.04));
-				int height = (int) (1000.0f * scale.y);
-				this.text = TextBuilder.createText((String) textData, font, textSize, width, height);
+				buildText((String) textData, font, textSize);
 			}
 		}
 		Object textOffsetXData = data.get("textOffsetX");

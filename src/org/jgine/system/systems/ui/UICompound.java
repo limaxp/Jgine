@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.Matrix;
 
 public class UICompound extends UIObject {
 
@@ -111,6 +112,14 @@ public class UICompound extends UIObject {
 			child.calculateTransform();
 	}
 
+	protected final void calculateTransformBase() {
+		super.calculateTransform();
+	}
+
+	public void updateTransform(Matrix transform) {
+		transform.mult(getTransform());
+	}
+
 	public void addChild(UIObject child) {
 		addChildIntern(child);
 		child.calculateTransform();
@@ -118,7 +127,7 @@ public class UICompound extends UIObject {
 
 	protected void addChildIntern(UIObject child) {
 		childs.add(child);
-		child.window = this;
+		child.parent = this;
 	}
 
 	public int removeChild(UIObject child) {

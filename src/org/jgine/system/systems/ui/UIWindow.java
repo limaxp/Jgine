@@ -7,13 +7,18 @@ import java.util.Map;
 
 import javax.script.ScriptEngine;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
+import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
+import org.jgine.misc.utils.options.Options;
 import org.jgine.misc.utils.scheduler.Task;
 import org.jgine.misc.utils.script.ScriptManager;
+import org.jgine.render.RenderTarget;
+import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
@@ -28,6 +33,7 @@ public class UIWindow extends UICompound {
 	private Material background;
 	private Material border;
 	ScriptEngine scriptEngine;
+	private RenderTarget renderTarget;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -53,6 +59,7 @@ public class UIWindow extends UICompound {
 		background = new Material(Color.DARK_GRAY);
 		border = new Material(Color.BLACK);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
+		renderTarget = createRenderTarget();
 	}
 
 	@Override
@@ -71,8 +78,38 @@ public class UIWindow extends UICompound {
 		if (hide)
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
-		super.render();
+		renderChilds();
 		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, border, true);
+	}
+
+	@Override
+	protected void renderChilds() {
+		RenderTarget tmp = Renderer.getRenderTarget();
+		Renderer.setRenderTarget(renderTarget);
+		renderTarget.clear();
+		for (UIObject child : getVisibleChilds())
+			child.render();
+		Renderer.setRenderTarget(tmp);
+		Material material = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		material.flipY();
+		UIRenderer.renderQuad(getTransform(), material);
+	}
+
+	@Override
+	protected void calculateTransform() {
+		calculateTransformBase();
+	}
+
+	@Override
+	public void updateTransform(Matrix matrix) {
+	}
+
+	@Override
+	@Nullable
+	public UIWindow getWindow() {
+		if (parent == null)
+			return null;
+		return super.getWindow();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -205,6 +242,16 @@ public class UIWindow extends UICompound {
 	@Override
 	public ScriptEngine getScriptEngine() {
 		return scriptEngine;
+	}
+
+	private static RenderTarget createRenderTarget() {
+		RenderTarget renderTarget = new RenderTarget();
+		renderTarget.bind();
+		renderTarget.setTexture(Texture.RGBA, RenderTarget.COLOR_ATTACHMENT0, Options.RESOLUTION_X.getInt(),
+				Options.RESOLUTION_Y.getInt());
+		renderTarget.checkStatus();
+		renderTarget.unbind();
+		return renderTarget;
 	}
 
 	public static class DragTask extends Task {
