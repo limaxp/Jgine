@@ -191,14 +191,17 @@ public class Texture implements ITexture, AutoCloseable {
 	private int height;
 	private int colums;
 	private int rows;
+
 	private AnimationFrame[] animation;
 
 	public Texture() {
-		this.name = "";
+		this("");
 	}
 
 	public Texture(String name) {
 		this.name = name;
+		colums = 1;
+		rows = 1;
 	}
 
 	@Override
@@ -207,21 +210,15 @@ public class Texture implements ITexture, AutoCloseable {
 		id = 0;
 	}
 
-	protected final void init(int width, int height, int colums, int rows) {
+	protected void init(int width, int height) {
 		close();
 		this.id = glGenTextures();
 		this.width = width;
 		this.height = height;
-		this.colums = colums;
-		this.rows = rows;
 	}
 
 	public final void load(BufferedImage image) {
-		load(image, 1, 1);
-	}
-
-	public final void load(BufferedImage image, int colums, int rows) {
-		init(image.getWidth(), image.getHeight(), colums, rows);
+		init(image.getWidth(), image.getHeight());
 		target = TEXTURE_2D;
 		bind();
 		glTexImage2D(target, 0, GL_RGBA8, width, height, 0, RGBA, UNSIGNED_BYTE, buildBuffer(image));
@@ -230,11 +227,7 @@ public class Texture implements ITexture, AutoCloseable {
 	}
 
 	public final void load(Image image) {
-		load(image, 1, 1);
-	}
-
-	public final void load(Image image, int colums, int rows) {
-		init(image.width, image.height, colums, rows);
+		init(image.width, image.height);
 		target = TEXTURE_2D;
 		bind();
 		loadImage(image);
@@ -243,20 +236,11 @@ public class Texture implements ITexture, AutoCloseable {
 	}
 
 	public final void load(@Nullable ByteBuffer data, int width, int height, int format) {
-		load(data, width, height, 1, 1, format, format);
+		load(data, width, height, format, format);
 	}
 
 	public final void load(@Nullable ByteBuffer data, int width, int height, int format, int internalformat) {
-		load(data, width, height, 1, 1, format, internalformat);
-	}
-
-	public final void load(@Nullable ByteBuffer data, int width, int height, int colums, int rows, int format) {
-		load(data, width, height, colums, rows, format, format);
-	}
-
-	public final void load(@Nullable ByteBuffer data, int width, int height, int colums, int rows, int format,
-			int internalformat) {
-		init(width, height, colums, rows);
+		init(width, height);
 		target = TEXTURE_2D;
 		bind();
 		glTexImage2D(target, 0, internalformat, width, height, 0, format, UNSIGNED_BYTE, data);
@@ -265,21 +249,12 @@ public class Texture implements ITexture, AutoCloseable {
 	}
 
 	public final void loadMultisample(int samples, int width, int height, int internalFormat) {
-		loadMultisample(samples, width, height, 1, 1, internalFormat, true);
+		loadMultisample(samples, width, height, internalFormat, true);
 	}
 
 	public final void loadMultisample(int samples, int width, int height, int internalFormat,
 			boolean fixedsamplelocations) {
-		loadMultisample(samples, width, height, 1, 1, internalFormat, fixedsamplelocations);
-	}
-
-	public final void loadMultisample(int samples, int width, int height, int colums, int rows, int internalFormat) {
-		loadMultisample(samples, width, height, colums, rows, internalFormat, true);
-	}
-
-	public final void loadMultisample(int samples, int width, int height, int colums, int rows, int internalFormat,
-			boolean fixedsamplelocations) {
-		init(width, height, colums, rows);
+		init(width, height);
 		target = TEXTURE_2D_MULTISAMPLE;
 		bind();
 		glTexImage2DMultisample(target, samples, internalFormat, width, height, fixedsamplelocations);
