@@ -28,8 +28,11 @@ public class ScriptSystem extends EngineSystem {
 		if (!(scriptName instanceof String))
 			return null;
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
-		if (scriptEngine == null)
-			return null;
-		return new ScriptObject(scriptEngine);
+		if (scriptEngine != null)
+			return new ScriptObject((String) scriptName, scriptEngine);
+		ScriptType<?> type = ScriptTypes.get((String) scriptName);
+		if (type != null)
+			return type.get();
+		return null;
 	}
 }

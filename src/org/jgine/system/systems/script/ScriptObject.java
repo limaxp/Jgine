@@ -6,19 +6,17 @@ import org.jgine.system.SystemObject;
 
 public class ScriptObject implements SystemObject, Cloneable {
 
+	private String name;
 	protected ScriptEngine engine;
 	protected IScript scriptInterface;
 
 	public ScriptObject(ScriptEngine engine) {
+		this(null, engine);
+	}
+
+	public ScriptObject(String name, ScriptEngine engine) {
+		this.name = name;
 		this.engine = engine;
-	}
-
-	public ScriptEngine getEngine() {
-		return engine;
-	}
-
-	public IScript getInterface() {
-		return scriptInterface;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -35,5 +33,21 @@ public class ScriptObject implements SystemObject, Cloneable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public ScriptEngine getEngine() {
+		return engine;
+	}
+
+	public IScript getInterface() {
+		return scriptInterface;
 	}
 }
