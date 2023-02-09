@@ -124,7 +124,7 @@ public class TextureLoader {
 			List<AnimationFrame> animationFrameList = new ArrayList<AnimationFrame>(frameList.size());
 			for (Object frame : frameList) {
 				if (frame instanceof Integer)
-					animationFrameList.add(new AnimationFrame(baseFrameTime, ((Integer) frame).intValue()));
+					animationFrameList.add(new AnimationFrame(baseFrameTime, texture, ((Integer) frame).intValue()));
 				else if (frame instanceof String) {
 					String frameString = (String) frame;
 					int index = frameString.indexOf(" to ");
@@ -137,7 +137,7 @@ public class TextureLoader {
 						continue;
 					int i = Integer.parseUnsignedInt(frameString, 0, index, 10);
 					for (; i <= size; i++)
-						animationFrameList.add(new AnimationFrame(baseFrameTime, i));
+						animationFrameList.add(new AnimationFrame(baseFrameTime, texture, i));
 				}
 			}
 			animationFrames = animationFrameList.toArray(new AnimationFrame[animationFrameList.size()]);
@@ -145,7 +145,7 @@ public class TextureLoader {
 			int size = texture.getColums() * texture.getRows();
 			animationFrames = new AnimationFrame[size];
 			for (int i = 0; i < size; i++)
-				animationFrames[i] = new AnimationFrame(baseFrameTime, i + 1);
+				animationFrames[i] = new AnimationFrame(baseFrameTime, texture, i + 1);
 		}
 
 		Object frameTimes = data.get("frameTimes");
