@@ -195,6 +195,7 @@ public class Material implements SystemObject, Cloneable {
 
 	public void flipX() {
 		flipX *= -1.0f;
+		textureWidth *= -1;
 	}
 
 	public boolean isflippedX() {
@@ -203,6 +204,7 @@ public class Material implements SystemObject, Cloneable {
 
 	public void flipY() {
 		flipY *= -1.0f;
+		textureHeight *= -1;
 	}
 
 	public boolean isflippedY() {
