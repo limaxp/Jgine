@@ -201,6 +201,13 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	private static UIObject focusCheck(UICompound window, float mouseX, float mouseY) {
 		float windowX = (mouseX - window.getX()) / window.getWidth();
 		float windowY = (mouseY - window.getY()) / window.getHeight();
+		if (window instanceof UIWindow) {
+			UIWindow w = (UIWindow) window;
+			// TODO remove Math.abs() after texture animation rework!
+			windowX = windowX * Math.abs(w.getViewWidth()) + w.getScrollX() + (1.0f - Math.abs(w.getViewWidth()));
+			windowY = windowY * Math.abs(w.getViewHeight()) + w.getScrollY() + (1.0f - Math.abs(w.getViewHeight()));
+		}
+
 		for (UIObject child : window.getVisibleChilds()) {
 			if (!insideCheck(child, windowX, windowY))
 				continue;

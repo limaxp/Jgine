@@ -3,7 +3,9 @@ package org.jgine.system.systems.ui;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.script.ScriptEngine;
 
@@ -34,6 +36,7 @@ public class UIWindow extends UICompound {
 	private Material border;
 	ScriptEngine scriptEngine;
 	private RenderTarget renderTarget;
+	private Material renderTargetMaterial;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -60,16 +63,24 @@ public class UIWindow extends UICompound {
 		border = new Material(Color.BLACK);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 		renderTarget = createRenderTarget();
+		renderTargetMaterial = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		renderTargetMaterial.flipY();
 	}
 
 	@Override
 	protected void free() {
+		renderTarget.close();
 	}
 
 	@Override
 	public UIWindow clone() {
 		UIWindow obj = (UIWindow) super.clone();
 		obj.background = background.clone();
+		obj.border = border.clone();
+		obj.renderTarget = createRenderTarget();
+		obj.renderTargetMaterial = renderTargetMaterial.clone();
+		obj.renderTargetMaterial.setTexture(obj.renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+//		obj.setViewSize(1.0f, -0.4f); // TODO texture Animation rework!
 		return obj;
 	}
 
@@ -79,7 +90,8 @@ public class UIWindow extends UICompound {
 			return;
 		UIRenderer.renderQuad(getTransform(), background);
 		renderChilds();
-		UIRenderer.renderLine2d(getTransform(), new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, border, true);
+		UIRenderer.renderLine2d(getTransform(), border, true,
+				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f });
 	}
 
 	@Override
@@ -90,9 +102,7 @@ public class UIWindow extends UICompound {
 		for (UIObject child : getVisibleChilds())
 			child.render();
 		Renderer.setRenderTarget(tmp);
-		Material material = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
-		material.flipY();
-		UIRenderer.renderQuad(getTransform(), material);
+		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
 	}
 
 	@Override
@@ -110,6 +120,102 @@ public class UIWindow extends UICompound {
 		if (parent == null)
 			return null;
 		return super.getWindow();
+	}
+
+	@Override
+	public void addChildIntern(UIObject child) {
+		super.addChildIntern(child);
+		setChildFunctions(child);
+	}
+
+	protected void setChildFunctions(UIObject child) {
+		child.setScrollFunction((object, scroll) -> addScrollY(scroll.intValue()));
+	}
+
+	@Override
+	public List<UIObject> getVisibleChilds() {
+		// TODO Optimization
+		return super.getVisibleChilds();
+	}
+
+	@Override
+	public void onScroll(float scroll) {
+		super.onScroll(scroll);
+		addScrollY((int) scroll);
+	}
+
+	public void addScrollX(int scroll) {
+		float newScroll = renderTargetMaterial.getTextureX() + scroll * 0.01f;
+		if (newScroll > 0.0f)
+			newScroll = 0.0f;
+		else if (newScroll < -getViewWidth() - 1.0f)
+			newScroll = -getViewWidth() - 1.0f;
+		renderTargetMaterial.setTextureX(newScroll);
+	}
+
+	public void addScrollY(int scroll) {
+		float newScroll = renderTargetMaterial.getTextureY() + scroll * 0.01f;
+		if (newScroll > 0.0f)
+			newScroll = 0.0f;
+		else if (newScroll < -getViewHeight() - 1.0f)
+			newScroll = -getViewHeight() - 1.0f;
+		renderTargetMaterial.setTextureY(newScroll);
+	}
+
+	public void setScrollX(float scroll) {
+		if (scroll > 0.0f)
+			scroll = 0.0f;
+		else if (scroll < -getViewWidth() - 1.0f)
+			scroll = -getViewWidth() - 1.0f;
+		renderTargetMaterial.setTextureX(scroll);
+	}
+
+	public void setScrollY(float scroll) {
+		if (scroll > 0.0f)
+			scroll = 0.0f;
+		else if (scroll < -getViewHeight() - 1.0f)
+			scroll = -getViewHeight() - 1.0f;
+		renderTargetMaterial.setTextureY(scroll);
+	}
+
+	public float getScrollX() {
+		return renderTargetMaterial.getTextureX();
+	}
+
+	public float getScrollY() {
+		return renderTargetMaterial.getTextureY();
+	}
+
+	public void setViewSize(float width, float sizeY) {
+		setViewWidth(width);
+		setViewHeight(sizeY);
+	}
+
+	public Vector2f getViewSize() {
+		return new Vector2f(getViewWidth(), getViewHeight());
+	}
+
+	public void setViewWidth(float width) {
+		renderTargetMaterial.setTextureWidth(width);
+	}
+
+	public void setViewHeight(float height) {
+		renderTargetMaterial.setTextureHeight(height);
+	}
+
+	public float getViewWidth() {
+		return renderTargetMaterial.getTextureWidth();
+	}
+
+	public float getViewHeight() {
+		return renderTargetMaterial.getTextureHeight();
+	}
+
+	@Override
+	public void setScrollFunction(BiConsumer<UIObject, Float> scrollFunction) {
+		super.setScrollFunction(scrollFunction);
+		for (UIObject child : getChilds())
+			child.setScrollFunction(scrollFunction);
 	}
 
 	@SuppressWarnings("unchecked")

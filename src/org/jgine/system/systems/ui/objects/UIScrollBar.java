@@ -8,64 +8,51 @@ import java.util.Map;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
+import org.jgine.system.systems.ui.UICompound;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
-import org.jgine.system.systems.ui.UIWindow.DragTask;
 
-public class UIHotbar extends UIGrid {
+public class UIScrollBar extends UICompound {
 
 	private Material background;
 	private float thickness;
-	private DragTask dragTask;
 
-	public UIHotbar() {
+	public UIScrollBar() {
 		this(0.05f);
 	}
 
-	public UIHotbar(float thickness) {
+	public UIScrollBar(float thickness) {
 		setThickness(thickness);
 		background = new Material(Color.DARK_GRAY);
 	}
 
 	@Override
-	public UIHotbar clone() {
-		UIHotbar obj = (UIHotbar) super.clone();
+	public UIScrollBar clone() {
+		UIScrollBar obj = (UIScrollBar) super.clone();
 		obj.background = background.clone();
-		obj.dragTask = null;
 		return obj;
-	}
-
-	@Override
-	protected void free() {
 	}
 
 	@Override
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
-		super.render();
-		UIRenderer.renderLine(getTransform(), ((UIWindow) getParent()).getBorder(), -1.0f, -1.0f + thickness, 1.0f,
-				-1.0f + thickness);
+		for (UIObject child : getChilds())
+			child.render();
+		UIRenderer.renderLine(getTransform(), ((UIWindow) getParent()).getBorder(), -1.0f + thickness, -1.0f,
+				-1.0f + thickness, 1.0f);
 	}
 
 	@Override
 	public void onClick(int key) {
 		super.onClick(key);
 		UIWindow window = (UIWindow) getParent();
-		if (window.isMoveAble())
-			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(window));
-	}
-
-	@Override
-	public void onRelease(int key) {
-		super.onRelease(key);
-		if (dragTask != null && !dragTask.isCanceled())
-			dragTask.cancel();
+		System.out.println("scrollbarClick");
+		window.addScrollY(1);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,8 +86,8 @@ public class UIHotbar extends UIGrid {
 	}
 
 	@Override
-	public UIObjectType<? extends UIHotbar> getType() {
-		return UIObjectTypes.HOTBAR;
+	public UIObjectType<? extends UIScrollBar> getType() {
+		return UIObjectTypes.SCROLLBAR;
 	}
 
 	public void setBackground(Material background) {
@@ -113,18 +100,10 @@ public class UIHotbar extends UIGrid {
 
 	public void setThickness(float thickness) {
 		this.thickness = thickness;
-		set(0, 1 - thickness, 1.0f, thickness);
+		set(1 - thickness, 0, thickness, 1.0f);
 	}
 
 	public float getThickness() {
 		return thickness;
-	}
-
-	@Override
-	public void placeChildReverse(UIObject child, int index) {
-		float widthSize = elementWidth * index;
-		int height = (int) widthSize;
-		child.set(1 - elementWidth - widthSize - height, elementHeight * (height - scroll), elementWidth,
-				elementHeight);
 	}
 }

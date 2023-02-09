@@ -8,6 +8,7 @@ import org.jgine.system.systems.ui.objects.UIGrid;
 import org.jgine.system.systems.ui.objects.UIHotbar;
 import org.jgine.system.systems.ui.objects.UILabel;
 import org.jgine.system.systems.ui.objects.UIList;
+import org.jgine.system.systems.ui.objects.UIScrollBar;
 
 public class UIObjectTypes {
 
@@ -16,6 +17,8 @@ public class UIObjectTypes {
 	public static final UIObjectType<UIWindow> WINDOW = a("window", UIWindow::new);
 
 	public static final UIObjectType<UIHotbar> HOTBAR = a("hotbar", UIHotbar::new);
+
+	public static final UIObjectType<UIScrollBar> SCROLLBAR = a("scrollbar", UIScrollBar::new);
 
 	public static final UIObjectType<UILabel> LABEL = a("label", UILabel::new);
 
