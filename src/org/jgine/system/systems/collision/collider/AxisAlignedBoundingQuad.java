@@ -112,6 +112,6 @@ public class AxisAlignedBoundingQuad extends Collider {
 	@Override
 	public void render(Vector3f pos) {
 		Renderer2D.renderLine2d(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(w, h, 0)),
-				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 }, new Material(), true);
+				new Material(), true, new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
 	}
 }

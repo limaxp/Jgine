@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
@@ -166,17 +167,36 @@ public class Renderer {
 		setShader(tmp);
 	}
 
-	public static void renderLine(Matrix transform, Vector3f start, Vector3f end, Material material) {
+	public static void renderLine(Matrix transform, Material material, Vector2f start, Vector2f end) {
+		renderLine(transform, material, start.x, start.y, end.x, end.y);
+	}
+
+	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, new float[] { start.x, start.y, start.z, end.x, end.y, end.z }, null);
+			lineMesh.loadData(2, new float[] { x1, y1, x2, y2 }, null);
 			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
 	}
 
-	public static void renderLine3d(Matrix transform, float[] points, Material material, boolean loop) {
+	public static void renderLine(Matrix transform, Material material, Vector3f start, Vector3f end) {
+		renderLine(transform, material, start.x, start.y, start.z, end.x, end.y, end.z);
+	}
+
+	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
+			float z2) {
+		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
+		material.bind(shader);
+		try (BaseMesh lineMesh = new BaseMesh()) {
+			lineMesh.loadData(3, new float[] { x1, y1, z1, x2, y2, z2 }, null);
+			lineMesh.mode = Mesh.LINES;
+			lineMesh.render();
+		}
+	}
+
+	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
@@ -189,7 +209,7 @@ public class Renderer {
 		}
 	}
 
-	public static void renderLine2d(Matrix transform, float[] points, Material material, boolean loop) {
+	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		try (BaseMesh lineMesh = new BaseMesh()) {
