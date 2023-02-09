@@ -153,7 +153,7 @@ public class TextureLoader {
 			for (Entry<Integer, Object> entry : ((Map<Integer, Object>) frameTimes).entrySet()) {
 				Object value = entry.getValue();
 				if (value instanceof Number)
-					animationFrames[entry.getKey()].frameTime += (int) value;
+					animationFrames[entry.getKey() - 1].frameTime += (int) value;
 			}
 		}
 		texture.setAnimation(animationFrames);

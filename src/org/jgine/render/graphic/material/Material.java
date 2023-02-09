@@ -182,8 +182,8 @@ public class Material implements SystemObject, Cloneable {
 		this.texturePos = texturePos;
 		int colums = texture.getColums();
 		int rows = texture.getRows();
-		int colum = texturePos % colums;
-		int row = texturePos / colums;
+		int colum = (texturePos - 1) % colums;
+		int row = (texturePos - 1) / colums;
 		// x, y, width, height
 		float flipX = isflippedX() ? -1.0f : 1.0f;
 		float flipY = isflippedY() ? -1.0f : 1.0f;
