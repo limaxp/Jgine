@@ -49,8 +49,7 @@ public class UIHotbar extends UIGrid {
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
 		super.render();
-		UIRenderer.renderLine(getTransform(), ((UIWindow) getParent()).getBorder(), -1.0f, -1.0f + thickness, 1.0f,
-				-1.0f + thickness);
+		UIRenderer.renderLine(getTransform(), ((UIWindow) getParent()).getBorder(), -1.0f, -1.0f, 1.0f, -1.0f);
 	}
 
 	@Override

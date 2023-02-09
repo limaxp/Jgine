@@ -80,7 +80,6 @@ public class UIWindow extends UICompound {
 		obj.renderTarget = createRenderTarget();
 		obj.renderTargetMaterial = renderTargetMaterial.clone();
 		obj.renderTargetMaterial.setTexture(obj.renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
-//		obj.setViewSize(1.0f, -0.4f); // TODO texture Animation rework!
 		return obj;
 	}
 
@@ -373,13 +372,15 @@ public class UIWindow extends UICompound {
 
 		@Override
 		public void run() {
-			float distance = Vector2f.distance(window.scene.mouseX, window.scene.mouseY, dragX, dragY);
+			float mouseX = window.scene.mouseX;
+			float mouseY = window.scene.mouseY;
+			float distance = Vector2f.distance(mouseX, mouseY, dragX, dragY);
 			if (distance > 0.01f) {
-				float newX = window.getX() + (window.scene.mouseX - dragX);
-				float newY = window.getY() + (window.scene.mouseY - dragY);
+				float newX = window.getX() + (mouseX - dragX);
+				float newY = window.getY() + (mouseY - dragY);
 				window.setPos(newX, newY);
-				dragX = window.scene.mouseX;
-				dragY = window.scene.mouseY;
+				dragX = mouseX;
+				dragY = mouseY;
 			}
 		}
 	}

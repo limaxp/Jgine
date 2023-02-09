@@ -5,9 +5,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
+import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
+import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
+import org.jgine.misc.utils.scheduler.Scheduler;
+import org.jgine.misc.utils.scheduler.Task;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.graphic.material.Material;
 import org.jgine.render.graphic.material.Texture;
@@ -21,6 +26,7 @@ public class UIScrollBar extends UICompound {
 
 	private Material background;
 	private float thickness;
+	private DragTask dragTask;
 
 	public UIScrollBar() {
 		this(0.05f);
@@ -29,30 +35,41 @@ public class UIScrollBar extends UICompound {
 	public UIScrollBar(float thickness) {
 		setThickness(thickness);
 		background = new Material(Color.DARK_GRAY);
+
+		UILabel button = new UILabel();
+		addChild(button);
+		button.set(0.0f, 0.2f, 1.0f, 0.6f);
+		button.setClickFunction((object, key) -> {
+			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(object));
+		});
+		button.setReleaseFunction((object, key) -> {
+			if (dragTask != null && !dragTask.isCanceled())
+				dragTask.cancel();
+		});
+
+		UILabel upbutton = new UILabel();
+		addChild(upbutton);
+		upbutton.set(0.0f, 0.95f, 1.0f, 0.05f);
+		upbutton.setClickFunction((object, key) -> ((UIScrollBar) object.getParent()).scroll(5));
+
+		UILabel downbutton = new UILabel();
+		addChild(downbutton);
+		downbutton.set(0.0f, 0.0f, 1.0f, 0.05f);
+		downbutton.setClickFunction((object, key) -> ((UIScrollBar) object.getParent()).scroll(-5));
 	}
 
 	@Override
 	public UIScrollBar clone() {
 		UIScrollBar obj = (UIScrollBar) super.clone();
 		obj.background = background.clone();
+		obj.dragTask = null;
 		return obj;
 	}
 
 	@Override
 	public void render() {
 		UIRenderer.renderQuad(getTransform(), background);
-		for (UIObject child : getChilds())
-			child.render();
-		UIRenderer.renderLine(getTransform(), ((UIWindow) getParent()).getBorder(), -1.0f + thickness, -1.0f,
-				-1.0f + thickness, 1.0f);
-	}
-
-	@Override
-	public void onClick(int key) {
-		super.onClick(key);
-		UIWindow window = (UIWindow) getParent();
-		System.out.println("scrollbarClick");
-		window.addScrollY(1);
+		super.render();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,10 +117,50 @@ public class UIScrollBar extends UICompound {
 
 	public void setThickness(float thickness) {
 		this.thickness = thickness;
-		set(1 - thickness, 0, thickness, 1.0f);
+		set(1 - thickness, 0, thickness, 0.95f);
 	}
 
 	public float getThickness() {
 		return thickness;
+	}
+
+	private void scroll(int scroll) {
+		UIWindow window = (UIWindow) getParent();
+		window.addScrollY(scroll);
+		setLabel(getChilds().get(0), scroll * 0.01f);
+	}
+
+	private static void setLabel(UIObject label, float scroll) {
+		float newY = label.getY() + scroll;
+		if (newY < 0.05f)
+			newY = 0.05f;
+		if (newY > 0.95f - label.getHeight())
+			newY = 0.95f - label.getHeight();
+		label.setY(newY);
+	}
+
+	public static class DragTask extends Task {
+
+		private UIObject label;
+		private float dragY;
+
+		public DragTask(UIObject label) {
+			this.label = label;
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindow().getSize();
+			this.dragY = 1 - cursorPos.y / windowSize.y;
+		}
+
+		@Override
+		public void run() {
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindow().getSize();
+			float mouseY = 1 - cursorPos.y / windowSize.y;
+			float distance = (mouseY - dragY) * (mouseY - dragY);
+			if (distance > 0.001f) {
+				setLabel(label, mouseY - dragY);
+				this.dragY = mouseY;
+			}
+		}
 	}
 }

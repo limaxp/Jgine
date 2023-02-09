@@ -203,9 +203,10 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		float windowY = (mouseY - window.getY()) / window.getHeight();
 		if (window instanceof UIWindow) {
 			UIWindow w = (UIWindow) window;
-			// TODO remove Math.abs() after texture animation rework!
-			windowX = windowX * Math.abs(w.getViewWidth()) + w.getScrollX() + (1.0f - Math.abs(w.getViewWidth()));
-			windowY = windowY * Math.abs(w.getViewHeight()) + w.getScrollY() + (1.0f - Math.abs(w.getViewHeight()));
+			float width = Math.abs(w.getViewWidth());
+			float height = Math.abs(w.getViewHeight());
+			windowX = windowX * width + w.getScrollX() + (1.0f - width);
+			windowY = windowY * height + w.getScrollY() + (1.0f - height);
 		}
 
 		for (UIObject child : window.getVisibleChilds()) {
@@ -222,5 +223,4 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		return mouseX >= object.getX() && mouseX <= object.getX() + object.getWidth() && mouseY >= object.getY()
 				&& mouseY <= object.getY() + object.getHeight();
 	}
-
 }
