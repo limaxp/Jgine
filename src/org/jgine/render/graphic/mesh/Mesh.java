@@ -13,13 +13,15 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGetBufferSubData;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -79,6 +81,9 @@ public class Mesh implements AutoCloseable {
 
 	public Mesh(int type) {
 		this.type = type;
+		vao = glGenVertexArrays();
+		vbo = glGenBuffers();
+		ibo = glGenBuffers();
 	}
 
 	@Override
@@ -212,87 +217,118 @@ public class Mesh implements AutoCloseable {
 	}
 
 	public void loadDataNoNormals(int dimension, FloatBuffer vertices) {
-		close();
 		int dataSize = dimension + TEXT_CORD_SIZE;
 		size = vertices.remaining() / dataSize;
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
-
-		vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, type);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-
 		glBindVertexArray(0);
 	}
 
 	public void loadData(int dimension, FloatBuffer vertices) {
-		close();
 		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
 		size = vertices.remaining() / dataSize;
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
-
-		vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, type);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, dimension, GL_FLOAT, false, dataSize * Float.BYTES, (dimension + 2) * Float.BYTES);
-
 		glBindVertexArray(0);
 	}
 
 	public void loadDataNoNormals(int dimension, FloatBuffer vertices, IntBuffer indices) {
-		close();
 		int dataSize = dimension + TEXT_CORD_SIZE;
 		size = indices.remaining();
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
-
-		vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, type);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-
-		ibo = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
-
 		glBindVertexArray(0);
+
 	}
 
 	public void loadData(int dimension, FloatBuffer vertices, IntBuffer indices) {
-		close();
 		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
 		size = indices.remaining();
-		vao = glGenVertexArrays();
-		glBindVertexArray(vao);
-
-		vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, type);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, dimension, GL_FLOAT, false, dataSize * Float.BYTES, (dimension + 2) * Float.BYTES);
-
-		ibo = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
-
 		glBindVertexArray(0);
+	}
+
+	public final void setVertices(int dimension, FloatBuffer data) {
+		setVertices(dimension, 0, data);
+	}
+
+	public final void setVertices(int dimension, int index, FloatBuffer data) {
+		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
+		size = data.remaining() / dataSize;
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferSubData(GL_ARRAY_BUFFER, index * dataSize * Float.BYTES, data);
+	}
+
+	public final FloatBuffer getVertices(int dimension, FloatBuffer target) {
+		return getVertices(dimension, 0, target);
+	}
+
+	public final FloatBuffer getVertices(int dimension, int index, FloatBuffer target) {
+		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * dataSize * Float.BYTES, target);
+		return target;
+	}
+
+	public final void setIndices(int dimension, IntBuffer data) {
+		setIndices(dimension, 0, data);
+	}
+
+	public final void setIndices(int dimension, int index, IntBuffer data) {
+		size = data.remaining() / dimension;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index * dimension * Integer.BYTES, data);
+	}
+
+	public final IntBuffer getIndices(int dimension, IntBuffer target) {
+		return getIndices(dimension, 0, target);
+	}
+
+	public final IntBuffer getIndices(int dimension, int index, IntBuffer target) {
+		glBindBuffer(GL_ARRAY_BUFFER, ibo);
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * dimension * Integer.BYTES, target);
+		return target;
 	}
 
 	public static FloatBuffer calculateNormals2d(FloatBuffer vertices, IntBuffer indices) {

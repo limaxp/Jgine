@@ -9,6 +9,9 @@ public class ParticleObject extends BillboardParticle implements SystemObject {
 	protected Material material;
 	protected boolean isActive = true;
 
+	public void update() {
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final <T extends SystemObject> T copy() {
