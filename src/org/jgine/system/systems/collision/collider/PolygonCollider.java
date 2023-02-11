@@ -13,7 +13,7 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;

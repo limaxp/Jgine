@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
 public interface Font {
 

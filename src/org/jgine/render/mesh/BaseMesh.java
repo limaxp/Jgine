@@ -1,27 +1,42 @@
-package org.jgine.render.graphic.mesh;
+package org.jgine.render.mesh;
 
 import java.nio.FloatBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.lwjgl.BufferUtils;
 
+/**
+ * Represents a NOT indexed Mesh!
+ * 
+ * @author Max
+ *
+ */
 public class BaseMesh extends Mesh {
+
+	public BaseMesh(int dimension, boolean hasNormals) {
+		super(dimension, hasNormals);
+	}
+
+	public BaseMesh(int dimension, int type, boolean hasNormals) {
+		super(dimension, type, hasNormals);
+	}
 
 	@Override
 	public void render() {
 		drawArrays();
 	}
 
-	public void loadData(int dimension, float[] vertices, @Nullable float[] textureChords) {
-		loadData(dimension, FloatBuffer.wrap(vertices), textureChords != null ? FloatBuffer.wrap(textureChords) : null);
+	public void loadVertices(float[] vertices, @Nullable float[] textureChords) {
+		loadVertices(FloatBuffer.wrap(vertices), textureChords != null ? FloatBuffer.wrap(textureChords) : null);
 	}
 
-	public void loadData(int dimension, float[] vertices, @Nullable float[] textureChords, float[] normals) {
-		loadData(dimension, FloatBuffer.wrap(vertices), textureChords != null ? FloatBuffer.wrap(textureChords) : null,
+	public void loadVertices(float[] vertices, @Nullable float[] textureChords, float[] normals) {
+		loadVertices(FloatBuffer.wrap(vertices), textureChords != null ? FloatBuffer.wrap(textureChords) : null,
 				FloatBuffer.wrap(normals));
 	}
 
-	public void loadData(int dimension, FloatBuffer vertices, @Nullable FloatBuffer textureChords) {
+	public void loadVertices(FloatBuffer vertices, @Nullable FloatBuffer textureChords) {
+		int dimension = getDimension();
 		if (textureChords == null || textureChords.remaining() == 0)
 			textureChords = generateTextureChords(dimension, vertices);
 
@@ -45,11 +60,11 @@ public class BaseMesh extends Mesh {
 			}
 		}
 		combinedVertices.flip();
-		loadDataNoNormals(dimension, combinedVertices);
+		loadVertices(combinedVertices);
 	}
 
-	public void loadData(int dimension, FloatBuffer vertices, @Nullable FloatBuffer textureChords,
-			FloatBuffer normals) {
+	public void loadVertices(FloatBuffer vertices, @Nullable FloatBuffer textureChords, FloatBuffer normals) {
+		int dimension = getDimension();
 		if (textureChords == null || textureChords.remaining() == 0)
 			textureChords = generateTextureChords(dimension, vertices);
 
@@ -78,6 +93,6 @@ public class BaseMesh extends Mesh {
 			}
 		}
 		combinedVertices.flip();
-		loadData(dimension, combinedVertices);
+		loadVertices(combinedVertices);
 	}
 }

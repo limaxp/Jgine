@@ -11,7 +11,7 @@ import org.jgine.misc.math.Matrix;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.UIRenderer;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;

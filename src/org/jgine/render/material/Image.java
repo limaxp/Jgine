@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.material;
+package org.jgine.render.material;
 
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
 import static org.lwjgl.stb.STBImage.stbi_info_from_memory;

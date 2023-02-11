@@ -1,7 +1,7 @@
 package org.jgine.system.systems.particle;
 
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.particle.BillboardParticle;
+import org.jgine.render.material.Material;
+import org.jgine.render.mesh.particle.BillboardParticle;
 import org.jgine.system.SystemObject;
 
 public class ParticleObject extends BillboardParticle implements SystemObject {

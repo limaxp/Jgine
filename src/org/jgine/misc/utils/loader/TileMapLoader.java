@@ -3,7 +3,7 @@ package org.jgine.misc.utils.loader;
 import java.io.File;
 import java.io.InputStream;
 
-import org.jgine.render.graphic.TileMap.TileMapTile;
+import org.jgine.render.mesh.TileMap.TileMapTile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

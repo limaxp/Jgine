@@ -25,9 +25,9 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArray
 import org.jgine.misc.utils.loader.ModelLoader;
 import org.jgine.misc.utils.loader.ResourceLoader;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
-import org.jgine.render.graphic.mesh.Model;
+import org.jgine.render.material.Material;
+import org.jgine.render.material.Texture;
+import org.jgine.render.mesh.Model;
 import org.jgine.sound.SoundBuffer;
 
 import com.google.common.collect.BiMap;

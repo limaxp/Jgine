@@ -6,7 +6,7 @@ import java.util.List;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 
 public class PostProcessShader extends Shader {
 

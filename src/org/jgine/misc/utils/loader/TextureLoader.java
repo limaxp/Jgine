@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.render.graphic.material.Image;
-import org.jgine.render.graphic.material.Texture;
-import org.jgine.render.graphic.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.Image;
+import org.jgine.render.material.Texture;
+import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
 
 public class TextureLoader {
 

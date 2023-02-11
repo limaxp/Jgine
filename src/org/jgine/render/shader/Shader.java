@@ -63,7 +63,7 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.math.vector.Vector4i;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.lwjgl.system.MemoryStack;
 
 public abstract class Shader {

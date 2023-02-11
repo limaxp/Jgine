@@ -28,8 +28,8 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArray
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.misc.utils.script.ScriptManager;
-import org.jgine.render.graphic.material.Texture;
-import org.jgine.render.graphic.mesh.Model;
+import org.jgine.render.material.Texture;
+import org.jgine.render.mesh.Model;
 import org.jgine.sound.SoundBuffer;
 import org.jgine.sound.SoundStream;
 

@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
 import static org.lwjgl.opengl.GL11.GL_RED;
 import static org.lwjgl.opengl.GL33.GL_TEXTURE_SWIZZLE_RGBA;
@@ -15,7 +15,7 @@ import org.jgine.core.window.DisplayManager;
 import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.options.Options;
-import org.jgine.render.graphic.material.Texture;
+import org.jgine.render.material.Texture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;

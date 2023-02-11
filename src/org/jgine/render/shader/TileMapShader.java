@@ -1,8 +1,8 @@
 package org.jgine.render.shader;
 
 import org.jgine.misc.math.Matrix;
-import org.jgine.render.graphic.material.ITexture;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.ITexture;
+import org.jgine.render.material.Material;
 
 public class TileMapShader extends Shader {
 

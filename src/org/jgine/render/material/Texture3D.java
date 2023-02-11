@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.material;
+package org.jgine.render.material;
 
 public class Texture3D {
 

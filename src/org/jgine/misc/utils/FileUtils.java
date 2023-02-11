@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.jgine.render.graphic.material.Image;
+import org.jgine.render.material.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 

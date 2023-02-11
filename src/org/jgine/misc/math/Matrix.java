@@ -1195,6 +1195,26 @@ public class Matrix implements Cloneable {
 		return true;
 	}
 
+	public FloatBuffer set(FloatBuffer buffer) {
+		m00 = buffer.get();
+		m01 = buffer.get();
+		m02 = buffer.get();
+		m03 = buffer.get();
+		m10 = buffer.get();
+		m11 = buffer.get();
+		m12 = buffer.get();
+		m13 = buffer.get();
+		m20 = buffer.get();
+		m21 = buffer.get();
+		m22 = buffer.get();
+		m23 = buffer.get();
+		m30 = buffer.get();
+		m31 = buffer.get();
+		m32 = buffer.get();
+		m33 = buffer.get();
+		return buffer;
+	}
+
 	public FloatBuffer get(FloatBuffer buffer) {
 		buffer.put(m00);
 		buffer.put(m01);

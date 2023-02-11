@@ -1,6 +1,6 @@
 package org.jgine.system.systems.graphic;
 
-import org.jgine.render.graphic.mesh.Model;
+import org.jgine.render.mesh.Model;
 import org.jgine.system.SystemObject;
 
 public class GraphicObject implements SystemObject, Cloneable {

@@ -1,4 +1,4 @@
-package org.jgine.render.graphic;
+package org.jgine.render.mesh;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
@@ -13,17 +13,14 @@ import static org.lwjgl.opengl.GL15.glGetBufferSubData;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.nio.FloatBuffer;
 
-import org.jgine.misc.utils.BufferHelper;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapDataLayer;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
@@ -97,40 +94,25 @@ public class TileMap implements AutoCloseable {
 		return tilesheight;
 	}
 
-	public class TileMapLayer implements AutoCloseable {
-
-		public static final int VERTEX_SIZE = 2;
-		public static final int TEXT_CORD_SIZE = 2;
-		public static final int SIZE = VERTEX_SIZE + TEXT_CORD_SIZE;
+	public class TileMapLayer extends BaseMesh {
 
 		public static final int TILE_POS_SIZE = 2;
 		public static final int TILE_TEXT_SIZE = 2;
 		public static final int TILE_DATA_SIZE = 2; // rot, flipX
 		public static final int TILE_SIZE = TILE_POS_SIZE + TILE_TEXT_SIZE + TILE_DATA_SIZE;
 
-		protected int vao;
-		protected int vbo;
 		protected int databo;
 
 		public TileMapLayer(TileMapDataLayer layerData) {
-			vao = glGenVertexArrays();
-			glBindVertexArray(vao);
-
+			super(2, false);
+			mode = GL_TRIANGLE_STRIP;
 			int widht = tilewidth / 2;
 			int height = tileheight / 2;
-			vbo = glGenBuffers();
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER,
-					BufferHelper.createFloatBuffer(2, 2,
-							new float[] { -widht, height, widht, height, -widht, -height, widht, -height },
-							new float[] { 0, 0, 1, 0, 0, 1, 1, 1 }),
-					GL_STATIC_DRAW);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, VERTEX_SIZE, GL_FLOAT, false, SIZE * Float.BYTES, 0 * Float.BYTES);
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, SIZE * Float.BYTES, 2 * Float.BYTES);
-
+			loadVertices(new float[] { -widht, height, widht, height, -widht, -height, widht, -height },
+					new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
 			databo = glGenBuffers();
+
+			glBindVertexArray(vao);
 			glBindBuffer(GL_ARRAY_BUFFER, databo);
 			glBufferData(GL_ARRAY_BUFFER, buildFloatBuffer(layerData.tiles), GL_STATIC_DRAW);
 			glEnableVertexAttribArray(2);
@@ -142,23 +124,20 @@ public class TileMap implements AutoCloseable {
 			glEnableVertexAttribArray(4);
 			glVertexAttribPointer(4, TILE_DATA_SIZE, GL_FLOAT, false, TILE_SIZE * Float.BYTES, 4 * Float.BYTES);
 			glVertexAttribDivisor(4, 1);
-
 			glBindVertexArray(0);
 		}
 
 		@Override
 		public final void close() {
-			glDeleteVertexArrays(vao);
-			glDeleteBuffers(vbo);
+			super.close();
 			glDeleteBuffers(databo);
-			vao = 0;
-			vbo = 0;
 			databo = 0;
 		}
 
+		@Override
 		public final void render() {
 			glBindVertexArray(vao);
-			glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, tileswidth * tilesheight);
+			glDrawArraysInstanced(mode, 0, size, tileswidth * tilesheight);
 			glBindVertexArray(0);
 		}
 

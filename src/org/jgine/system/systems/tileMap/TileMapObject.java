@@ -1,8 +1,8 @@
 package org.jgine.system.systems.tileMap;
 
 import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
-import org.jgine.render.graphic.TileMap;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
+import org.jgine.render.mesh.TileMap;
 import org.jgine.system.SystemObject;
 
 public class TileMapObject extends TileMap implements SystemObject {

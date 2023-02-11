@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.material;
+package org.jgine.render.material;
 
 import static org.lwjgl.opengl.GL11.GL_BYTE;
 import static org.lwjgl.opengl.GL11.GL_CLAMP;
@@ -92,7 +92,7 @@ import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.math.FastMath;
-import org.jgine.render.graphic.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 

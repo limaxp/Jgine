@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jgine.misc.utils.FileUtils;
-import org.jgine.render.graphic.mesh.Model;
+import org.jgine.render.mesh.Model;
 import org.lwjgl.assimp.AIExportFormatDesc;
 import org.lwjgl.assimp.AIFile;
 import org.lwjgl.assimp.AIFileIO;

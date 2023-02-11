@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jgine.render.graphic.material.Image;
+import org.jgine.render.material.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWImage;
 

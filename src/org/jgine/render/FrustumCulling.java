@@ -3,7 +3,7 @@ package org.jgine.render;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.jgine.system.systems.camera.Camera;
 
 public class FrustumCulling {

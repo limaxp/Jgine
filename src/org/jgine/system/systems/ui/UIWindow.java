@@ -22,8 +22,8 @@ import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.RenderTarget;
 import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
+import org.jgine.render.material.Material;
+import org.jgine.render.material.Texture;
 
 public class UIWindow extends UICompound {
 

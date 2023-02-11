@@ -7,7 +7,7 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
-import org.jgine.render.graphic.text.Text;
+import org.jgine.render.mesh.text.Text;
 
 public class YamlHelper {
 

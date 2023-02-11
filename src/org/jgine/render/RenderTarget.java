@@ -69,7 +69,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Engine;
 import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.render.graphic.material.Texture;
+import org.jgine.render.material.Texture;
 
 public class RenderTarget implements AutoCloseable {
 

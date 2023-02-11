@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.mesh;
+package org.jgine.render.mesh;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINES;
@@ -45,8 +45,15 @@ import org.lwjgl.assimp.AIAABB;
 import org.lwjgl.assimp.AIFace;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIVector3D;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * Represents an indexed Mesh!
+ * 
+ * @author Max
+ *
+ */
 public class Mesh implements AutoCloseable {
 
 	public static final int STATIC = GL_STATIC_DRAW;
@@ -69,21 +76,40 @@ public class Mesh implements AutoCloseable {
 	public static final int TEXT_CORD_SIZE = 2;
 
 	public final int type;
-	public int mode = TRIANGLES;
+	public int mode;
 	protected int vao;
 	protected int vbo;
 	protected int ibo;
 	protected int size;
+	protected int vertexSize;
 
-	public Mesh() {
-		this(STATIC);
+	public Mesh(int dimension, boolean hasNormals) {
+		this(dimension, STATIC, hasNormals);
 	}
 
-	public Mesh(int type) {
+	public Mesh(int dimension, int type, boolean hasNormals) {
 		this.type = type;
+		mode = TRIANGLES;
 		vao = glGenVertexArrays();
 		vbo = glGenBuffers();
 		ibo = glGenBuffers();
+
+		vertexSize = dimension + TEXT_CORD_SIZE;
+		if (hasNormals)
+			vertexSize += dimension;
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, dimension, GL_FLOAT, false, vertexSize * Float.BYTES, 0 * Float.BYTES);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, vertexSize * Float.BYTES, dimension * Float.BYTES);
+		if (hasNormals) {
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, dimension, GL_FLOAT, false, vertexSize * Float.BYTES,
+					(dimension + TEXT_CORD_SIZE) * Float.BYTES);
+		}
+		glBindVertexArray(0);
 	}
 
 	@Override
@@ -110,52 +136,6 @@ public class Mesh implements AutoCloseable {
 		glBindVertexArray(vao);
 		glDrawElements(mode, size, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-	}
-
-	public void loadData(int dimension, float[] vertices, int[] indices, @Nullable float[] textureChords,
-			@Nullable float[] normals) {
-		loadData(dimension, FloatBuffer.wrap(vertices), IntBuffer.wrap(indices),
-				textureChords != null ? FloatBuffer.wrap(textureChords) : null,
-				normals != null ? FloatBuffer.wrap(normals) : null);
-	}
-
-	public void loadData(int dimension, FloatBuffer vertices, IntBuffer indices, @Nullable FloatBuffer textureChords,
-			@Nullable FloatBuffer normals) {
-		if (textureChords == null || textureChords.remaining() == 0)
-			textureChords = generateTextureChords(dimension, vertices);
-
-		if (normals == null || normals.remaining() == 0)
-			if (dimension == 3)
-				normals = calculateNormals3d(vertices, indices);
-			else if (dimension == 2)
-				normals = calculateNormals2d(vertices, indices);
-
-		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
-		int vertexSize = vertices.remaining() / dimension;
-		FloatBuffer combinedVertices = BufferUtils.createFloatBuffer(dataSize * vertexSize);
-		if (dimension == 3) {
-			for (int i = 0; i < vertexSize; i++) {
-				combinedVertices.put(vertices.get());
-				combinedVertices.put(vertices.get());
-				combinedVertices.put(vertices.get());
-				combinedVertices.put(textureChords.get());
-				combinedVertices.put(textureChords.get());
-				combinedVertices.put(normals.get());
-				combinedVertices.put(normals.get());
-				combinedVertices.put(normals.get());
-			}
-		} else if (dimension == 2) {
-			for (int i = 0; i < vertexSize; i++) {
-				combinedVertices.put(vertices.get());
-				combinedVertices.put(vertices.get());
-				combinedVertices.put(textureChords.get());
-				combinedVertices.put(textureChords.get());
-				combinedVertices.put(normals.get());
-				combinedVertices.put(normals.get());
-			}
-		}
-		combinedVertices.flip();
-		loadData(dimension, combinedVertices, indices);
 	}
 
 	public void loadData(AIMesh mesh) {
@@ -211,124 +191,247 @@ public class Mesh implements AutoCloseable {
 		loadData_(vertices, indices, textureChords, normals);
 	}
 
-	private void loadData_(AIVector3D.Buffer vertices, IntBuffer indices, AIVector3D.Buffer textureChords,
+	private final void loadData_(AIVector3D.Buffer vertices, IntBuffer indices, AIVector3D.Buffer textureChords,
 			AIVector3D.Buffer normals) {
-		loadData(3, BufferHelper.createFloatBuffer(3, TEXT_CORD_SIZE, 3, vertices, textureChords, normals), indices);
+		loadVertices(BufferHelper.createFloatBuffer(3, TEXT_CORD_SIZE, 3, vertices, textureChords, normals));
+		loadIndices(indices);
 	}
 
-	public void loadDataNoNormals(int dimension, FloatBuffer vertices) {
-		int dataSize = dimension + TEXT_CORD_SIZE;
-		size = vertices.remaining() / dataSize;
+	public void loadVertices(float[] vertices, int[] indices, @Nullable float[] textureChords,
+			@Nullable float[] normals) {
+		loadVertices(FloatBuffer.wrap(vertices), IntBuffer.wrap(indices),
+				textureChords != null ? FloatBuffer.wrap(textureChords) : null,
+				normals != null ? FloatBuffer.wrap(normals) : null);
+	}
+
+	public void loadVertices(FloatBuffer vertices, IntBuffer indices, @Nullable FloatBuffer textureChords,
+			@Nullable FloatBuffer normals) {
+		int dimension = getDimension();
+		if (textureChords == null || textureChords.remaining() == 0)
+			textureChords = generateTextureChords(dimension, vertices);
+
+		if (normals == null || normals.remaining() == 0)
+			if (dimension == 3)
+				normals = calculateNormals3d(vertices, indices);
+			else if (dimension == 2)
+				normals = calculateNormals2d(vertices, indices);
+
+		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
+		int vertexSize = vertices.remaining() / dimension;
+		FloatBuffer combinedVertices = BufferUtils.createFloatBuffer(dataSize * vertexSize);
+		if (dimension == 3) {
+			for (int i = 0; i < vertexSize; i++) {
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+			}
+		} else if (dimension == 2) {
+			for (int i = 0; i < vertexSize; i++) {
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(vertices.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(textureChords.get());
+				combinedVertices.put(normals.get());
+				combinedVertices.put(normals.get());
+			}
+		}
+		combinedVertices.flip();
+		loadVertices(combinedVertices);
+		loadIndices(indices);
+	}
+
+	public final void loadVertices(FloatBuffer vertices) {
+		size = vertices.remaining() / vertexSize;
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, type);
-
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-		glBindVertexArray(0);
 	}
 
-	public void loadData(int dimension, FloatBuffer vertices) {
-		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
-		size = vertices.remaining() / dataSize;
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices, type);
-
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, dimension, GL_FLOAT, false, dataSize * Float.BYTES, (dimension + 2) * Float.BYTES);
-		glBindVertexArray(0);
+	public final void setVertices(FloatBuffer data) {
+		setVertices(0, data);
 	}
 
-	public void loadDataNoNormals(int dimension, FloatBuffer vertices, IntBuffer indices) {
-		int dataSize = dimension + TEXT_CORD_SIZE;
-		size = indices.remaining();
+	public final void setVertices(int index, FloatBuffer data) {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices, type);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
-
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-		glBindVertexArray(0);
-
+		glBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, data);
 	}
 
-	public void loadData(int dimension, FloatBuffer vertices, IntBuffer indices) {
-		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
-		size = indices.remaining();
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices, type);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
-
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, dimension, GL_FLOAT, false, dataSize * Float.BYTES, 0 * Float.BYTES);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, TEXT_CORD_SIZE, GL_FLOAT, false, dataSize * Float.BYTES, dimension * Float.BYTES);
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, dimension, GL_FLOAT, false, dataSize * Float.BYTES, (dimension + 2) * Float.BYTES);
-		glBindVertexArray(0);
+	public final FloatBuffer getVertices(FloatBuffer target) {
+		return getVertices(0, target);
 	}
 
-	public final void setVertices(int dimension, FloatBuffer data) {
-		setVertices(dimension, 0, data);
-	}
-
-	public final void setVertices(int dimension, int index, FloatBuffer data) {
-		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
-		size = data.remaining() / dataSize;
+	public final FloatBuffer getVertices(int index, FloatBuffer target) {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferSubData(GL_ARRAY_BUFFER, index * dataSize * Float.BYTES, data);
-	}
-
-	public final FloatBuffer getVertices(int dimension, FloatBuffer target) {
-		return getVertices(dimension, 0, target);
-	}
-
-	public final FloatBuffer getVertices(int dimension, int index, FloatBuffer target) {
-		int dataSize = dimension + TEXT_CORD_SIZE + dimension;
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glGetBufferSubData(GL_ARRAY_BUFFER, index * dataSize * Float.BYTES, target);
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
 		return target;
 	}
 
-	public final void setIndices(int dimension, IntBuffer data) {
-		setIndices(dimension, 0, data);
+	public final void setVertex(int index, VertexData data) {
+		setVertex(index, data.x, data.y, data.z, data.textureChordX, data.textureChordY, data.normalX, data.normalY,
+				data.normalZ);
+		int dimension = getDimension();
+		if (dimension == 2) {
+			if (hasNormals())
+				setVertex(index, data.x, data.y, data.textureChordX, data.textureChordY, data.normalX, data.normalY);
+			else
+				setVertex(index, data.x, data.y, data.textureChordX, data.textureChordY);
+		} else if (dimension == 3) {
+			if (hasNormals())
+				setVertex(index, data.x, data.y, data.z, data.textureChordX, data.textureChordY, data.normalX,
+						data.normalY, data.normalZ);
+			else
+				setVertex(index, data.x, data.y, data.z, data.textureChordX, data.textureChordY);
+		}
 	}
 
-	public final void setIndices(int dimension, int index, IntBuffer data) {
-		size = data.remaining() / dimension;
+	public final void setVertex(int index, float x, float y, float textureChordX, float textureChordY) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer target = stack.mallocFloat(vertexSize);
+			target.put(x);
+			target.put(y);
+			target.put(textureChordX);
+			target.put(textureChordY);
+			target.flip();
+			glBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
+		}
+	}
+
+	public final void setVertex(int index, float x, float y, float textureChordX, float textureChordY, float normalX,
+			float normalY) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer target = stack.mallocFloat(vertexSize);
+			target.put(x);
+			target.put(y);
+			target.put(textureChordX);
+			target.put(textureChordY);
+			target.put(normalX);
+			target.put(normalY);
+			target.flip();
+			glBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
+		}
+	}
+
+	public final void setVertex(int index, float x, float y, float z, float textureChordX, float textureChordY,
+			float normalX, float normalY, float normalZ) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer target = stack.mallocFloat(vertexSize);
+			target.put(x);
+			target.put(y);
+			target.put(z);
+			target.put(textureChordX);
+			target.put(textureChordY);
+			target.put(normalX);
+			target.put(normalY);
+			target.put(normalZ);
+			target.flip();
+			glBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
+		}
+	}
+
+	public final void setVertex(int index, float x, float y, float z, float textureChordX, float textureChordY) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer target = stack.mallocFloat(vertexSize);
+			target.put(x);
+			target.put(y);
+			target.put(z);
+			target.put(textureChordX);
+			target.put(textureChordY);
+			target.flip();
+			glBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
+		}
+	}
+
+	public final VertexData getVertex(int index) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer target = stack.mallocFloat(vertexSize);
+			glGetBufferSubData(GL_ARRAY_BUFFER, index * vertexSize * Float.BYTES, target);
+			VertexData data = new VertexData();
+			int dimension = getDimension();
+			if (dimension == 2) {
+				data.x = target.get();
+				data.y = target.get();
+				data.textureChordX = target.get();
+				data.textureChordY = target.get();
+				if (hasNormals()) {
+					data.normalX = target.get();
+					data.normalY = target.get();
+				}
+			} else if (dimension == 3) {
+				data.x = target.get();
+				data.y = target.get();
+				data.z = target.get();
+				data.textureChordX = target.get();
+				data.textureChordY = target.get();
+				if (hasNormals()) {
+					data.normalX = target.get();
+					data.normalY = target.get();
+					data.normalZ = target.get();
+				}
+			}
+			return data;
+		}
+	}
+
+	public final void loadIndices(IntBuffer indices) {
+		size = indices.remaining();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index * dimension * Integer.BYTES, data);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, type);
 	}
 
-	public final IntBuffer getIndices(int dimension, IntBuffer target) {
-		return getIndices(dimension, 0, target);
+	public final void setIndices(IntBuffer data) {
+		setIndices(0, data);
 	}
 
-	public final IntBuffer getIndices(int dimension, int index, IntBuffer target) {
+	public final void setIndices(int index, IntBuffer data) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, index * Integer.BYTES, data);
+	}
+
+	public final IntBuffer getIndices(IntBuffer target) {
+		return getIndices(0, target);
+	}
+
+	public final IntBuffer getIndices(int index, IntBuffer target) {
 		glBindBuffer(GL_ARRAY_BUFFER, ibo);
-		glGetBufferSubData(GL_ARRAY_BUFFER, index * dimension * Integer.BYTES, target);
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * Integer.BYTES, target);
 		return target;
+	}
+
+	public final void setIndex(int data) {
+		setIndex(0, data);
+	}
+
+	public final void setIndex(int index, int data) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer target = stack.mallocInt(1);
+			target.put(data);
+			glBufferSubData(GL_ARRAY_BUFFER, index * Integer.BYTES, target);
+		}
+	}
+
+	public final int getIndex(int index) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer target = stack.mallocInt(1);
+			glGetBufferSubData(GL_ARRAY_BUFFER, index * Integer.BYTES, target);
+			return target.get();
+		}
+	}
+
+	public final int getDimension() {
+		return (vertexSize - TEXT_CORD_SIZE) % 3 == 0 ? 3 : 2;
+	}
+
+	public final boolean hasNormals() {
+		return vertexSize - TEXT_CORD_SIZE - getDimension() != 0;
 	}
 
 	public static FloatBuffer calculateNormals2d(FloatBuffer vertices, IntBuffer indices) {
@@ -453,5 +556,17 @@ public class Mesh implements AutoCloseable {
 		}
 		textureCords.flip();
 		return textureCords;
+	}
+
+	public static class VertexData {
+
+		public float x;
+		public float y;
+		public float z;
+		public float textureChordX;
+		public float textureChordY;
+		public float normalX;
+		public float normalY;
+		public float normalZ;
 	}
 }

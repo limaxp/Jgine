@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.material;
+package org.jgine.render.material;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -12,7 +12,7 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.misc.utils.logger.Logger;
-import org.jgine.render.graphic.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
 import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
 import org.lwjgl.assimp.AIColor4D;

@@ -1,9 +1,9 @@
-package org.jgine.render.graphic.mesh;
+package org.jgine.render.mesh;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
 import org.lwjgl.PointerBuffer;
@@ -40,7 +40,7 @@ public class Model implements SystemObject, AutoCloseable {
 			meshes[i].render();
 		}
 	}
-	
+
 	public Mesh[] setMeshes(Mesh mesh, Material material) {
 		return setMeshes(new Mesh[] { mesh }, new Material[] { material });
 	}
@@ -75,18 +75,18 @@ public class Model implements SystemObject, AutoCloseable {
 		for (int i = 0; i < meshCount; ++i) {
 			AIMesh aiMesh = AIMesh.create(meshesBuffer.get(i));
 			@SuppressWarnings("resource")
-			Mesh mesh = new Mesh();
+			Mesh mesh = new Mesh(3, true);
 			mesh.loadData(aiMesh);
 			meshes[i] = mesh;
 			this.materials[i] = materials.get(aiMesh.mMaterialIndex());
 		}
 		return old;
 	}
-	
+
 	public Mesh[] getMeshes() {
 		return meshes;
 	}
-	
+
 	public Material[] getMaterials() {
 		return materials;
 	}

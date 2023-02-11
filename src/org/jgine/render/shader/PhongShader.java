@@ -8,9 +8,9 @@ import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
-import org.jgine.render.graphic.material.Material;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
+import org.jgine.render.material.Material;
 import org.jgine.system.systems.camera.CameraSystem;
 
 public class PhongShader extends TextureShader {

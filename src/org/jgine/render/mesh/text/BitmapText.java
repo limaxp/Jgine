@@ -1,7 +1,7 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.MeshGenerator;
+import org.jgine.render.material.Material;
+import org.jgine.render.mesh.MeshGenerator;
 
 public class BitmapText extends Text {
 

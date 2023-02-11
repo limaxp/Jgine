@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.mesh;
+package org.jgine.render.mesh;
 
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointKernAdvance;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
@@ -10,11 +10,11 @@ import java.nio.IntBuffer;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.options.Options;
-import org.jgine.render.graphic.text.BitmapFont;
-import org.jgine.render.graphic.text.Text;
-import org.jgine.render.graphic.text.TrueTypeFont;
-import org.jgine.render.graphic.text.TrueTypeFontGenerated;
-import org.jgine.render.graphic.text.TrueTypeText;
+import org.jgine.render.mesh.text.BitmapFont;
+import org.jgine.render.mesh.text.Text;
+import org.jgine.render.mesh.text.TrueTypeFont;
+import org.jgine.render.mesh.text.TrueTypeFontGenerated;
+import org.jgine.render.mesh.text.TrueTypeText;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;
@@ -23,16 +23,16 @@ import org.lwjgl.system.MemoryStack;
 public class MeshGenerator {
 
 	public static BaseMesh quad(float size) {
-		BaseMesh mesh = new BaseMesh();
-		mesh.loadData(2, new float[] { -size, size, size, size, -size, -size, size, -size },
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(new float[] { -size, size, size, size, -size, -size, size, -size },
 				new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
 		mesh.mode = Mesh.TRIANGLE_STRIP;
 		return mesh;
 	}
 
 	public static Mesh cube(float size) {
-		Mesh mesh = new Mesh();
-		mesh.loadData(3,
+		Mesh mesh = new Mesh(3, true);
+		mesh.loadVertices(
 				new float[] { size, size, size, -size, size, size, size, size, -size, -size, size, -size, size, -size,
 						size, -size, -size, size, size, -size, -size, -size, -size, -size },
 				new int[] { 2, 1, 0, 3, 1, 2, 0, 1, 4, 5, 4, 1, 6, 3, 2, 6, 7, 3, 1, 3, 5, 5, 3, 7, 0, 4, 6, 0, 6, 2, 4,
@@ -54,8 +54,8 @@ public class MeshGenerator {
 		addVertice(vertices, -radiusHalf, radius); // left top
 		vertices.flip();
 
-		BaseMesh mesh = new BaseMesh();
-		mesh.loadDataNoNormals(2, vertices);
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(vertices);
 		mesh.mode = Mesh.TRIANGLE_FAN;
 		return mesh;
 	}
@@ -105,8 +105,8 @@ public class MeshGenerator {
 				x0 += tileWidth * scale * factorX;
 			}
 			vertices.flip();
-			BaseMesh mesh = new BaseMesh();
-			mesh.loadDataNoNormals(2, vertices);
+			BaseMesh mesh = new BaseMesh(2, false);
+			mesh.loadVertices(vertices);
 			mesh.mode = Mesh.TRIANGLE_STRIP;
 			return mesh;
 		}
@@ -162,8 +162,8 @@ public class MeshGenerator {
 				addQuad(vertices, x0, x1, y0, y1, q.s0(), q.s1(), q.t0(), q.t1());
 			}
 			vertices.flip();
-			BaseMesh mesh = new BaseMesh();
-			mesh.loadDataNoNormals(2, vertices);
+			BaseMesh mesh = new BaseMesh(2, false);
+			mesh.loadVertices(vertices);
 			return mesh;
 		}
 	}

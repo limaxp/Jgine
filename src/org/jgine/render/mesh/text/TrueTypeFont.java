@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointHMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointKernAdvance;

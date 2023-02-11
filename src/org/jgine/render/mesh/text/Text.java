@@ -1,9 +1,9 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
 import java.nio.IntBuffer;
 
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.mesh.BaseMesh;
+import org.jgine.render.material.Material;
+import org.jgine.render.mesh.BaseMesh;
 
 public abstract class Text implements AutoCloseable {
 

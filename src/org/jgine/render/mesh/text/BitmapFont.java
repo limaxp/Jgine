@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.text;
+package org.jgine.render.mesh.text;
 
 import static org.lwjgl.system.MemoryStack.stackPush;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.render.graphic.material.Texture;
+import org.jgine.render.material.Texture;
 import org.lwjgl.system.MemoryStack;
 
 public class BitmapFont implements Font {

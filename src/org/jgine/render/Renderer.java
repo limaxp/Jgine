@@ -12,15 +12,14 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget.Attachment;
-import org.jgine.render.graphic.TileMap;
-import org.jgine.render.graphic.material.Material;
-import org.jgine.render.graphic.material.Texture;
-import org.jgine.render.graphic.mesh.BaseMesh;
-import org.jgine.render.graphic.mesh.Mesh;
-import org.jgine.render.graphic.mesh.MeshGenerator;
-import org.jgine.render.graphic.mesh.Model;
-import org.jgine.render.graphic.particle.BillboardParticle;
 import org.jgine.render.light.PointLight;
+import org.jgine.render.material.Material;
+import org.jgine.render.material.Texture;
+import org.jgine.render.mesh.BaseMesh;
+import org.jgine.render.mesh.Mesh;
+import org.jgine.render.mesh.MeshGenerator;
+import org.jgine.render.mesh.Model;
+import org.jgine.render.mesh.TileMap;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
 import org.jgine.render.shader.CircleShader;
@@ -84,8 +83,6 @@ public class Renderer {
 	public static void terminate() {
 		QUAD_MESH.close();
 		CUBE_MESH.close();
-		BillboardParticle.free();
-
 		OpenGL.terminate();
 	}
 
@@ -134,12 +131,6 @@ public class Renderer {
 		mesh.render();
 	}
 
-	public static void render(Matrix transform, BillboardParticle particle, Material material) {
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		material.bind(shader);
-		particle.render();
-	}
-
 	public static void render(Matrix transform, TileMap tileMap, Material material) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
@@ -174,8 +165,8 @@ public class Renderer {
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(2, new float[] { x1, y1, x2, y2 }, null);
+		try (BaseMesh lineMesh = new BaseMesh(2, false)) {
+			lineMesh.loadVertices(new float[] { x1, y1, x2, y2 }, null);
 			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
@@ -189,8 +180,8 @@ public class Renderer {
 			float z2) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, new float[] { x1, y1, z1, x2, y2, z2 }, null);
+		try (BaseMesh lineMesh = new BaseMesh(3, false)) {
+			lineMesh.loadVertices(new float[] { x1, y1, z1, x2, y2, z2 }, null);
 			lineMesh.mode = Mesh.LINES;
 			lineMesh.render();
 		}
@@ -199,8 +190,8 @@ public class Renderer {
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(3, points, null);
+		try (BaseMesh lineMesh = new BaseMesh(3, false)) {
+			lineMesh.loadVertices(points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else
@@ -212,8 +203,8 @@ public class Renderer {
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
-		try (BaseMesh lineMesh = new BaseMesh()) {
-			lineMesh.loadData(2, points, null);
+		try (BaseMesh lineMesh = new BaseMesh(2, false)) {
+			lineMesh.loadVertices(points, null);
 			if (loop)
 				lineMesh.mode = Mesh.LINE_LOOP;
 			else

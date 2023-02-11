@@ -3,7 +3,7 @@ package org.jgine.system.systems.graphic;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 import org.jgine.system.EngineSystem;
 
 public class Graphic2DSystem extends EngineSystem {

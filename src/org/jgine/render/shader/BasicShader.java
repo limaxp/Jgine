@@ -1,7 +1,7 @@
 package org.jgine.render.shader;
 
 import org.jgine.misc.math.Matrix;
-import org.jgine.render.graphic.material.Material;
+import org.jgine.render.material.Material;
 
 public class BasicShader extends Shader {
 

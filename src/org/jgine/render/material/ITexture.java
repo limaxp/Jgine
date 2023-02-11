@@ -1,4 +1,4 @@
-package org.jgine.render.graphic.material;
+package org.jgine.render.material;
 
 import org.jgine.render.RenderTarget.Attachment;
 
