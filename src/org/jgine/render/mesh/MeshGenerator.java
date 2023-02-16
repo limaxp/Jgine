@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.jgine.core.window.DisplayManager;
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.mesh.text.BitmapFont;
@@ -52,6 +53,22 @@ public class MeshGenerator {
 		addVertice(vertices, -radiusHalf, -radius); // left bottom
 		addVertice(vertices, -radius, 0.0f); // left
 		addVertice(vertices, -radiusHalf, radius); // left top
+		vertices.flip();
+
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(vertices);
+		mesh.mode = Mesh.TRIANGLE_FAN;
+		return mesh;
+	}
+
+	public static BaseMesh circle(float radius, int steps) {
+		FloatBuffer vertices = BufferUtils.createFloatBuffer((steps + 3) * 4);
+		addVertice(vertices, 0.0f, 0.0f);
+		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
+		float angle = (float) FastMath.PI2 / steps;
+		for (float phi = angle; phi < FastMath.PI2; phi += angle)
+			addVertice(vertices, radius * FastMath.sin(phi), radius * FastMath.cos(phi));
+		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
 		vertices.flip();
 
 		BaseMesh mesh = new BaseMesh(2, false);

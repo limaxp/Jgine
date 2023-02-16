@@ -8,7 +8,6 @@ import org.jgine.render.mesh.BaseMesh;
 import org.jgine.render.mesh.Mesh;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
-import org.jgine.render.shader.Shader;
 
 public class UIRenderer extends Renderer {
 
@@ -47,15 +46,6 @@ public class UIRenderer extends Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
 		material.bind(shader);
 		CUBE_MESH.render();
-	}
-
-	public static void renderCircle(Matrix transform, Material material) {
-		Shader tmp = shader;
-		setShader(CIRCLE_SHADER);
-		shader.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		material.bind(shader);
-		QUAD_MESH.render();
-		setShader(tmp);
 	}
 
 	public static void renderLine(Matrix transform, Material material, Vector2f start, Vector2f end) {

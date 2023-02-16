@@ -22,7 +22,6 @@ import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
-import org.jgine.render.shader.CircleShader;
 import org.jgine.render.shader.ComputeShader;
 import org.jgine.render.shader.Phong2dShader;
 import org.jgine.render.shader.PhongShader;
@@ -40,7 +39,6 @@ public class Renderer {
 	public static final Phong2dShader PHONG_2D_SHADER;
 	public static final BillboardParticleShader PARTICLE_SHADER;
 	public static final TileMapShader TILE_MAP_SHADER;
-	public static final CircleShader CIRCLE_SHADER;
 	public static final PostProcessShader POST_PROCESS_SHADER;
 	public static final ComputeShader BASIC_COMPUTE_SHADER;
 
@@ -62,7 +60,6 @@ public class Renderer {
 		PHONG_2D_SHADER = new Phong2dShader("Phong2d", pointLights);
 		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
 		TILE_MAP_SHADER = new TileMapShader("TileMap");
-		CIRCLE_SHADER = new CircleShader("Circle");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 		BASIC_COMPUTE_SHADER = new ComputeShader("BasicCompute");
 
@@ -147,15 +144,6 @@ public class Renderer {
 		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
 		material.bind(shader);
 		CUBE_MESH.render();
-	}
-
-	public static void renderCircle(Matrix transform, Material material) {
-		Shader tmp = shader;
-		setShader(CIRCLE_SHADER);
-		shader.setTransform(transform, new Matrix(transform).mult(camera.getMatrix()));
-		material.bind(shader);
-		QUAD_MESH.render();
-		setShader(tmp);
 	}
 
 	public static void renderLine(Matrix transform, Material material, Vector2f start, Vector2f end) {

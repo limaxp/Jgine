@@ -12,6 +12,7 @@ import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
@@ -102,7 +103,7 @@ public class BoundingCircle extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.renderCircle(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
-				new Material());
+		Renderer2D.render(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
+				MeshGenerator.circle(1, 32), new Material());
 	}
 }
