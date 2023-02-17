@@ -3,6 +3,7 @@ package org.jgine.misc.math;
 import java.nio.FloatBuffer;
 import java.text.NumberFormat;
 
+import org.jgine.misc.math.rotation.AxisAngle4f;
 import org.jgine.misc.math.rotation.Quaternionf;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.math.vector.Vector4f;
@@ -367,6 +368,18 @@ public class Matrix implements Cloneable {
 		return new Vector3f(x, y, z);
 	}
 
+	public float getScaleX() {
+		return FastMath.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
+	}
+
+	public float getScaleY() {
+		return FastMath.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
+	}
+
+	public float getScaleZ() {
+		return FastMath.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
+	}
+
 	/**
 	 * Pre-multiply scaling to this matrix by scaling the base axes by the given xyz
 	 * factor.
@@ -401,9 +414,8 @@ public class Matrix implements Cloneable {
 		return this;
 	}
 
-	public final Vector3f getRotation() {
-		// TODO implements this
-		return new Vector3f(m03, m13, m23);
+	public AxisAngle4f getRotation(AxisAngle4f dest) {
+		return dest.set(this);
 	}
 
 	public Matrix rotation(float angle, float x, float y, float z) {
