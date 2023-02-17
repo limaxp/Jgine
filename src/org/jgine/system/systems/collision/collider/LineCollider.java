@@ -10,7 +10,6 @@ import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.Color;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
@@ -101,11 +100,7 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		// TODO
-		Vector3f right = new Vector3f(-normal.y, normal.x, 0);
-//		System.out.println(new Vector3f(normal) + "     " + right);
-		Renderer2D.renderLine(
-				Transform.calculateMatrix(new Matrix(), pos, new Vector3f(normal), new Vector3f(Float.MAX_VALUE)),
-				new Material(Color.BLACK), 0, 0, 1, 1);
+		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(Float.MAX_VALUE)),
+				new Material(), normal.y, -normal.x, -normal.y, normal.x);
 	}
 }

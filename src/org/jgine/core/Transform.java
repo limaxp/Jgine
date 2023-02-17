@@ -61,6 +61,19 @@ public class Transform implements Cloneable {
 			child.transform.calculateMatrix();
 	}
 
+	public static Matrix calculateMatrix2d(Matrix matrix, Vector2f position, Vector2f rotation, Vector2f scale) {
+		return calculateMatrix2d(matrix, position.x, position.y, rotation.x, rotation.y, scale.x, scale.y);
+	}
+
+	public static Matrix calculateMatrix2d(Matrix matrix, float posX, float posY, float rotX, float rotY, float scaleX,
+			float scaleY) {
+		matrix.clear();
+		matrix.setPosition(posX, posY, 0.0f);
+		matrix.rotationXY(rotX, rotY);
+		matrix.scaleLocal(scaleX, scaleY, 0.0f); // return new Matrix().scaling(scale).mult(matrix);
+		return matrix;
+	}
+
 	public static Matrix calculateMatrix(Matrix matrix, Vector3f position, Vector3f rotation, Vector3f scale) {
 		return calculateMatrix(matrix, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale.x,
 				scale.y, scale.z);
@@ -72,6 +85,17 @@ public class Transform implements Cloneable {
 		matrix.setPosition(posX, posY, posZ);
 		matrix.rotationXYZ(rotX, rotY, rotZ);
 		matrix.scaleLocal(scaleX, scaleY, scaleZ); // return new Matrix().scaling(scale).mult(matrix);
+		return matrix;
+	}
+
+	public static Matrix calculateMatrix2d(Matrix matrix, Vector2f position, Vector2f scale) {
+		return calculateMatrix2d(matrix, position.x, position.y, scale.x, scale.y);
+	}
+
+	public static Matrix calculateMatrix2d(Matrix matrix, float posX, float posY, float scaleX, float scaleY) {
+		matrix.clear();
+		matrix.setPosition(posX, posY, 0.0f);
+		matrix.scaleLocal(scaleX, scaleY, 0.0f);
 		return matrix;
 	}
 

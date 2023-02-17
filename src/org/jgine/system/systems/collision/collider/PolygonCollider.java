@@ -115,7 +115,7 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(1, 1, 0)),
-				new Material(), true, points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(1, 1)), new Material(), true,
+				points);
 	}
 }

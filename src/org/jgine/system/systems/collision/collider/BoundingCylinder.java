@@ -101,7 +101,7 @@ public class BoundingCylinder extends Collider {
 	@Override
 	public void render(Vector3f pos) {
 		Renderer.enableWireframeMode();
-		Renderer.render(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r, h, r)),
+		Renderer.render(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(r, h, r)),
 				ResourceManager.getModel("ball"));
 		Renderer.disableWireframeMode();
 	}

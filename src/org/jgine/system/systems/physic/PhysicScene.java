@@ -64,12 +64,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	public void update(float dt) {
 		int subSteps = 4;
 		subDt = dt / subSteps;
-
-		for (int i = 0; i < subSteps; i++) {
-//			TaskHelper.execute(size, this::applyConstraint);
+		for (int i = 0; i < subSteps; i++)
 			TaskHelper.execute(size, this::solveCollisions);
-			TaskHelper.execute(size, this::updatePositions);
-		}
+		TaskHelper.execute(size, this::updatePositions);
 	}
 
 	private void updatePositions(int index, int size) {
@@ -80,23 +77,6 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 				Entity entity = entities[index];
 				UpdateManager.getPhysicPosition().accept(entity,
 						entity.transform.setPositionIntern(object.x, object.y, object.z));
-			}
-		}
-	}
-
-	private void applyConstraint(int index, int size) {
-		Vector3f pos = new Vector3f(0, 0, 0);
-		float radius = 600.0f;
-		size = index + size;
-		for (; index < size; index++) {
-			PhysicObject object = objects[index];
-			Vector3f toObj = Vector3f.sub(object.getPosition(), pos);
-			float dist = Vector3f.length(toObj);
-			if (dist > radius) {
-				Vector3f n = Vector3f.div(toObj, dist);
-				object.x = pos.x + n.x * radius;
-				object.y = pos.y + n.y * radius;
-				object.z = pos.z + n.z * radius;
 			}
 		}
 	}

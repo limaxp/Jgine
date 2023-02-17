@@ -481,6 +481,24 @@ public class Matrix implements Cloneable {
 		return this;
 	}
 
+	public Matrix rotationXY(float angleX, float angleY) {
+		float sinX = FastMath.sin(angleX);
+		float cosX = FastMath.cosFromSin(sinX, angleX);
+		float sinY = FastMath.sin(angleY);
+		float cosY = FastMath.cosFromSin(sinY, angleY);
+		float nm01 = -sinX * -sinY, nm02 = cosX * -sinY;
+		m20 = sinY;
+		m21 = -sinX * cosY;
+		m22 = cosX * cosY;
+		m00 = cosY;
+		m01 = nm01 + cosX;
+		m02 = nm02 + sinX;
+		m10 = cosY;
+		m11 = nm01 + cosX;
+		m12 = nm02 + sinX;
+		return this;
+	}
+
 	// TODO rotateXYZ line 5225
 
 	public Matrix rotation(Quaternionf quat) {

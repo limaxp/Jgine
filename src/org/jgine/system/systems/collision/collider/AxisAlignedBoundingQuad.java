@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
@@ -15,8 +16,8 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionData;
 
 /**
  * Represents an AxisAlignedBoundingBox for 3D with float precision. An
@@ -111,7 +112,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(w, h, 0)),
-				new Material(), true, new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(w, h)), new Material(), true,
+				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
 	}
 }

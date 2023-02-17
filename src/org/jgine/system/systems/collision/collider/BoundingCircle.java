@@ -7,17 +7,18 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.misc.math.FastMath;
 import org.jgine.misc.math.Matrix;
+import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
-import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionData;
 
 /**
  * Represents an BoundingSphere for 3D with float precision. An BoundingSphere
@@ -103,7 +104,15 @@ public class BoundingCircle extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.render(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(r)),
-				MeshGenerator.circle(1, 32), new Material());
+		float points[] = new float[32 * 2];
+		float angle = (float) FastMath.PI2 / 32;
+		int i = 0;
+		for (float phi = 0; phi < FastMath.PI2; phi += angle) {
+			points[i] = FastMath.sin(phi);
+			points[i + 1] = FastMath.cos(phi);
+			i += 2;
+		}
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(r, r)), new Material(), true,
+				points);
 	}
 }

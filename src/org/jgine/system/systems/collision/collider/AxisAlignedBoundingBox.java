@@ -116,8 +116,7 @@ public class AxisAlignedBoundingBox extends Collider {
 	@Override
 	public void render(Vector3f pos) {
 		Renderer.enableWireframeMode();
-		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), pos, Vector3f.NULL, new Vector3f(w, h, d)),
-				new Material());
+		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(w, h, d)), new Material());
 		Renderer.disableWireframeMode();
 	}
 }
