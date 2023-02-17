@@ -43,7 +43,7 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 		return object;
 	}
 
-	private T2 removeObject(int index) {
+	protected T2 removeObject(int index) {
 		T2 element = objects[index];
 		if (index != --size)
 			objects[index] = objects[size];
@@ -75,14 +75,14 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 		return -1;
 	}
 
-	protected final void ensureCapacity(int minCapacity) {
+	protected void ensureCapacity(int minCapacity) {
 		int length = objects.length;
 		if (minCapacity > length)
 			resize(minCapacity + GROW_SIZE);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final void resize(int size) {
+	protected void resize(int size) {
 		T2[] newArray = (T2[]) Array.newInstance(clazz, size);
 		System.arraycopy(objects, 0, newArray, 0, this.size);
 		objects = newArray;
