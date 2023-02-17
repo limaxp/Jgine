@@ -38,11 +38,11 @@ public class UpdateManager {
 		return transformScale;
 	}
 
-	public static void addPhysicPosiiton(BiConsumer<Entity, Vector3f> func) {
+	public static void addPhysicPosition(BiConsumer<Entity, Vector3f> func) {
 		physicPosition = addUpdate(physicPosition, func);
 	}
 
-	public static BiConsumer<Entity, Vector3f> getPhysicPosiiton() {
+	public static BiConsumer<Entity, Vector3f> getPhysicPosition() {
 		return physicPosition;
 	}
 
