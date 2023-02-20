@@ -1,76 +1,218 @@
 package org.jgine.misc.math.spacePartitioning;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class BinarySpaceTree<T> {
+import org.jgine.core.Transform;
+import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
-	public static class Node<T> {
+public class BinarySpaceTree implements SpacePartitioning {
 
-		private static final int depth_max = 32;
-		private static final int max_objects = 32;
-		
-//		private final int depth;
-//		private final int min, max, center;
-		private List<T> objects;
-		private Node<T> childA;
-		private Node<T> childB;
+	private static final int MAX_DEPTH = 32;
+	private static final int MAX_OBJECTS = 32;
+
+	private Node root;
+	private int size;
+
+	public BinarySpaceTree() {
 	}
 
-	public static class BinarySpaceTreePoint<T> implements Comparable<BinarySpaceTreePoint<T>> {
+	public BinarySpaceTree(double yMin, double yMax) {
+		this.root = new Node(0, yMin, yMax);
+	}
 
-		private double x;
-		private double y;
-		private T opt_value;
+	@Override
+	public void add(double x, double y, Transform object) {
+		root.add(x, y, object);
+		size++;
+	}
 
-		public BinarySpaceTreePoint(double x, double y, T opt_value) {
-			this.x = x;
-			this.y = y;
-			this.opt_value = opt_value;
+	@Override
+	public void remove(double x, double y, Transform object) {
+		root.remove(x, y, object);
+		size--;
+	}
+
+	@Override
+	public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
+		root.move(xOld, yOld, xNew, yNew, object);
+	}
+
+	@Override
+	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+		root.forEach(xMin, yMin, xMax, yMax, func);
+	}
+
+	@Override
+	public Transform get(double x, double y, Transform opt_default) {
+		return root.get(x, y, opt_default);
+	}
+
+	@Override
+	public boolean contains(double x, double y, Transform object) {
+		return root.contains(x, y, object);
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return root.isEmpty();
+	}
+
+	@Override
+	public void clear() {
+		root.clear();
+	}
+
+	@Override
+	public SpacePartitioningType<?> getType() {
+		return SpacePartitioningTypes.BINARY_SPACE_TREE;
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+		this.root = new Node(0, in.readDouble(), in.readDouble());
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
+		out.writeDouble(root.yMin);
+		out.writeDouble(root.yMax);
+	}
+
+	public Node getRoot() {
+		return root;
+	}
+
+	public static class Node {
+
+		public final int depth;
+		public final double yMin;
+		public final double yMax;
+		public final double yCenter;
+		private final List<Transform> objects;
+		private Node childA;
+		private Node childB;
+
+		public Node(int depth, double yMin, double yMax) {
+			this.depth = depth;
+			this.yMin = yMin;
+			this.yMax = yMax;
+			this.yCenter = (yMin + yMax) * 0.5;
+			objects = new UnorderedIdentityArrayList<Transform>();
 		}
 
-		public double getX() {
-			return x;
-		}
-
-		public void setX(double x) {
-			this.x = x;
-		}
-
-		public double getY() {
-			return y;
-		}
-
-		public void setY(double y) {
-			this.y = y;
-		}
-
-		public T getValue() {
-			return opt_value;
-		}
-
-		public void setValue(T opt_value) {
-			this.opt_value = opt_value;
-		}
-
-		@Override
-		public String toString() {
-			return "(" + this.x + ", " + this.y + ")";
-		}
-
-		@Override
-		public int compareTo(BinarySpaceTreePoint<T> point) {
-			if (this.x < point.x) {
-				return -1;
-			} else if (this.x > point.x) {
-				return 1;
-			} else {
-				if (this.y < point.y) {
-					return -1;
-				} else if (this.y > point.y) {
-					return 1;
-				}
-				return 0;
+		public void add(double x, double y, Transform object) {
+			if (objects.size() > MAX_OBJECTS && depth < MAX_DEPTH) {
+				if (!hasChilds())
+					createChilds();
+				getChild(y).add(x, y, object);
+				return;
 			}
+			objects.add(object);
+		}
+
+		public void remove(double x, double y, Transform object) {
+			int index = objects.indexOf(object);
+			if (index != -1) {
+				objects.remove(index);
+				return;
+			}
+			if (hasChilds()) {
+				getChild(y).remove(x, y, object);
+				if (childA.isEmpty() && childB.isEmpty())
+					deleteChilds();
+			}
+		}
+
+		public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
+			int index = objects.indexOf(object);
+			if (index == -1 && hasChilds()) {
+				if (yNew <= yCenter) {
+					if (yOld <= yCenter)
+						childA.move(xOld, yOld, xNew, yNew, object);
+					else {
+						childB.remove(xOld, yOld, object);
+						childA.add(xNew, yNew, object);
+					}
+				} else {
+					if (yOld <= yCenter) {
+						childA.remove(xOld, yOld, object);
+						childB.add(xNew, yNew, object);
+					} else
+						childB.move(xOld, yOld, xNew, yNew, object);
+				}
+			}
+		}
+
+		public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+			for (Transform object : objects)
+				if (object.getX() >= xMin && object.getY() >= yMin && object.getX() < xMax && object.getY() < yMax)
+					func.accept(object);
+
+			if (hasChilds()) {
+				if (yMin <= yCenter)
+					childA.forEach(xMin, yMin, xMax, yMax, func);
+				if (yMax > yCenter)
+					childB.forEach(xMin, yMin, xMax, yMax, func);
+			}
+		}
+
+		public Transform get(double x, double y, Transform opt_default) {
+			for (Transform object : objects)
+				if (object.getX() == x && object.getY() == y)
+					return object;
+
+			if (hasChilds())
+				return getChild(y).get(x, y, opt_default);
+			return opt_default;
+		}
+
+		public boolean contains(double x, double y, Transform object) {
+			int index = objects.indexOf(object);
+			if (index != -1)
+				return true;
+
+			if (hasChilds())
+				return getChild(y).contains(x, y, object);
+			return false;
+		}
+
+		public boolean isEmpty() {
+			return objects.isEmpty();
+		}
+
+		public void clear() {
+			objects.clear();
+			deleteChilds();
+		}
+
+		protected void createChilds() {
+			childA = new Node(depth + 1, yMin, yCenter);
+			childB = new Node(depth + 1, yCenter, yMax);
+		}
+
+		protected void deleteChilds() {
+			childA = null;
+			childB = null;
+		}
+
+		protected Node getChild(double y) {
+			if (y <= yCenter)
+				return childA;
+			else
+				return childB;
+		}
+
+		protected boolean hasChilds() {
+			return childA != null;
 		}
 	}
 }

@@ -1,38 +1,63 @@
 package org.jgine.misc.math.spacePartitioning;
 
-import java.util.List;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.function.Consumer;
 
-public interface SpacePartitioning<T> {
+import org.jgine.core.Transform;
 
-	public void set(double x, double y, T value);
+public interface SpacePartitioning {
 
-	public default void set(double x, double y, double z, T value) {
-		set(x, y, value);
+	public static final SpacePartitioning NULL = new NullSpacePartitioning();
+
+	public void add(double x, double y, Transform object);
+
+	public default void add(double x, double y, double z, Transform object) {
+		add(x, y, object);
 	}
 
-	public T get(double x, double y, T opt_default);
+	public void remove(double x, double y, Transform object);
 
-	public default T get(double x, double y, double z, T opt_default) {
+	public default void remove(double x, double y, double z, Transform object) {
+		remove(x, y, object);
+	}
+
+	public void move(double xOld, double yOld, double xNew, double yNew, Transform object);
+
+	public default void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew,
+			Transform object) {
+		move(xOld, yOld, xNew, yNew, object);
+	}
+
+	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func);
+
+	public default void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+			Consumer<Transform> func) {
+		forEach(xMin, yMin, xMax, yMax, func);
+	}
+
+	public Transform get(double x, double y, Transform opt_default);
+
+	public default Transform get(double x, double y, double z, Transform opt_default) {
 		return get(x, y, opt_default);
 	}
 
-	public T remove(double x, double y);
+	public boolean contains(double x, double y, Transform object);
 
-	public default T remove(double x, double y, double z) {
-		return remove(x, y);
-	}
-
-	public boolean contains(double x, double y);
-
-	public default boolean contains(double x, double y, double z) {
-		return contains(x, y);
+	public default boolean contains(double x, double y, double z, Transform object) {
+		return contains(x, y, object);
 	}
 
 	public boolean isEmpty();
 
-	public int getCount();
+	public int size();
 
 	public void clear();
 
-	public List<T> getValues();
+	public SpacePartitioningType<?> getType();
+
+	public void load(DataInput in) throws IOException;
+
+	public void save(DataOutput out) throws IOException;
 }

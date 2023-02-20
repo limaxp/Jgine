@@ -8,6 +8,7 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.Matrix;
 import org.jgine.misc.math.rotation.AxisAngle4f;
+import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 
@@ -29,6 +30,7 @@ public class Transform implements Cloneable {
 	protected float scaleY;
 	protected float scaleZ;
 	protected Matrix matrix;
+	protected SpacePartitioning spacePartitioning;
 
 	public Transform(Entity entity) {
 		this(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
@@ -52,10 +54,11 @@ public class Transform implements Cloneable {
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
 		calculateMatrix();
+		spacePartitioning = SpacePartitioning.NULL;
 	}
 
 	public final void calculateMatrix() {
-		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
+		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ); // TODO 2d rotation bug!
 		if (entity.hasParent())
 			matrix.mult(entity.getParent().transform.getMatrix());
 		for (Entity child : entity.getChilds())
@@ -83,11 +86,16 @@ public class Transform implements Cloneable {
 	}
 
 	public final Vector3f setPositionIntern(float x, float y, float z) {
+		float oldX = getX();
+		float oldY = getY();
+		float oldZ = getZ();
 		posX = x;
 		posY = y;
 		posZ = z;
 		calculateMatrix();
-		return matrix.getPosition();
+		Vector3f pos = matrix.getPosition();
+		spacePartitioning.move(oldX, oldY, oldZ, pos.x, pos.y, pos.z, this);
+		return pos;
 	}
 
 	public final Vector3f getPosition() {

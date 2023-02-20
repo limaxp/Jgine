@@ -18,6 +18,8 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
+import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
+import org.jgine.misc.math.spacePartitioning.SpacePartitioningTypes;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.system.SystemScene;
 
@@ -49,6 +51,10 @@ public class SceneLoader {
 		String name = in.readUTF();
 		Scene scene = Engine.getInstance().createScene(name);
 
+		SpacePartitioning spacePartitioning = SpacePartitioningTypes.get(in.readInt()).get();
+		spacePartitioning.load(in);
+		scene.setSpacePartitioning(spacePartitioning);
+
 		int systemSize = in.readInt();
 		for (int i = 0; i < systemSize; i++)
 			scene.addSystem(in.readInt());
@@ -69,7 +75,6 @@ public class SceneLoader {
 			renderOrder.load(in);
 			scene.setRenderOrder(renderOrder);
 		}
-		// TODO spacePartitioning
 		return scene;
 	}
 
@@ -83,6 +88,10 @@ public class SceneLoader {
 	 */
 	public static void write(Scene scene, DataOutput out) throws IOException {
 		out.writeUTF(scene.name);
+
+		SpacePartitioning spacePartitioning = scene.getSpacePartitioning();
+		out.writeInt(spacePartitioning.getType().getId());
+		spacePartitioning.save(out);
 
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
 		out.writeInt(systems.size());
@@ -106,6 +115,5 @@ public class SceneLoader {
 			renderOrder.save(out);
 		} else
 			out.writeBoolean(false);
-		// TODO spacePartitioning
 	}
 }

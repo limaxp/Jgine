@@ -9,12 +9,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.misc.math.spacePartitioning.SceneSpacePartitioning;
 import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
@@ -35,7 +37,7 @@ public class Scene {
 	private final List<Entity> topEntities;
 	private UpdateOrder updateOrder;
 	private UpdateOrder renderOrder;
-	private SpacePartitioning<Entity> spacePartitioning;
+	private SpacePartitioning spacePartitioning;
 	private boolean paused;
 
 	Scene(Engine engine, String name) {
@@ -47,6 +49,7 @@ public class Scene {
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
+		spacePartitioning = new SceneSpacePartitioning();
 		paused = false;
 	}
 
@@ -216,12 +219,19 @@ public class Scene {
 	}
 
 	public final void addEntity(Entity entity) {
-		Scheduler.runTaskSynchron(() -> entities.add(entity));
+		Scheduler.runTaskSynchron(() -> addEntityIntern(entity));
 	}
 
 	public final void removeEntity(Entity entity) {
 		if (entity.isAlive())
 			Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
+	}
+
+	private final void addEntityIntern(Entity entity) {
+		entities.add(entity);
+		entity.transform.spacePartitioning = spacePartitioning;
+		spacePartitioning.add(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
+				entity.transform);
 	}
 
 	private final void removeEntityIntern(Entity entity) {
@@ -247,6 +257,8 @@ public class Scene {
 		}
 		entity.cleanupChilds();
 		entity.transform.cleanupEntity();
+		spacePartitioning.remove(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
+				entity.transform);
 	}
 
 	public final List<Entity> getEntities() {
@@ -265,41 +277,127 @@ public class Scene {
 		topEntities.remove(entity);
 	}
 
+	@Nullable
+	public final Entity getEntity(Vector2f pos) {
+		return getEntity(pos.x, pos.y);
+	}
+
+	@Nullable
+	public final Entity getEntity(float x, float y) {
+		Transform transform = spacePartitioning.get(x, y, null);
+		if (transform != null)
+			return transform.getEntity();
+		return null;
+	}
+
+	@Nullable
+	public final Entity getEntity(Vector3f pos) {
+		return getEntity(pos.x, pos.y, pos.z);
+	}
+
+	@Nullable
+	public final Entity getEntity(float x, float y, float z) {
+		Transform transform = spacePartitioning.get(x, y, z, null);
+		if (transform != null)
+			return transform.getEntity();
+		return null;
+	}
+
+	public final Entity getEntity(Vector2f pos, Entity defaultValue) {
+		return getEntity(pos.x, pos.y, defaultValue);
+	}
+
 	public final Entity getEntity(float x, float y, Entity defaultValue) {
-		return spacePartitioning.get(x, y, 0, defaultValue);
+		return spacePartitioning.get(x, y, defaultValue.transform).getEntity();
+	}
+
+	public final Entity getEntity(Vector3f pos, Entity defaultValue) {
+		return getEntity(pos.x, pos.y, pos.z, defaultValue);
 	}
 
 	public final Entity getEntity(float x, float y, float z, Entity defaultValue) {
-		return spacePartitioning.get(x, y, z, defaultValue);
+		return spacePartitioning.get(x, y, z, defaultValue.transform).getEntity();
+	}
+
+	public final boolean containsEntity(Vector2f pos, Entity entity) {
+		return containsEntity(pos.x, pos.y, entity);
+	}
+
+	public final boolean containsEntity(float x, float y, Entity entity) {
+		return spacePartitioning.contains(x, y, entity.transform);
+	}
+
+	public final boolean containsEntity(Vector3f pos, Entity entity) {
+		return containsEntity(pos.x, pos.y, pos.z, entity);
+	}
+
+	public final boolean containsEntity(float x, float y, float z, Entity entity) {
+		return spacePartitioning.contains(x, y, z, entity.transform);
+	}
+
+	public final void forEntity(Vector2f min, Vector2f max, Consumer<Transform> func) {
+		spacePartitioning.forEach(min.x, min.y, max.x, max.y, func);
+	}
+
+	public final void forEntity(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+		spacePartitioning.forEach(xMin, yMin, xMax, yMax, func);
+	}
+
+	public final void forEntity(Vector3f min, Vector3f max, Consumer<Transform> func) {
+		spacePartitioning.forEach(min.x, min.y, min.z, max.x, max.y, max.z, func);
+	}
+
+	public final void forEntity(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+			Consumer<Transform> func) {
+		spacePartitioning.forEach(xMin, yMin, zMin, xMax, yMax, zMax, func);
+	}
+
+	public final List<Entity> getEntities(Vector2f min, Vector2f max) {
+		return getEntities(min.x, min.y, max.x, max.y);
+	}
+
+	public final List<Entity> getEntities(float xMin, float yMin, float xMax, float yMax) {
+		List<Entity> result = new ArrayList<Entity>();
+		forEntity(xMin, yMin, xMax, yMax, (transform) -> result.add(transform.getEntity()));
+		return result;
+	}
+
+	public final List<Entity> getEntities(Vector3f min, Vector3f max) {
+		return getEntities(min.x, min.y, min.z, max.x, max.y, max.z);
+	}
+
+	public final List<Entity> getEntities(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
+		List<Entity> result = new ArrayList<Entity>();
+		forEntity(xMin, yMin, zMin, xMax, yMax, zMax, (transform) -> result.add(transform.getEntity()));
+		return result;
 	}
 
 	public final List<Entity> getEntitiesNear(Vector2f pos, float range) {
-		return getEntitiesNear(pos.x, pos.y, range);
+		return getEntitiesNear(pos.x, pos.y, range, range);
 	}
 
-	public final List<Entity> getEntitiesNear(float x, float y, float range) {
+	public final List<Entity> getEntitiesNear(Vector2f pos, Vector2f range) {
+		return getEntitiesNear(pos.x, pos.y, range.x, range.y);
+	}
+
+	public final List<Entity> getEntitiesNear(float x, float y, float xRange, float yRange) {
 		List<Entity> result = new ArrayList<Entity>();
-		for (int i = 0; i < entities.size(); i++) {
-			Entity entity = entities.get(i);
-			Vector2f entityPos = entity.transform.getPosition();
-			if (Vector2f.distance(entityPos.x, entityPos.y, x, y) <= range)
-				result.add(entity);
-		}
+		forEntity(x - xRange, y - yRange, x + xRange, y + yRange, (transform) -> result.add(transform.getEntity()));
 		return result;
 	}
 
 	public final List<Entity> getEntitiesNear(Vector3f pos, float range) {
-		return getEntitiesNear(pos.x, pos.y, pos.z, range);
+		return getEntitiesNear(pos.x, pos.y, pos.z, range, range, range);
 	}
 
-	public final List<Entity> getEntitiesNear(float x, float y, float z, float range) {
+	public final List<Entity> getEntitiesNear(Vector3f pos, Vector3f range) {
+		return getEntitiesNear(pos.x, pos.y, pos.z, range.x, range.y, range.z);
+	}
+
+	public final List<Entity> getEntitiesNear(float x, float y, float z, float xRange, float yRange, float zRange) {
 		List<Entity> result = new ArrayList<Entity>();
-		for (int i = 0; i < entities.size(); i++) {
-			Entity entity = entities.get(i);
-			Vector3f entityPos = entity.transform.getPosition();
-			if (Vector3f.distance(entityPos.x, entityPos.y, entityPos.z, x, y, z) <= range)
-				result.add(entity);
-		}
+		forEntity(x - xRange, y - yRange, z - zRange, x + xRange, y + yRange, z + zRange,
+				(transform) -> result.add(transform.getEntity()));
 		return result;
 	}
 
@@ -329,12 +427,16 @@ public class Scene {
 		return renderOrder != null;
 	}
 
-	public void setSpacePartitioning(SpacePartitioning<Entity> spacePartitioning) {
+	public void setSpacePartitioning(SpacePartitioning spacePartitioning) {
 		this.spacePartitioning = spacePartitioning;
-
+		for (Entity entity : entities) {
+			entity.transform.spacePartitioning = spacePartitioning;
+			spacePartitioning.add(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
+					entity.transform);
+		}
 	}
 
-	public SpacePartitioning<Entity> getSpacePartitioning() {
+	public SpacePartitioning getSpacePartitioning() {
 		return spacePartitioning;
 	}
 

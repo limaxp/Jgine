@@ -1,5 +1,6 @@
 package org.jgine.misc.utils.registry;
 
+import org.jgine.misc.math.spacePartitioning.SpacePartitioningType;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.input.InputHandlerType;
@@ -8,6 +9,9 @@ import org.jgine.system.systems.script.ScriptType;
 import org.jgine.system.systems.ui.UIObjectType;
 
 public abstract class Registry<T> implements Iterable<T> {
+
+	public static final Registry<SpacePartitioningType<?>> SPACE_PARTITIONING_TYPES = new GenIdRegistry<SpacePartitioningType<?>>(
+			"space_partitioning", 1000);
 
 	public static final Registry<ColliderType<?>> COLLIDER_TYPES = new GenIdRegistry<ColliderType<?>>("collider", 1000);
 
