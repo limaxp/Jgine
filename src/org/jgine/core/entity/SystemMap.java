@@ -12,6 +12,9 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
+/**
+ * Data structure used internally by entities to store their systems.
+ */
 public class SystemMap {
 
 	private static final SystemObject[] EMPTY_OBJECTS = new SystemObject[0];

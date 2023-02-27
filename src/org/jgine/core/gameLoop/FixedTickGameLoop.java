@@ -1,5 +1,9 @@
 package org.jgine.core.gameLoop;
 
+/**
+ * GameLoop implementation that updates at given time interval in milliseconds
+ * and renders as often as possible.
+ */
 public class FixedTickGameLoop extends GameLoop {
 
 	/**

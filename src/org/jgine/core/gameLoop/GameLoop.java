@@ -1,5 +1,10 @@
 package org.jgine.core.gameLoop;
 
+/**
+ * Abstract game loop class. Extend to make a custom game loop and overwrite
+ * Engine.createGameLoop() to use it. Use update() and render() methods to tell
+ * engine to do the respective action.
+ */
 public abstract class GameLoop implements Runnable {
 
 	private static Runnable NULL = new Runnable() {

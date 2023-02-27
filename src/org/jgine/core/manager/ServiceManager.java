@@ -12,9 +12,16 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArray
 import org.jgine.misc.other.Property;
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * Manager to register and run services and to register, set and get properties
+ * with a given identifier.
+ * <p>
+ * Services expose a system functionality while properties expose a system value
+ * by identifier.
+ */
 public class ServiceManager {
 
-	private static final int MAX_UPDATES = 32;
+	private static final int MAX_UPDATES = 64;
 
 	private static final Map<Object, Service> SERVICES = new ConcurrentHashMap<Object, Service>();
 	@SuppressWarnings("rawtypes")
@@ -102,8 +109,9 @@ public class ServiceManager {
 			try {
 				method = provider.getClass().getMethod(methodName, parameterTypes);
 			} catch (NoSuchMethodException | SecurityException e) {
-				Logger.err("Service: Error on reflection of method '" + methodName + "' for provider '" + provider
-						+ "'", e);
+				Logger.err(
+						"Service: Error on reflection of method '" + methodName + "' for provider '" + provider + "'",
+						e);
 				method = null;
 			}
 			this.provider = provider;
@@ -119,8 +127,8 @@ public class ServiceManager {
 			try {
 				method.invoke(provider, args);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				Logger.err("Service: Error on running method '" + method.getName() + "' for provider '" + provider
-						+ "'",
+				Logger.err(
+						"Service: Error on running method '" + method.getName() + "' for provider '" + provider + "'",
 						e);
 			}
 		}

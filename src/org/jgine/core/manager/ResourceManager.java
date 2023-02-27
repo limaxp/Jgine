@@ -33,10 +33,15 @@ import org.jgine.sound.SoundBuffer;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+/**
+ * Manager that stores imported models, textures, sounds, shaders and scripts.
+ * <p>
+ * Use load() method to import a folder. Use loadResource() method to import a
+ * resource folder like in a .jar file. You may specify an identifier.
+ * <p>
+ * Use free() method with or without identifier to free imports.
+ */
 public class ResourceManager {
-
-	// TODO should be able to dynamic load resources if used and free resources if
-	// not!
 
 	private static final Map<String, Model> MODEL_MAP = new HashMap<String, Model>();
 	private static final Map<String, Texture> TEXTURE_MAP = new HashMap<String, Texture>();

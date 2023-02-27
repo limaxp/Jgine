@@ -99,7 +99,7 @@ public class PrefabLoader {
 		if (prefabData instanceof Map)
 			prefab.setData((Map<String, Object>) prefabData);
 
-		Object tagData = data.get("tag");
+		Object tagData = data.get("tags");
 		if (tagData instanceof Number)
 			prefab.setTagBits(((Number) tagData).longValue());
 		if (tagData instanceof List) {

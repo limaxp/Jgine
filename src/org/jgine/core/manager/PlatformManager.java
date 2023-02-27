@@ -2,6 +2,10 @@ package org.jgine.core.manager;
 
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * Helper class that exposes information about the platform the engine is
+ * running on.
+ */
 public class PlatformManager {
 
 	public static String getOperatingSystem() {

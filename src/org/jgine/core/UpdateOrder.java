@@ -10,6 +10,10 @@ import org.jgine.misc.collection.list.IntList;
 import org.jgine.misc.collection.list.arrayList.IntArrayList;
 import org.jgine.system.EngineSystem;
 
+/**
+ * This defines an update or render order for a scene. Use add() methods to add
+ * a system and its required systems.
+ */
 public class UpdateOrder {
 
 	private IntList start;

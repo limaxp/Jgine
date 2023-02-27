@@ -8,6 +8,10 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
+/**
+ * Manager to register and free prefabs. Allows registration of prefabs not
+ * loaded from file.
+ */
 public class PrefabManager {
 
 	private static final List<Prefab> LIST = new UnorderedIdentityArrayList<Prefab>();

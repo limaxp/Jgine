@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.jgine.misc.utils.loader.YamlHelper;
 
+/**
+ * Used by prefabs to store transforms.
+ */
 public class TransformData {
 
 	public float posX;

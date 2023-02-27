@@ -13,9 +13,9 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 
 /**
- * Represents a Transform for 3D with float precision.
- * 
- * @author Maximilian Paar
+ * A transform with float precision. Uses matrix class internally. This is your
+ * primary way to change entity position, rotation and scale. Also stores a
+ * reference to scenes space partitioning.
  */
 public class Transform implements Cloneable {
 
@@ -248,6 +248,10 @@ public class Transform implements Cloneable {
 
 	public final Entity getEntity() {
 		return entity;
+	}
+
+	public final SpacePartitioning getSpacePartitioning() {
+		return spacePartitioning;
 	}
 
 	@Override

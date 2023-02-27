@@ -25,6 +25,11 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
+/**
+ * A container for game entity data. Stores info about id, scene, transform,
+ * prefab, used systems and the scene graph. This is supposed to link all
+ * together in an easy to use way.
+ */
 public class Entity {
 
 	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
@@ -431,9 +436,16 @@ public class Entity {
 		transform.calculateMatrix();
 	}
 
+	@Nullable
+	public final Object getData(Object identifier) {
+		if (prefab == null)
+			return null;
+		return prefab.getData(identifier);
+	}
+
 	public final long getTag() {
 		if (prefab == null)
-			return 0;
+			return 0L;
 		return prefab.getTagBits();
 	}
 

@@ -25,6 +25,14 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
+/**
+ * A scene or world identified with id and name. Use this class to create
+ * entities. Scenes store a list of entities, a list of top level entities and
+ * the systems they use. They also provide a pause capability.
+ * <p>
+ * Change the update and render order of the given systems by using the
+ * respective methods. Set a space partitioning to optimize location checks.
+ */
 public class Scene {
 
 	public final Engine engine;

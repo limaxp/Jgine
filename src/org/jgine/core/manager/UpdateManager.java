@@ -5,6 +5,9 @@ import java.util.function.BiConsumer;
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.vector.Vector3f;
 
+/**
+ * Helper class for updating values between system.
+ */
 public class UpdateManager {
 
 	@SuppressWarnings("rawtypes")

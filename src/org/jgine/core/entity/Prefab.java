@@ -19,6 +19,61 @@ import org.jgine.misc.utils.Reflection;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
+/**
+ * A blueprint for entities. Stores info about name, id, transform, tags, used
+ * systems and child prefabs. Also contains a Map<Object, Object> to store any
+ * extra data. Use create() methods to build entities.
+ * <p>
+ * Prefabs are usually written as YAML files with the .prefab extension and
+ * loaded with the ResourceManager. The prefab name becomes the file name
+ * without the extension.
+ * 
+ * <pre>
+YAML example:
+
+parents:
+  - parentName1
+  - parentName2
+  - ...
+childs:
+  - childName1
+  - childName2
+  - ...
+tags:
+  - tag1
+  - tag2
+  - ...
+data:
+  dataName1: data
+  dataName2: data
+  ...:
+transform:
+  position: xyzValue
+  position: [x, y, z]
+  position:
+    x: xValue
+    y: yValue
+    z: zValue
+  rotation: xyzValue
+  rotation: [x, y, z]
+  rotation:
+    x: xValue
+    y: yValue
+    z: zValue
+  scale: xyzValue
+  scale: [x, y, z]
+  scale:
+    x: xValue
+    y: yValue
+    z: zValue
+systems:
+  systemName1:
+    systemData
+  systemName2:
+    systemData
+  ...:
+ * </pre>
+ */
 public class Prefab {
 
 	public static final int MAX_SYSTEMS = 20;
