@@ -451,15 +451,13 @@ public class FastMath {
 
 	public static float fma(float a, float b, float c) {
 		if (HAS_Math_fma)
-			// return java.lang.Math.fma(a, b, c);
-			;
+			return java.lang.Math.fma(a, b, c);
 		return a * b + c;
 	}
 
 	public static double fma(double a, double b, double c) {
 		if (HAS_Math_fma)
-			// return java.lang.Math.fma(a, b, c);
-			;
+			return java.lang.Math.fma(a, b, c);
 		return a * b + c;
 	}
 
