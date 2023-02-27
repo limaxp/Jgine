@@ -3,6 +3,7 @@ package org.jgine.misc.math.spacePartitioning;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import org.jgine.core.Transform;
@@ -35,6 +36,13 @@ public interface SpacePartitioning {
 	public default void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Transform> func) {
 		forEach(xMin, yMin, xMax, yMax, func);
+	}
+
+	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax);
+
+	public default Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax,
+			double zMax) {
+		return get(xMin, yMin, xMax, yMax);
 	}
 
 	public Transform get(double x, double y, Transform opt_default);

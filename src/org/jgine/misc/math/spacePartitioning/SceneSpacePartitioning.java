@@ -3,6 +3,8 @@ package org.jgine.misc.math.spacePartitioning;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -46,6 +48,20 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 			if (transform.getX() >= xMin && transform.getY() >= yMin && transform.getZ() >= zMin
 					&& transform.getX() < xMax && transform.getY() < yMax && transform.getZ() < zMax)
 				func.accept(transform);
+	}
+
+	@Override
+	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
+		List<Transform> result = new ArrayList<Transform>();
+		forEach(xMin, yMin, xMax, yMax, result::add);
+		return result;
+	}
+
+	@Override
+	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		List<Transform> result = new ArrayList<Transform>();
+		forEach(xMin, yMin, zMin, xMax, yMax, zMax, result::add);
+		return result;
 	}
 
 	@Override

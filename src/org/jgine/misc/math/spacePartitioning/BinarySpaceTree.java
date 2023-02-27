@@ -3,6 +3,8 @@ package org.jgine.misc.math.spacePartitioning;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -44,6 +46,13 @@ public class BinarySpaceTree implements SpacePartitioning {
 	@Override
 	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
 		root.forEach(xMin, yMin, xMax, yMax, func);
+	}
+
+	@Override
+	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
+		List<Transform> result = new ArrayList<Transform>();
+		forEach(xMin, yMin, xMax, yMax, result::add);
+		return result;
 	}
 
 	@Override
@@ -106,7 +115,7 @@ public class BinarySpaceTree implements SpacePartitioning {
 			this.yMin = yMin;
 			this.yMax = yMax;
 			this.yCenter = (yMin + yMax) * 0.5;
-			objects = new UnorderedIdentityArrayList<Transform>();
+			objects = new UnorderedIdentityArrayList<Transform>(MAX_OBJECTS);
 		}
 
 		public void add(double x, double y, Transform object) {

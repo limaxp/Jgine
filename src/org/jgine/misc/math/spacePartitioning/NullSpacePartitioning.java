@@ -3,6 +3,8 @@ package org.jgine.misc.math.spacePartitioning;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import org.jgine.core.Transform;
@@ -23,6 +25,11 @@ public class NullSpacePartitioning implements SpacePartitioning {
 
 	@Override
 	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+	}
+
+	@Override
+	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
+		return new ArrayList<Transform>();
 	}
 
 	@Override
@@ -48,7 +55,7 @@ public class NullSpacePartitioning implements SpacePartitioning {
 	@Override
 	public void clear() {
 	}
-	
+
 	@Override
 	public SpacePartitioningType<?> getType() {
 		return null;

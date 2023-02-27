@@ -8,6 +8,9 @@ public class SpacePartitioningTypes {
 
 	public static final SpacePartitioningType<SceneSpacePartitioning> SCENE = a("scene", SceneSpacePartitioning::new);
 
+	public static final SpacePartitioningType<SpatialHashing2d> SPATIAL_HASHING_2D = a("spatial_hashing_2d",
+			SpatialHashing2d::new);
+
 	public static final SpacePartitioningType<BinarySpaceTree> BINARY_SPACE_TREE = a("binary_tree",
 			BinarySpaceTree::new);
 
