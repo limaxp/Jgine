@@ -4,6 +4,9 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
+/**
+ * A keyboard {@link InputDevice}.
+ */
 public class Keyboard extends InputDevice {
 
 	public Keyboard() {

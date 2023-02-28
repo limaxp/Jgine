@@ -1,7 +1,15 @@
 package org.jgine.misc.collection.bitSet;
 
+import java.lang.invoke.VarHandle;
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+/**
+ * A {@link BitSet} in which elements may be updated atomically. See the
+ * {@link VarHandle} specification for descriptions of the properties of atomic
+ * accesses.
+ * <p>
+ */
 public class AtomicBitSet {
 
 	private final AtomicIntegerArray array;

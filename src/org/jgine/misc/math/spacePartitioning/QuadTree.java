@@ -11,6 +11,12 @@ import java.util.function.Consumer;
 import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
+/**
+ * Basic quad tree implementation. Quad trees divide space into 4 quads
+ * recursively.
+ * <p>
+ * NOT FULLY IMPLEMENTED YET!!!!!
+ */
 public class QuadTree implements SpacePartitioning {
 
 	private static final int MAX_DEPTH = 32;

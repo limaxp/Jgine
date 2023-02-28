@@ -23,6 +23,10 @@ import org.jgine.misc.utils.logger.Logger;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+/**
+ * Manager for handling {@link Display}<code>s</code>. Can be used to get
+ * currently plugged in {@link Display}<code>s</code>.
+ */
 public class DisplayManager {
 
 	private static final List<Display> DISPLAYS = new ArrayList<Display>();
@@ -43,14 +47,14 @@ public class DisplayManager {
 		Cursor.terminate();
 	}
 
-	public static void initGLFW() {
+	private static void initGLFW() {
 		GLFWErrorCallback.createPrint(Logger.getErrorPrintStream()).set();
 		if (!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 		Logger.log(() -> "Engine: GLFW - Version: " + glfwGetVersionString());
 	}
 
-	public static void terminateGLFW() {
+	private static void terminateGLFW() {
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}

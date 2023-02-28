@@ -3,11 +3,16 @@ package org.jgine.core.input.device;
 import static org.lwjgl.glfw.GLFW.glfwGetGamepadName;
 import static org.lwjgl.glfw.GLFW.glfwGetGamepadState;
 
+import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 import org.jgine.misc.math.vector.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWGamepadState;
 
+/**
+ * A gamepad {@link InputDevice}. Has methods for gamepad left and right axes
+ * and triggers.
+ */
 public class Gamepad extends Joystick {
 
 	private GLFWGamepadState gamepadState;

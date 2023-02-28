@@ -46,11 +46,12 @@ import org.jgine.system.systems.ui.UISystem;
 
 /**
  * The Base Engine class. Your main game class should extends this class. After
- * calling the constructor all engine systems are initialized and ready to use.
- * Call the start() method to start the game loop created by createGameLoop().
- * Use shutdown() method to stop game loop and free engine systems.
+ * calling the constructor all internal systems are initialized and ready to
+ * use. Call the start() method to start the game loop created by
+ * createGameLoop(). Use shutdown() method to stop game loop and free engine
+ * systems.
  * <p>
- * Use this class to create and destroy scenes with whom you then create
+ * Use this class to create and destroy a {@link Scene} with whom you can create
  * entities.
  */
 public abstract class Engine {

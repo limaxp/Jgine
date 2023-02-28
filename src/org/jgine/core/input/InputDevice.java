@@ -4,6 +4,11 @@ import org.jgine.misc.collection.list.IntList;
 import org.jgine.misc.collection.list.arrayList.IntArrayList;
 import org.jgine.misc.math.FastMath;
 
+/**
+ * Base input device class. Has methods to check for {@link Key} press and
+ * release and for getting the time the {@link Key} is pressed. Also has methods
+ * to check for device type.
+ */
 public abstract class InputDevice {
 
 	private IntList pressedKeys;

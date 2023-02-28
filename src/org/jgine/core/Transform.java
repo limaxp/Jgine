@@ -13,9 +13,10 @@ import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 
 /**
- * A transform with float precision. Uses matrix class internally. This is your
- * primary way to change entity position, rotation and scale. Also stores a
- * reference to scenes space partitioning.
+ * A transform with float precision. Uses {@link Matrix} class internally. This
+ * is your primary way to change entity position, rotation and scale. Also
+ * stores a reference to its {@link Entity} and the scenes
+ * {@link SpacePartitioning}.
  */
 public class Transform implements Cloneable {
 

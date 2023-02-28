@@ -8,9 +8,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
+/**
+ * The default {@link SpacePartitioning} for a {@link Scene}. This basically
+ * acts as if the {@link Scene} does not have any {@link SpacePartitioning} and
+ * is the default {@link SpacePartitioning} a {@link Scene} uses after creation.
+ * Checks will search the ENTIRE {@link Scene}.
+ */
 public class SceneSpacePartitioning implements SpacePartitioning {
 
 	private final List<Transform> objects;

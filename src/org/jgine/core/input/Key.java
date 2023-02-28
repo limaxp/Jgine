@@ -47,6 +47,10 @@ import static org.lwjgl.glfw.GLFW.GLFW_REPEAT;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyScancode;
 
+/**
+ * Base Key class. A key is defined as an id. Use this class to define keys for
+ * multiple {@link InputDevice}<code>s</code>.
+ */
 public class Key {
 
 	public static final int RELEASE = GLFW_RELEASE;

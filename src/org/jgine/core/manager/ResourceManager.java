@@ -28,13 +28,16 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
+import org.jgine.render.shader.Shader;
 import org.jgine.sound.SoundBuffer;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Manager that stores imported models, textures, sounds, shaders and scripts.
+ * Manager that stores imported {@link Model}<code>s</code>,
+ * {@link Texture}<code>s</code>, {@link SoundBuffer}<code>s</code>,
+ * {@link Shader}<code>s</code> and {@link ScriptEngine}<code>s</code>.
  * <p>
  * Use load() method to import a folder. Use loadResource() method to import a
  * resource folder like in a .jar file. You may specify an identifier.

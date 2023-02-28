@@ -4,9 +4,10 @@ import java.util.function.BiConsumer;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.system.EngineSystem;
 
 /**
- * Helper class for updating values between system.
+ * Helper class for updating values between {@link EngineSystem}<code>s</code>.
  */
 public class UpdateManager {
 

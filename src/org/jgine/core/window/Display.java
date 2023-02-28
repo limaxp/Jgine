@@ -21,6 +21,12 @@ import org.jgine.misc.math.vector.Vector4i;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
+/**
+ * A glfw monitor.
+ * <p>
+ * Documentation: <a href=
+ * "https://www.glfw.org/docs/3.3/group__monitor.html">https://www.glfw.org/docs/3.3/group__monitor.html</a>
+ */
 public class Display {
 
 	public final long id;
@@ -117,12 +123,12 @@ public class Display {
 		glfwSetGamma(id, gamma);
 	}
 
-	public void setGammaRamp(GamaRamp gamma) {
+	public void setGammaRamp(GammaRamp gamma) {
 		glfwSetGammaRamp(id, gamma.glfw);
 	}
 
-	public GamaRamp getGammaRamp() {
-		return new GamaRamp(glfwGetGammaRamp(id));
+	public GammaRamp getGammaRamp() {
+		return new GammaRamp(glfwGetGammaRamp(id));
 	}
 
 	@Override

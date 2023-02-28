@@ -28,9 +28,7 @@ import org.jgine.misc.math.Matrix;
  */
 
 /**
- * Represents an immutable Vector with float precision.
- * 
- * @author Maximilian Paar
+ * An immutable Vector with 3 float values.
  */
 public class Vector3f extends Vector2f {
 

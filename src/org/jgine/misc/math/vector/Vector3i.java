@@ -1,5 +1,8 @@
 package org.jgine.misc.math.vector;
 
+/**
+ * An immutable Vector with 3 int values.
+ */
 public class Vector3i extends Vector2i {
 
 	public static final Vector3f NULL = new Vector3f(0);

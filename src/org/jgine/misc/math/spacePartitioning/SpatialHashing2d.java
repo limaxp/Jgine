@@ -13,6 +13,11 @@ import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.FastMath;
 
+/**
+ * Basic spatial hashing implementation for 2d. Spatial hashing divides space
+ * into a grid of cells. Cell size might severely impact performance since cells
+ * object count should be generally low.
+ */
 public class SpatialHashing2d implements SpacePartitioning {
 
 	private int xMin;

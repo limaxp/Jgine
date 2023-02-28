@@ -32,6 +32,9 @@ import org.jgine.misc.utils.options.Options;
  * THE SOFTWARE.
  */
 
+/**
+ * Class for quaternion mathematics with float precision.
+ */
 public class Quaternionf implements Cloneable {
 
 	public float x, y, z, w;
@@ -141,9 +144,7 @@ public class Quaternionf implements Cloneable {
 		float hangle = angle / 2.0f;
 		float sinAngle = FastMath.sin(hangle);
 		float invVLength = FastMath.invsqrt(axisX * axisX + axisY * axisY + axisZ * axisZ);
-		return set(axisX * invVLength * sinAngle,
-				axisY * invVLength * sinAngle,
-				axisZ * invVLength * sinAngle,
+		return set(axisX * invVLength * sinAngle, axisY * invVLength * sinAngle, axisZ * invVLength * sinAngle,
 				FastMath.cosFromSin(sinAngle, hangle));
 	}
 
@@ -196,8 +197,7 @@ public class Quaternionf implements Cloneable {
 			x = (m12 - m21) * t;
 			y = (m20 - m02) * t;
 			z = (m01 - m10) * t;
-		}
-		else {
+		} else {
 			if (m00 >= m11 && m00 >= m22) {
 				t = FastMath.sqrt(m00 - (m11 + m22) + 1.0f);
 				x = t * 0.5f;
@@ -205,16 +205,14 @@ public class Quaternionf implements Cloneable {
 				y = (m10 + m01) * t;
 				z = (m02 + m20) * t;
 				w = (m12 - m21) * t;
-			}
-			else if (m11 > m22) {
+			} else if (m11 > m22) {
 				t = FastMath.sqrt(m11 - (m22 + m00) + 1.0f);
 				y = t * 0.5f;
 				t = 0.5f / t;
 				z = (m21 + m12) * t;
 				x = (m10 + m01) * t;
 				w = (m20 - m02) * t;
-			}
-			else {
+			} else {
 				t = FastMath.sqrt(m22 - (m00 + m11) + 1.0f);
 				z = t * 0.5f;
 				t = 0.5f / t;
@@ -369,21 +367,21 @@ public class Quaternionf implements Cloneable {
 		float xx = this.x * this.x, yy = this.y * this.y, zz = this.z * this.z, ww = this.w * this.w;
 		float xy = this.x * this.y, xz = this.x * this.z, yz = this.y * this.z, xw = this.x * this.w;
 		float zw = this.z * this.w, yw = this.y * this.w, k = 1 / (xx + yy + zz + ww);
-		return new Vector3f(FastMath.fma((xx - yy - zz + ww) * k, x, FastMath.fma(2 * (xy - zw) * k, y, (2 * (xz + yw)
-				* k) * z)),
+		return new Vector3f(
+				FastMath.fma((xx - yy - zz + ww) * k, x, FastMath.fma(2 * (xy - zw) * k, y, (2 * (xz + yw) * k) * z)),
 				FastMath.fma(2 * (xy + zw) * k, x, FastMath.fma((yy - xx - zz + ww) * k, y, (2 * (yz - xw) * k) * z)),
 				FastMath.fma(2 * (xz - yw) * k, x, FastMath.fma(2 * (yz + xw) * k, y, ((zz - xx - yy + ww) * k) * z)));
 	}
 
 	public Vector3f transformInverse(float x, float y, float z) {
-		float n = 1.0f / FastMath.fma(this.x, this.x, FastMath.fma(this.y, this.y, FastMath.fma(this.z, this.z, this.w
-				* this.w)));
+		float n = 1.0f / FastMath.fma(this.x, this.x,
+				FastMath.fma(this.y, this.y, FastMath.fma(this.z, this.z, this.w * this.w)));
 		float qx = this.x * n, qy = this.y * n, qz = this.z * n, qw = this.w * n;
 		float xx = qx * qx, yy = qy * qy, zz = qz * qz, ww = qw * qw;
 		float xy = qx * qy, xz = qx * qz, yz = qy * qz, xw = qx * qw;
 		float zw = qz * qw, yw = qy * qw, k = 1 / (xx + yy + zz + ww);
-		return new Vector3f(FastMath.fma((xx - yy - zz + ww) * k, x, FastMath.fma(2 * (xy + zw) * k, y, (2 * (xz - yw)
-				* k) * z)),
+		return new Vector3f(
+				FastMath.fma((xx - yy - zz + ww) * k, x, FastMath.fma(2 * (xy + zw) * k, y, (2 * (xz - yw) * k) * z)),
 				FastMath.fma(2 * (xy - zw) * k, x, FastMath.fma((yy - xx - zz + ww) * k, y, (2 * (yz + xw) * k) * z)),
 				FastMath.fma(2 * (xz + yw) * k, x, FastMath.fma(2 * (yz - xw) * k, y, ((zz - xx - yy + ww) * k) * z)));
 	}
@@ -392,8 +390,8 @@ public class Quaternionf implements Cloneable {
 		float xx = this.x * this.x, xy = this.x * this.y, xz = this.x * this.z;
 		float xw = this.x * this.w, yy = this.y * this.y, yz = this.y * this.z;
 		float yw = this.y * this.w, zz = this.z * this.z, zw = this.z * this.w;
-		return new Vector3f(FastMath.fma(FastMath.fma(-2, yy + zz, 1), x, FastMath.fma(2 * (xy - zw), y, (2 * (xz + yw))
-				* z)),
+		return new Vector3f(
+				FastMath.fma(FastMath.fma(-2, yy + zz, 1), x, FastMath.fma(2 * (xy - zw), y, (2 * (xz + yw)) * z)),
 				FastMath.fma(2 * (xy + zw), x, FastMath.fma(FastMath.fma(-2, xx + zz, 1), y, (2 * (yz - xw)) * z)),
 				FastMath.fma(2 * (xz - yw), x, FastMath.fma(2 * (yz + xw), y, FastMath.fma(-2, xx + yy, 1) * z)));
 	}
@@ -402,8 +400,8 @@ public class Quaternionf implements Cloneable {
 		float xx = this.x * this.x, xy = this.x * this.y, xz = this.x * this.z;
 		float xw = this.x * this.w, yy = this.y * this.y, yz = this.y * this.z;
 		float yw = this.y * this.w, zz = this.z * this.z, zw = this.z * this.w;
-		return new Vector3f(FastMath.fma(FastMath.fma(-2, yy + zz, 1), x, FastMath.fma(2 * (xy + zw), y, (2 * (xz - yw))
-				* z)),
+		return new Vector3f(
+				FastMath.fma(FastMath.fma(-2, yy + zz, 1), x, FastMath.fma(2 * (xy + zw), y, (2 * (xz - yw)) * z)),
 				FastMath.fma(2 * (xy - zw), x, FastMath.fma(FastMath.fma(-2, xx + zz, 1), y, (2 * (yz + xw)) * z)),
 				FastMath.fma(2 * (xz + yw), x, FastMath.fma(2 * (yz - xw), y, FastMath.fma(-2, xx + yy, 1) * z)));
 	}
@@ -637,8 +635,7 @@ public class Quaternionf implements Cloneable {
 			float omega = FastMath.atan2(sinSqr * sinom, absCosom);
 			scale0 = (float) (FastMath.sin((1.0 - alpha) * omega) * sinom);
 			scale1 = (float) (FastMath.sin(alpha * omega) * sinom);
-		}
-		else {
+		} else {
 			scale0 = 1.0f - alpha;
 			scale1 = alpha;
 		}
@@ -699,8 +696,7 @@ public class Quaternionf implements Cloneable {
 		if (thetaMagSq * thetaMagSq / 24.0f < 1E-8f) {
 			dqW = 1.0f - thetaMagSq * 0.5f;
 			s = 1.0f - thetaMagSq / 6.0f;
-		}
-		else {
+		} else {
 			float thetaMag = FastMath.sqrt(thetaMagSq);
 			float sin = FastMath.sin(thetaMag);
 			s = sin / thetaMag;
@@ -728,9 +724,8 @@ public class Quaternionf implements Cloneable {
 		dest.y = FastMath.fma(scale0, y, scale1 * q.y);
 		dest.z = FastMath.fma(scale0, z, scale1 * q.z);
 		dest.w = FastMath.fma(scale0, w, scale1 * q.w);
-		float s = FastMath.invsqrt(FastMath.fma(dest.x, dest.x, FastMath.fma(dest.y, dest.y, FastMath.fma(dest.z,
-				dest.z, dest.w
-						* dest.w))));
+		float s = FastMath.invsqrt(FastMath.fma(dest.x, dest.x,
+				FastMath.fma(dest.y, dest.y, FastMath.fma(dest.z, dest.z, dest.w * dest.w))));
 		dest.x *= s;
 		dest.y *= s;
 		dest.z *= s;
@@ -772,21 +767,20 @@ public class Quaternionf implements Cloneable {
 				q2y = FastMath.fma(scale0, q2y, scale1 * q1y);
 				q2z = FastMath.fma(scale0, q2z, scale1 * q1z);
 				q2w = FastMath.fma(scale0, q2w, scale1 * q1w);
-				float s = FastMath.invsqrt(FastMath.fma(q2x, q2x, FastMath.fma(q2y, q2y, FastMath.fma(q2z, q2z, q2w
-						* q2w))));
+				float s = FastMath
+						.invsqrt(FastMath.fma(q2x, q2x, FastMath.fma(q2y, q2y, FastMath.fma(q2z, q2z, q2w * q2w))));
 				q2x *= s;
 				q2y *= s;
 				q2z *= s;
 				q2w *= s;
 				alphaN = alphaN + alphaN;
-			}
-			else {
+			} else {
 				q1x = FastMath.fma(scale0, q1x, scale1 * q2x);
 				q1y = FastMath.fma(scale0, q1y, scale1 * q2y);
 				q1z = FastMath.fma(scale0, q1z, scale1 * q2z);
 				q1w = FastMath.fma(scale0, q1w, scale1 * q2w);
-				float s = FastMath.invsqrt(FastMath.fma(q1x, q1x, FastMath.fma(q1y, q1y, FastMath.fma(q1z, q1z, q1w
-						* q1w))));
+				float s = FastMath
+						.invsqrt(FastMath.fma(q1x, q1x, FastMath.fma(q1y, q1y, FastMath.fma(q1z, q1z, q1w * q1w))));
 				q1x *= s;
 				q1y *= s;
 				q1z *= s;
@@ -802,8 +796,8 @@ public class Quaternionf implements Cloneable {
 		float resY = FastMath.fma(scale0, q1y, scale1 * q2y);
 		float resZ = FastMath.fma(scale0, q1z, scale1 * q2z);
 		float resW = FastMath.fma(scale0, q1w, scale1 * q2w);
-		float s = FastMath.invsqrt(FastMath.fma(resX, resX, FastMath.fma(resY, resY, FastMath.fma(resZ, resZ, resW
-				* resW))));
+		float s = FastMath
+				.invsqrt(FastMath.fma(resX, resX, FastMath.fma(resY, resY, FastMath.fma(resZ, resZ, resW * resW))));
 		dest.x = resX * s;
 		dest.y = resY * s;
 		dest.z = resZ * s;
@@ -869,8 +863,7 @@ public class Quaternionf implements Cloneable {
 			x = (float) ((dirnY - upnZ) * t);
 			y = (float) ((leftZ - dirnX) * t);
 			z = (float) ((upnX - leftY) * t);
-		}
-		else {
+		} else {
 			if (leftX > upnY && leftX > dirnZ) {
 				t = FastMath.sqrt(1.0 + leftX - upnY - dirnZ);
 				x = (float) (t * 0.5);
@@ -878,16 +871,14 @@ public class Quaternionf implements Cloneable {
 				y = (float) ((leftY + upnX) * t);
 				z = (float) ((dirnX + leftZ) * t);
 				w = (float) ((dirnY - upnZ) * t);
-			}
-			else if (upnY > dirnZ) {
+			} else if (upnY > dirnZ) {
 				t = FastMath.sqrt(1.0 + upnY - leftX - dirnZ);
 				y = (float) (t * 0.5);
 				t = 0.5 / t;
 				x = (float) ((leftY + upnX) * t);
 				z = (float) ((upnZ + dirnY) * t);
 				w = (float) ((leftZ - dirnX) * t);
-			}
-			else {
+			} else {
 				t = FastMath.sqrt(1.0 + dirnZ - leftX - upnY);
 				z = (float) (t * 0.5);
 				t = 0.5 / t;
@@ -905,8 +896,8 @@ public class Quaternionf implements Cloneable {
 
 	public Quaternionf rotationTo(float fromDirX, float fromDirY, float fromDirZ, float toDirX, float toDirY,
 			float toDirZ) {
-		float fn = FastMath.invsqrt(FastMath.fma(fromDirX, fromDirX, FastMath.fma(fromDirY, fromDirY, fromDirZ
-				* fromDirZ)));
+		float fn = FastMath
+				.invsqrt(FastMath.fma(fromDirX, fromDirX, FastMath.fma(fromDirY, fromDirY, fromDirZ * fromDirZ)));
 		float tn = FastMath.invsqrt(FastMath.fma(toDirX, toDirX, FastMath.fma(toDirY, toDirY, toDirZ * toDirZ)));
 		float fx = fromDirX * fn, fy = fromDirY * fn, fz = fromDirZ * fn;
 		float tx = toDirX * tn, ty = toDirY * tn, tz = toDirZ * tn;
@@ -927,8 +918,7 @@ public class Quaternionf implements Cloneable {
 			this.y = y;
 			this.z = z;
 			this.w = 0;
-		}
-		else {
+		} else {
 			float sd2 = FastMath.sqrt((1.0f + dot) * 2.0f);
 			float isd2 = 1.0f / sd2;
 			float cx = fy * tz - fz * ty;
@@ -953,8 +943,8 @@ public class Quaternionf implements Cloneable {
 
 	public Quaternionf rotateTo(float fromDirX, float fromDirY, float fromDirZ, float toDirX, float toDirY,
 			float toDirZ, Quaternionf dest) {
-		float fn = FastMath.invsqrt(FastMath.fma(fromDirX, fromDirX, FastMath.fma(fromDirY, fromDirY, fromDirZ
-				* fromDirZ)));
+		float fn = FastMath
+				.invsqrt(FastMath.fma(fromDirX, fromDirX, FastMath.fma(fromDirY, fromDirY, fromDirZ * fromDirZ)));
 		float tn = FastMath.invsqrt(FastMath.fma(toDirX, toDirX, FastMath.fma(toDirY, toDirY, toDirZ * toDirZ)));
 		float fx = fromDirX * fn, fy = fromDirY * fn, fz = fromDirZ * fn;
 		float tx = toDirX * tn, ty = toDirY * tn, tz = toDirZ * tn;
@@ -971,8 +961,7 @@ public class Quaternionf implements Cloneable {
 				z = -fy;
 				w = 0.0f;
 			}
-		}
-		else {
+		} else {
 			float sd2 = FastMath.sqrt((1.0f + dot) * 2.0f);
 			float isd2 = 1.0f / sd2;
 			float cx = fy * tz - fz * ty;
@@ -1015,10 +1004,7 @@ public class Quaternionf implements Cloneable {
 	public Quaternionf rotateX(float angle, Quaternionf dest) {
 		float sin = FastMath.sin(angle * 0.5f);
 		float cos = FastMath.cosFromSin(sin, angle * 0.5f);
-		return dest.set(w * sin + x * cos,
-				y * cos + z * sin,
-				z * cos - y * sin,
-				w * cos - x * sin);
+		return dest.set(w * sin + x * cos, y * cos + z * sin, z * cos - y * sin, w * cos - x * sin);
 	}
 
 	public Quaternionf rotateY(float angle) {
@@ -1028,10 +1014,7 @@ public class Quaternionf implements Cloneable {
 	public Quaternionf rotateY(float angle, Quaternionf dest) {
 		float sin = FastMath.sin(angle * 0.5f);
 		float cos = FastMath.cosFromSin(sin, angle * 0.5f);
-		return dest.set(x * cos - z * sin,
-				w * sin + y * cos,
-				x * sin + z * cos,
-				w * cos - y * sin);
+		return dest.set(x * cos - z * sin, w * sin + y * cos, x * sin + z * cos, w * cos - y * sin);
 	}
 
 	public Quaternionf rotateZ(float angle) {
@@ -1041,10 +1024,7 @@ public class Quaternionf implements Cloneable {
 	public Quaternionf rotateZ(float angle, Quaternionf dest) {
 		float sin = FastMath.sin(angle * 0.5f);
 		float cos = FastMath.cosFromSin(sin, angle * 0.5f);
-		return dest.set(x * cos + y * sin,
-				y * cos - x * sin,
-				w * sin + z * cos,
-				w * cos - z * sin);
+		return dest.set(x * cos + y * sin, y * cos - x * sin, w * sin + z * cos, w * cos - z * sin);
 	}
 
 	public Quaternionf rotateLocalX(float angle) {
@@ -1055,10 +1035,7 @@ public class Quaternionf implements Cloneable {
 		float hangle = angle * 0.5f;
 		float s = FastMath.sin(hangle);
 		float c = FastMath.cosFromSin(s, hangle);
-		dest.set(c * x + s * w,
-				c * y - s * z,
-				c * z + s * y,
-				c * w - s * x);
+		dest.set(c * x + s * w, c * y - s * z, c * z + s * y, c * w - s * x);
 		return dest;
 	}
 
@@ -1070,10 +1047,7 @@ public class Quaternionf implements Cloneable {
 		float hangle = angle * 0.5f;
 		float s = FastMath.sin(hangle);
 		float c = FastMath.cosFromSin(s, hangle);
-		dest.set(c * x + s * z,
-				c * y + s * w,
-				c * z - s * x,
-				c * w - s * y);
+		dest.set(c * x + s * z, c * y + s * w, c * z - s * x, c * w - s * y);
 		return dest;
 	}
 
@@ -1085,10 +1059,7 @@ public class Quaternionf implements Cloneable {
 		float hangle = angle * 0.5f;
 		float s = FastMath.sin(hangle);
 		float c = FastMath.cosFromSin(s, hangle);
-		dest.set(c * x - s * y,
-				c * y + s * x,
-				c * z + s * w,
-				c * w - s * z);
+		dest.set(c * x - s * y, c * y + s * x, c * z + s * w, c * w - s * z);
 		return dest;
 	}
 
@@ -1123,9 +1094,8 @@ public class Quaternionf implements Cloneable {
 	}
 
 	public String toString(NumberFormat formatter) {
-		return "(" + StringUtils.format(x, formatter) + " " + StringUtils.format(y, formatter) + " " + StringUtils
-				.format(z,
-						formatter) + " " + StringUtils.format(w, formatter) + ")";
+		return "(" + StringUtils.format(x, formatter) + " " + StringUtils.format(y, formatter) + " "
+				+ StringUtils.format(z, formatter) + " " + StringUtils.format(w, formatter) + ")";
 	}
 
 	public int hashCode() {

@@ -1,66 +1,24 @@
 package org.jgine.core.window;
 
-import static org.lwjgl.glfw.GLFW.GLFW_AUTO_ICONIFY;
-import static org.lwjgl.glfw.GLFW.GLFW_CLIENT_API;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_CREATION_API;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_NO_ERROR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_RELEASE_BEHAVIOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_REVISION;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_ROBUSTNESS;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_DECORATED;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_FLOATING;
-import static org.lwjgl.glfw.GLFW.GLFW_FOCUSED;
-import static org.lwjgl.glfw.GLFW.GLFW_FOCUS_ON_SHOW;
-import static org.lwjgl.glfw.GLFW.GLFW_HOVERED;
-import static org.lwjgl.glfw.GLFW.GLFW_ICONIFIED;
-import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_DEBUG_CONTEXT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
-import static org.lwjgl.glfw.GLFW.GLFW_TRANSPARENT_FRAMEBUFFER;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowHintString;
 
+import org.jgine.core.window.Window.Attribute;
 import org.jgine.misc.utils.options.Options;
 import org.jgine.render.OpenGL;
 
+/**
+ * A helper class for building {@link Window}<code>s</code>. New instances of
+ * {@link Window} will use the setting specified here.
+ * <p>
+ * Documentation: <a href=
+ * "https://www.glfw.org/docs/3.3/window_guide.html">https://www.glfw.org/docs/3.3/window_guide.html</a>
+ */
 public class WindowBuilder {
-
-	public static class Attribute {
-
-		public static final int FOCUSED = GLFW_FOCUSED;
-		public static final int ICONIFIED = GLFW_ICONIFIED;
-		public static final int MAXIMIZED = GLFW_MAXIMIZED;
-		public static final int HOVERED = GLFW_HOVERED;
-		public static final int VISIBLE = GLFW_VISIBLE;
-		public static final int RESIZABLE = GLFW_RESIZABLE;
-		public static final int DECORATED = GLFW_DECORATED;
-		public static final int AUTO_ICONIFY = GLFW_AUTO_ICONIFY;
-		public static final int FLOATING = GLFW_FLOATING;
-		public static final int TRANSPARENT_FRAMEBUFFER = GLFW_TRANSPARENT_FRAMEBUFFER;
-		public static final int FOCUS_ON_SHOW = GLFW_FOCUS_ON_SHOW;
-		public static final int CLIENT_API = GLFW_CLIENT_API;
-		public static final int CONTEXT_CREATION_API = GLFW_CONTEXT_CREATION_API;
-		public static final int CONTEXT_VERSION_MAJOR = GLFW_CONTEXT_VERSION_MAJOR;
-		public static final int CONTEXT_VERSION_MINOR = GLFW_CONTEXT_VERSION_MINOR;
-		public static final int CONTEXT_REVISION = GLFW_CONTEXT_REVISION;
-		public static final int OPENGL_FORWARD_COMPAT = GLFW_OPENGL_FORWARD_COMPAT;
-		public static final int OPENGL_DEBUG_CONTEXT = GLFW_OPENGL_DEBUG_CONTEXT;
-		public static final int OPENGL_PROFILE = GLFW_OPENGL_PROFILE;
-		public static final int CONTEXT_RELEASE_BEHAVIOR = GLFW_CONTEXT_RELEASE_BEHAVIOR;
-		public static final int CONTEXT_NO_ERROR = GLFW_CONTEXT_NO_ERROR;
-		public static final int CONTEXT_ROBUSTNESS = GLFW_CONTEXT_ROBUSTNESS;
-		public static final int SAMPLES = GLFW_SAMPLES;
-	}
 
 	public static void init() {
 		glfwWindowHint(Attribute.CONTEXT_VERSION_MAJOR, OpenGL.VERSION_MAJOR);
@@ -114,7 +72,7 @@ public class WindowBuilder {
 	public static void setFocusOnShow(boolean bool) {
 		setAttribute(Attribute.FOCUS_ON_SHOW, bool ? GLFW_TRUE : GLFW_FALSE);
 	}
-	
+
 	public static void setMultiSamples(int amount) {
 		setAttribute(Attribute.SAMPLES, amount);
 	}

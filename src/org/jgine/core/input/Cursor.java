@@ -14,6 +14,10 @@ import org.jgine.render.material.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWImage;
 
+/**
+ * Class for custom cursor creation. Cursors MUST be freed after use and are
+ * identified per name.
+ */
 public class Cursor {
 
 	private static final Map<String, Cursor> CURSORS = new HashMap<String, Cursor>();
@@ -108,5 +112,9 @@ public class Cursor {
 		final GLFWImage result = GLFWImage.create();
 		result.set(image.width, image.height, image.data);
 		return result;
+	}
+
+	public static Cursor get(String name) {
+		return CURSORS.get(name);
 	}
 }

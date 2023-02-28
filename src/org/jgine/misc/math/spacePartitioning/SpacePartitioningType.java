@@ -2,6 +2,11 @@ package org.jgine.misc.math.spacePartitioning;
 
 import java.util.function.Supplier;
 
+/**
+ * A type of {@link SpacePartitioning}.
+ * 
+ * @param <T> the type of {@link SpacePartitioning}
+ */
 public class SpacePartitioningType<T extends SpacePartitioning> implements Supplier<T> {
 
 	public final String name;

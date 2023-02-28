@@ -26,9 +26,9 @@ import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
 /**
- * A container for game entity data. Stores info about id, scene, transform,
- * prefab, used systems and the scene graph. This is supposed to link all
- * together in an easy to use way.
+ * A container for game entity data. Stores info about id, {@link Scene},
+ * {@link Transform}, {@link Prefab}, used systems and the scene graph. This is
+ * supposed to link all together in an easy to use way.
  */
 public class Entity {
 

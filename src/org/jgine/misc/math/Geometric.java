@@ -1,5 +1,8 @@
 package org.jgine.misc.math;
 
+/**
+ * Helper class for some geometric operations.
+ */
 public class Geometric {
 
 	public static double[] sphere(double radius, int upSize, int sideSize) {

@@ -9,8 +9,8 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.system.EngineSystem;
 
 /**
- * Manager to register systems. Created systems MUST be registered before using
- * them!
+ * Manager to register {@link EngineSystem}<code>s</code>. Created systems MUST
+ * be registered before using them!
  */
 public class SystemManager {
 

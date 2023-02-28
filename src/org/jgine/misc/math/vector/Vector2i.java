@@ -1,5 +1,8 @@
 package org.jgine.misc.math.vector;
 
+/**
+ * An immutable Vector with 2 integer values.
+ */
 public class Vector2i {
 
 	public static final Vector2i NULL = new Vector2i(0);

@@ -4,6 +4,9 @@ import java.util.function.Supplier;
 
 import org.jgine.misc.utils.registry.Registry;
 
+/**
+ * Helper class for {@link SpacePartitioningType} registration.
+ */
 public class SpacePartitioningTypes {
 
 	public static final SpacePartitioningType<SceneSpacePartitioning> SCENE = a("scene", SceneSpacePartitioning::new);

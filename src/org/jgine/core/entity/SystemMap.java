@@ -13,7 +13,8 @@ import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
 /**
- * Data structure used internally by entities to store their systems.
+ * Data structure used internally by {@link Entity} class to store their
+ * {@link EngineSystem}<code>s</code>.
  */
 public class SystemMap {
 

@@ -11,6 +11,12 @@ import java.util.function.Consumer;
 import org.jgine.core.Transform;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
+/**
+ * Basic binary space tree implementation. Binary space trees divide space into
+ * 2 regions recursively.
+ * <p>
+ * NOT FULLY IMPLEMENTED YET!!!!!
+ */
 public class BinarySpaceTree implements SpacePartitioning {
 
 	private static final int MAX_DEPTH = 32;

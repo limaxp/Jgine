@@ -39,6 +39,10 @@ import java.nio.FloatBuffer;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
+/**
+ * a joystick {@link InputDevice}. Has methods for joystick buttons, hats and
+ * axes.
+ */
 public class Joystick extends InputDevice {
 
 	public static class Hats {

@@ -4,6 +4,9 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 
+/**
+ * A mouse {@link InputDevice}. Has methods for mouse scroll.
+ */
 public class Mouse extends InputDevice {
 
 	private float scroll;

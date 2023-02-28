@@ -27,6 +27,9 @@ import org.jgine.misc.math.Matrix;
  * THE SOFTWARE.
  */
 
+/**
+ * An immutable Vector with 2 float values.
+ */
 public class Vector2f {
 
 	public static final Vector2f NULL = new Vector2f(0);

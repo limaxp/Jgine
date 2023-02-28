@@ -3,10 +3,11 @@ package org.jgine.core;
 import java.util.List;
 import java.util.Map;
 
+import org.jgine.core.entity.Prefab;
 import org.jgine.misc.utils.loader.YamlHelper;
 
 /**
- * Used by prefabs to store transforms.
+ * Used by {@link Prefab} class to store {@link Transform} data.
  */
 public class TransformData {
 

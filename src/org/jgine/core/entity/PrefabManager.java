@@ -9,8 +9,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 
 /**
- * Manager to register and free prefabs. Allows registration of prefabs not
- * loaded from file.
+ * Manager to register and free {@link Prefab}<code>s</code>. Allows
+ * registration of {@link Prefab}<code>s</code> not loaded from file.
  */
 public class PrefabManager {
 

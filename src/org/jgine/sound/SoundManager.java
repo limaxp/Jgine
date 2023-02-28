@@ -46,16 +46,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import org.jgine.core.Engine;
 import org.jgine.core.Transform;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.sound.effect.EFXUtil;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.physic.PhysicObject;
-import org.jgine.system.systems.physic.PhysicSystem;
 import org.lwjgl.openal.ALUtil;
 import org.lwjgl.openal.EnumerateAllExt;
 import org.lwjgl.system.MemoryUtil;
@@ -82,12 +80,10 @@ public class SoundManager {
 	}
 
 	private static void updateListener() {
-		// TODO this should not access systems!
-		CameraSystem cameraSystem = SystemManager.get(CameraSystem.class);
-		Camera camera = cameraSystem.getMainCamera();
+		Camera camera = Engine.CAMERA_SYSTEM.getMainCamera();
 		Transform transform = camera.getTransform();
 		listener.setPosition(transform.getPosition());
-		PhysicObject physicObject = transform.getEntity().getSystem(PhysicSystem.class);
+		PhysicObject physicObject = transform.getEntity().getSystem(Engine.PHYSIC_SYSTEM);
 		if (physicObject != null)
 			listener.setVelocity(physicObject.getVelocity());
 		listener.setOrientation(Vector3f.mult(camera.getForwardDirection(), -1), camera.getUpDirection());

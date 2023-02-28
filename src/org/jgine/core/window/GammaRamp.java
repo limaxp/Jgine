@@ -4,11 +4,14 @@ import java.nio.ShortBuffer;
 
 import org.lwjgl.glfw.GLFWGammaRamp;
 
-public class GamaRamp {
+/**
+ * The gamma ramp for a {@link Display}.
+ */
+public class GammaRamp {
 
 	protected final GLFWGammaRamp glfw;
 
-	public GamaRamp(GLFWGammaRamp glfw) {
+	public GammaRamp(GLFWGammaRamp glfw) {
 		this.glfw = glfw;
 	}
 

@@ -1,7 +1,20 @@
 package org.jgine.misc.collection.bitSet;
 
 import java.io.Serializable;
+import java.util.BitSet;
 
+/**
+ * A {@link BitSet} backed by a long. Can only hold up to 64 bits.
+ * <p>
+ * <strong>Note that this implementation is not synchronized.</strong> If
+ * multiple threads access an {@code ArrayList} instance concurrently, and at
+ * least one of the threads modifies the list structurally, it <i>must</i> be
+ * synchronized externally. (A structural modification is any operation that
+ * adds or deletes one or more elements, or explicitly resizes the backing
+ * array; merely setting the value of an element is not a structural
+ * modification.) This is typically accomplished by synchronizing on some object
+ * that naturally encapsulates the list.
+ */
 public class LongBitSet implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 9031893883463019904L;
@@ -10,7 +23,8 @@ public class LongBitSet implements Cloneable, Serializable {
 
 	private long bits;
 
-	public LongBitSet() {}
+	public LongBitSet() {
+	}
 
 	public LongBitSet(long bits) {
 		this.bits = bits;
@@ -174,7 +188,7 @@ public class LongBitSet implements Cloneable, Serializable {
 		StringBuffer stringBuffer = new StringBuffer("[");
 		boolean first = true;
 		long bit = 1;
-		for (int i = 0; i < 64; ++i) {
+		for (int i = 0; i < MAX_SIZE; ++i) {
 			if ((bits & bit) != 0) {
 				if (!first)
 					stringBuffer.append(", ");

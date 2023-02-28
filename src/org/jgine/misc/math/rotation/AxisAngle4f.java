@@ -33,6 +33,9 @@ import org.jgine.misc.utils.options.Options;
  * THE SOFTWARE.
  */
 
+/**
+ * An axis angle in float precision.
+ */
 public class AxisAngle4f implements Cloneable {
 
 	public float angle, x, y, z;
@@ -45,8 +48,8 @@ public class AxisAngle4f implements Cloneable {
 		x = a.x;
 		y = a.y;
 		z = a.z;
-		angle = (float) ((a.angle < 0.0 ? Math.PI + Math.PI + a.angle % (Math.PI + Math.PI) : a.angle) % (Math.PI
-				+ Math.PI));
+		angle = (float) ((a.angle < 0.0 ? Math.PI + Math.PI + a.angle % (Math.PI + Math.PI) : a.angle)
+				% (Math.PI + Math.PI));
 	}
 
 	public AxisAngle4f(Quaternionf q) {
@@ -56,8 +59,7 @@ public class AxisAngle4f implements Cloneable {
 			this.x = 0.0f;
 			this.y = 0.0f;
 			this.z = 1.0f;
-		}
-		else {
+		} else {
 			this.x = q.x * invSqrt;
 			this.y = q.y * invSqrt;
 			this.z = q.z * invSqrt;
@@ -69,8 +71,8 @@ public class AxisAngle4f implements Cloneable {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.angle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle) % (Math.PI
-				+ Math.PI));
+		this.angle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle)
+				% (Math.PI + Math.PI));
 	}
 
 	public AxisAngle4f(float angle, Vector3f v) {
@@ -90,8 +92,8 @@ public class AxisAngle4f implements Cloneable {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.angle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle) % (Math.PI
-				+ Math.PI));
+		this.angle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle)
+				% (Math.PI + Math.PI));
 		return this;
 	}
 
@@ -106,8 +108,7 @@ public class AxisAngle4f implements Cloneable {
 			this.x = 0.0f;
 			this.y = 0.0f;
 			this.z = 1.0f;
-		}
-		else {
+		} else {
 			this.x = q.x * invSqrt;
 			this.y = q.y * invSqrt;
 			this.z = q.z * invSqrt;
@@ -133,11 +134,10 @@ public class AxisAngle4f implements Cloneable {
 		nm21 *= lenZ;
 		nm22 *= lenZ;
 		float epsilon = 1E-4f, epsilon2 = 1E-3f;
-		if (FastMath.abs(nm10 - nm01) < epsilon && FastMath.abs(nm20 - nm02) < epsilon && FastMath.abs(nm21
-				- nm12) < epsilon) {
-			if (FastMath.abs(nm10 + nm01) < epsilon2 && FastMath.abs(nm20 + nm02) < epsilon2 && FastMath.abs(nm21
-					+ nm12) < epsilon2
-					&& FastMath.abs(nm00 + nm11 + nm22 - 3) < epsilon2) {
+		if (FastMath.abs(nm10 - nm01) < epsilon && FastMath.abs(nm20 - nm02) < epsilon
+				&& FastMath.abs(nm21 - nm12) < epsilon) {
+			if (FastMath.abs(nm10 + nm01) < epsilon2 && FastMath.abs(nm20 + nm02) < epsilon2
+					&& FastMath.abs(nm21 + nm12) < epsilon2 && FastMath.abs(nm00 + nm11 + nm22 - 3) < epsilon2) {
 				x = 0;
 				y = 0;
 				z = 1;
@@ -155,21 +155,19 @@ public class AxisAngle4f implements Cloneable {
 				x = FastMath.sqrt(xx);
 				y = xy / x;
 				z = xz / x;
-			}
-			else if (yy > zz) {
+			} else if (yy > zz) {
 				y = FastMath.sqrt(yy);
 				x = xy / y;
 				z = yz / y;
-			}
-			else {
+			} else {
 				z = FastMath.sqrt(zz);
 				x = xz / z;
 				y = yz / z;
 			}
 			return this;
 		}
-		float s = FastMath.sqrt((nm12 - nm21) * (nm12 - nm21) + (nm20 - nm02) * (nm20 - nm02) + (nm01 - nm10) * (nm01
-				- nm10));
+		float s = FastMath
+				.sqrt((nm12 - nm21) * (nm12 - nm21) + (nm20 - nm02) * (nm20 - nm02) + (nm01 - nm10) * (nm01 - nm10));
 		angle = FastMath.safeAcos((nm00 + nm11 + nm22 - 1) / 2);
 		x = (nm12 - nm21) / s;
 		y = (nm20 - nm02) / s;
@@ -207,8 +205,7 @@ public class AxisAngle4f implements Cloneable {
 		float dot = x * v.x + y * v.y + z * v.z;
 		return new Vector4f((float) (v.x * cos + sin * (y * v.z - z * v.y) + (1.0 - cos) * dot * x),
 				(float) (v.y * cos + sin * (z * v.x - x * v.z) + (1.0 - cos) * dot * y),
-				(float) (v.z * cos + sin * (x * v.y - y * v.x) + (1.0 - cos) * dot * z),
-				v.w);
+				(float) (v.z * cos + sin * (x * v.y - y * v.x) + (1.0 - cos) * dot * z), v.w);
 	}
 
 	public String toString() {
@@ -216,15 +213,15 @@ public class AxisAngle4f implements Cloneable {
 	}
 
 	public String toString(NumberFormat formatter) {
-		return "(" + StringUtils.format(x, formatter) + " " + StringUtils.format(y, formatter) + " " + StringUtils
-				.format(z, formatter) + " <| " + StringUtils.format(angle, formatter) + ")";
+		return "(" + StringUtils.format(x, formatter) + " " + StringUtils.format(y, formatter) + " "
+				+ StringUtils.format(z, formatter) + " <| " + StringUtils.format(angle, formatter) + ")";
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		float nangle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle) % (Math.PI
-				+ Math.PI));
+		float nangle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle)
+				% (Math.PI + Math.PI));
 		result = prime * result + Float.floatToIntBits(nangle);
 		result = prime * result + Float.floatToIntBits(x);
 		result = prime * result + Float.floatToIntBits(y);
@@ -240,8 +237,8 @@ public class AxisAngle4f implements Cloneable {
 		if (getClass() != obj.getClass())
 			return false;
 		AxisAngle4f other = (AxisAngle4f) obj;
-		float nangle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle) % (Math.PI
-				+ Math.PI));
+		float nangle = (float) ((angle < 0.0 ? Math.PI + Math.PI + angle % (Math.PI + Math.PI) : angle)
+				% (Math.PI + Math.PI));
 		float nangleOther = (float) ((other.angle < 0.0 ? Math.PI + Math.PI + other.angle % (Math.PI + Math.PI)
 				: other.angle) % (Math.PI + Math.PI));
 		if (Float.floatToIntBits(nangle) != Float.floatToIntBits(nangleOther))

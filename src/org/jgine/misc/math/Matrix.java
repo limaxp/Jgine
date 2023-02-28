@@ -35,9 +35,7 @@ import org.jgine.misc.utils.options.Options;
  */
 
 /**
- * Helper class for matrix calculations.
- * 
- * @author Maximilian Paar
+ * A 4x4 matrix with float precision.
  */
 public class Matrix implements Cloneable {
 

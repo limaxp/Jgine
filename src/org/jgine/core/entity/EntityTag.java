@@ -7,12 +7,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.misc.collection.bitSet.LongBitSet;
 
 /**
- * Tags that can be attached to an prefab to mark it with identifiers.
+ * Tags that can be attached to an {@link Prefab} to mark it with identifiers.
  * <p>
  * Only supports up to 64 tags since its internally stored as a long! Tags must
  * be registered here before using them!
  * <p>
- * Alternatively use setData(), getData(), etc. methods in prefab.
+ * Alternatively use setData(), getData(), etc. methods in {@link Prefab}.
  */
 public class EntityTag {
 

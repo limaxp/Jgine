@@ -10,7 +10,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
+import org.jgine.core.manager.ResourceManager;
 import org.jgine.misc.collection.bitSet.LongBitSet;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
@@ -20,13 +22,15 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
 /**
- * A blueprint for entities. Stores info about name, id, transform, tags, used
- * systems and child prefabs. Also contains a Map<Object, Object> to store any
- * extra data. Use create() methods to build entities.
+ * A blueprint for a {@link Entity}. Stores info about name, id,
+ * {@link Transform}, {@link EntityTag}, used
+ * {@link EngineSystems}<code>s</code> and child prefabs. Also contains a
+ * Map<Object, Object> to store any extra data. Use create() methods to build a
+ * {@link Entity}.
  * <p>
  * Prefabs are usually written as YAML files with the .prefab extension and
- * loaded with the ResourceManager. The prefab name becomes the file name
- * without the extension.
+ * loaded with the {@link ResourceManager}. The prefab name becomes the file
+ * name without the extension.
  * 
  * <pre>
 YAML example:

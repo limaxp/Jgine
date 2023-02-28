@@ -32,6 +32,11 @@ import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
 
+/**
+ * Manager that handles input and stores {@link InputDevice}<code>s</code>. Has
+ * many helper methods to customize input. Use {@link InputDevice}<code>s</code>
+ * to check for clicks, etc.
+ */
 public class Input {
 
 	private static Window window;

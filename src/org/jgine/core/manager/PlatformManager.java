@@ -1,10 +1,11 @@
 package org.jgine.core.manager;
 
+import org.jgine.core.Engine;
 import org.lwjgl.system.MemoryUtil;
 
 /**
- * Helper class that exposes information about the platform the engine is
- * running on.
+ * Helper class that exposes information about the platform the {@link Engine}
+ * is running on.
  */
 public class PlatformManager {
 

@@ -27,6 +27,9 @@ import org.jgine.misc.math.Matrix;
  * THE SOFTWARE.
  */
 
+/**
+ * An immutable Vector with 4 float values.
+ */
 public class Vector4f extends Vector3f {
 
 	public static final Vector4f NULL = new Vector4f(0, 1);

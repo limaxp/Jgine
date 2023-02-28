@@ -7,6 +7,9 @@ import java.util.List;
 import org.jgine.misc.utils.options.Option;
 import org.jgine.misc.utils.options.Options;
 
+/**
+ * This class extends the {@link Key} class with {@link Option} functionality.
+ */
 public class OptionKey extends Key {
 
 	private static final List<OptionKey> OPTION_KEY_LIST = new ArrayList<OptionKey>();
