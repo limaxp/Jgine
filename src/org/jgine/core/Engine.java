@@ -54,7 +54,7 @@ import org.jgine.system.systems.ui.UISystem;
  * Use this class to create and destroy a {@link Scene} with whom you can create
  * entities.
  */
-public abstract class Engine {
+public class Engine {
 
 	public static final PhysicSystem PHYSIC_SYSTEM = SystemManager.register(new PhysicSystem());
 	public static final CameraSystem CAMERA_SYSTEM = SystemManager.register(new CameraSystem());
@@ -143,7 +143,8 @@ public abstract class Engine {
 		return isRunning;
 	}
 
-	public abstract void onUpdate();
+	public void onUpdate() {
+	}
 
 	private final void update() {
 		long time = System.currentTimeMillis();
@@ -171,7 +172,8 @@ public abstract class Engine {
 		new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
-	public abstract void onRender();
+	public void onRender() {
+	}
 
 	private final void render() {
 		renderCameras();
