@@ -20,6 +20,7 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
+import org.jgine.core.sound.SoundBuffer;
 import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.utils.loader.ModelLoader;
@@ -29,7 +30,6 @@ import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
-import org.jgine.sound.SoundBuffer;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

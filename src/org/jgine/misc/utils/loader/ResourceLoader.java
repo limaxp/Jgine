@@ -24,6 +24,8 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Prefab;
+import org.jgine.core.sound.SoundBuffer;
+import org.jgine.core.sound.SoundStream;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.utils.FileUtils;
 import org.jgine.misc.utils.logger.Logger;
@@ -31,8 +33,6 @@ import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
-import org.jgine.sound.SoundBuffer;
-import org.jgine.sound.SoundStream;
 
 /**
  * Helper class for loading {@link Model}<code>s</code>,

@@ -1,4 +1,4 @@
-package org.jgine.sound;
+package org.jgine.core.sound;
 
 import static org.lwjgl.openal.AL10.AL_DISTANCE_MODEL;
 import static org.lwjgl.openal.AL10.AL_EXTENSIONS;
@@ -48,10 +48,10 @@ import java.util.stream.Stream;
 
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
+import org.jgine.core.sound.effect.EFXUtil;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.sound.effect.EFXUtil;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.lwjgl.openal.ALUtil;

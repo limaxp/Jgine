@@ -1,4 +1,4 @@
-package org.jgine.sound.effect;
+package org.jgine.core.sound.effect;
 
 import static org.lwjgl.openal.EXTEfx.*;
 

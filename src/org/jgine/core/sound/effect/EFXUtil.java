@@ -1,4 +1,4 @@
-package org.jgine.sound.effect;
+package org.jgine.core.sound.effect;
 
 import static org.lwjgl.openal.AL10.AL_INVALID_OPERATION;
 import static org.lwjgl.openal.AL10.AL_INVALID_VALUE;

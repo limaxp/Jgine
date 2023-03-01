@@ -1,4 +1,4 @@
-package org.jgine.sound;
+package org.jgine.core.sound;
 
 import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
