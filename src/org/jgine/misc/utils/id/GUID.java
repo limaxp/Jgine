@@ -8,10 +8,10 @@ import java.util.UUID;
 import org.jgine.misc.math.FastMath;
 
 /**
- * A class that represents an immutable globally unique identifier (GUID). A
- * GUID represents a 128-bit value.
+ * Represents an immutable globally unique identifier (GUID). A GUID represents
+ * a 128-bit value.
  * <p>
- * Can be used as an alternatice to {@link UUID}.
+ * Can be used as an alternative to {@link UUID}.
  */
 public class GUID implements Serializable, Comparable<GUID> {
 
@@ -28,17 +28,22 @@ public class GUID implements Serializable, Comparable<GUID> {
 		HOST_ID = hostName.hashCode();
 	}
 
-	private final long id;
 	private final long timeStamp;
+	private final long id;
 
 	public GUID() {
-		id = HOST_ID << 32 | FastMath.random(Integer.MAX_VALUE);
 		timeStamp = System.currentTimeMillis();
+		id = HOST_ID << 32 | FastMath.random(Integer.MAX_VALUE);
+	}
+
+	public GUID(long id, long timeStamp) {
+		this.timeStamp = timeStamp;
+		this.id = id;
 	}
 
 	public GUID(GUID gid) {
-		id = gid.id;
 		timeStamp = gid.timeStamp;
+		id = gid.id;
 	}
 
 	@Override
@@ -49,33 +54,32 @@ public class GUID implements Serializable, Comparable<GUID> {
 	}
 
 	public final boolean equals(GUID gid) {
-		if (id == gid.id && timeStamp == gid.timeStamp)
+		if (timeStamp == gid.timeStamp && id == gid.id)
 			return true;
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return "" + id + timeStamp;
+		return "" + timeStamp + id;
 	}
 
 	@Override
 	public int hashCode() {
-		return Long.hashCode(id ^ timeStamp);
+		return Long.hashCode(timeStamp ^ id);
 	}
 
 	@Override
 	public int compareTo(GUID val) {
-		return (this.id < val.id ? -1
-				: (this.id > val.id ? 1
-						: (this.timeStamp < val.timeStamp ? -1 : (this.timeStamp > val.timeStamp ? 1 : 0))));
-	}
-
-	public final long getId() {
-		return id;
+		return (this.timeStamp < val.timeStamp ? -1
+				: (this.timeStamp > val.timeStamp ? 1 : (this.id < val.id ? -1 : (this.id > val.id ? 1 : 0))));
 	}
 
 	public final long getTimeStamp() {
 		return timeStamp;
+	}
+
+	public final long getId() {
+		return id;
 	}
 }
