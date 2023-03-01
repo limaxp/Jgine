@@ -11,6 +11,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+/**
+ * {@link ScriptEngine} implemented after the null object pattern. Also
+ * overrides {@link Invocable} and {@link Compilable}
+ */
 public class NullScriptEngine implements ScriptEngine, Invocable, Compilable {
 
 	protected NullScriptEngine() {

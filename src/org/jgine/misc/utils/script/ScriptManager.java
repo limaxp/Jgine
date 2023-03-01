@@ -18,6 +18,9 @@ import org.jgine.misc.utils.logger.Logger;
 
 import bsh.BshScriptEngineFactory;
 
+/**
+ * Manager class for scripts.
+ */
 public class ScriptManager {
 
 	public static final ScriptEngine NULL_SCRIPT_ENGINE = new NullScriptEngine();
@@ -27,11 +30,9 @@ public class ScriptManager {
 	static {
 		ENGINE_MANAGER = new ScriptEngineManager();
 		registerFactory(new BshScriptEngineFactory());
-		// TODO add Nashorn!
 	}
 
 	public static void registerFactory(ScriptEngineFactory factory) {
-		// TODO add to ENGINE_MANAGER.getEngineFactories() somehow!
 		for (String extenson : factory.getNames())
 			ENGINE_MANAGER.registerEngineName(extenson, factory);
 		for (String mimeType : factory.getMimeTypes())

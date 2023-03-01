@@ -13,7 +13,6 @@ import org.jgine.core.manager.UpdateManager;
 import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.misc.utils.scheduler.TaskHelper;
-import org.jgine.misc.utils.script.EventManager;
 import org.jgine.system.SystemObject;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.collision.Collider;
@@ -27,6 +26,7 @@ import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
 import org.jgine.system.systems.script.IScript;
+import org.jgine.system.systems.script.ScriptSystem;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
@@ -109,9 +109,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
 			Collider targetCollider, CollisionData collision) {
-		EventManager.callEvent(object, new Collision(collision, target, objectCollider, targetCollider),
+		ScriptSystem.callEvent(object, new Collision(collision, target, objectCollider, targetCollider),
 				IScript::onCollision);
-		EventManager.callEvent(target, new Collision(collision, object, targetCollider, objectCollider),
+		ScriptSystem.callEvent(target, new Collision(collision, object, targetCollider, objectCollider),
 				IScript::onCollision);
 	}
 
