@@ -15,7 +15,7 @@ import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArray
  * Basic binary space tree implementation. Binary space trees divide space into
  * 2 regions recursively.
  * <p>
- * NOT FULLY IMPLEMENTED YET!!!!!
+ * <strong>NOT FULLY IMPLEMENTED YET!</strong>
  */
 public class BinarySpaceTree implements SpacePartitioning {
 

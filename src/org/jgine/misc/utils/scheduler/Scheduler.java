@@ -1,5 +1,9 @@
 package org.jgine.misc.utils.scheduler;
 
+/**
+ * Manager for timed operations. Has functions to call a {@link Runnable} or
+ * {@link Task} synchron or asynchron, after a given time, or in an interval.
+ */
 public class Scheduler {
 
 	protected static final int START_CAPACITY = 4096;

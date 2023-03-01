@@ -8,6 +8,12 @@ import java.util.function.Consumer;
 import org.jgine.misc.collection.iterator.ArrayIterator;
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * The default {@link Registry}. Uses given id and name for registration. Only
+ * passing name will use its hash code as id.
+ * 
+ * @param <T> the type of elements in this registry
+ */
 public class BaseRegistry<T> extends Registry<T> {
 
 	protected final Object[] values;
@@ -23,7 +29,7 @@ public class BaseRegistry<T> extends Registry<T> {
 	}
 
 	/**
-	 * Uses hashCode() of key to generate id!
+	 * Uses hashCode() of key as id!
 	 */
 	@Override
 	public int register(String key, T value) {

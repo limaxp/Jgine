@@ -7,8 +7,6 @@ import java.util.logging.Level;
 /**
  * Represents the base of an LoggerService implemented after the service
  * provider pattern.
- * 
- * @author Maximilian Paar
  */
 public interface ILoggerService {
 

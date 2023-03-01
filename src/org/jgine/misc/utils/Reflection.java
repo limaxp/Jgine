@@ -14,6 +14,9 @@ import java.util.List;
 
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * Helper class for reflection.
+ */
 public class Reflection {
 
 	private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.other.Property;
+import org.jgine.misc.utils.Property;
 import org.jgine.misc.utils.logger.Logger;
 
 /**

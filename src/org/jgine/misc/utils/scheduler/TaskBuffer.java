@@ -2,6 +2,11 @@ package org.jgine.misc.utils.scheduler;
 
 import java.util.function.Consumer;
 
+/**
+ * {@link TimeBuffer} implementation that is internally used by
+ * {@link Scheduler} that allows {@link Task}<code>s</code> to be called in an
+ * interval.
+ */
 public class TaskBuffer extends TimeBuffer<Task> {
 
 	public TaskBuffer(int capacity) {

@@ -30,9 +30,19 @@ import org.jgine.misc.utils.logger.Logger;
 import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
+import org.jgine.render.shader.Shader;
 import org.jgine.sound.SoundBuffer;
 import org.jgine.sound.SoundStream;
 
+/**
+ * Helper class for loading {@link Model}<code>s</code>,
+ * {@link Texture}<code>s</code>, {@link SoundBuffer}<code>s</code>,
+ * {@link Shader}<code>s</code>, {@link ScriptEngine}<code>s</code> and
+ * {@link Prefab}<code>s</code>.
+ * <p>
+ * Use load() method to import a folder. Use loadResource() method to import a
+ * resource folder (e.g. a jar file).
+ */
 public abstract class ResourceLoader {
 
 	public abstract void modelCallback(String name, @Nullable Model model);

@@ -5,6 +5,9 @@ import org.jgine.misc.math.FastMath;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIVector3D;
 
+/**
+ * Helper class for buffer creation.
+ */
 public class BufferHelper {
 
 	public static FloatBuffer createFloatBuffer(int size1, float[] buffer1) {
@@ -98,8 +101,7 @@ public class BufferHelper {
 				default:
 					break;
 				}
-			}
-			else {
+			} else {
 				for (int j = 0; j < sizes[bufferIndex]; j++)
 					newBuffer.put(0);
 				i += sizes[bufferIndex];

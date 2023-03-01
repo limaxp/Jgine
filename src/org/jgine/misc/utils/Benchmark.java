@@ -3,6 +3,9 @@ package org.jgine.misc.utils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Helper class for benchmarking per identifier.
+ */
 public class Benchmark {
 
 	private static final Map<Object, BenchmarkData> BENCHMARKS = new ConcurrentHashMap<Object, BenchmarkData>();
@@ -45,13 +48,17 @@ public class Benchmark {
 		benchmark.startTimer();
 		func.run();
 		benchmark.stopTimer();
-		return benchmark.getTime();
+		return benchmark.getAverage();
 	}
 
+	/**
+	 * Container for {@link Benchmark} data. Tracks average, best, worst time and
+	 * test count.
+	 */
 	public static class BenchmarkData {
 
 		private long startTime;
-		private int size;
+		private int count;
 		private long time;
 		private long best = Long.MAX_VALUE;
 		private long worst;
@@ -70,19 +77,19 @@ public class Benchmark {
 			if (deltaTime > worst)
 				worst = deltaTime;
 			time += deltaTime;
-			size++;
+			count++;
 			startTime = 0;
 		}
 
 		public void clear() {
-			size = 0;
+			count = 0;
 			time = 0;
 			best = Long.MAX_VALUE;
 			worst = 0;
 		}
 
-		public long getTime() {
-			return time / size;
+		public long getAverage() {
+			return time / count;
 		}
 
 		public long getBest() {
@@ -95,6 +102,10 @@ public class Benchmark {
 
 		public boolean isTiming() {
 			return startTime != 0;
+		}
+
+		public int getCount() {
+			return count;
 		}
 	}
 }

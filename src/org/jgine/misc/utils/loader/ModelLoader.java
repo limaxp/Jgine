@@ -36,6 +36,10 @@ import org.lwjgl.assimp.AIImporterDesc;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
 
+/**
+ * Helper class for loading model files with
+ * <a href="https://github.com/assimp/assimp">assimp</a>.
+ */
 public class ModelLoader {
 
 	private static final HashSet<String> IMPORT_EXTENSIONS;

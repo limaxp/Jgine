@@ -23,6 +23,9 @@ import org.jgine.misc.math.spacePartitioning.SpacePartitioningTypes;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.system.SystemScene;
 
+/**
+ * Helper class for loading {@link Scene} files.
+ */
 public class SceneLoader {
 
 	public static Scene load(File file) {

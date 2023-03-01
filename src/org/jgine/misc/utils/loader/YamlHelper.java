@@ -9,6 +9,9 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.utils.Color;
 import org.jgine.render.mesh.text.Text;
 
+/**
+ * Helper class for reading yaml data.
+ */
 public class YamlHelper {
 
 	public static byte toByte(Object data) {

@@ -26,6 +26,13 @@ import javax.security.auth.Destroyable;
 import org.jgine.misc.utils.Reflection;
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * Helper class for symetric encryption and decryption of data with a
+ * {@link Key}. Also provides methods for {@link Key} generation.
+ * <p>
+ * <strong>Note that you should never use this class in any way except you
+ * really know what you are doing!</strong>
+ */
 public class Encryption {
 
 	private static final String ALGORITHM = "AES";

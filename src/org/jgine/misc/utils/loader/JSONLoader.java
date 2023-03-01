@@ -16,6 +16,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Helper class for reading and writing json files with
+ * <a href="https://github.com/FasterXML/jackson">FasterXML/jackson</a>.
+ */
 public class JSONLoader {
 
 	public static final JsonEncoding DEFAULT_ENCODING = JsonEncoding.UTF8;

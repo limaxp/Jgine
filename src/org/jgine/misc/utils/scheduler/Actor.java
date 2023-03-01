@@ -5,7 +5,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
- * from https://github.com/strehler/workshop-jbcn
+ * An actor system from <a href=
+ * "https://github.com/strehler/workshop-jbcn">strehler/workshop-jbcn</a>.
  */
 public interface Actor {
 

@@ -7,6 +7,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Helper class for getting the byte size of a {@link Object}, {@link Class} or
+ * {@link Field}.
+ */
 public class SizeOf {
 
 	public static final byte REFERENCE_SIZE = 4;

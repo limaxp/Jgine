@@ -3,10 +3,14 @@ package org.jgine.misc.utils.loader;
 import java.io.File;
 import java.io.InputStream;
 
+import org.jgine.render.mesh.TileMap;
 import org.jgine.render.mesh.TileMap.TileMapTile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * Helper class for loading {@link TileMap} files.
+ */
 public class TileMapLoader {
 
 	public static TileMapData load(File file) {

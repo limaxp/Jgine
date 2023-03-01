@@ -8,6 +8,13 @@ import org.jgine.system.systems.light.LightType;
 import org.jgine.system.systems.script.ScriptType;
 import org.jgine.system.systems.ui.UIObjectType;
 
+/**
+ * Base class of a registry. A registry is a collection of types identified by
+ * both an <code>int</code> id and a {@link String} name. They implement
+ * {@link Iterable} and can be accessed by index of addition.
+ * 
+ * @param <T> the type of elements in this registry
+ */
 public abstract class Registry<T> implements Iterable<T> {
 
 	public static final Registry<SpacePartitioningType<?>> SPACE_PARTITIONING_TYPES = new GenIdRegistry<SpacePartitioningType<?>>(

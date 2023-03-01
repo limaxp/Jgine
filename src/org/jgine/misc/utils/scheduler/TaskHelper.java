@@ -10,6 +10,10 @@ import org.jgine.misc.utils.function.BiIntConsumer;
 import org.jgine.misc.utils.logger.Logger;
 import org.jgine.misc.utils.options.Options;
 
+/**
+ * Helper class for parallel task execution. Uses {@link TaskExecutor}
+ * internally.
+ */
 public class TaskHelper {
 
 	public static void execute(int size, BiIntConsumer func) {

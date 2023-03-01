@@ -8,8 +8,8 @@ import java.util.UUID;
 import org.jgine.misc.math.FastMath;
 
 /**
- * Represents an immutable globally unique identifier (GUID). A GUID represents
- * a 128-bit value.
+ * An immutable globally unique identifier (GUID). A GUID represents a 128-bit
+ * value.
  * <p>
  * Can be used as an alternative to {@link UUID}.
  */
@@ -36,7 +36,7 @@ public class GUID implements Serializable, Comparable<GUID> {
 		id = HOST_ID << 32 | FastMath.random(Integer.MAX_VALUE);
 	}
 
-	public GUID(long id, long timeStamp) {
+	public GUID(long timeStamp, long id) {
 		this.timeStamp = timeStamp;
 		this.id = id;
 	}

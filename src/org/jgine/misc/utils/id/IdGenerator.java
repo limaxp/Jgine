@@ -5,6 +5,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import org.jgine.misc.math.FastMath;
 
+/**
+ * A generator for 32-bit identifiers. Identifiers consist of index and
+ * generation. Index is a 24-bit value while generation uses the other 8-bit. So
+ * there are up to 16777215 identifiers possible but you can also specify a
+ * lower maximum. Generation is used to check if id is still in use (alive).
+ * Will recycle freed identifiers!
+ * <p>
+ * <strong>Identifiers must be freed after use!</strong>
+ */
 public class IdGenerator {
 
 	public static final int MAX_ID = 16777215;

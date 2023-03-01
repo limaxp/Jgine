@@ -15,6 +15,13 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * Helper class for asymetric encryption and decryption of data with a
+ * {@link KeyPair}. Also provides methods for {@link KeyPair} generation.
+ * <p>
+ * <strong>Note that you should never use this class in any way except you
+ * really know what you are doing!</strong>
+ */
 public class EncryptionAsymetric {
 
 	private static final String ALGORITHM = "RSA";

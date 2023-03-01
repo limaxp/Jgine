@@ -8,6 +8,9 @@ import java.util.Map;
 import org.jgine.misc.utils.loader.YamlLoader;
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * Helper class for config.ini access.
+ */
 public class OptionFile {
 
 	public static final File FILE;
@@ -42,8 +45,7 @@ public class OptionFile {
 				result = defaultvalue;
 			}
 			return result;
-		}
-		else {
+		} else {
 			Object result = DATA.get(property);
 			if (result == null) {
 				DATA.put(property, defaultvalue);
@@ -57,8 +59,7 @@ public class OptionFile {
 		if (property.contains(".")) {
 			String[] split = property.split("\\.");
 			findSubData(split).put(split[split.length - 1], value);
-		}
-		else
+		} else
 			DATA.put(property, value);
 	}
 

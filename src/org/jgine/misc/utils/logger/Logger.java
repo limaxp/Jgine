@@ -8,8 +8,6 @@ import java.util.logging.Level;
  * Represents an logger implemented after the service provider pattern. Should
  * be used as the standard way to log anything. The service can be changed with
  * provide().
- * 
- * @author Maximilian Paar
  */
 public class Logger {
 

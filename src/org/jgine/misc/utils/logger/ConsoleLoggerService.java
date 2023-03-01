@@ -7,8 +7,6 @@ import java.util.logging.Level;
 /**
  * Represents an LoggerService that logs to the java console implemented after
  * the service provider pattern.
- * 
- * @author Maximilian Paar
  */
 public class ConsoleLoggerService implements ILoggerService {
 

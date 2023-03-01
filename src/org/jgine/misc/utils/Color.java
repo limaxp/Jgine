@@ -8,9 +8,7 @@ import org.jgine.misc.math.vector.Vector4f;
 import org.jgine.misc.math.vector.Vector4i;
 
 /**
- * Helper class for color handling. Colors are represented as an integer
- * 
- * @author Maximilian Paar
+ * Helper class for color handling. Colors are represented as <code>int</code>.
  */
 public class Color {
 

@@ -40,7 +40,7 @@ import com.google.common.collect.HashBiMap;
  * {@link Shader}<code>s</code> and {@link ScriptEngine}<code>s</code>.
  * <p>
  * Use load() method to import a folder. Use loadResource() method to import a
- * resource folder like in a .jar file. You may specify an identifier.
+ * resource folder (e.g. a jar file). You may specify an identifier.
  * <p>
  * Use free() method with or without identifier to free imports.
  */

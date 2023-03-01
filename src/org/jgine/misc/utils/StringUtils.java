@@ -2,6 +2,9 @@ package org.jgine.misc.utils;
 
 import java.text.NumberFormat;
 
+/**
+ * Helper class for {@link String} operations.
+ */
 public class StringUtils {
 
 	public static boolean isInteger(String s, int radix) {
@@ -60,13 +63,11 @@ public class StringUtils {
 			char c = str.charAt(i);
 			if (c == 'E') {
 				eIndex = i;
-			}
-			else if (c == ' ' && eIndex == i - 1) {
+			} else if (c == ' ' && eIndex == i - 1) {
 				// workaround Java 1.4 DecimalFormat bug
 				res.append('+');
 				continue;
-			}
-			else if (Character.isDigit(c) && eIndex == i - 1) {
+			} else if (Character.isDigit(c) && eIndex == i - 1) {
 				res.append('+');
 			}
 			res.append(c);
@@ -77,8 +78,7 @@ public class StringUtils {
 	public static String format(double number, NumberFormat format) {
 		if (Double.isNaN(number)) {
 			return padLeft(format, " NaN");
-		}
-		else if (Double.isInfinite(number)) {
+		} else if (Double.isInfinite(number)) {
 			return padLeft(format, number > 0.0 ? " +Inf" : " -Inf");
 		}
 		return format.format(number);

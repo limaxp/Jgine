@@ -14,6 +14,9 @@ import org.jgine.core.manager.SystemManager;
 import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.system.EngineSystem;
 
+/**
+ * Helper class for loading {@link Prefab} files.
+ */
 public class PrefabLoader {
 
 	private static final Map<String, Object> EMPTY_DATA = new HashMap<String, Object>();

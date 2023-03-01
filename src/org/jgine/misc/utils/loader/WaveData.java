@@ -73,8 +73,8 @@ public class WaveData {
 	/**
 	 * Creates a new WaveData
 	 * 
-	 * @param data actual wavedata
-	 * @param format format of wave data
+	 * @param data       actual wavedata
+	 * @param format     format of wave data
 	 * @param samplerate sample rate of data
 	 */
 	private WaveData(ByteBuffer data, int format, int samplerate) {
@@ -140,8 +140,7 @@ public class WaveData {
 	 */
 	public static WaveData create(InputStream is) {
 		try {
-			return create(
-					AudioSystem.getAudioInputStream(is));
+			return create(AudioSystem.getAudioInputStream(is));
 		} catch (Exception e) {
 			Logger.err("WaveData: Unable to create from inputstream!", e);
 			return null;
@@ -156,9 +155,7 @@ public class WaveData {
 	 */
 	public static WaveData create(byte[] buffer) {
 		try {
-			return create(
-					AudioSystem.getAudioInputStream(
-							new BufferedInputStream(new ByteArrayInputStream(buffer))));
+			return create(AudioSystem.getAudioInputStream(new BufferedInputStream(new ByteArrayInputStream(buffer))));
 		} catch (Exception e) {
 			Logger.err("WaveData: Unable to create from byte array!", e);
 			return null;
@@ -179,8 +176,7 @@ public class WaveData {
 
 			if (buffer.hasArray()) {
 				bytes = buffer.array();
-			}
-			else {
+			} else {
 				bytes = new byte[buffer.capacity()];
 				buffer.get(bytes);
 			}
@@ -206,26 +202,20 @@ public class WaveData {
 		if (audioformat.getChannels() == 1) {
 			if (audioformat.getSampleSizeInBits() == 8) {
 				channels = AL10.AL_FORMAT_MONO8;
-			}
-			else if (audioformat.getSampleSizeInBits() == 16) {
+			} else if (audioformat.getSampleSizeInBits() == 16) {
 				channels = AL10.AL_FORMAT_MONO16;
-			}
-			else {
+			} else {
 				assert false : "Illegal sample size";
 			}
-		}
-		else if (audioformat.getChannels() == 2) {
+		} else if (audioformat.getChannels() == 2) {
 			if (audioformat.getSampleSizeInBits() == 8) {
 				channels = AL10.AL_FORMAT_STEREO8;
-			}
-			else if (audioformat.getSampleSizeInBits() == 16) {
+			} else if (audioformat.getSampleSizeInBits() == 16) {
 				channels = AL10.AL_FORMAT_STEREO16;
-			}
-			else {
+			} else {
 				assert false : "Illegal sample size";
 			}
-		}
-		else {
+		} else {
 			assert false : "Only mono or stereo is supported";
 		}
 
@@ -234,18 +224,16 @@ public class WaveData {
 		try {
 			int available = ais.available();
 			if (available <= 0) {
-				available = ais.getFormat().getChannels() * (int) ais.getFrameLength() * ais.getFormat()
-						.getSampleSizeInBits() / 8;
+				available = ais.getFormat().getChannels() * (int) ais.getFrameLength()
+						* ais.getFormat().getSampleSizeInBits() / 8;
 			}
 			byte[] buf = new byte[ais.available()];
 			int read = 0, total = 0;
-			while ((read = ais.read(buf, total, buf.length - total)) != -1
-					&& total < buf.length) {
+			while ((read = ais.read(buf, total, buf.length - total)) != -1 && total < buf.length) {
 				total += read;
 			}
-			buffer = convertAudioBytes(buf, audioformat.getSampleSizeInBits() == 16, audioformat.isBigEndian()
-					? ByteOrder.BIG_ENDIAN
-					: ByteOrder.LITTLE_ENDIAN);
+			buffer = convertAudioBytes(buf, audioformat.getSampleSizeInBits() == 16,
+					audioformat.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 		} catch (IOException ioe) {
 			return null;
 		}
@@ -256,7 +244,8 @@ public class WaveData {
 		// close stream
 		try {
 			ais.close();
-		} catch (IOException ioe) {}
+		} catch (IOException ioe) {
+		}
 
 		return wavedata;
 	}
@@ -271,8 +260,7 @@ public class WaveData {
 			ShortBuffer src_short = src.asShortBuffer();
 			while (src_short.hasRemaining())
 				dest_short.put(src_short.get());
-		}
-		else {
+		} else {
 			while (src.hasRemaining())
 				dest.put(src.get());
 		}

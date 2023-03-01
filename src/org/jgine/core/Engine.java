@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 
+import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
 import org.jgine.core.input.Input;
@@ -45,14 +46,14 @@ import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
 
 /**
- * The Base Engine class. Your main game class should extends this class. After
- * calling the constructor all internal systems are initialized and ready to
- * use. Call the start() method to start the game loop created by
+ * The Base Engine class. You can extend this class to override some methods.
+ * After calling the constructor all internal systems are initialized and ready
+ * to use. Call the start() method to start the game loop created by
  * createGameLoop(). Use shutdown() method to stop game loop and free engine
  * systems.
  * <p>
  * Use this class to create and destroy a {@link Scene} with whom you can create
- * entities.
+ * a {@link Entity}.
  */
 public class Engine {
 

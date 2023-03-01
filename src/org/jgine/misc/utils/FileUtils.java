@@ -39,6 +39,9 @@ import org.jgine.render.material.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * Helper class for file operations.
+ */
 public class FileUtils {
 
 	public static void copy(String source, String target) throws IOException {

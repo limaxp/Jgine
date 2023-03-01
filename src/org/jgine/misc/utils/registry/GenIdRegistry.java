@@ -8,6 +8,12 @@ import java.util.function.Consumer;
 import org.jgine.misc.collection.iterator.ArrayIterator;
 import org.jgine.misc.utils.logger.Logger;
 
+/**
+ * {@link Registry} implementation that only uses name for registration. Uses
+ * index as id.
+ * 
+ * @param <T> the type of elements in this registry
+ */
 public class GenIdRegistry<T> extends Registry<T> {
 
 	protected final Object[] values;

@@ -15,6 +15,9 @@ import org.jgine.render.material.Image;
 import org.jgine.render.material.Texture;
 import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
 
+/**
+ * Helper class for loading {@link Texture} files.
+ */
 public class TextureLoader {
 
 	@Nullable

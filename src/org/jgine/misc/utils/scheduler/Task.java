@@ -1,5 +1,9 @@
 package org.jgine.misc.utils.scheduler;
 
+/**
+ * {@link Runnable} implementation that allows for interval scheduling and
+ * cancellation.
+ */
 public abstract class Task implements Runnable {
 
 	int tickTime;

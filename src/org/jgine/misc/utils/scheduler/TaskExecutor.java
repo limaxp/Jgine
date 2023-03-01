@@ -14,14 +14,16 @@ import java.util.concurrent.TimeoutException;
 
 import org.jgine.core.manager.PlatformManager;
 
+/**
+ * Helper class for parallel task execution. Uses {@link ThreadPoolExecutor}
+ * internally.
+ */
 public class TaskExecutor {
-
-	// TODO: Bind thread to core!
 
 	private static final ThreadPoolExecutor THREAD_POOL;
 
 	static {
-		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(PlatformManager.getProcessorsSize(),
+		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(PlatformManager.getProcessorsSize() - 1,
 				new WorkerThreadFactory());
 		THREAD_POOL.prestartAllCoreThreads();
 	}

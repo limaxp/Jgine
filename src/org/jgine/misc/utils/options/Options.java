@@ -8,6 +8,12 @@ import java.util.Locale;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
 
+/**
+ * Helper class for {@link Option} registration. A registered {@link Option}
+ * will check config.ini file and use its value if it exists otherwise it will
+ * uses the default value and save it to file. {@link Option}<code>s</code> can
+ * be overridden with VM arguments.
+ */
 public class Options {
 
 	/**
@@ -62,21 +68,37 @@ public class Options {
 	 */
 	public static final NumberFormat NUMBER_FORMAT = decimalFormat();
 
+	/**
+	 * The maximal amount of sounds that can be played simultaneously.
+	 */
 	public static final Option MAX_SOUNDS = a("jgine.sound.maxSounds", 512);
 
+	/**
+	 * The x resolution used.
+	 */
 	public static final Option RESOLUTION_X = a("jgine.graphic.resolution.x",
 			DisplayManager.getPrimaryDisplay().getWidth());
 
+	/**
+	 * The y resolution used.
+	 */
 	public static final Option RESOLUTION_Y = a("jgine.graphic.resolution.y",
 			DisplayManager.getPrimaryDisplay().getHeight());
 
+	/**
+	 * The monitor used.
+	 */
 	public static final Option MONITOR = a("jgine.graphic.monitor", 0);
 
+	/**
+	 * The window mode used.
+	 */
 	public static final Option WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.WINDOWED);
-	
-	public static final Option ANTI_ALIASING = a("jgine.graphic.antialiasing", 4);
 
-	public static final boolean USE_COMPRESSED_OOPS = a("UseCompressedOops", false).getBoolean();
+	/**
+	 * The anti aliasing factor used.
+	 */
+	public static final Option ANTI_ALIASING = a("jgine.graphic.antialiasing", 4);
 
 	public static Option a(String property, boolean defaultValue) {
 		Object value = OptionFile.getData(property, defaultValue);

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.misc.other.Property;
+import org.jgine.misc.utils.Property;
 import org.jgine.system.EngineSystem;
 
 public class CollisionSystem extends EngineSystem {

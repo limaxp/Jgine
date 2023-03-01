@@ -2,6 +2,12 @@ package org.jgine.misc.utils.scheduler;
 
 import java.util.function.Consumer;
 
+/**
+ * Data structure used internally by {@link Scheduler} that allows elements to
+ * be saved according to a time value.
+ * 
+ * @param <E> the type of element
+ */
 public class TimeBuffer<E> {
 
 	protected long[] timeArray;

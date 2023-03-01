@@ -1,5 +1,9 @@
 package org.jgine.misc.utils.options;
 
+/**
+ * An option with a <code>string</code> key and any value. Changing an option
+ * will update config.ini file!
+ */
 public class Option {
 
 	public final String key;

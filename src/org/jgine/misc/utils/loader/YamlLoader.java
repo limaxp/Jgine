@@ -15,6 +15,10 @@ import org.jgine.misc.utils.logger.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * Helper class for reading and writing yaml files with
+ * <a href="https://github.com/snakeyaml/snakeyaml">snakeyaml</a>.
+ */
 public class YamlLoader {
 
 	private static final Yaml YAML;
