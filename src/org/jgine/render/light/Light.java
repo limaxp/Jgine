@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.Color;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
 import org.jgine.system.systems.light.LightType;
+import org.jgine.utils.Color;
+import org.jgine.utils.loader.YamlHelper;
 
 public abstract class Light implements SystemObject {
 

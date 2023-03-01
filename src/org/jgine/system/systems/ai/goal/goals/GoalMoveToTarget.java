@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.ai.goal.AiGoalTypes;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class GoalMoveToTarget extends AiGoal {
 

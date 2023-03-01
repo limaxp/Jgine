@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.misc.utils.Property;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.Property;
 
 public class PhysicSystem extends EngineSystem {
 

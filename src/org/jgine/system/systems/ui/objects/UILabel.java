@@ -9,11 +9,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector2i;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.Color;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -27,6 +22,11 @@ import org.jgine.render.mesh.text.TrueTypeText;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.Color;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector2i;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class UILabel extends UIObject {
 

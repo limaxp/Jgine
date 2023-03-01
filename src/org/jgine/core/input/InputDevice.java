@@ -1,8 +1,8 @@
 package org.jgine.core.input;
 
-import org.jgine.misc.collection.list.IntList;
-import org.jgine.misc.collection.list.arrayList.IntArrayList;
-import org.jgine.misc.math.FastMath;
+import org.jgine.collection.list.IntList;
+import org.jgine.collection.list.arrayList.IntArrayList;
+import org.jgine.utils.math.FastMath;
 
 /**
  * Base input device class. Has methods to check for {@link Key} press and

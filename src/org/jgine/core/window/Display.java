@@ -15,9 +15,9 @@ import static org.lwjgl.glfw.GLFW.glfwSetMonitorUserPointer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector2i;
-import org.jgine.misc.math.vector.Vector4i;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
+import org.jgine.utils.math.vector.Vector4i;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 

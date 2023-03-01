@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.http.controller.HttpController;
+import org.jgine.utils.logger.Logger;
 
 public class HttpServer implements Runnable {
 

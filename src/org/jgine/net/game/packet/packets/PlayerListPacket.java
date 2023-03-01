@@ -3,7 +3,7 @@ package org.jgine.net.game.packet.packets;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.jgine.misc.collection.list.arrayList.FastArrayList;
+import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.Packet;

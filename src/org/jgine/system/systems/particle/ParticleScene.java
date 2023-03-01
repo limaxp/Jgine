@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.TransformListSystemScene;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class ParticleScene extends TransformListSystemScene<ParticleSystem, ParticleObject> {
 

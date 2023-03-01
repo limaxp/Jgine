@@ -8,14 +8,14 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.jgine.core.window.DisplayManager;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.mesh.text.BitmapFont;
 import org.jgine.render.mesh.text.Text;
 import org.jgine.render.mesh.text.TrueTypeFont;
 import org.jgine.render.mesh.text.TrueTypeFontGenerated;
 import org.jgine.render.mesh.text.TrueTypeText;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.options.Options;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;

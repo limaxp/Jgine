@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
@@ -17,6 +16,7 @@ import org.jgine.render.mesh.TileMap.TileMapTile;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.utils.loader.TileMapLoader.TileMapData;
 
 public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMapObject> {
 

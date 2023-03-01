@@ -1,12 +1,12 @@
 package org.jgine.system.systems.collision;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.vector.Vector2f;
 
 public class CollisionChecks2D {
 

@@ -1,7 +1,7 @@
 package org.jgine.system.systems.collision;
 
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class CollisionData {
 

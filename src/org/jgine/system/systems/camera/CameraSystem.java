@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.misc.collection.list.arrayList.FastArrayList;
-import org.jgine.misc.utils.Property;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.Property;
 
 public class CameraSystem extends EngineSystem {
 

@@ -7,9 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.render.Renderer;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
@@ -17,6 +14,9 @@ import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class PlaneCollider extends Collider {
 

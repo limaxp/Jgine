@@ -10,9 +10,6 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.system.SystemObject;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.collision.Collider;
@@ -27,6 +24,9 @@ import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 

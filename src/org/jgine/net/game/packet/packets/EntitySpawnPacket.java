@@ -8,9 +8,9 @@ import java.nio.ByteBuffer;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
+import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;

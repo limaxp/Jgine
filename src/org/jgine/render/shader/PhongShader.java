@@ -3,15 +3,15 @@ package org.jgine.render.shader;
 import java.util.List;
 
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.math.vector.Vector4f;
-import org.jgine.misc.utils.Color;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.camera.CameraSystem;
+import org.jgine.utils.Color;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.math.vector.Vector4f;
 
 public class PhongShader extends TextureShader {
 

@@ -13,12 +13,12 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.render.FrustumCulling;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class GraphicScene extends TransformListSystemScene<GraphicSystem, GraphicObject> {
 

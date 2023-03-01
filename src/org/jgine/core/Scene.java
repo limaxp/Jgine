@@ -12,18 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.math.spacePartitioning.SceneSpacePartitioning;
-import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
+import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A scene or world identified with id and name. Use this class to create a

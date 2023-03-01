@@ -2,7 +2,6 @@ package org.jgine.system.systems.collision;
 
 import java.util.function.Supplier;
 
-import org.jgine.misc.utils.registry.Registry;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingBox;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.BoundingCircle;
@@ -11,6 +10,7 @@ import org.jgine.system.systems.collision.collider.BoundingSphere;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
+import org.jgine.utils.registry.Registry;
 
 public class ColliderTypes {
 

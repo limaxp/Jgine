@@ -18,9 +18,9 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.nio.FloatBuffer;
 
-import org.jgine.misc.utils.loader.TileMapLoader.TileMapData;
-import org.jgine.misc.utils.loader.TileMapLoader.TileMapDataLayer;
 import org.jgine.render.material.Material;
+import org.jgine.utils.loader.TileMapLoader.TileMapData;
+import org.jgine.utils.loader.TileMapLoader.TileMapDataLayer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 

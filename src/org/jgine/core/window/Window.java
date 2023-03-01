@@ -100,10 +100,10 @@ import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Cursor;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector2i;
-import org.jgine.misc.math.vector.Vector4i;
-import org.jgine.misc.utils.options.Options;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
+import org.jgine.utils.math.vector.Vector4i;
+import org.jgine.utils.options.Options;
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;

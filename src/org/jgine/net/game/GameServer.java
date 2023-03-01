@@ -14,11 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.utils.function.TriConsumer;
-import org.jgine.misc.utils.id.IdGenerator;
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
 import org.jgine.net.game.packet.ServerPacketListener;
@@ -27,6 +24,9 @@ import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
+import org.jgine.utils.function.TriConsumer;
+import org.jgine.utils.id.IdGenerator;
+import org.jgine.utils.logger.Logger;
 
 public class GameServer implements Runnable {
 

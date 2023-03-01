@@ -2,7 +2,7 @@ package org.jgine.system.systems.script;
 
 import java.util.function.Supplier;
 
-import org.jgine.misc.utils.registry.Registry;
+import org.jgine.utils.registry.Registry;
 
 public class ScriptTypes {
 

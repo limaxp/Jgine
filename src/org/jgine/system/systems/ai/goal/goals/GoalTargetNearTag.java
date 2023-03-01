@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.core.entity.EntityTag;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.ai.goal.AiGoalTypes;
+import org.jgine.utils.loader.YamlHelper;
 
 public class GoalTargetNearTag extends AiGoal {
 

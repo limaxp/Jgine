@@ -5,9 +5,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.jgine.collection.list.IntList;
+import org.jgine.collection.list.arrayList.IntArrayList;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.collection.list.IntList;
-import org.jgine.misc.collection.list.arrayList.IntArrayList;
 import org.jgine.system.EngineSystem;
 
 /**

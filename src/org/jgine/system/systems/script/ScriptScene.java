@@ -10,8 +10,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.data.ListSystemScene;
+import org.jgine.utils.script.ScriptManager;
 
 public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 

@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Cursor;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector2i;
-import org.jgine.misc.utils.logger.Logger;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 

@@ -25,7 +25,7 @@ import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
 
 import java.util.function.Consumer;
 
-import org.jgine.misc.utils.options.Options;
+import org.jgine.utils.options.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;

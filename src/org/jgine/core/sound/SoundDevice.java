@@ -29,8 +29,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 
-import org.jgine.misc.collection.list.arrayList.FastArrayList;
-import org.jgine.misc.utils.logger.Logger;
+import org.jgine.collection.list.arrayList.FastArrayList;
+import org.jgine.utils.logger.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;

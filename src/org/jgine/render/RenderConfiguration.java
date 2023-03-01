@@ -1,10 +1,10 @@
 package org.jgine.render;
 
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector4f;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.material.Texture;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector4f;
+import org.jgine.utils.options.Options;
 
 public class RenderConfiguration implements AutoCloseable {
 

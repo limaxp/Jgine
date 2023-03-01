@@ -37,8 +37,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.BufferHelper;
+import org.jgine.utils.BufferHelper;
+import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIAABB;

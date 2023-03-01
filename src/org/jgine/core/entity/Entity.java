@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.id.IdGenerator;
-import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.GameServer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.id.IdGenerator;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A container for game entity data. Stores info about id, {@link Scene},

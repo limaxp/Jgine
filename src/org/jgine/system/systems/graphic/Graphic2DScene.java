@@ -12,7 +12,6 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
-import org.jgine.misc.utils.scheduler.TaskHelper;
 import org.jgine.render.FrustumCulling2D;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
@@ -20,6 +19,7 @@ import org.jgine.render.material.Material;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Material> {
 

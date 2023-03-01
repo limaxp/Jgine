@@ -13,8 +13,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.FileUtils;
-import org.jgine.misc.utils.logger.Logger;
+import org.jgine.utils.FileUtils;
+import org.jgine.utils.logger.Logger;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryStack;
 

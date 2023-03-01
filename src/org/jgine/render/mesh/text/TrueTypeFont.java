@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.utils.FileUtils;
-import org.jgine.misc.utils.logger.Logger;
+import org.jgine.utils.FileUtils;
+import org.jgine.utils.logger.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.system.MemoryStack;
 

@@ -8,8 +8,8 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowHintString;
 
 import org.jgine.core.window.Window.Attribute;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.OpenGL;
+import org.jgine.utils.options.Options;
 
 /**
  * A helper class for building {@link Window}<code>s</code>. New instances of

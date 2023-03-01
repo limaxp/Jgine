@@ -3,10 +3,10 @@ package org.jgine.render.shader;
 import java.util.Collections;
 import java.util.List;
 
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.Matrix;
+import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.render.material.Material;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.Matrix;
 
 public class PostProcessShader extends Shader {
 

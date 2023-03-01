@@ -6,11 +6,11 @@ import java.io.IOException;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.rotation.AxisAngle4f;
-import org.jgine.misc.math.spacePartitioning.SpacePartitioning;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.rotation.AxisAngle4f;
+import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * A transform with float precision. Uses {@link Matrix} class internally. This

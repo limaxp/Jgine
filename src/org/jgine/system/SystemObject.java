@@ -1,6 +1,6 @@
 package org.jgine.system;
 
-import org.jgine.misc.utils.Reflection;
+import org.jgine.utils.Reflection;
 
 public interface SystemObject {
 

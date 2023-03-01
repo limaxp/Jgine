@@ -9,10 +9,10 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.utils.function.TriConsumer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.function.TriConsumer;
 
 public class ScriptSystem extends EngineSystem {
 

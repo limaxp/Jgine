@@ -1,9 +1,9 @@
 package org.jgine.render;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class FrustumCulling2D {
 

@@ -2,13 +2,13 @@ package org.jgine.system.systems.ui;
 
 import java.util.function.Supplier;
 
-import org.jgine.misc.utils.registry.Registry;
 import org.jgine.system.systems.ui.objects.UIBar;
 import org.jgine.system.systems.ui.objects.UIGrid;
 import org.jgine.system.systems.ui.objects.UIHotbar;
 import org.jgine.system.systems.ui.objects.UILabel;
 import org.jgine.system.systems.ui.objects.UIList;
 import org.jgine.system.systems.ui.objects.UIScrollBar;
+import org.jgine.utils.registry.Registry;
 
 public class UIObjectTypes {
 

@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 
+import org.jgine.collection.list.IntList;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -19,13 +21,6 @@ import org.jgine.core.manager.SystemManager;
 import org.jgine.core.sound.SoundManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
-import org.jgine.misc.collection.list.IntList;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.utils.logger.Logger;
-import org.jgine.misc.utils.options.OptionFile;
-import org.jgine.misc.utils.options.Options;
-import org.jgine.misc.utils.scheduler.Scheduler;
-import org.jgine.misc.utils.scheduler.TaskExecutor;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.render.RenderConfiguration;
 import org.jgine.render.Renderer;
@@ -44,6 +39,11 @@ import org.jgine.system.systems.physic.PhysicSystem;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.options.OptionFile;
+import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.TaskExecutor;
 
 /**
  * The Base Engine class. You can extend this class to override some methods.

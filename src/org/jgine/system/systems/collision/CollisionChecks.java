@@ -1,10 +1,10 @@
 package org.jgine.system.systems.collision;
 
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingBox;
 import org.jgine.system.systems.collision.collider.BoundingCylinder;
 import org.jgine.system.systems.collision.collider.BoundingSphere;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class CollisionChecks {
 

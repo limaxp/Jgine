@@ -14,8 +14,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
-import org.jgine.misc.utils.FileUtils;
-import org.jgine.misc.utils.logger.Logger;
+import org.jgine.utils.FileUtils;
+import org.jgine.utils.logger.Logger;
 
 public class HttpResponse {
 

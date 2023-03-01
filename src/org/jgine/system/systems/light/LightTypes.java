@@ -2,10 +2,10 @@ package org.jgine.system.systems.light;
 
 import java.util.function.Supplier;
 
-import org.jgine.misc.utils.registry.Registry;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
+import org.jgine.utils.registry.Registry;
 
 public class LightTypes {
 

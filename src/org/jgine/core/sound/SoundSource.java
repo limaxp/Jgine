@@ -48,11 +48,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.PersistentArrayList;
 import org.jgine.core.sound.effect.SoundEffect;
 import org.jgine.core.sound.effect.SoundFilter;
-import org.jgine.misc.collection.list.arrayList.PersistentArrayList;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.options.Options;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.options.Options;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 

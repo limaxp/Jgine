@@ -1,13 +1,13 @@
 package org.jgine.render;
 
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.render.material.Material;
 import org.jgine.render.mesh.BaseMesh;
 import org.jgine.render.mesh.Mesh;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class UIRenderer extends Renderer {
 

@@ -3,8 +3,8 @@ package org.jgine.core.manager;
 import java.util.function.BiConsumer;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Helper class for updating values between {@link EngineSystem}<code>s</code>.

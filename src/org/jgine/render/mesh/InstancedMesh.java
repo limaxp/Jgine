@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.nio.FloatBuffer;
 
-import org.jgine.misc.math.Matrix;
+import org.jgine.utils.math.Matrix;
 import org.lwjgl.system.MemoryStack;
 
 public class InstancedMesh extends Mesh {

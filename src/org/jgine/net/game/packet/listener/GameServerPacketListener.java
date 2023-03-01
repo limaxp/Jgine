@@ -1,7 +1,6 @@
 package org.jgine.net.game.packet.listener;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.Packet;
@@ -13,6 +12,7 @@ import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PingPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class GameServerPacketListener implements ServerPacketListener {
 

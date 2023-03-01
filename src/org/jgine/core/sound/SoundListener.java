@@ -5,7 +5,7 @@ import static org.lwjgl.openal.AL10.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.jgine.misc.math.vector.Vector3f;
+import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 

@@ -21,9 +21,9 @@ import static org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BARRIER_BIT;
 import static org.lwjgl.opengl.GL43.glDispatchCompute;
 
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.material.Material;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.math.Matrix;
 
 public class ComputeShader extends Shader {
 	

@@ -10,10 +10,10 @@ import java.util.function.Consumer;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.script.ScriptManager;
 
 public abstract class UIObject implements SystemObject, Cloneable {
 

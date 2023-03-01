@@ -91,8 +91,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.FastMath;
 import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.utils.math.FastMath;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 

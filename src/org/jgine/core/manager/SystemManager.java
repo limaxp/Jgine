@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.logger.Logger;
 
 /**
  * Manager to register {@link EngineSystem}<code>s</code>. Created systems MUST

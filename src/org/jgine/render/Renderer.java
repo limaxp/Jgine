@@ -3,14 +3,8 @@ package org.jgine.render;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.core.Transform;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedArrayList;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.math.vector.Vector4f;
-import org.jgine.misc.utils.Color;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
@@ -30,6 +24,12 @@ import org.jgine.render.shader.Shader;
 import org.jgine.render.shader.TextureShader;
 import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.utils.Color;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.math.vector.Vector4f;
+import org.jgine.utils.options.Options;
 
 public class Renderer {
 

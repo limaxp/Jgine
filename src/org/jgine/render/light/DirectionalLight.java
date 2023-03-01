@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.light.LightType;
 import org.jgine.system.systems.light.LightTypes;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class DirectionalLight extends Light {
 

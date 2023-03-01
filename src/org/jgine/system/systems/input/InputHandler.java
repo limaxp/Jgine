@@ -11,8 +11,8 @@ import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
 import org.jgine.core.input.device.Gamepad;
 import org.jgine.core.input.device.Mouse;
-import org.jgine.misc.math.vector.Vector2f;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.math.vector.Vector2f;
 
 public class InputHandler implements SystemObject {
 

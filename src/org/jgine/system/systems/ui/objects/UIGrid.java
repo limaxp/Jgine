@@ -5,11 +5,11 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.FastMath;
 
 public class UIGrid extends UIList {
 

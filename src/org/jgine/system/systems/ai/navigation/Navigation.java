@@ -3,11 +3,11 @@ package org.jgine.system.systems.ai.navigation;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class Navigation implements Cloneable {
 

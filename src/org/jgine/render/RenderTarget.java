@@ -67,9 +67,9 @@ import static org.lwjgl.opengl.GL30.glRenderbufferStorageMultisample;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Engine;
-import org.jgine.misc.math.vector.Vector2i;
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.render.material.Texture;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.math.vector.Vector2i;
 
 public class RenderTarget implements AutoCloseable {
 

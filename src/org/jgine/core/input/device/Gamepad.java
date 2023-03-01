@@ -5,7 +5,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetGamepadState;
 
 import org.jgine.core.input.InputDevice;
 import org.jgine.core.input.Key;
-import org.jgine.misc.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWGamepadState;
 

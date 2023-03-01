@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.jgine.core.Transform;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.misc.utils.options.Options;
 import org.jgine.render.RenderTarget;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.options.Options;
 
 /**
  * Represents a 3D Camera

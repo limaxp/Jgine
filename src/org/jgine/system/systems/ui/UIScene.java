@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector2i;
 import org.jgine.render.UIRenderer;
 import org.jgine.system.data.ListSystemScene;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
 
 public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 

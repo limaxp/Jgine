@@ -46,14 +46,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.sound.effect.EFXUtil;
-import org.jgine.misc.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.openal.ALUtil;
 import org.lwjgl.openal.EnumerateAllExt;
 import org.lwjgl.system.MemoryUtil;

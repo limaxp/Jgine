@@ -2,11 +2,11 @@ package org.jgine.render.shader;
 
 import java.util.List;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector4f;
-import org.jgine.misc.utils.Color;
 import org.jgine.render.light.PointLight;
+import org.jgine.utils.Color;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector4f;
 
 public class Phong2dShader extends TextureShader {
 

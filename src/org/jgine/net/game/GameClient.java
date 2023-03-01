@@ -15,11 +15,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.entity.Entity;
-import org.jgine.misc.collection.list.arrayList.IdentityArrayList;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.id.IdGenerator;
-import org.jgine.misc.utils.logger.Logger;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;
 import org.jgine.net.game.packet.PacketManager;
@@ -28,6 +25,9 @@ import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
+import org.jgine.utils.id.IdGenerator;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class GameClient implements Runnable {
 

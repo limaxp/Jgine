@@ -6,13 +6,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.entity.Prefab;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.net.game.packet.listener.GameClientPacketListener;
 import org.jgine.net.game.packet.listener.GameServerPacketListener;
 import org.jgine.net.game.packet.packets.EntityDeletePacket;
 import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class ConnectionManager {
 

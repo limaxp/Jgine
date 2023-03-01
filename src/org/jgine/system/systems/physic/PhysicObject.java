@@ -5,11 +5,11 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
 
 public class PhysicObject implements SystemObject {
 

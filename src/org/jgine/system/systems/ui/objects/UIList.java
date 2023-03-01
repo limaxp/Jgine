@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ui.UICompound;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.FastMath;
 
 public class UIList extends UICompound {
 

@@ -12,18 +12,18 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.misc.math.Matrix;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.utils.Color;
-import org.jgine.misc.utils.loader.YamlHelper;
-import org.jgine.misc.utils.options.Options;
-import org.jgine.misc.utils.scheduler.Task;
-import org.jgine.misc.utils.script.ScriptManager;
 import org.jgine.render.RenderTarget;
 import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
+import org.jgine.utils.Color;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.Matrix;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.Task;
+import org.jgine.utils.script.ScriptManager;
 
 public class UIWindow extends UICompound {
 

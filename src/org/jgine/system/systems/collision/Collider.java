@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.misc.math.vector.Vector3f;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents the default Collider

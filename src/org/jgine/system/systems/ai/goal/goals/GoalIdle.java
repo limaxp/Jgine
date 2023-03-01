@@ -5,12 +5,12 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.misc.math.FastMath;
-import org.jgine.misc.utils.loader.YamlHelper;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.ai.goal.AiGoalTypes;
+import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.math.FastMath;
 
 public class GoalIdle extends AiGoal {
 

@@ -4,9 +4,6 @@ import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
-import org.jgine.misc.math.vector.Vector2f;
-import org.jgine.misc.math.vector.Vector3f;
-import org.jgine.misc.utils.scheduler.Scheduler;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.input.InputHandler;
@@ -14,6 +11,9 @@ import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.physic.PhysicSystem;
+import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 public class CameraInputHandler extends InputHandler {
 
