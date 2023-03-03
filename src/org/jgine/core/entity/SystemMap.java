@@ -40,7 +40,7 @@ public class SystemMap {
 
 	public void add(int id, SystemObject object) {
 		synchronized (this) {
-			SystemObject[] subObjects = get(id);
+			SystemObject[] subObjects = get_(id);
 			SystemObject[] newObjects = Arrays.copyOf(subObjects, subObjects.length + 1);
 			newObjects[subObjects.length] = object;
 			objects[id] = newObjects;
@@ -58,7 +58,7 @@ public class SystemMap {
 
 	public void add(int id, SystemObject... objects) {
 		synchronized (this) {
-			SystemObject[] subObjects = get(id);
+			SystemObject[] subObjects = get_(id);
 			SystemObject[] newObjects = Arrays.copyOf(subObjects, subObjects.length + objects.length);
 			System.arraycopy(objects, 0, newObjects, newObjects.length, objects.length);
 			this.objects[id] = newObjects;
@@ -76,42 +76,34 @@ public class SystemMap {
 
 	public SystemObject[] remove(int id) {
 		synchronized (this) {
-			SystemObject[] subObjects = get(id);
+			SystemObject[] subObjects = get_(id);
 			this.objects[id] = EMPTY_OBJECTS;
 			size -= subObjects.length;
 			return subObjects;
 		}
 	}
 
-	public int remove(SystemObject object) {
+	public void remove(EngineSystem system, SystemObject object) {
+		remove(system.getId(), object);
+	}
+
+	public void remove(SystemScene<?, ?> systemScene, SystemObject object) {
+		remove(systemScene.system.getId(), object);
+	}
+
+	public void remove(int id, SystemObject object) {
 		synchronized (this) {
-			int id = -1;
-			int subId = -1;
-			for (int i = 0; i < objects.length; i++) {
-				SystemObject[] subObjects = objects[i];
-				if (subObjects != EMPTY_OBJECTS) {
-					for (int j = 0; j < subObjects.length; j++) {
-						if (subObjects[j] == object) {
-							subId = j;
-							break;
-						}
-					}
-					if (subId != -1) {
-						id = i;
-						break;
-					}
+			SystemObject[] subObjects = get_(id);
+			for (int i = 0; i < subObjects.length; i++) {
+				if (subObjects[i] == object) {
+					int size = subObjects.length - 1;
+					SystemObject[] newObjects = Arrays.copyOf(subObjects, size);
+					if (i != size)
+						System.arraycopy(subObjects, i + 1, newObjects, i, size - i);
+					objects[id] = newObjects;
+					size--;
 				}
 			}
-			if (id == -1)
-				return -1;
-			SystemObject[] subObjects = objects[id];
-			int size = subObjects.length - 1;
-			SystemObject[] newObjects = Arrays.copyOf(subObjects, size);
-			if (subId != size)
-				System.arraycopy(subObjects, subId + 1, newObjects, subId, size - subId);
-			objects[id] = newObjects;
-			size--;
-			return id;
 		}
 	}
 

@@ -27,8 +27,9 @@ import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A container for game entity data. Stores info about id, {@link Scene},
- * {@link Transform}, {@link Prefab}, used systems and the scene graph. This is
- * supposed to link all together in an easy to use way.
+ * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>
+ * and the scene graph. This is supposed to link all together in an easy to use
+ * way.
  */
 public class Entity {
 
@@ -232,13 +233,35 @@ public class Entity {
 		return objects;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
-	public final <T extends SystemObject> SystemScene<?, T> removeSystem(T object) {
-		int id = systems.remove(object);
-		@SuppressWarnings("unchecked")
-		SystemScene<?, T> systemScene = (SystemScene<?, T>) scene.getSystem(id);
+	public final <T extends SystemObject> T removeSystem(String name, T object) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(name)), object);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public final <T extends SystemObject> T removeSystem(Class<? extends EngineSystem> clazz, T object) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz), object);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public final <T extends SystemObject> T removeSystem(int id, T object) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(id), object);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public final <T extends SystemObject> T removeSystem(EngineSystem system, T object) {
+		return removeSystem((SystemScene<?, T>) scene.getSystem(system), object);
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T removeSystem(SystemScene<?, T> systemScene, T object) {
+		systems.remove(systemScene, object);
 		Scheduler.runTaskSynchron(() -> systemScene.removeObject(object));
-		return systemScene;
+		return object;
 	}
 
 	@Nullable
