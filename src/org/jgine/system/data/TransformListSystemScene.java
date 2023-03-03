@@ -2,7 +2,6 @@ package org.jgine.system.data;
 
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
@@ -17,23 +16,24 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 
 	public TransformListSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene, clazz);
-		transforms = new Transform[ListSystemScene.GROW_SIZE];
+		transforms = new Transform[ListSystemScene.INITAL_SIZE];
 	}
 
 	@Override
-	public T2 addObject(Entity entity, T2 object) {
-		super.addObject(entity, object);
-		transforms[size - 1] = entity.transform;
-		return object;
+	public int addObject(Entity entity, T2 object) {
+		transforms[size] = entity.transform;
+		return super.addObject(entity, object);
 	}
 
 	@Override
-	@Nullable
-	protected T2 removeObject(int index) {
+	public T2 removeObject(int index) {
 		T2 element = objects[index];
 		if (index != --size) {
-			objects[index] = objects[size];
-			transforms[index] = transforms[size];
+			T2 last = objects[size];
+			Transform lastTransform = transforms[size];
+			objects[index] = last;
+			transforms[index] = lastTransform;
+			lastTransform.getEntity().setSystemId(this, last, index);
 		}
 		objects[size] = null;
 		transforms[size] = null;
@@ -44,22 +44,14 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 		return new FastArrayList<>(transforms, size);
 	}
 
+	@Override
+	public Entity getEntity(int index) {
+		return transforms[index].getEntity();
+	}
+
+	@Override
 	public Transform getTransform(int index) {
 		return transforms[index];
-	}
-
-	public int indexOf(Transform transform) {
-		for (int i = 0; i < size; i++)
-			if (transforms[i] == transform)
-				return i;
-		return -1;
-	}
-
-	public int lastIndexOf(Transform transform) {
-		for (int i = size; i >= 0; i--)
-			if (transforms[i] == transform)
-				return i;
-		return -1;
 	}
 
 	@Override

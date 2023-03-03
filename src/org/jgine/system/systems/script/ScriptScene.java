@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import javax.script.ScriptEngine;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.data.ListSystemScene;
@@ -33,10 +33,10 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
-	@Nullable
-	public ScriptObject removeObject(ScriptObject object) {
+	public ScriptObject removeObject(int index) {
+		ScriptObject object = super.removeObject(index);
 		object.scriptInterface.onDisable();
-		return super.removeObject(object);
+		return object;
 	}
 
 	@Override
@@ -47,6 +47,20 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		ScriptObject object = objects[index];
+		if (object instanceof ScriptObjectJava)
+			return ((ScriptObjectJava) object).entity;
+		else
+			return object.scriptInterface.getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return getEntity(index).transform;
 	}
 
 	@Override

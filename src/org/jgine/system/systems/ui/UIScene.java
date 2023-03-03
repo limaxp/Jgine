@@ -5,9 +5,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
@@ -50,10 +50,10 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	@Nullable
-	public UIWindow removeObject(UIWindow object) {
+	public UIWindow removeObject(int index) {
+		UIWindow object = super.removeObject(index);
 		disableObject(object);
-		return super.removeObject(object);
+		return object;
 	}
 
 	private void disableObject(UIWindow object) {
@@ -159,6 +159,16 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		UIRenderer.setShader(UIRenderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++)
 			objects[i].render();
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return objects[index].entity;
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return getEntity(index).transform;
 	}
 
 	@Override

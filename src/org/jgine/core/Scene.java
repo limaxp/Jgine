@@ -17,7 +17,6 @@ import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
@@ -233,8 +232,10 @@ public class Scene {
 	}
 
 	public final void removeEntity(Entity entity) {
-		if (entity.isAlive())
+		if (entity.isAlive()) {
+			Entity.freeId(entity.id);
 			Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
+		}
 	}
 
 	private final void addEntityIntern(Entity entity) {
@@ -247,23 +248,22 @@ public class Scene {
 	private final void removeEntityIntern(Entity entity) {
 		removeChildIntern(entity);
 		entity.cleanupParent();
-		Entity.freeId(entity.id);
 	}
 
 	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
-		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = entity.getEntryIterator();
+		Iterator<Entry<SystemScene<?, ?>, int[]>> entryIterator = entity.getIdEntryIterator();
 		while (entryIterator.hasNext()) {
-			Entry<SystemScene<?, ?>, SystemObject[]> entry = entryIterator.next();
+			Entry<SystemScene<?, ?>, int[]> entry = entryIterator.next();
 			SystemScene<?, ?> system = entry.getKey();
-			SystemObject[] objects = entry.getValue();
+			int[] objects = entry.getValue();
 			for (int i = 0; i < objects.length; i++)
-				system.removeObject_(objects[i]);
+				system.removeObject(objects[i]);
 		}
 
 		for (Entity child : entity.getChilds()) {
-			removeChildIntern(child);
 			Entity.freeId(child.id);
+			removeChildIntern(child);
 		}
 		entity.cleanupChilds();
 		entity.transform.cleanupEntity();

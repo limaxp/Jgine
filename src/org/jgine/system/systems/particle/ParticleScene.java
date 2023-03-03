@@ -4,7 +4,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
@@ -28,10 +27,10 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 	}
 
 	@Override
-	@Nullable
-	public ParticleObject removeObject(ParticleObject object) {
+	public ParticleObject removeObject(int index) {
+		ParticleObject object = super.removeObject(index);
 		object.close();
-		return super.removeObject(object);
+		return object;
 	}
 
 	@Override

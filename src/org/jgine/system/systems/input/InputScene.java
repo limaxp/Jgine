@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
 
@@ -31,6 +32,16 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return objects[index].getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return getEntity(index).transform;
 	}
 
 	@Override

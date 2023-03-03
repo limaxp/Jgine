@@ -3,7 +3,6 @@ package org.jgine.system.data;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
@@ -13,7 +12,7 @@ import org.jgine.system.SystemScene;
 
 public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends SystemObject> extends SystemScene<T1, T2> {
 
-	public static final int GROW_SIZE = 1000;
+	public static final int INITAL_SIZE = 1024;
 
 	protected Class<T2> clazz;
 	protected T2[] objects;
@@ -23,30 +22,26 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	public ListSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene);
 		this.clazz = clazz;
-		objects = (T2[]) Array.newInstance(clazz, GROW_SIZE);
+		objects = (T2[]) Array.newInstance(clazz, INITAL_SIZE);
 	}
 
 	@Override
-	public T2 addObject(Entity entity, T2 object) {
+	public int addObject(Entity entity, T2 object) {
 		if (size == objects.length)
 			ensureCapacity(size + 1);
-		objects[size++] = object;
-		return object;
+		int index = size++;
+		objects[index] = object;
+		return index;
 	}
 
 	@Override
-	@Nullable
-	public T2 removeObject(T2 object) {
-		int index = indexOf(object);
-		if (index != -1)
-			removeObject(index);
-		return object;
-	}
-
-	protected T2 removeObject(int index) {
+	public T2 removeObject(int index) {
 		T2 element = objects[index];
-		if (index != --size)
-			objects[index] = objects[size];
+		if (index != --size) {
+			T2 last = objects[size];
+			objects[index] = last;
+			getEntity(size).setSystemId(this, last, index);
+		}
 		objects[size] = null;
 		return element;
 	}
@@ -61,24 +56,10 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 		return objects[index];
 	}
 
-	public int indexOf(T2 object) {
-		for (int i = 0; i < size; i++)
-			if (objects[i] == object)
-				return i;
-		return -1;
-	}
-
-	public int lastIndexOf(T2 object) {
-		for (int i = size; i >= 0; i--)
-			if (objects[i] == object)
-				return i;
-		return -1;
-	}
-
 	protected void ensureCapacity(int minCapacity) {
 		int length = objects.length;
 		if (minCapacity > length)
-			resize(minCapacity + GROW_SIZE);
+			resize(minCapacity * 2);
 	}
 
 	@SuppressWarnings("unchecked")

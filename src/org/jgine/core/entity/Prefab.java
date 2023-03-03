@@ -488,22 +488,12 @@ public class Prefab {
 
 		@Override
 		public boolean hasNext() {
-			if (index < size) {
+			for (; index < objects.length; index++) {
 				if (subIndex < names[index].length)
 					return true;
-				else if (index + 1 < size)
-					return true;
-			}
-			return false;
-		}
-
-		@Override
-		public E next() {
-			if (subIndex >= names[index].length) {
-				index++;
 				subIndex = 0;
 			}
-			return null;
+			return false;
 		}
 	}
 
@@ -511,7 +501,6 @@ public class Prefab {
 
 		@Override
 		public String next() {
-			super.next();
 			return names[index][subIndex++];
 		}
 	}
@@ -520,7 +509,6 @@ public class Prefab {
 
 		@Override
 		public SystemObject next() {
-			super.next();
 			return objects[index][subIndex++];
 		}
 	}

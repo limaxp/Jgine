@@ -4,8 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
 
@@ -28,10 +28,10 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	@Nullable
-	public Camera removeObject(Camera object) {
+	public Camera removeObject(int index) {
+		Camera object = super.removeObject(index);
 		system.removeCamera(object);
-		return super.removeObject(object);
+		return object;
 	}
 
 	@Override
@@ -40,6 +40,16 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public void render() {
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return getTransform(index).getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return objects[index].transform;
 	}
 
 	@Override

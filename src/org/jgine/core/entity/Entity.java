@@ -163,7 +163,7 @@ public class Entity {
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
 		systems.add(systemScene, object);
 		systemScene.initObject(this, object);
-		Scheduler.runTaskSynchron(() -> systemScene.addObject(this, object));
+		Scheduler.runTaskSynchron(() -> systems.setId(systemScene, object, systemScene.addObject(this, object)));
 		return object;
 	}
 
@@ -193,8 +193,10 @@ public class Entity {
 		for (int i = 0; i < objects.length; i++)
 			systemScene.initObject(this, objects[i]);
 		Scheduler.runTaskSynchron(() -> {
-			for (int i = 0; i < objects.length; i++)
-				systemScene.addObject(this, objects[i]);
+			for (int i = 0; i < objects.length; i++) {
+				T object = objects[i];
+				systems.setId(systemScene, object, systemScene.addObject(this, object));
+			}
 		});
 	}
 
@@ -225,10 +227,11 @@ public class Entity {
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(SystemScene<?, T> systemScene) {
 		@SuppressWarnings("unchecked")
-		T[] objects = (T[]) systems.remove(systemScene);
+		T[] objects = (T[]) systems.get(systemScene);
+		int[] indexes = systems.remove(systemScene);
 		Scheduler.runTaskSynchron(() -> {
-			for (int i = 0; i < objects.length; i++)
-				systemScene.removeObject(objects[i]);
+			for (int i = 0; i < indexes.length; i++)
+				systemScene.removeObject(indexes[i]);
 		});
 		return objects;
 	}
@@ -259,9 +262,13 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T removeSystem(SystemScene<?, T> systemScene, T object) {
-		systems.remove(systemScene, object);
-		Scheduler.runTaskSynchron(() -> systemScene.removeObject(object));
+		int index = systems.remove(systemScene, object);
+		Scheduler.runTaskSynchron(() -> systemScene.removeObject(index));
 		return object;
+	}
+
+	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, T object, int objectId) {
+		systems.setId(systemScene, object, objectId);
 	}
 
 	@Nullable
@@ -356,8 +363,16 @@ public class Entity {
 		return systems.getSystemIterator();
 	}
 
-	public final Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getEntryIterator() {
-		return systems.getEntryIterator(scene);
+	public final Iterator<Integer> getIdIterator() {
+		return systems.getIdIterator();
+	}
+
+	public final Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getSystemEntryIterator() {
+		return systems.getSystemEntryIterator(scene);
+	}
+
+	public final Iterator<Entry<SystemScene<?, ?>, int[]>> getIdEntryIterator() {
+		return systems.getIdEntryIterator(scene);
 	}
 
 	final void setPrefab(Prefab prefab) {
@@ -526,7 +541,7 @@ public class Entity {
 		transform.save(out);
 
 		out.writeInt(systems.size());
-		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = getEntryIterator();
+		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = getSystemEntryIterator();
 		while (entryIterator.hasNext()) {
 			Entry<SystemScene<?, ?>, SystemObject[]> entry = entryIterator.next();
 			SystemScene<?, ?> systemScene = entry.getKey();

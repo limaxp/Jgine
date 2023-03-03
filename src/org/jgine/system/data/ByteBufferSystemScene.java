@@ -3,7 +3,6 @@ package org.jgine.system.data;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
@@ -22,7 +21,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
 		super(system, scene);
 //		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
-		bufferSize = ListSystemScene.GROW_SIZE;
+		bufferSize = ListSystemScene.INITAL_SIZE;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}
 
@@ -32,23 +31,22 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
-	public T2 addObject(Entity entity, T2 object) {
+	public int addObject(Entity entity, T2 object) {
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
-		long address = MemoryUtil.memAddress(buffer) + (size++ * objectSize);
+		int index = size++;
+		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 //		MemoryHelper.copyArray(object, address, objectSize);
 //		entity.system = new SystemObjectPointer<T2>(object);
-		return object;
+		return index;
 	}
 
 	@Override
-	@Nullable
-	public T2 removeObject(T2 object) {
-		int index = 0;
+	public T2 removeObject(int index) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 		MemoryUtil.memSet(address, 0, objectSize);
 		// TODO rearange list
-		return object;
+		return null;
 	}
 
 	@Override

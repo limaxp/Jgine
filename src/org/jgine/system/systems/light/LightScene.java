@@ -5,16 +5,15 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.EntityListSystemScene;
 
-public class LightScene extends ListSystemScene<LightSystem, Light> {
+public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 
 	public LightScene(LightSystem system, Scene scene) {
 		super(system, scene, Light.class);
@@ -30,7 +29,7 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public Light addObject(Entity entity, Light object) {
+	public int addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			Renderer.PHONG_SHADER.getPointLights().add((PointLight) object);
 		if (object instanceof DirectionalLight)
@@ -39,13 +38,13 @@ public class LightScene extends ListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	@Nullable
-	public Light removeObject(Light object) {
+	public Light removeObject(int index) {
+		Light object = super.removeObject(index);
 		if (object instanceof PointLight)
 			Renderer.PHONG_SHADER.getPointLights().remove((PointLight) object);
 		if (object instanceof DirectionalLight)
 			;
-		return super.removeObject(object);
+		return object;
 	}
 
 	public List<PointLight> getPointLights() {

@@ -19,8 +19,10 @@ import org.jgine.system.SystemScene;
 public class SystemMap {
 
 	private static final SystemObject[] EMPTY_OBJECTS = new SystemObject[0];
+	private static final int[] EMPTY_IDS = new int[0];
 
 	private SystemObject[][] objects;
+	private int[][] ids;
 	private int size;
 
 	public SystemMap() {
@@ -28,6 +30,25 @@ public class SystemMap {
 		objects = new SystemObject[size][];
 		for (int i = 0; i < size; i++)
 			objects[i] = EMPTY_OBJECTS;
+		ids = new int[size][];
+		for (int i = 0; i < size; i++)
+			ids[i] = EMPTY_IDS;
+	}
+
+	public void setId(EngineSystem system, SystemObject object, int objectId) {
+		setId(system.getId(), object, objectId);
+	}
+
+	public void setId(SystemScene<?, ?> systemScene, SystemObject object, int objectId) {
+		setId(systemScene.system.getId(), object, objectId);
+	}
+
+	public void setId(int id, SystemObject object, int objectId) {
+		SystemObject[] subObjects = get_(id);
+		for (int i = 0; i < subObjects.length; i++) {
+			if (subObjects[i] == object)
+				ids[id][i] = objectId;
+		}
 	}
 
 	public void add(EngineSystem system, SystemObject object) {
@@ -44,6 +65,7 @@ public class SystemMap {
 			SystemObject[] newObjects = Arrays.copyOf(subObjects, subObjects.length + 1);
 			newObjects[subObjects.length] = object;
 			objects[id] = newObjects;
+			ids[id] = Arrays.copyOf(ids[id], subObjects.length + 1);
 			size++;
 		}
 	}
@@ -62,69 +84,59 @@ public class SystemMap {
 			SystemObject[] newObjects = Arrays.copyOf(subObjects, subObjects.length + objects.length);
 			System.arraycopy(objects, 0, newObjects, newObjects.length, objects.length);
 			this.objects[id] = newObjects;
+			ids[id] = Arrays.copyOf(ids[id], subObjects.length + objects.length);
 			size += objects.length;
 		}
 	}
 
-	public SystemObject[] remove(EngineSystem system) {
+	public int[] remove(EngineSystem system) {
 		return remove(system.getId());
 	}
 
-	public SystemObject[] remove(SystemScene<?, ?> systemScene) {
+	public int[] remove(SystemScene<?, ?> systemScene) {
 		return remove(systemScene.system.getId());
 	}
 
-	public SystemObject[] remove(int id) {
+	public int[] remove(int id) {
 		synchronized (this) {
 			SystemObject[] subObjects = get_(id);
-			this.objects[id] = EMPTY_OBJECTS;
+			int[] subIds = ids[id];
+			objects[id] = EMPTY_OBJECTS;
+			ids[id] = EMPTY_IDS;
 			size -= subObjects.length;
-			return subObjects;
+			return subIds;
 		}
 	}
 
-	public void remove(EngineSystem system, SystemObject object) {
-		remove(system.getId(), object);
+	public int remove(EngineSystem system, SystemObject object) {
+		return remove(system.getId(), object);
 	}
 
-	public void remove(SystemScene<?, ?> systemScene, SystemObject object) {
-		remove(systemScene.system.getId(), object);
+	public int remove(SystemScene<?, ?> systemScene, SystemObject object) {
+		return remove(systemScene.system.getId(), object);
 	}
 
-	public void remove(int id, SystemObject object) {
+	public int remove(int id, SystemObject object) {
 		synchronized (this) {
 			SystemObject[] subObjects = get_(id);
 			for (int i = 0; i < subObjects.length; i++) {
 				if (subObjects[i] == object) {
+					int objectId = ids[id][i];
 					int size = subObjects.length - 1;
 					SystemObject[] newObjects = Arrays.copyOf(subObjects, size);
-					if (i != size)
+					int[] newIds = Arrays.copyOf(ids[id], size);
+					if (i != size) {
 						System.arraycopy(subObjects, i + 1, newObjects, i, size - i);
+						System.arraycopy(ids[id], i + 1, newIds, i, size - i);
+					}
 					objects[id] = newObjects;
+					ids[id] = newIds;
 					size--;
+					return objectId;
 				}
 			}
 		}
-	}
-
-	@Nullable
-	public SystemObject get(EngineSystem system, int index) {
-		return get(system.getId(), index);
-	}
-
-	@Nullable
-	public SystemObject get(SystemScene<?, ?> systemScene, int index) {
-		return get(systemScene.system.getId(), index);
-	}
-
-	@Nullable
-	public SystemObject get(int id, int index) {
-		synchronized (this) {
-			SystemObject[] subObjects = get_(id);
-			if (subObjects != EMPTY_OBJECTS)
-				return subObjects[index];
-			return null;
-		}
+		return -1;
 	}
 
 	public SystemObject[] get(EngineSystem system) {
@@ -148,60 +160,72 @@ public class SystemMap {
 			for (int i = objects.length - 1; i < newObjects.length; i++)
 				newObjects[i] = EMPTY_OBJECTS;
 			objects = newObjects;
+
+			int[][] newIds = new int[SystemManager.getSize()][];
+			System.arraycopy(ids, 0, newIds, 0, ids.length);
+			for (int i = ids.length - 1; i < newIds.length; i++)
+				newIds[i] = EMPTY_IDS;
+			ids = newIds;
 		}
 		return objects[id];
+	}
+
+	@Nullable
+	public SystemObject get(EngineSystem system, int index) {
+		return get(system.getId(), index);
+	}
+
+	@Nullable
+	public SystemObject get(SystemScene<?, ?> systemScene, int index) {
+		return get(systemScene.system.getId(), index);
+	}
+
+	@Nullable
+	public SystemObject get(int id, int index) {
+		synchronized (this) {
+			SystemObject[] subObjects = get_(id);
+			if (subObjects != EMPTY_OBJECTS)
+				return subObjects[index];
+			return null;
+		}
 	}
 
 	public int size() {
 		return size;
 	}
 
-	/**
-	 * Must call hasNext() before every next()
-	 * 
-	 * @return
-	 */
 	public Iterator<SystemScene<?, ?>> getSceneIterator(Scene scene) {
 		return new SystemSceneIterator(scene);
 	}
 
-	/**
-	 * Must call hasNext() before every next()
-	 * 
-	 * @return
-	 */
 	public Iterator<SystemObject[]> getSystemsIterator() {
 		return new SystemsIterator();
 	}
 
-	/**
-	 * Must call hasNext() before every next()
-	 * 
-	 * @return
-	 */
 	public Iterator<SystemObject> getSystemIterator() {
 		return new SystemIterator();
 	}
 
-	/**
-	 * Must call hasNext() before every next()
-	 * 
-	 * @return
-	 */
-	public Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getEntryIterator(Scene scene) {
+	public Iterator<Integer> getIdIterator() {
+		return new IdIterator();
+	}
+
+	public Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getSystemEntryIterator(Scene scene) {
 		return new SystemsEntryIterator(scene);
+	}
+
+	public Iterator<Entry<SystemScene<?, ?>, int[]>> getIdEntryIterator(Scene scene) {
+		return new IdEntryIterator(scene);
 	}
 
 	private abstract class DataIterator<E> implements Iterator<E> {
 
-		protected int index = -1;
+		protected int index;
 
 		@Override
 		public boolean hasNext() {
-			index++;
 			for (; index < objects.length; index++) {
-				SystemObject[] o = objects[index];
-				if (o != EMPTY_OBJECTS)
+				if (objects[index] != EMPTY_OBJECTS)
 					return true;
 			}
 			return false;
@@ -218,7 +242,7 @@ public class SystemMap {
 
 		@Override
 		public SystemScene<?, ?> next() {
-			return scene.getSystem(index);
+			return scene.getSystem(index++);
 		}
 	}
 
@@ -226,7 +250,7 @@ public class SystemMap {
 
 		@Override
 		public SystemObject[] next() {
-			return objects[index];
+			return objects[index++];
 		}
 	}
 
@@ -240,39 +264,61 @@ public class SystemMap {
 
 		@Override
 		public Entry<SystemScene<?, ?>, SystemObject[]> next() {
-			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, SystemObject[]>(scene.getSystem(index),
-					objects[index]);
+			int i = index++;
+			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, SystemObject[]>(scene.getSystem(i), objects[i]);
 		}
 	}
 
-	private class SystemIterator implements Iterator<SystemObject> {
+	private class IdEntryIterator extends DataIterator<Entry<SystemScene<?, ?>, int[]>> {
 
-		protected int index = -1;
-		protected int subIndex = -1;
+		protected Scene scene;
 
-		@Override
-		public boolean hasNext() {
-			if (subIndex >= 0) {
-				SystemObject[] subObjects = objects[index];
-				if (++subIndex < subObjects.length)
-					return true;
-				else
-					subIndex = -1;
-			}
-			index++;
-			for (; index < objects.length; index++) {
-				SystemObject[] o = objects[index];
-				if (o != EMPTY_OBJECTS) {
-					subIndex = 0;
-					return true;
-				}
-			}
-			return false;
+		public IdEntryIterator(Scene scene) {
+			this.scene = scene;
 		}
 
 		@Override
+		public Entry<SystemScene<?, ?>, int[]> next() {
+			int i = index++;
+			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, int[]>(scene.getSystem(i), ids[i]);
+		}
+	}
+
+	private abstract class SubDataIterator<E> implements Iterator<E> {
+
+		protected int index;
+		protected int subIndex;
+
+		@Override
+		public boolean hasNext() {
+			for (; index < objects.length; index++) {
+				if (subIndex < objects[index].length)
+					return true;
+				subIndex = 0;
+			}
+			return false;
+		}
+	}
+
+	private class SystemIterator extends SubDataIterator<SystemObject> {
+
+		protected int index;
+		protected int subIndex;
+
+		@Override
 		public SystemObject next() {
-			return objects[index][subIndex];
+			return objects[index][subIndex++];
+		}
+	}
+
+	private class IdIterator extends SubDataIterator<Integer> {
+
+		protected int index;
+		protected int subIndex;
+
+		@Override
+		public Integer next() {
+			return ids[index][subIndex++];
 		}
 	}
 }
