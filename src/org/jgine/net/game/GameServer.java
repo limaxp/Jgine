@@ -60,7 +60,7 @@ public class GameServer implements Runnable {
 		player = new PlayerConnection(idGenerator.generate(), name, getIp(), port);
 		registerConnection(player);
 		trackedEntities = new IdentityArrayList<Entity>(MAX_ENTITIES);
-		entityIdGenerator = new IdGenerator(0, Entity.MAX_ENTITIES);
+		entityIdGenerator = new IdGenerator(0, MAX_ENTITIES);
 	}
 
 	public void stop() {
