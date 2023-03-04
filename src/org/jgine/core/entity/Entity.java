@@ -34,6 +34,7 @@ import org.jgine.utils.scheduler.Scheduler;
 public class Entity {
 
 	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
+	public static final int MAX_OBJECTS_PER_SYSTEMS = 8;
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
@@ -161,7 +162,9 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
-		systems.add(systemScene, object);
+		synchronized (systems) {
+			systems.add(systemScene, object);
+		}
 		systemScene.initObject(this, object);
 		Scheduler.runTaskSynchron(() -> systems.setId(systemScene, object, systemScene.addObject(this, object)));
 		return object;
@@ -189,7 +192,9 @@ public class Entity {
 
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(SystemScene<?, T> systemScene, T... objects) {
-		systems.add(systemScene, objects);
+		synchronized (systems) {
+			systems.add(systemScene, objects);
+		}
 		for (int i = 0; i < objects.length; i++)
 			systemScene.initObject(this, objects[i]);
 		Scheduler.runTaskSynchron(() -> {
@@ -224,11 +229,15 @@ public class Entity {
 		return removeSystem((SystemScene<?, T>) scene.getSystem(system));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(SystemScene<?, T> systemScene) {
-		@SuppressWarnings("unchecked")
-		T[] objects = (T[]) systems.get(systemScene);
-		int[] indexes = systems.remove(systemScene);
+		T[] objects;
+		int[] indexes;
+		synchronized (systems) {
+			objects = (T[]) systems.get(systemScene);
+			indexes = systems.remove(systemScene);
+		}
 		Scheduler.runTaskSynchron(() -> {
 			for (int i = 0; i < indexes.length; i++)
 				systemScene.removeObject(indexes[i]);
@@ -262,7 +271,10 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T removeSystem(SystemScene<?, T> systemScene, T object) {
-		int index = systems.remove(systemScene, object);
+		int index;
+		synchronized (systems) {
+			index = systems.remove(systemScene, object);
+		}
 		Scheduler.runTaskSynchron(() -> systemScene.removeObject(index));
 		return object;
 	}
@@ -321,7 +333,9 @@ public class Entity {
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
 		if (systemScene == null)
 			return null;
-		return (T) systems.get(systemScene, index);
+		synchronized (systems) {
+			return (T) systems.get(systemScene, index);
+		}
 	}
 
 	@Nullable
@@ -348,15 +362,13 @@ public class Entity {
 	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
 		if (systemScene == null)
 			return null;
-		return systems.get(systemScene);
+		synchronized (systems) {
+			return systems.get(systemScene);
+		}
 	}
 
-	public final Iterator<SystemScene<?, ?>> getSystemsSceneIterator() {
-		return systems.getSceneIterator(scene);
-	}
-
-	public final Iterator<SystemObject[]> getSystemsIterator() {
-		return systems.getSystemsIterator();
+	public SystemMap getSystemMap() {
+		return systems;
 	}
 
 	public final Iterator<SystemObject> getSystemIterator() {
@@ -367,11 +379,11 @@ public class Entity {
 		return systems.getIdIterator();
 	}
 
-	public final Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> getSystemEntryIterator() {
+	public final Iterator<Entry<SystemScene<?, ?>, SystemObject>> getSystemEntryIterator() {
 		return systems.getSystemEntryIterator(scene);
 	}
 
-	public final Iterator<Entry<SystemScene<?, ?>, int[]>> getIdEntryIterator() {
+	public final Iterator<Entry<SystemScene<?, ?>, Integer>> getIdEntryIterator() {
 		return systems.getIdEntryIterator(scene);
 	}
 
@@ -540,13 +552,15 @@ public class Entity {
 			out.writeInt(-1);
 		transform.save(out);
 
-		out.writeInt(systems.size());
-		Iterator<Entry<SystemScene<?, ?>, SystemObject[]>> entryIterator = getSystemEntryIterator();
-		while (entryIterator.hasNext()) {
-			Entry<SystemScene<?, ?>, SystemObject[]> entry = entryIterator.next();
-			SystemScene<?, ?> systemScene = entry.getKey();
-			out.writeInt(systemScene.system.getId());
-			systemScene.save_(entry.getValue()[0], out);
+		synchronized (systems) {
+			out.writeInt(systems.size());
+			Iterator<Entry<SystemScene<?, ?>, SystemObject>> entryIterator = getSystemEntryIterator();
+			while (entryIterator.hasNext()) {
+				Entry<SystemScene<?, ?>, SystemObject> entry = entryIterator.next();
+				SystemScene<?, ?> systemScene = entry.getKey();
+				out.writeInt(systemScene.system.getId());
+				systemScene.save_(entry.getValue(), out);
+			}
 		}
 
 		out.writeInt(childs.size());

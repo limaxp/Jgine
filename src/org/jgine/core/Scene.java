@@ -252,13 +252,10 @@ public class Scene {
 
 	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
-		Iterator<Entry<SystemScene<?, ?>, int[]>> entryIterator = entity.getIdEntryIterator();
+		Iterator<Entry<SystemScene<?, ?>, Integer>> entryIterator = entity.getIdEntryIterator();
 		while (entryIterator.hasNext()) {
-			Entry<SystemScene<?, ?>, int[]> entry = entryIterator.next();
-			SystemScene<?, ?> system = entry.getKey();
-			int[] objects = entry.getValue();
-			for (int i = 0; i < objects.length; i++)
-				system.removeObject(objects[i]);
+			Entry<SystemScene<?, ?>, Integer> entry = entryIterator.next();
+			entry.getKey().removeObject(entry.getValue());
 		}
 
 		for (Entity child : entity.getChilds()) {
