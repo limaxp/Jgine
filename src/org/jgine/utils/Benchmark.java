@@ -71,7 +71,11 @@ public class Benchmark {
 		protected void stopTimer() {
 			if (!isTiming())
 				return;
-			long deltaTime = java.lang.Math.abs(System.nanoTime() - startTime);
+			long deltaTime = System.nanoTime() - startTime;
+			if (deltaTime == 0) {
+				startTime = 0;
+				return;
+			}
 			if (deltaTime < best)
 				best = deltaTime;
 			if (deltaTime > worst)
