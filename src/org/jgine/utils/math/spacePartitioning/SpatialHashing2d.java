@@ -51,19 +51,19 @@ public class SpatialHashing2d implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, Transform object) {
+	public void add(double x, double y, double z, Transform object) {
 		tiles[getTilePos(x, y)].add(object);
 		size++;
 	}
 
 	@Override
-	public void remove(double x, double y, Transform object) {
+	public void remove(double x, double y, double z, Transform object) {
 		tiles[getTilePos(x, y)].remove(object);
 		size--;
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
+	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
 		int oldPos = getTilePos(xOld, yOld);
 		int newPos = getTilePos(xNew, yNew);
 		if (oldPos != newPos) {
@@ -73,12 +73,13 @@ public class SpatialHashing2d implements SpacePartitioning {
 	}
 
 	@Override
-	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
-		get(xMin, yMin, xMax, yMax).forEach(func);
+	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+			Consumer<Transform> func) {
+		get(xMin, yMin, zMin, xMax, yMax, zMax).forEach(func);
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
+	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		Set<Transform> result = new HashSet<Transform>();
 		int lastX = getTileX(xMax);
 		int lastY = getTileY(yMax);
@@ -94,23 +95,12 @@ public class SpatialHashing2d implements SpacePartitioning {
 	}
 
 	@Override
-	public Transform get(double x, double y, Transform opt_default) {
+	public Transform get(double x, double y, double z, Transform opt_default) {
 		for (Transform object : tiles[getTilePos(x, y)]) {
 			if (object.getX() == x && object.getY() == y)
 				return object;
 		}
 		return opt_default;
-	}
-
-	@Override
-	public boolean contains(double x, double y, Transform object) {
-		List<Transform> tile = tiles[getTilePos(x, y)];
-		int tileSize = tile.size();
-		for (int i = 0; i < tileSize; i++) {
-			if (tile.get(i) == object)
-				return true;
-		}
-		return false;
 	}
 
 	@Override

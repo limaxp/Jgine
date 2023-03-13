@@ -33,42 +33,38 @@ public class QuadTree implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, Transform object) {
+	public void add(double x, double y, double z, Transform object) {
 		root.add(x, y, object);
 		size++;
 	}
 
 	@Override
-	public void remove(double x, double y, Transform object) {
+	public void remove(double x, double y, double z, Transform object) {
 		root.remove(x, y, object);
 		size--;
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
+	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
 		root.move(xOld, yOld, xNew, yNew, object);
 	}
 
 	@Override
-	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+			Consumer<Transform> func) {
 		root.forEach(xMin, yMin, xMax, yMax, func);
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
+	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		List<Transform> result = new ArrayList<Transform>();
-		forEach(xMin, yMin, xMax, yMax, result::add);
+		root.forEach(xMin, yMin, xMax, yMax, result::add);
 		return result;
 	}
 
 	@Override
-	public Transform get(double x, double y, Transform opt_default) {
+	public Transform get(double x, double y, double z, Transform opt_default) {
 		return root.get(x, y, opt_default);
-	}
-
-	@Override
-	public boolean contains(double x, double y, Transform object) {
-		return root.contains(x, y, object);
 	}
 
 	@Override
@@ -200,16 +196,6 @@ public class QuadTree implements SpacePartitioning {
 			if (hasChilds())
 				return getChild(x, y).get(x, y, opt_default);
 			return opt_default;
-		}
-
-		public boolean contains(double x, double y, Transform object) {
-			int index = objects.indexOf(object);
-			if (index != -1)
-				return true;
-
-			if (hasChilds())
-				return getChild(x, y).contains(x, y, object);
-			return false;
 		}
 
 		public boolean isEmpty() {

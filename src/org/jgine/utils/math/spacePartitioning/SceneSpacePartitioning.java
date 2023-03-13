@@ -27,25 +27,17 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, Transform object) {
+	public void add(double x, double y, double z, Transform object) {
 		objects.add(object);
 	}
 
 	@Override
-	public void remove(double x, double y, Transform object) {
+	public void remove(double x, double y, double z, Transform object) {
 		objects.remove(object);
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
-	}
-
-	@Override
-	public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
-		for (Transform transform : objects)
-			if (transform.getX() >= xMin && transform.getY() >= yMin && transform.getX() < xMax
-					&& transform.getY() < yMax)
-				func.accept(transform);
+	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
 	}
 
 	@Override
@@ -58,25 +50,10 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double xMax, double yMax) {
-		List<Transform> result = new ArrayList<Transform>();
-		forEach(xMin, yMin, xMax, yMax, result::add);
-		return result;
-	}
-
-	@Override
 	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		List<Transform> result = new ArrayList<Transform>();
 		forEach(xMin, yMin, zMin, xMax, yMax, zMax, result::add);
 		return result;
-	}
-
-	@Override
-	public Transform get(double x, double y, Transform opt_default) {
-		for (Transform transform : objects)
-			if (transform.getX() == x && transform.getY() == y)
-				return transform;
-		return opt_default;
 	}
 
 	@Override
@@ -85,22 +62,6 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 			if (transform.getX() == x && transform.getY() == y && transform.getZ() == z)
 				return transform;
 		return opt_default;
-	}
-
-	@Override
-	public boolean contains(double x, double y, Transform object) {
-		for (Transform transform : objects)
-			if (transform == object)
-				return true;
-		return false;
-	}
-
-	@Override
-	public boolean contains(double x, double y, double z, Transform object) {
-		for (Transform transform : objects)
-			if (transform == object)
-				return true;
-		return false;
 	}
 
 	@Override

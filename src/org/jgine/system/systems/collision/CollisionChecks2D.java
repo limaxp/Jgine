@@ -10,6 +10,31 @@ import org.jgine.utils.math.vector.Vector2f;
 
 public class CollisionChecks2D {
 
+	public static boolean circlevsCircle(double x1, double y1, double r1, double x2, double y2, double r2) {
+		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < (r1 + r2) * (r1 + r2);
+	}
+
+	public static boolean pointvsCircle(double x1, double y1, double x2, double y2, double r) {
+		return circlevsPoint(x2, y2, r, x1, y1);
+	}
+
+	public static boolean circlevsPoint(double x1, double y1, double r, double x2, double y2) {
+		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < r * r;
+	}
+
+	public static boolean spherevsSphere(double x1, double y1, double z1, double r1, double x2, double y2, double z2,
+			double r2) {
+		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2) < (r1 + r2) * (r1 + r2);
+	}
+
+	public static boolean pointvsSphere(double x1, double y1, double z1, double x2, double y2, double z2, double r) {
+		return spherevsPoint(x2, y2, z2, r, x1, y1, z1);
+	}
+
+	public static boolean spherevsPoint(double x1, double y1, double z1, double r, double x2, double y2, double z2) {
+		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2) < r * r;
+	}
+
 	public static boolean checkAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(Vector2f pos1,
 			AxisAlignedBoundingQuad a, Vector2f pos2, AxisAlignedBoundingQuad b) {
 		return checkAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(pos1.x, pos1.y, a, pos2.x, pos2.y, b);
@@ -37,7 +62,7 @@ public class CollisionChecks2D {
 
 	public static boolean checkAxisAlignedBoundingQuadvsBoundingCircle(float x1, float y1, AxisAlignedBoundingQuad a,
 			float x2, float y2, BoundingCircle b) {
-		return (x1 - x2) * (x1 - x2) < (a.w + b.r) * (a.w + b.r) && (y1 - y2) * (y1 - y2) < (a.h + b.r) * (a.h + b.r);
+		return (x1 - x2) * (x1 - x2) < (a.w + b.r) * (a.w + b.r) && (y1 - y2) * (y1 - y2) < (a.w + b.r) * (a.h + b.r);
 	}
 
 	public static boolean checkLinevsLine(Vector2f pos1, LineCollider a, Vector2f pos2, LineCollider b) {
@@ -144,7 +169,8 @@ public class CollisionChecks2D {
 	}
 
 	@Nullable
-	public static CollisionData resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2, LineCollider b) {
+	public static CollisionData resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2,
+			LineCollider b) {
 		// TODO check line resolve! dist as overlap also seems false!
 		float dist = Vector2f.cross(a.normal.x, b.normal.x, a.normal.y, b.normal.y);
 		if (dist != 0) {
@@ -162,8 +188,8 @@ public class CollisionChecks2D {
 	}
 
 	@Nullable
-	public static CollisionData resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2, float y2,
-			AxisAlignedBoundingQuad b) {
+	public static CollisionData resolveLinevsAxisAlignedBoundingQuad(float x1, float y1, LineCollider a, float x2,
+			float y2, AxisAlignedBoundingQuad b) {
 		float distX = (x2 - x1) * a.normal.x;
 		float distY = (y2 - y1) * a.normal.y;
 		if (distX < b.w && distY < b.h) {

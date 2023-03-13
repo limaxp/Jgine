@@ -291,7 +291,7 @@ public class Scene {
 
 	@Nullable
 	public final Entity getEntity(float x, float y) {
-		Transform transform = spacePartitioning.get(x, y, null);
+		Transform transform = spacePartitioning.get(x, y, 0.0, null);
 		if (transform != null)
 			return transform.getEntity();
 		return null;
@@ -315,7 +315,7 @@ public class Scene {
 	}
 
 	public final Entity getEntity(float x, float y, Entity defaultValue) {
-		return spacePartitioning.get(x, y, defaultValue.transform).getEntity();
+		return spacePartitioning.get(x, y, 0.0, defaultValue.transform).getEntity();
 	}
 
 	public final Entity getEntity(Vector3f pos, Entity defaultValue) {
@@ -326,28 +326,12 @@ public class Scene {
 		return spacePartitioning.get(x, y, z, defaultValue.transform).getEntity();
 	}
 
-	public final boolean containsEntity(Vector2f pos, Entity entity) {
-		return containsEntity(pos.x, pos.y, entity);
-	}
-
-	public final boolean containsEntity(float x, float y, Entity entity) {
-		return spacePartitioning.contains(x, y, entity.transform);
-	}
-
-	public final boolean containsEntity(Vector3f pos, Entity entity) {
-		return containsEntity(pos.x, pos.y, pos.z, entity);
-	}
-
-	public final boolean containsEntity(float x, float y, float z, Entity entity) {
-		return spacePartitioning.contains(x, y, z, entity.transform);
-	}
-
 	public final void forEntity(Vector2f min, Vector2f max, Consumer<Transform> func) {
-		spacePartitioning.forEach(min.x, min.y, max.x, max.y, func);
+		spacePartitioning.forEach(min.x, min.y, 0.0, max.x, max.y, 0.0, func);
 	}
 
 	public final void forEntity(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
-		spacePartitioning.forEach(xMin, yMin, xMax, yMax, func);
+		spacePartitioning.forEach(xMin, yMin, 0.0, xMax, yMax, 0.0, func);
 	}
 
 	public final void forEntity(Vector3f min, Vector3f max, Consumer<Transform> func) {
