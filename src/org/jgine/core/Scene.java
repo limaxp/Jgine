@@ -1,6 +1,5 @@
 package org.jgine.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,7 +57,7 @@ public class Scene {
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
-		spacePartitioning = new SceneSpacePartitioning();
+		spacePartitioning = new SceneSpacePartitioning(this);
 		paused = false;
 	}
 
@@ -241,7 +240,7 @@ public class Scene {
 	private final void addEntityIntern(Entity entity) {
 		entities.add(entity);
 		entity.transform.spacePartitioning = spacePartitioning;
-		spacePartitioning.add(entity.transform);
+		spacePartitioning.add(entity);
 	}
 
 	private final void removeEntityIntern(Entity entity) {
@@ -263,7 +262,7 @@ public class Scene {
 		}
 		entity.cleanupChilds();
 		entity.transform.cleanupEntity();
-		spacePartitioning.remove(entity.transform);
+		spacePartitioning.remove(entity);
 	}
 
 	public final List<Entity> getEntities() {
@@ -289,10 +288,7 @@ public class Scene {
 
 	@Nullable
 	public final Entity getEntity(float x, float y) {
-		Transform transform = spacePartitioning.get(x, y, 0.0, null);
-		if (transform != null)
-			return transform.getEntity();
-		return null;
+		return spacePartitioning.get(x, y, 0.0, null);
 	}
 
 	@Nullable
@@ -302,10 +298,7 @@ public class Scene {
 
 	@Nullable
 	public final Entity getEntity(float x, float y, float z) {
-		Transform transform = spacePartitioning.get(x, y, z, null);
-		if (transform != null)
-			return transform.getEntity();
-		return null;
+		return spacePartitioning.get(x, y, z, null);
 	}
 
 	public final Entity getEntity(Vector2f pos, Entity defaultValue) {
@@ -313,7 +306,7 @@ public class Scene {
 	}
 
 	public final Entity getEntity(float x, float y, Entity defaultValue) {
-		return spacePartitioning.get(x, y, 0.0, defaultValue.transform).getEntity();
+		return spacePartitioning.get(x, y, 0.0, defaultValue);
 	}
 
 	public final Entity getEntity(Vector3f pos, Entity defaultValue) {
@@ -321,73 +314,66 @@ public class Scene {
 	}
 
 	public final Entity getEntity(float x, float y, float z, Entity defaultValue) {
-		return spacePartitioning.get(x, y, z, defaultValue.transform).getEntity();
+		return spacePartitioning.get(x, y, z, defaultValue);
 	}
 
-	public final void forEntity(Vector2f min, Vector2f max, Consumer<Transform> func) {
+	public final void forEntity(Vector2f min, Vector2f max, Consumer<Entity> func) {
 		spacePartitioning.forEach(min.x, min.y, 0.0, max.x, max.y, 0.0, func);
 	}
 
-	public final void forEntity(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
+	public final void forEntity(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
 		spacePartitioning.forEach(xMin, yMin, 0.0, xMax, yMax, 0.0, func);
 	}
 
-	public final void forEntity(Vector3f min, Vector3f max, Consumer<Transform> func) {
+	public final void forEntity(Vector3f min, Vector3f max, Consumer<Entity> func) {
 		spacePartitioning.forEach(min.x, min.y, min.z, max.x, max.y, max.z, func);
 	}
 
 	public final void forEntity(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-			Consumer<Transform> func) {
+			Consumer<Entity> func) {
 		spacePartitioning.forEach(xMin, yMin, zMin, xMax, yMax, zMax, func);
 	}
 
-	public final List<Entity> getEntities(Vector2f min, Vector2f max) {
-		return getEntities(min.x, min.y, max.x, max.y);
+	public final Collection<Entity> getEntities(Vector2f min, Vector2f max) {
+		return spacePartitioning.get(min.x, min.y, 0.0f, max.x, max.y, 0.0f);
 	}
 
-	public final List<Entity> getEntities(float xMin, float yMin, float xMax, float yMax) {
-		List<Entity> result = new ArrayList<Entity>();
-		forEntity(xMin, yMin, xMax, yMax, (transform) -> result.add(transform.getEntity()));
-		return result;
+	public final Collection<Entity> getEntities(float xMin, float yMin, float xMax, float yMax) {
+		return spacePartitioning.get(xMin, yMin, 0.0f, xMax, yMax, 0.0f);
 	}
 
-	public final List<Entity> getEntities(Vector3f min, Vector3f max) {
-		return getEntities(min.x, min.y, min.z, max.x, max.y, max.z);
+	public final Collection<Entity> getEntities(Vector3f min, Vector3f max) {
+		return spacePartitioning.get(min.x, min.y, min.z, max.x, max.y, max.z);
 	}
 
-	public final List<Entity> getEntities(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
-		List<Entity> result = new ArrayList<Entity>();
-		forEntity(xMin, yMin, zMin, xMax, yMax, zMax, (transform) -> result.add(transform.getEntity()));
-		return result;
+	public final Collection<Entity> getEntities(float xMin, float yMin, float zMin, float xMax, float yMax,
+			float zMax) {
+		return spacePartitioning.get(xMin, yMin, zMin, xMax, yMax, zMax);
 	}
 
-	public final List<Entity> getEntitiesNear(Vector2f pos, float range) {
+	public final Collection<Entity> getEntitiesNear(Vector2f pos, float range) {
 		return getEntitiesNear(pos.x, pos.y, range, range);
 	}
 
-	public final List<Entity> getEntitiesNear(Vector2f pos, Vector2f range) {
+	public final Collection<Entity> getEntitiesNear(Vector2f pos, Vector2f range) {
 		return getEntitiesNear(pos.x, pos.y, range.x, range.y);
 	}
 
-	public final List<Entity> getEntitiesNear(float x, float y, float xRange, float yRange) {
-		List<Entity> result = new ArrayList<Entity>();
-		forEntity(x - xRange, y - yRange, x + xRange, y + yRange, (transform) -> result.add(transform.getEntity()));
-		return result;
+	public final Collection<Entity> getEntitiesNear(float x, float y, float xRange, float yRange) {
+		return spacePartitioning.get(x - xRange, y - yRange, 0.0f, x + xRange, y + yRange, 0.0f);
 	}
 
-	public final List<Entity> getEntitiesNear(Vector3f pos, float range) {
+	public final Collection<Entity> getEntitiesNear(Vector3f pos, float range) {
 		return getEntitiesNear(pos.x, pos.y, pos.z, range, range, range);
 	}
 
-	public final List<Entity> getEntitiesNear(Vector3f pos, Vector3f range) {
+	public final Collection<Entity> getEntitiesNear(Vector3f pos, Vector3f range) {
 		return getEntitiesNear(pos.x, pos.y, pos.z, range.x, range.y, range.z);
 	}
 
-	public final List<Entity> getEntitiesNear(float x, float y, float z, float xRange, float yRange, float zRange) {
-		List<Entity> result = new ArrayList<Entity>();
-		forEntity(x - xRange, y - yRange, z - zRange, x + xRange, y + yRange, z + zRange,
-				(transform) -> result.add(transform.getEntity()));
-		return result;
+	public final Collection<Entity> getEntitiesNear(float x, float y, float z, float xRange, float yRange,
+			float zRange) {
+		return spacePartitioning.get(x - xRange, y - yRange, z - zRange, x + xRange, y + yRange, z + zRange);
 	}
 
 	public void setUpdateOrder(@Nullable UpdateOrder updateOrder) {
@@ -420,7 +406,7 @@ public class Scene {
 		this.spacePartitioning = spacePartitioning;
 		for (Entity entity : entities) {
 			entity.transform.spacePartitioning = spacePartitioning;
-			spacePartitioning.add(entity.transform);
+			spacePartitioning.add(entity);
 		}
 	}
 

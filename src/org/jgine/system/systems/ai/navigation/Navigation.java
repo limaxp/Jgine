@@ -28,7 +28,7 @@ public class Navigation implements Cloneable {
 	public void attack(Entity target) {
 		Vector2f dirToTarget = Vector2f
 				.normalize(Vector2f.sub(target.transform.getPosition(), transform.getPosition()));
-		physic.accelerate(Vector2f.mult(dirToTarget, 200000.0f));
+		physic.accelerate(Vector2f.mult(dirToTarget, 20000.0f));
 	}
 
 	public void move(float x, float y) {

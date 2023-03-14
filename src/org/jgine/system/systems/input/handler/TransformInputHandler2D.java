@@ -26,7 +26,7 @@ public class TransformInputHandler2D extends InputHandler {
 	public static final Key KEY_FULLSCREEN = new Key(Key.KEY_F12, Key.KEY_UNKNOWN, Key.KEY_UNKNOWN,
 			Key.GAMEPAD_BUTTON_BACK);
 
-	public static final float MOVEMENT_SPEED = 2000.0f;
+	public static final float MOVEMENT_SPEED = 1000.0f;
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private PhysicObject physicObject;

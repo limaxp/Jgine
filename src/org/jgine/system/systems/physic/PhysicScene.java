@@ -30,6 +30,8 @@ import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
+	public static final int SUB_STEPS = 4;
+
 	static {
 		UpdateManager.addTransformPosition((entity, pos) -> {
 			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
@@ -40,6 +42,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	private float gravity;
 	private float airResistanceFactor;
+	private float dt;
 
 	public PhysicScene(PhysicSystem system, Scene scene) {
 		super(system, scene, PhysicObject.class);
@@ -58,13 +61,10 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		object.initPosition(pos);
 	}
 
-	private float subDt;
-
 	@Override
 	public void update(float dt) {
-		int subSteps = 4;
-		subDt = dt / subSteps;
-		for (int i = 0; i < subSteps; i++)
+		this.dt = dt;
+		for (int i = 0; i < SUB_STEPS; i++)
 			TaskHelper.execute(size, this::solveCollisions);
 		TaskHelper.execute(size, this::updatePositions);
 	}
@@ -73,7 +73,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		size = index + size;
 		for (; index < size; index++) {
 			PhysicObject object = objects[index];
-			if (object.updatePosition(subDt, gravity, airResistanceFactor)) {
+			if (object.updatePosition(dt, gravity, airResistanceFactor)) {
 				Entity entity = entities[index];
 				UpdateManager.getPhysicPosition().accept(entity,
 						entity.transform.setPositionIntern(object.x, object.y, object.z));
