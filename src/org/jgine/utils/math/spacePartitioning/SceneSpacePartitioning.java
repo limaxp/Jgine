@@ -27,17 +27,17 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, double z, Transform object) {
+	public void add(Transform object) {
 		objects.add(object);
 	}
 
 	@Override
-	public void remove(double x, double y, double z, Transform object) {
+	public void remove(Transform object) {
 		objects.remove(object);
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
+	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 	}
 
 	@Override
@@ -62,16 +62,6 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 			if (transform.getX() == x && transform.getY() == y && transform.getZ() == z)
 				return transform;
 		return opt_default;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return objects.isEmpty();
-	}
-
-	@Override
-	public int size() {
-		return objects.size();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Transform;
+import org.jgine.system.systems.collision.Collider;
 import org.jgine.utils.math.FastMath;
 
 /**
@@ -27,7 +28,6 @@ public class SpatialHashing2d implements SpacePartitioning {
 	private int cols;
 	private int rows;
 	private List<Transform>[] tiles;
-	private int size;
 
 	public SpatialHashing2d() {
 	}
@@ -51,19 +51,17 @@ public class SpatialHashing2d implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, double z, Transform object) {
-		tiles[getTilePos(x, y)].add(object);
-		size++;
+	public void add(Transform object) {
+		tiles[getTilePos(object.getX(), object.getY())].add(object);
 	}
 
 	@Override
-	public void remove(double x, double y, double z, Transform object) {
-		tiles[getTilePos(x, y)].remove(object);
-		size--;
+	public void remove(Transform object) {
+		tiles[getTilePos(object.getX(), object.getY())].remove(object);
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
+	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 		int oldPos = getTilePos(xOld, yOld);
 		int newPos = getTilePos(xNew, yNew);
 		if (oldPos != newPos) {
@@ -71,6 +69,21 @@ public class SpatialHashing2d implements SpacePartitioning {
 			tiles[newPos].add(object);
 		}
 	}
+
+// TODO: collider hashing!
+//	public void add(Transform object, Collider collider) {
+//		float boundX = object.getBoundX();
+//		float boundY = object.getBoundX();
+//		int firstX = getTileX(object.getX() - boundX);
+//		int firstY = getTileY(object.getY() - boundY);
+//		int lastX = getTileX(object.getX() + boundX);
+//		int lastY = getTileY(object.getY() + boundY);
+//		for (int x = firstX; x <= lastX; x++) {
+//			for (int y = firstY; y <= lastY; y++) {
+//				tiles[x + y * cols].add(object);
+//			}
+//		}
+//	}
 
 	@Override
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
@@ -81,10 +94,12 @@ public class SpatialHashing2d implements SpacePartitioning {
 	@Override
 	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		Set<Transform> result = new HashSet<Transform>();
+		int firstX = getTileX(xMin);
+		int firstY = getTileY(yMin);
 		int lastX = getTileX(xMax);
 		int lastY = getTileY(yMax);
-		for (int x = getTileX(xMin); x <= lastX; x++) {
-			for (int y = getTileY(yMin); y <= lastY; y++) {
+		for (int x = firstX; x <= lastX; x++) {
+			for (int y = firstY; y <= lastY; y++) {
 				for (Transform object : tiles[x + y * cols]) {
 					if (object.getX() >= xMin && object.getY() >= yMin && object.getX() < xMax && object.getY() < yMax)
 						result.add(object);
@@ -101,16 +116,6 @@ public class SpatialHashing2d implements SpacePartitioning {
 				return object;
 		}
 		return opt_default;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return size < 1;
-	}
-
-	@Override
-	public int size() {
-		return size;
 	}
 
 	@Override

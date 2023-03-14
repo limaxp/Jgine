@@ -17,9 +17,9 @@ public class TransformData {
 	public float rotX;
 	public float rotY;
 	public float rotZ;
-	public float scaleX = 1;
-	public float scaleY = 1;
-	public float scaleZ = 1;
+	public float scaleX = 1.0f;
+	public float scaleY = 1.0f;
+	public float scaleZ = 1.0f;
 
 	public TransformData load(Map<String, Object> data) {
 		Object position = data.get("position");

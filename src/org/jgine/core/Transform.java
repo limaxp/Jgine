@@ -33,14 +33,6 @@ public class Transform implements Cloneable {
 	protected Matrix matrix;
 	protected SpacePartitioning spacePartitioning;
 
-	public Transform(Entity entity) {
-		this(entity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-	}
-
-	public Transform(Entity entity, Vector3f position, Vector3f rotation, Vector3f scale) {
-		this(entity, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, scale.x, scale.y, scale.z);
-	}
-
 	public Transform(Entity entity, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
 			float scaleX, float scaleY, float scaleZ) {
 		this.entity = entity;
@@ -95,7 +87,7 @@ public class Transform implements Cloneable {
 		posZ = z;
 		calculateMatrix();
 		Vector3f pos = matrix.getPosition();
-		spacePartitioning.move(oldX, oldY, oldZ, pos.x, pos.y, pos.z, this);
+		spacePartitioning.move(this, oldX, oldY, oldZ, pos.x, pos.y, pos.z);
 		return pos;
 	}
 

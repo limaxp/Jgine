@@ -241,8 +241,7 @@ public class Scene {
 	private final void addEntityIntern(Entity entity) {
 		entities.add(entity);
 		entity.transform.spacePartitioning = spacePartitioning;
-		spacePartitioning.add(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
-				entity.transform);
+		spacePartitioning.add(entity.transform);
 	}
 
 	private final void removeEntityIntern(Entity entity) {
@@ -264,8 +263,7 @@ public class Scene {
 		}
 		entity.cleanupChilds();
 		entity.transform.cleanupEntity();
-		spacePartitioning.remove(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
-				entity.transform);
+		spacePartitioning.remove(entity.transform);
 	}
 
 	public final List<Entity> getEntities() {
@@ -422,8 +420,7 @@ public class Scene {
 		this.spacePartitioning = spacePartitioning;
 		for (Entity entity : entities) {
 			entity.transform.spacePartitioning = spacePartitioning;
-			spacePartitioning.add(entity.transform.getX(), entity.transform.getY(), entity.transform.getZ(),
-					entity.transform);
+			spacePartitioning.add(entity.transform);
 		}
 	}
 

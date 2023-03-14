@@ -19,16 +19,16 @@ public interface SpacePartitioning {
 
 	public static final SpacePartitioning NULL = new SpacePartitioning() {
 		@Override
-		public void add(double x, double y, double z, Transform object) {
+		public void add(Transform object) {
 		}
 
 		@Override
-		public void remove(double x, double y, double z, Transform object) {
+		public void remove(Transform object) {
 		}
 
 		@Override
-		public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew,
-				Transform object) {
+		public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew,
+				double zNew) {
 		}
 
 		@Override
@@ -44,16 +44,6 @@ public interface SpacePartitioning {
 		@Override
 		public Transform get(double x, double y, double z, Transform opt_default) {
 			return null;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		public int size() {
-			return 0;
 		}
 
 		@Override
@@ -74,11 +64,11 @@ public interface SpacePartitioning {
 		}
 	};
 
-	public void add(double x, double y, double z, Transform object);
+	public void add(Transform object);
 
-	public void remove(double x, double y, double z, Transform object);
+	public void remove(Transform object);
 
-	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object);
+	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew);
 
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Transform> func);
@@ -86,10 +76,6 @@ public interface SpacePartitioning {
 	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax);
 
 	public Transform get(double x, double y, double z, Transform opt_default);
-
-	public boolean isEmpty();
-
-	public int size();
 
 	public void clear();
 

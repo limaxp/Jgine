@@ -14,8 +14,6 @@ import org.jgine.utils.registry.Registry;
 
 public class ColliderTypes {
 
-	public static final ColliderType<Collider> NONE = a("none", () -> Collider.NULL);
-
 	public static final ColliderType<PlaneCollider> PLANE = a("plane", PlaneCollider::new);
 
 	public static final ColliderType<BoundingSphere> SPHERE = a("sphere", BoundingSphere::new);

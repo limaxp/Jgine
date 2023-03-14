@@ -23,7 +23,6 @@ public class QuadTree implements SpacePartitioning {
 	private static final int MAX_OBJECTS = 32;
 
 	private Node root;
-	private int size;
 
 	public QuadTree() {
 	}
@@ -33,19 +32,17 @@ public class QuadTree implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(double x, double y, double z, Transform object) {
-		root.add(x, y, object);
-		size++;
+	public void add(Transform object) {
+		root.add(object.getX(), object.getY(), object);
 	}
 
 	@Override
-	public void remove(double x, double y, double z, Transform object) {
-		root.remove(x, y, object);
-		size--;
+	public void remove(Transform object) {
+		root.remove(object.getX(), object.getY(), object);
 	}
 
 	@Override
-	public void move(double xOld, double yOld, double zOld, double xNew, double yNew, double zNew, Transform object) {
+	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 		root.move(xOld, yOld, xNew, yNew, object);
 	}
 
@@ -65,16 +62,6 @@ public class QuadTree implements SpacePartitioning {
 	@Override
 	public Transform get(double x, double y, double z, Transform opt_default) {
 		return root.get(x, y, opt_default);
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return root.isEmpty();
-	}
-
-	@Override
-	public int size() {
-		return size;
 	}
 
 	@Override

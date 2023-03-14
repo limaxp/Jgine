@@ -10,73 +10,11 @@ import org.jgine.system.SystemObject;
 import org.jgine.utils.math.vector.Vector3f;
 
 /**
- * Represents the default Collider
- * 
- * @author Maximilian Paar
+ * The default Collider class.
  */
 public abstract class Collider implements SystemObject, Cloneable {
 
-	public static final Collider NULL = new Collider() {
-
-		@Override
-		public void scale(Vector3f scale) {
-		}
-
-		@Override
-		public boolean containsPoint(Vector3f pos, Vector3f point) {
-			return false;
-		}
-
-		@Override
-		public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-			return false;
-		}
-
-		@Nullable
-		@Override
-		public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-			return null;
-		}
-
-		@Override
-		public void load(Map<String, Object> data) {
-		}
-
-		@Override
-		public void load(DataInput in) {
-		}
-
-		@Override
-		public void save(DataOutput out) {
-		}
-
-		@Override
-		public ColliderType<?> getType() {
-			return ColliderTypes.NONE;
-		}
-
-		@Override
-		public void render(Vector3f pos) {
-		}
-	};
-
 	public boolean noResolve = false;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
-	@Override
-	public Collider clone() {
-		try {
-			return (Collider) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
 	public void scale(float scae) {
 		scale(new Vector3f(scae));
@@ -104,4 +42,20 @@ public abstract class Collider implements SystemObject, Cloneable {
 	public abstract ColliderType<? extends Collider> getType();
 
 	public abstract void render(Vector3f pos);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
+	}
+
+	@Override
+	public Collider clone() {
+		try {
+			return (Collider) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
