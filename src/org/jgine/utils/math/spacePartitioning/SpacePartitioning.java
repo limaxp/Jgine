@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 
 /**
@@ -19,30 +18,29 @@ public interface SpacePartitioning {
 
 	public static final SpacePartitioning NULL = new SpacePartitioning() {
 		@Override
-		public void add(Transform object) {
+		public void add(Entity object) {
 		}
 
 		@Override
-		public void remove(Transform object) {
+		public void remove(Entity object) {
 		}
 
 		@Override
-		public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew,
-				double zNew) {
+		public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 		}
 
 		@Override
 		public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-				Consumer<Transform> func) {
+				Consumer<Entity> func) {
 		}
 
 		@Override
-		public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-			return new ArrayList<Transform>();
+		public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+			return new ArrayList<Entity>();
 		}
 
 		@Override
-		public Transform get(double x, double y, double z, Transform opt_default) {
+		public Entity get(double x, double y, double z, Entity opt_default) {
 			return null;
 		}
 
@@ -64,18 +62,18 @@ public interface SpacePartitioning {
 		}
 	};
 
-	public void add(Transform object);
+	public void add(Entity object);
 
-	public void remove(Transform object);
+	public void remove(Entity object);
 
-	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew);
+	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew);
 
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-			Consumer<Transform> func);
+			Consumer<Entity> func);
 
-	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax);
+	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax);
 
-	public Transform get(double x, double y, double z, Transform opt_default);
+	public Entity get(double x, double y, double z, Entity opt_default);
 
 	public void clear();
 

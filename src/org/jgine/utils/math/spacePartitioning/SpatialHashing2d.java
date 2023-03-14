@@ -10,8 +10,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.core.Transform;
-import org.jgine.system.systems.collision.Collider;
+import org.jgine.core.entity.Entity;
 import org.jgine.utils.math.FastMath;
 
 /**
@@ -27,7 +26,7 @@ public class SpatialHashing2d implements SpacePartitioning {
 	private int yMax;
 	private int cols;
 	private int rows;
-	private List<Transform>[] tiles;
+	private List<Entity>[] tiles;
 
 	public SpatialHashing2d() {
 	}
@@ -47,21 +46,21 @@ public class SpatialHashing2d implements SpacePartitioning {
 		int size = cols * rows;
 		tiles = new List[size];
 		for (int i = 0; i < size; i++)
-			tiles[i] = new UnorderedIdentityArrayList<Transform>();
+			tiles[i] = new UnorderedIdentityArrayList<Entity>();
 	}
 
 	@Override
-	public void add(Transform object) {
-		tiles[getTilePos(object.getX(), object.getY())].add(object);
+	public void add(Entity object) {
+		tiles[getTilePos(object.transform.getX(), object.transform.getY())].add(object);
 	}
 
 	@Override
-	public void remove(Transform object) {
-		tiles[getTilePos(object.getX(), object.getY())].remove(object);
+	public void remove(Entity object) {
+		tiles[getTilePos(object.transform.getX(), object.transform.getY())].remove(object);
 	}
 
 	@Override
-	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
+	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 		int oldPos = getTilePos(xOld, yOld);
 		int newPos = getTilePos(xNew, yNew);
 		if (oldPos != newPos) {
@@ -87,21 +86,22 @@ public class SpatialHashing2d implements SpacePartitioning {
 
 	@Override
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-			Consumer<Transform> func) {
+			Consumer<Entity> func) {
 		get(xMin, yMin, zMin, xMax, yMax, zMax).forEach(func);
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		Set<Transform> result = new HashSet<Transform>();
+	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		Set<Entity> result = new HashSet<Entity>();
 		int firstX = getTileX(xMin);
 		int firstY = getTileY(yMin);
 		int lastX = getTileX(xMax);
 		int lastY = getTileY(yMax);
 		for (int x = firstX; x <= lastX; x++) {
 			for (int y = firstY; y <= lastY; y++) {
-				for (Transform object : tiles[x + y * cols]) {
-					if (object.getX() >= xMin && object.getY() >= yMin && object.getX() < xMax && object.getY() < yMax)
+				for (Entity object : tiles[x + y * cols]) {
+					if (object.transform.getX() >= xMin && object.transform.getY() >= yMin
+							&& object.transform.getX() < xMax && object.transform.getY() < yMax)
 						result.add(object);
 				}
 			}
@@ -110,9 +110,9 @@ public class SpatialHashing2d implements SpacePartitioning {
 	}
 
 	@Override
-	public Transform get(double x, double y, double z, Transform opt_default) {
-		for (Transform object : tiles[getTilePos(x, y)]) {
-			if (object.getX() == x && object.getY() == y)
+	public Entity get(double x, double y, double z, Entity opt_default) {
+		for (Entity object : tiles[getTilePos(x, y)]) {
+			if (object.transform.getX() == x && object.transform.getY() == y)
 				return object;
 		}
 		return opt_default;

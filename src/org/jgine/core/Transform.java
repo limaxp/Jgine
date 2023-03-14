@@ -87,7 +87,7 @@ public class Transform implements Cloneable {
 		posZ = z;
 		calculateMatrix();
 		Vector3f pos = matrix.getPosition();
-		spacePartitioning.move(this, oldX, oldY, oldZ, pos.x, pos.y, pos.z);
+		spacePartitioning.move(entity, oldX, oldY, oldZ, pos.x, pos.y, pos.z);
 		return pos;
 	}
 

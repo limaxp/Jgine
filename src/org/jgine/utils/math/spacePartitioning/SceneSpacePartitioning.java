@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
-import org.jgine.core.Transform;
+import org.jgine.core.entity.Entity;
 
 /**
  * The default {@link SpacePartitioning} for a {@link Scene}. This basically
@@ -20,47 +20,49 @@ import org.jgine.core.Transform;
  */
 public class SceneSpacePartitioning implements SpacePartitioning {
 
-	private final List<Transform> objects;
+	private Scene scene;
 
 	public SceneSpacePartitioning() {
-		objects = new UnorderedIdentityArrayList<Transform>();
+	}
+
+	public SceneSpacePartitioning(Scene scene) {
+		this.scene = scene;
 	}
 
 	@Override
-	public void add(Transform object) {
-		objects.add(object);
+	public void add(Entity object) {
 	}
 
 	@Override
-	public void remove(Transform object) {
-		objects.remove(object);
+	public void remove(Entity object) {
 	}
 
 	@Override
-	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
+	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 	}
 
 	@Override
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-			Consumer<Transform> func) {
-		for (Transform transform : objects)
-			if (transform.getX() >= xMin && transform.getY() >= yMin && transform.getZ() >= zMin
-					&& transform.getX() < xMax && transform.getY() < yMax && transform.getZ() < zMax)
-				func.accept(transform);
+			Consumer<Entity> func) {
+		for (Entity entity : scene.getEntities())
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
+					&& entity.transform.getX() < xMax && entity.transform.getY() < yMax
+					&& entity.transform.getZ() < zMax)
+				func.accept(entity);
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		List<Transform> result = new ArrayList<Transform>();
+	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		List<Entity> result = new ArrayList<Entity>();
 		forEach(xMin, yMin, zMin, xMax, yMax, zMax, result::add);
 		return result;
 	}
 
 	@Override
-	public Transform get(double x, double y, double z, Transform opt_default) {
-		for (Transform transform : objects)
-			if (transform.getX() == x && transform.getY() == y && transform.getZ() == z)
-				return transform;
+	public Entity get(double x, double y, double z, Entity opt_default) {
+		for (Entity entity : scene.getEntities())
+			if (entity.transform.getX() == x && entity.transform.getY() == y && entity.transform.getZ() == z)
+				return entity;
 		return opt_default;
 	}
 
@@ -75,9 +77,11 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		scene = Engine.getInstance().getScene(in.readUTF());
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeUTF(scene.name);
 	}
 }

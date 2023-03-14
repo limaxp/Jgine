@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.core.Transform;
+import org.jgine.core.entity.Entity;
 
 /**
  * Basic binary space tree implementation. Binary space trees divide space into
@@ -32,35 +32,35 @@ public class BinarySpaceTree implements SpacePartitioning {
 	}
 
 	@Override
-	public void add(Transform object) {
-		root.add(object.getX(), object.getY(), object);
+	public void add(Entity object) {
+		root.add(object.transform.getX(), object.transform.getY(), object);
 	}
 
 	@Override
-	public void remove(Transform object) {
-		root.remove(object.getX(), object.getY(), object);
+	public void remove(Entity object) {
+		root.remove(object.transform.getX(), object.transform.getY(), object);
 	}
 
 	@Override
-	public void move(Transform object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
+	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
 		root.move(xOld, yOld, xNew, yNew, object);
 	}
 
 	@Override
 	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
-			Consumer<Transform> func) {
+			Consumer<Entity> func) {
 		root.forEach(xMin, yMin, xMax, yMax, func);
 	}
 
 	@Override
-	public Collection<Transform> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		List<Transform> result = new ArrayList<Transform>();
+	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		List<Entity> result = new ArrayList<Entity>();
 		root.forEach(xMin, yMin, xMax, yMax, result::add);
 		return result;
 	}
 
 	@Override
-	public Transform get(double x, double y, double z, Transform opt_default) {
+	public Entity get(double x, double y, double z, Entity opt_default) {
 		return root.get(x, y, opt_default);
 	}
 
@@ -95,7 +95,7 @@ public class BinarySpaceTree implements SpacePartitioning {
 		public final double yMin;
 		public final double yMax;
 		public final double yCenter;
-		private final List<Transform> objects;
+		private final List<Entity> objects;
 		private Node childA;
 		private Node childB;
 
@@ -104,10 +104,10 @@ public class BinarySpaceTree implements SpacePartitioning {
 			this.yMin = yMin;
 			this.yMax = yMax;
 			this.yCenter = (yMin + yMax) * 0.5;
-			objects = new UnorderedIdentityArrayList<Transform>(MAX_OBJECTS);
+			objects = new UnorderedIdentityArrayList<Entity>(MAX_OBJECTS);
 		}
 
-		public void add(double x, double y, Transform object) {
+		public void add(double x, double y, Entity object) {
 			if (objects.size() > MAX_OBJECTS && depth < MAX_DEPTH) {
 				if (!hasChilds())
 					createChilds();
@@ -117,7 +117,7 @@ public class BinarySpaceTree implements SpacePartitioning {
 			objects.add(object);
 		}
 
-		public void remove(double x, double y, Transform object) {
+		public void remove(double x, double y, Entity object) {
 			int index = objects.indexOf(object);
 			if (index != -1) {
 				objects.remove(index);
@@ -130,7 +130,7 @@ public class BinarySpaceTree implements SpacePartitioning {
 			}
 		}
 
-		public void move(double xOld, double yOld, double xNew, double yNew, Transform object) {
+		public void move(double xOld, double yOld, double xNew, double yNew, Entity object) {
 			int index = objects.indexOf(object);
 			if (index == -1 && hasChilds()) {
 				if (yNew <= yCenter) {
@@ -150,9 +150,10 @@ public class BinarySpaceTree implements SpacePartitioning {
 			}
 		}
 
-		public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Transform> func) {
-			for (Transform object : objects)
-				if (object.getX() >= xMin && object.getY() >= yMin && object.getX() < xMax && object.getY() < yMax)
+		public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
+			for (Entity object : objects)
+				if (object.transform.getX() >= xMin && object.transform.getY() >= yMin && object.transform.getX() < xMax
+						&& object.transform.getY() < yMax)
 					func.accept(object);
 
 			if (hasChilds()) {
@@ -163,9 +164,9 @@ public class BinarySpaceTree implements SpacePartitioning {
 			}
 		}
 
-		public Transform get(double x, double y, Transform opt_default) {
-			for (Transform object : objects)
-				if (object.getX() == x && object.getY() == y)
+		public Entity get(double x, double y, Entity opt_default) {
+			for (Entity object : objects)
+				if (object.transform.getX() == x && object.transform.getY() == y)
 					return object;
 
 			if (hasChilds())
