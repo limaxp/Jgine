@@ -17,9 +17,9 @@ public class PhysicObject implements SystemObject {
 
 	public boolean hasGravity = true;
 	public float stiffness = 0.5f;
-	float x, y, z;
+	public float x, y, z;
 	private float oldX, oldY, oldZ;
-	private float motX, motY, motZ;
+	public float motX, motY, motZ;
 	private boolean isMoving;
 
 	final boolean updatePosition(float dt, float gravity, float airResistanceFactor) {
