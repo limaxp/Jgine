@@ -18,16 +18,26 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
 
+/**
+ * Represents a PlaneCollider for 3D with float precision. A PlaneCollider is
+ * represented by center point and normal vector(xNorm, yNorm, zNorm).
+ */
 public class PlaneCollider extends Collider {
 
-	public Vector3f normal;
+	public float xNorm;
+	public float yNorm;
+	public float zNorm;
 
 	public PlaneCollider() {
-		this.normal = Vector3f.NULL;
 	}
 
 	public PlaneCollider(Vector3f normal) {
-		this.normal = normal;
+		this(normal.x, normal.y, normal.z);
+	}
+
+	public PlaneCollider(float xNorm, float yNorm, float zNorm) {
+		this.xNorm = xNorm;
+		this.yNorm = yNorm;
 	}
 
 	@Override
@@ -36,25 +46,24 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return distance(pos, point) > 0;
-	}
-
-	public float distance(Vector3f pos, Vector3f point) {
-		Vector3f sub = Vector3f.sub(point, pos);
-		return Vector3f.dot(normal, sub);
+		return CollisionChecks.planevsPoint(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, point.x, point.y, point.z);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof PlaneCollider)
-			return CollisionChecks.checkPlanevsPlane(pos, this, otherPos, (PlaneCollider) other);
-		else if (other instanceof BoundingSphere)
-			return CollisionChecks.checkPlanevsBoundingSphere(pos, this, otherPos, (BoundingSphere) other);
+			return CollisionChecks.planevsPlane(xNorm, yNorm, zNorm, ((PlaneCollider) other).xNorm,
+					((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
+		else if (other instanceof SphereCollider)
+			return CollisionChecks.planevsSphere(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
+					otherPos.z, ((SphereCollider) other).r);
 		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.checkPlanevsAxisAlignedBoundingBox(pos, this, otherPos,
-					(AxisAlignedBoundingBox) other);
-		else if (other instanceof BoundingCylinder)
-			return CollisionChecks.checkBoundingCylindervsPlane(otherPos, (BoundingCylinder) other, pos, this);
+			return CollisionChecks.planevsCube(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
+					otherPos.z, ((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
+					((AxisAlignedBoundingBox) other).d);
+		else if (other instanceof CylinderCollider)
+			return CollisionChecks.planevsCylinder(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
+					otherPos.z, ((CylinderCollider) other).r, ((CylinderCollider) other).h);
 		return false;
 	}
 
@@ -66,26 +75,32 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public PlaneCollider clone() {
-		return new PlaneCollider(normal);
+		return new PlaneCollider(xNorm, yNorm, zNorm);
 	}
 
 	@Override
 	public void load(Map<String, Object> data) {
 		Object normalData = data.get("normal");
-		if (normalData != null)
-			normal = YamlHelper.toVector3f(normalData);
+		if (normalData != null) {
+			Vector3f normal = YamlHelper.toVector3f(normalData);
+			xNorm = normal.x;
+			yNorm = normal.y;
+			zNorm = normal.z;
+		}
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
-		normal = new Vector3f(in.readFloat(), in.readFloat(), in.readFloat());
+		xNorm = in.readFloat();
+		yNorm = in.readFloat();
+		zNorm = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
-		out.writeFloat(normal.x);
-		out.writeFloat(normal.y);
-		out.writeFloat(normal.z);
+		out.writeFloat(xNorm);
+		out.writeFloat(yNorm);
+		out.writeFloat(zNorm);
 	}
 
 	@Override
@@ -95,7 +110,7 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, normal, new Vector3f(Float.MAX_VALUE)),
-				new Material());
+		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(xNorm, yNorm, zNorm),
+				new Vector3f(Float.MAX_VALUE)), new Material());
 	}
 }

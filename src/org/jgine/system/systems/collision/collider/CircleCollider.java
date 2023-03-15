@@ -12,7 +12,7 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.FastMath;
@@ -21,19 +21,17 @@ import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
 /**
- * Represents an BoundingSphere for 3D with float precision. An BoundingSphere
- * in 3D is represented by a center point and a radius(r).
- * 
- * @author Maximilian Paar
+ * Represents a BoundingCircle for 2D with float precision. A BoundingCircle is
+ * represented by center point and radius(r).
  */
-public class BoundingCircle extends Collider {
+public class CircleCollider extends Collider {
 
 	public float r;
 
-	public BoundingCircle() {
+	public CircleCollider() {
 	}
 
-	public BoundingCircle(float r) {
+	public CircleCollider(float r) {
 		this.r = r;
 	}
 
@@ -47,37 +45,40 @@ public class BoundingCircle extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return Vector3f.distance(pos, point) < r * r;
+		return CollisionChecks.circlevsPoint(pos.x, pos.y, r, point.x, point.y);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof BoundingCircle)
-			return CollisionChecks2D.checkBoundingCirclevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+		if (other instanceof CircleCollider)
+			return CollisionChecks.circlevsCircle(pos.x, pos.y, r, otherPos.x, otherPos.y, ((CircleCollider) other).r);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
-					(AxisAlignedBoundingQuad) other, pos, this);
+			return CollisionChecks.circlevsQuad(pos.x, pos.y, r, otherPos.x, otherPos.y,
+					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.checkLinevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks.circlevsLine(pos.x, pos.y, r, otherPos.x, otherPos.y, ((LineCollider) other).xNorm,
+					((LineCollider) other).yNorm);
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof BoundingCircle)
-			return CollisionChecks2D.resolveBoundingCirclevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+		if (other instanceof CircleCollider)
+			return CollisionChecks.resolveCirclevsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(CircleCollider) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(otherPos,
-					(AxisAlignedBoundingQuad) other, pos, this);
+			return CollisionChecks.resolveCirclevsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(AxisAlignedBoundingQuad) other);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.resolveLinevsBoundingCircle(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks.resolveCirclevsLine(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(LineCollider) other);
 		return null;
 	}
 
 	@Override
-	public BoundingCircle clone() {
-		return new BoundingCircle(r);
+	public CircleCollider clone() {
+		return new CircleCollider(r);
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public class BoundingCircle extends Collider {
 	}
 
 	@Override
-	public ColliderType<BoundingCircle> getType() {
+	public ColliderType<CircleCollider> getType() {
 		return ColliderTypes.CIRCLE;
 	}
 
@@ -112,7 +113,7 @@ public class BoundingCircle extends Collider {
 			points[i + 1] = FastMath.cos(phi);
 			i += 2;
 		}
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(r, r)), new Material(), true,
-				points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(r, r)), new Material(),
+				true, points);
 	}
 }

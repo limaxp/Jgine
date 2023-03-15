@@ -13,13 +13,17 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
+/**
+ * Represents a PolygonCollider for 2D with float precision. A PolygonCollider
+ * is represented by center point and multiple corner points.
+ */
 public class PolygonCollider extends Collider {
 
 	public float[] points;
@@ -57,6 +61,9 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (other instanceof PolygonCollider)
+			return CollisionChecks.polygonvsPolygon(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(PolygonCollider) other);
 		return false;
 	}
 
@@ -64,7 +71,8 @@ public class PolygonCollider extends Collider {
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof PolygonCollider)
-			return CollisionChecks2D.resolvePolygonvsPolygon(pos, this, otherPos, (PolygonCollider) other);
+			return CollisionChecks.resolvePolygonvsPolygon(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(PolygonCollider) other);
 		return null;
 	}
 
@@ -115,7 +123,7 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(1, 1)), new Material(), true,
-				points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(1, 1)), new Material(),
+				true, points);
 	}
 }

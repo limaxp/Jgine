@@ -4,9 +4,9 @@ import java.util.function.Supplier;
 
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingBox;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
-import org.jgine.system.systems.collision.collider.BoundingCircle;
-import org.jgine.system.systems.collision.collider.BoundingCylinder;
-import org.jgine.system.systems.collision.collider.BoundingSphere;
+import org.jgine.system.systems.collision.collider.CircleCollider;
+import org.jgine.system.systems.collision.collider.CylinderCollider;
+import org.jgine.system.systems.collision.collider.SphereCollider;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
@@ -16,15 +16,15 @@ public class ColliderTypes {
 
 	public static final ColliderType<PlaneCollider> PLANE = a("plane", PlaneCollider::new);
 
-	public static final ColliderType<BoundingSphere> SPHERE = a("sphere", BoundingSphere::new);
+	public static final ColliderType<SphereCollider> SPHERE = a("sphere", SphereCollider::new);
 
-	public static final ColliderType<BoundingCylinder> CYLINDER = a("cylinder", BoundingCylinder::new);
+	public static final ColliderType<CylinderCollider> CYLINDER = a("cylinder", CylinderCollider::new);
 
 	public static final ColliderType<AxisAlignedBoundingBox> BOX = a("box", AxisAlignedBoundingBox::new);
 
 	public static final ColliderType<LineCollider> LINE = a("line", LineCollider::new);
 
-	public static final ColliderType<BoundingCircle> CIRCLE = a("circle", BoundingCircle::new);
+	public static final ColliderType<CircleCollider> CIRCLE = a("circle", CircleCollider::new);
 
 	public static final ColliderType<AxisAlignedBoundingQuad> QUAD = a("quad", AxisAlignedBoundingQuad::new);
 

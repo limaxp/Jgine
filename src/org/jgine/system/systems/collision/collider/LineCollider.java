@@ -12,23 +12,32 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
+/**
+ * Represents a LineCollider for 2D with float precision. A LineCollider is
+ * represented by center point and normal vector(xNorm, yNorm).
+ */
 public class LineCollider extends Collider {
 
-	public Vector2f normal;
+	public float xNorm;
+	public float yNorm;
 
 	public LineCollider() {
-		this.normal = Vector2f.NULL;
 	}
 
 	public LineCollider(Vector2f normal) {
-		this.normal = normal;
+		this(normal.x, normal.y);
+	}
+
+	public LineCollider(float xNorm, float yNorm) {
+		this.xNorm = xNorm;
+		this.yNorm = yNorm;
 	}
 
 	@Override
@@ -37,23 +46,19 @@ public class LineCollider extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return distance(pos, point) > 0;
-	}
-
-	public float distance(Vector2f pos, Vector2f point) {
-		Vector2f sub = Vector2f.sub(point, pos);
-		return Vector2f.dot(normal, sub);
+		return CollisionChecks.linevsPoint(pos.x, pos.y, xNorm, yNorm, point.x, point.y);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
-			return CollisionChecks2D.checkLinevsLine(pos, this, otherPos, (LineCollider) other);
-		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.checkLinevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+			return CollisionChecks.linevsLine(xNorm, yNorm, ((LineCollider) other).xNorm, ((LineCollider) other).yNorm);
+		else if (other instanceof CircleCollider)
+			return CollisionChecks.linevsCircle(pos.x, pos.y, xNorm, yNorm, otherPos.x, otherPos.y,
+					((CircleCollider) other).r);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.checkLinevsAxisAlignedBoundingQuad(pos, this, otherPos,
-					(AxisAlignedBoundingQuad) other);
+			return CollisionChecks.linevsQuad(pos.x, pos.y, xNorm, yNorm, otherPos.x, otherPos.y,
+					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
 		return false;
 	}
 
@@ -61,36 +66,41 @@ public class LineCollider extends Collider {
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof LineCollider)
-			return CollisionChecks2D.resolveLinevsLine(pos, this, otherPos, (LineCollider) other);
-		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.resolveLinevsBoundingCircle(pos, this, otherPos, (BoundingCircle) other);
+			return CollisionChecks.resolveLinevsLine(pos.x, pos.y, this, otherPos.x, otherPos.y, (LineCollider) other);
+		else if (other instanceof CircleCollider)
+			return CollisionChecks.resolveLinevsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(CircleCollider) other);
 		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(pos, this, otherPos,
+			return CollisionChecks.resolveLinevsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
 					(AxisAlignedBoundingQuad) other);
 		return null;
 	}
 
 	@Override
 	public LineCollider clone() {
-		return new LineCollider(normal);
+		return new LineCollider(xNorm, yNorm);
 	}
 
 	@Override
 	public void load(Map<String, Object> data) {
 		Object normalData = data.get("normal");
-		if (normalData != null)
-			normal = YamlHelper.toVector2f(normalData);
+		if (normalData != null) {
+			Vector2f normal = YamlHelper.toVector2f(normalData);
+			xNorm = normal.x;
+			yNorm = normal.y;
+		}
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
-		normal = new Vector2f(in.readFloat(), in.readFloat());
+		xNorm = in.readFloat();
+		yNorm = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
-		out.writeFloat(normal.x);
-		out.writeFloat(normal.y);
+		out.writeFloat(xNorm);
+		out.writeFloat(yNorm);
 	}
 
 	@Override
@@ -101,6 +111,6 @@ public class LineCollider extends Collider {
 	@Override
 	public void render(Vector3f pos) {
 		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(Float.MAX_VALUE)),
-				new Material(), normal.y, -normal.x, -normal.y, normal.x);
+				new Material(), yNorm, -xNorm, -yNorm, xNorm);
 	}
 }

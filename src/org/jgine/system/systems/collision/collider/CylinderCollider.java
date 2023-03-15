@@ -12,21 +12,25 @@ import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
-import org.jgine.system.systems.collision.CollisionChecks;
 
-public class BoundingCylinder extends Collider {
+/**
+ * Represents an BoundingCylinder for 3D with float precision. An
+ * BoundingCylinder is represented by center point, radius(r) and height(h).
+ */
+public class CylinderCollider extends Collider {
 
 	public float r;
 	public float h;
 
-	public BoundingCylinder() {
+	public CylinderCollider() {
 	}
 
-	public BoundingCylinder(float r, float h) {
+	public CylinderCollider(float r, float h) {
 		this.r = r;
 		this.h = h;
 	}
@@ -42,21 +46,24 @@ public class BoundingCylinder extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		// TODO make this use height!
-		return Vector3f.distance(pos, point) < r * r;
+		return CollisionChecks.cylindervsPoint(pos.x, pos.y, pos.z, r, h, point.x, point.y, point.z);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof BoundingCylinder)
-			return CollisionChecks.checkBoundingCylindervsBoundingCylinder(pos, this, otherPos, (BoundingSphere) other);
-		else if (other instanceof BoundingSphere)
-			return CollisionChecks.checkBoundingCylindervsBoundingSphere(pos, this, otherPos, (BoundingSphere) other);
+		if (other instanceof CylinderCollider)
+			return CollisionChecks.cylindervsCylinder(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
+					((CylinderCollider) other).r, ((CylinderCollider) other).h);
+		else if (other instanceof SphereCollider)
+			return CollisionChecks.cylindervsSphere(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
+					((SphereCollider) other).r);
 		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.checkBoundingCylindervsAxisAlignedBoundingBox(pos, this, otherPos,
-					(AxisAlignedBoundingBox) other);
+			return CollisionChecks.cylindervsCube(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
+					((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
+					((AxisAlignedBoundingBox) other).d);
 		else if (other instanceof PlaneCollider)
-			return CollisionChecks.checkBoundingCylindervsPlane(pos, this, otherPos, (PlaneCollider) other);
+			return CollisionChecks.cylindervsPlane(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
+					((PlaneCollider) other).xNorm, ((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
 		return false;
 	}
 
@@ -67,8 +74,8 @@ public class BoundingCylinder extends Collider {
 	}
 
 	@Override
-	public BoundingCylinder clone() {
-		return new BoundingCylinder(r, h);
+	public CylinderCollider clone() {
+		return new CylinderCollider(r, h);
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class BoundingCylinder extends Collider {
 	}
 
 	@Override
-	public ColliderType<BoundingCylinder> getType() {
+	public ColliderType<CylinderCollider> getType() {
 		return ColliderTypes.CYLINDER;
 	}
 

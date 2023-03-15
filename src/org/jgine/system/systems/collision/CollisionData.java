@@ -16,26 +16,27 @@ public class CollisionData {
 	public final float overlapZ;
 	public final Collider collider1;
 	public final Collider collider2;
+	public final boolean strictResolve;
 
 	public CollisionData(Collider collider1, Collider collider2, Vector2f collisionAxis, Vector2f collisionPosition,
-			Vector2f overlap) {
+			Vector2f overlap, boolean strictResolve) {
 		this(collider1, collider2, collisionAxis.x, collisionAxis.y, 0, collisionPosition.x, collisionPosition.y, 0,
-				overlap.x, overlap.y, 0);
+				overlap.x, overlap.y, 0, strictResolve);
 	}
 
 	public CollisionData(Collider collider1, Collider collider2, Vector3f collisionAxis, Vector3f collisionPosition,
-			Vector3f overlap) {
+			Vector3f overlap, boolean strictResolve) {
 		this(collider1, collider2, collisionAxis.x, collisionAxis.y, collisionAxis.z, collisionPosition.x,
-				collisionPosition.y, collisionPosition.z, overlap.x, overlap.y, overlap.z);
+				collisionPosition.y, collisionPosition.z, overlap.x, overlap.y, overlap.z, strictResolve);
 	}
 
-	public CollisionData(Collider collider1, Collider collider2, float axisX, float axisY, float positionX, float positionY,
-			float overlapX, float overlapY) {
-		this(collider1, collider2, axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0);
+	public CollisionData(Collider collider1, Collider collider2, float axisX, float axisY, float positionX,
+			float positionY, float overlapX, float overlapY, boolean strictResolve) {
+		this(collider1, collider2, axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0, strictResolve);
 	}
 
 	public CollisionData(Collider collider1, Collider collider2, float axisX, float axisY, float axisZ, float positionX,
-			float positionY, float positionZ, float overlapX, float overlapY, float overlapZ) {
+			float positionY, float positionZ, float overlapX, float overlapY, float overlapZ, boolean strictResolve) {
 		this.collider1 = collider1;
 		this.collider2 = collider2;
 		this.axisX = axisX;
@@ -47,6 +48,7 @@ public class CollisionData {
 		this.overlapX = overlapX;
 		this.overlapY = overlapY;
 		this.overlapZ = overlapZ;
+		this.strictResolve = strictResolve;
 	}
 
 	public final Vector3f getCollisionAxis3d() {

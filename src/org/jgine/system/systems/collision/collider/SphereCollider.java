@@ -20,18 +20,16 @@ import org.jgine.system.systems.collision.CollisionChecks;
 
 /**
  * Represents an BoundingSphere for 3D with float precision. An BoundingSphere
- * in 3D is represented by a center point and a radius(r).
- * 
- * @author Maximilian Paar
+ * is represented by center point and radius(r).
  */
-public class BoundingSphere extends Collider {
+public class SphereCollider extends Collider {
 
 	public float r;
 
-	public BoundingSphere() {
+	public SphereCollider() {
 	}
 
-	public BoundingSphere(float r) {
+	public SphereCollider(float r) {
 		this.r = r;
 	}
 
@@ -45,20 +43,24 @@ public class BoundingSphere extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return Vector3f.distance(pos, point) < r * r;
+		return CollisionChecks.spherevsPoint(pos.x, pos.y, pos.z, r, point.x, point.y, point.z);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof BoundingSphere)
-			return CollisionChecks.checkBoundingSpherevsBoundingSphere(pos, this, otherPos, (BoundingSphere) other);
+		if (other instanceof SphereCollider)
+			return CollisionChecks.spherevsSphere(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
+					((SphereCollider) other).r);
 		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.checkAxisAlignedBoundingBoxvsBoundingSphere(otherPos, (AxisAlignedBoundingBox) other,
-					pos, this);
+			return CollisionChecks.spherevsCube(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
+					((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
+					((AxisAlignedBoundingBox) other).d);
 		else if (other instanceof PlaneCollider)
-			return CollisionChecks.checkPlanevsBoundingSphere(otherPos, (PlaneCollider) other, pos, this);
-		else if (other instanceof BoundingCylinder)
-			return CollisionChecks.checkBoundingCylindervsBoundingSphere(otherPos, (BoundingCylinder) other, pos, this);
+			return CollisionChecks.spherevsPlane(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
+					((PlaneCollider) other).xNorm, ((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
+		else if (other instanceof CylinderCollider)
+			return CollisionChecks.spherevsCylinder(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
+					((CylinderCollider) other).r, ((CylinderCollider) other).h);
 		return false;
 	}
 
@@ -69,8 +71,8 @@ public class BoundingSphere extends Collider {
 	}
 
 	@Override
-	public BoundingSphere clone() {
-		return new BoundingSphere(r);
+	public SphereCollider clone() {
+		return new SphereCollider(r);
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public class BoundingSphere extends Collider {
 	}
 
 	@Override
-	public ColliderType<BoundingSphere> getType() {
+	public ColliderType<SphereCollider> getType() {
 		return ColliderTypes.SPHERE;
 	}
 

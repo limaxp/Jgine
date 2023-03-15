@@ -12,7 +12,7 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
-import org.jgine.system.systems.collision.CollisionChecks2D;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
@@ -20,11 +20,9 @@ import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
 /**
- * Represents an AxisAlignedBoundingBox for 3D with float precision. An
- * AxisAlignedBoundingBox in 3D is represented by a center point, a width(w), a
- * height(h) and a depth(d).
- * 
- * @author Maximilian Paar
+ * Represents an AxisAlignedBoundingQuad for 2D with float precision. An
+ * AxisAlignedBoundingQuad is represented by center point, width(w), height(h)
+ * and depth(d).
  */
 public class AxisAlignedBoundingQuad extends Collider {
 
@@ -47,20 +45,19 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return (point.x >= (pos.x - this.w * 0.5f) && point.x <= (pos.x + this.w * 0.5f))
-				&& (point.y >= (pos.y - this.h * 0.5f) && point.y <= (pos.y + this.h * 0.5f));
+		return CollisionChecks.quadvsPoint(pos.x, pos.y, w, h, point.x, point.y);
 	}
 
 	@Override
 	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(pos, this, otherPos,
-					(AxisAlignedBoundingQuad) other);
-		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.checkAxisAlignedBoundingQuadvsBoundingCircle(pos, this, otherPos,
-					(BoundingCircle) other);
+			return CollisionChecks.quadvsQuad(pos.x, pos.y, w, h, otherPos.x, otherPos.y,
+					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
+		else if (other instanceof CircleCollider)
+			return CollisionChecks.quadvsCircle(pos.x, pos.y, w, h, otherPos.x, otherPos.y, ((CircleCollider) other).r);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.checkLinevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks.quadvsLine(pos.x, pos.y, w, h, otherPos.x, otherPos.y, ((LineCollider) other).xNorm,
+					((LineCollider) other).yNorm);
 		return false;
 	}
 
@@ -68,13 +65,13 @@ public class AxisAlignedBoundingQuad extends Collider {
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
 		if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsAxisAlignedBoundingQuad(pos, this, otherPos,
+			return CollisionChecks.resolveQuadvsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
 					(AxisAlignedBoundingQuad) other);
-		else if (other instanceof BoundingCircle)
-			return CollisionChecks2D.resolveAxisAlignedBoundingQuadvsBoundingCircle(pos, this, otherPos,
-					(BoundingCircle) other);
+		else if (other instanceof CircleCollider)
+			return CollisionChecks.resolveQuadvsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
+					(CircleCollider) other);
 		else if (other instanceof LineCollider)
-			return CollisionChecks2D.resolveLinevsAxisAlignedBoundingQuad(otherPos, (LineCollider) other, pos, this);
+			return CollisionChecks.resolveQuadvsLine(pos.x, pos.y, this, otherPos.x, otherPos.y, (LineCollider) other);
 		return null;
 	}
 
@@ -112,7 +109,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(w, h)), new Material(), true,
-				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(w, h)), new Material(),
+				true, new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
 	}
 }
