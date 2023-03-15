@@ -321,7 +321,7 @@ public class Scene {
 		spacePartitioning.forEach(min.x, min.y, 0.0, max.x, max.y, 0.0, func);
 	}
 
-	public final void forEntity(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
+	public final void forEntity(float xMin, float yMin, float xMax, float yMax, Consumer<Entity> func) {
 		spacePartitioning.forEach(xMin, yMin, 0.0, xMax, yMax, 0.0, func);
 	}
 
@@ -329,7 +329,7 @@ public class Scene {
 		spacePartitioning.forEach(min.x, min.y, min.z, max.x, max.y, max.z, func);
 	}
 
-	public final void forEntity(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+	public final void forEntity(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax,
 			Consumer<Entity> func) {
 		spacePartitioning.forEach(xMin, yMin, zMin, xMax, yMax, zMax, func);
 	}
