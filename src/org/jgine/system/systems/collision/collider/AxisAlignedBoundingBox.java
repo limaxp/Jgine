@@ -71,6 +71,15 @@ public class AxisAlignedBoundingBox extends Collider {
 	@Nullable
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (other instanceof AxisAlignedBoundingBox)
+			return CollisionChecks.resolveCubevsCube(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(AxisAlignedBoundingBox) other);
+		else if (other instanceof SphereCollider)
+			return CollisionChecks.resolveCubevsSphere(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(SphereCollider) other);
+		else if (other instanceof PlaneCollider)
+			return CollisionChecks.resolveCubevsPlane(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(PlaneCollider) other);
 		return null;
 	}
 

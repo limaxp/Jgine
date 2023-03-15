@@ -70,6 +70,15 @@ public class PlaneCollider extends Collider {
 	@Nullable
 	@Override
 	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+		if (other instanceof PlaneCollider)
+			return CollisionChecks.resolvePlanevsPlane(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(PlaneCollider) other);
+		else if (other instanceof SphereCollider)
+			return CollisionChecks.resolvePlanevsSphere(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(SphereCollider) other);
+		else if (other instanceof AxisAlignedBoundingBox)
+			return CollisionChecks.resolvePlanevsCube(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
+					(AxisAlignedBoundingBox) other);
 		return null;
 	}
 
