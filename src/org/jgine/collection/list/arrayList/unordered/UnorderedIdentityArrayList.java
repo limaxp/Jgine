@@ -6,8 +6,6 @@ import java.util.List;
 /**
  * An ArrayList implementation that does instance checks instead of equals()
  * calls. Does NOT do range checks. Insert order is NOT persistent.
- * 
- * @author Maximilian Paar
  */
 public class UnorderedIdentityArrayList<E> extends UnorderedArrayList<E> implements List<E> {
 

@@ -9,6 +9,12 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 
+/**
+ * The base system scene class.
+ * 
+ * @param <T1> the {@link EngineSystem} of this {@link SystemScene}
+ * @param <T2>
+ */
 public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObject> {
 
 	public final T1 system;

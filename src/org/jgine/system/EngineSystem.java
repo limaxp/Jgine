@@ -7,7 +7,7 @@ import org.jgine.core.manager.SystemManager;
 
 /**
  * The base engine system class. All systems must override this class and must
- * be register with the {@link SystemManager} before use.
+ * be registered with the {@link SystemManager} before use.
  * <p>
  * A system consists of an {@link EngineSystem} and a {@link SystemScene}
  * implementation.
