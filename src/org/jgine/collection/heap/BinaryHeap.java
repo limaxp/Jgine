@@ -8,7 +8,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Represents a binary heap that is based on an array.
  * 
- * @author Maximilian Paar
  * @param <E> The type the tree contains.
  */
 public abstract class BinaryHeap<E extends IHeapItem<E>> extends AbstractHeap<E> {
@@ -122,11 +121,9 @@ public abstract class BinaryHeap<E extends IHeapItem<E>> extends AbstractHeap<E>
 					}
 					if (parentItem != null && item.compareTo(parentItem) < 0) {
 						swap(item, parentItem);
-					}
-					else
+					} else
 						return;
-				}
-				else
+				} else
 					return;
 			}
 		}
@@ -147,8 +144,7 @@ public abstract class BinaryHeap<E extends IHeapItem<E>> extends AbstractHeap<E>
 						swap(item, array[swapI]);
 					else
 						return;
-				}
-				else
+				} else
 					return;
 			}
 		}
@@ -177,7 +173,8 @@ public abstract class BinaryHeap<E extends IHeapItem<E>> extends AbstractHeap<E>
 
 		private int index;
 
-		private BinaryHeapIterator() {}
+		private BinaryHeapIterator() {
+		}
 
 		@Override
 		public boolean hasNext() {

@@ -9,9 +9,7 @@ import org.jgine.collection.list.AbstractDoubleList;
 import org.jgine.collection.list.DoubleList;
 
 /**
- * An Double ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
+ * An double ArrayList implementation that does NOT do range checks.
  */
 public class DoubleArrayList extends AbstractDoubleList implements DoubleList {
 

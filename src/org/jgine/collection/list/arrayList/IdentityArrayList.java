@@ -6,8 +6,6 @@ import java.util.List;
 /**
  * An ArrayList implementation that does instance checks instead of equals()
  * calls. Does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class IdentityArrayList<E> extends FastArrayList<E> implements List<E> {
 

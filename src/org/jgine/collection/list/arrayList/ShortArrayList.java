@@ -10,8 +10,6 @@ import org.jgine.collection.list.ShortList;
 
 /**
  * An Short ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class ShortArrayList extends AbstractShortList implements ShortList {
 

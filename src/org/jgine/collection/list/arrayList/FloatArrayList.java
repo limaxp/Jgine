@@ -10,8 +10,6 @@ import org.jgine.collection.list.FloatList;
 
 /**
  * An Float ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class FloatArrayList extends AbstractFloatList implements FloatList {
 

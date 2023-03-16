@@ -10,8 +10,6 @@ import org.jgine.collection.list.List;
 
 /**
  * An ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class FastArrayList<E> extends AbstractList<E> implements List<E> {
 

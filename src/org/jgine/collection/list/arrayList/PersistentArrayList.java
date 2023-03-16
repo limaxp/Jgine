@@ -8,8 +8,6 @@ import java.util.List;
  * change! This list can contain null values. So traversing it will require null
  * checks! Does NOT allow adding and setting! Use insert() method instead! Also
  * does NOT do range checks!
- * 
- * @author Maximilian Paar
  */
 public class PersistentArrayList<E> extends FastArrayList<E> implements List<E> {
 

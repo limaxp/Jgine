@@ -10,8 +10,6 @@ import org.jgine.collection.list.IntList;
 
 /**
  * An Integer ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class IntArrayList extends AbstractIntList implements IntList {
 

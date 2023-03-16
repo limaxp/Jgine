@@ -10,8 +10,6 @@ import org.jgine.collection.list.LongList;
 
 /**
  * An Long ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
  */
 public class LongArrayList extends AbstractLongList implements LongList {
 

@@ -9,9 +9,7 @@ import org.jgine.collection.list.AbstractByteList;
 import org.jgine.collection.list.ByteList;
 
 /**
- * An Float ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
+ * An Byte ArrayList implementation that does NOT do range checks.
  */
 public class ByteArrayList extends AbstractByteList implements ByteList {
 

@@ -9,9 +9,7 @@ import org.jgine.collection.list.AbstractCharList;
 import org.jgine.collection.list.CharList;
 
 /**
- * An Float ArrayList implementation that does NOT do range checks.
- * 
- * @author Maximilian Paar
+ * An Char ArrayList implementation that does NOT do range checks.
  */
 public class CharArrayList extends AbstractCharList implements CharList {
 

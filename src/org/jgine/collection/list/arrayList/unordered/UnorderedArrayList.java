@@ -9,8 +9,6 @@ import org.jgine.collection.list.arrayList.FastArrayList;
 /**
  * An ArrayList implementation that does NOT do range checks. Insert order is
  * NOT persistent.
- * 
- * @author Maximilian Paar
  */
 public class UnorderedArrayList<E> extends FastArrayList<E> implements List<E> {
 
@@ -29,7 +27,7 @@ public class UnorderedArrayList<E> extends FastArrayList<E> implements List<E> {
 	public UnorderedArrayList(E[] array) {
 		super(array);
 	}
-	
+
 	public UnorderedArrayList(E[] array, int size) {
 		super(array, size);
 	}
