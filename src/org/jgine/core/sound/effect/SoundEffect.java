@@ -7,6 +7,12 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 
+/**
+ * An openAL sound effect.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundEffect implements AutoCloseable {
 
 	public static class Type {

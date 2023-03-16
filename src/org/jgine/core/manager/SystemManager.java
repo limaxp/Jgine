@@ -10,7 +10,7 @@ import org.jgine.utils.logger.Logger;
 
 /**
  * Manager to register {@link EngineSystem}<code>s</code>. Created systems MUST
- * be registered before using them!
+ * be registered here before using them!
  */
 public class SystemManager {
 

@@ -25,6 +25,12 @@ import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * An openAL sound buffer.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundBuffer implements AutoCloseable {
 
 	public final int id;

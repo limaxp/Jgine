@@ -49,7 +49,10 @@ import java.util.stream.Stream;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
+import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.sound.effect.EFXUtil;
+import org.jgine.core.sound.effect.SoundEffect;
+import org.jgine.core.sound.effect.SoundFilter;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.utils.math.vector.Vector2f;
@@ -58,6 +61,22 @@ import org.lwjgl.openal.ALUtil;
 import org.lwjgl.openal.EnumerateAllExt;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * Manager for handling openAL sounds. To use a sound load it to a
+ * {@link SoundBuffer} with the {@link ResourceManager} class. Then use the
+ * <code>play()</code> methods here to play it. This will return a
+ * {@link SoundSource} which can be used to modify the sound with
+ * {@link SoundEffect}<code>s</code>, {@link SoundFilter}<code>s</code>, etc.
+ * <p>
+ * To modify to way sounds are received call <code>listener()</code> to get the
+ * {@link SoundListener} in use.
+ * <p>
+ * Can also be used to get currently plugged in
+ * {@link SoundDevice}<code>s</code> and set the one to use.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundManager {
 
 	private static SoundDevice device;

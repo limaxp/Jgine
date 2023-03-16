@@ -30,6 +30,12 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 
+/**
+ * An openAL sound filter.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundFilter implements AutoCloseable {
 
 	public static class Type {

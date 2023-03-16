@@ -38,6 +38,12 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * An openAL sound device.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundDevice {
 
 	public final long device;

@@ -15,6 +15,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * An openAL sound stream.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundStream extends SoundBuffer {
 
 	public static final int NUM_BUFFERS = 4;

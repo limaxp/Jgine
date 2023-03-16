@@ -3,7 +3,15 @@ package org.jgine.system;
 import java.util.Map;
 
 import org.jgine.core.Scene;
+import org.jgine.core.manager.SystemManager;
 
+/**
+ * The base engine system class. All systems must override this class and must
+ * be register with the {@link SystemManager} before use.
+ * <p>
+ * A system consists of an {@link EngineSystem} and a {@link SystemScene}
+ * implementation.
+ */
 public abstract class EngineSystem {
 
 	public final String name;

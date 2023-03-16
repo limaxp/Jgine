@@ -33,7 +33,7 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.MemoryUtil;
 
 /**
- * @author Maximilian Paar
+ * Helper class for openGL.
  */
 public class OpenGL {
 

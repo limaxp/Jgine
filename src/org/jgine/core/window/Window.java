@@ -124,7 +124,7 @@ import org.lwjgl.system.MemoryStack;
 /**
  * A basic glfw window.
  * <p>
- * Documentation: <a href=
+ * See Also: <a href=
  * "https://www.glfw.org/docs/3.3/window_guide.html">https://www.glfw.org/docs/3.3/window_guide.html</a>
  */
 public class Window {

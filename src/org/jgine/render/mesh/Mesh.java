@@ -50,8 +50,6 @@ import org.lwjgl.system.MemoryUtil;
 
 /**
  * Represents an indexed Mesh!
- * 
- * @author Max
  *
  */
 public class Mesh implements AutoCloseable {

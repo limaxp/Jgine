@@ -24,7 +24,7 @@ import org.lwjgl.system.MemoryStack;
 /**
  * A glfw monitor.
  * <p>
- * Documentation: <a href=
+ * See Also: <a href=
  * "https://www.glfw.org/docs/3.3/group__monitor.html">https://www.glfw.org/docs/3.3/group__monitor.html</a>
  */
 public class Display {

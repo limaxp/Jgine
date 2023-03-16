@@ -7,9 +7,6 @@ import org.lwjgl.BufferUtils;
 
 /**
  * Represents a NOT indexed Mesh!
- * 
- * @author Max
- *
  */
 public class BaseMesh extends Mesh {
 

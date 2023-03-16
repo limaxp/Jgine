@@ -15,7 +15,7 @@ import org.jgine.utils.options.Options;
  * A helper class for building {@link Window}<code>s</code>. New instances of
  * {@link Window} will use the setting specified here.
  * <p>
- * Documentation: <a href=
+ * See Also: <a href=
  * "https://www.glfw.org/docs/3.3/window_guide.html">https://www.glfw.org/docs/3.3/window_guide.html</a>
  */
 public class WindowBuilder {

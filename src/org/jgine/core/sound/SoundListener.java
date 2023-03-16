@@ -9,9 +9,16 @@ import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
+/**
+ * An openAL sound listener.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundListener {
 
-	SoundListener() {}
+	SoundListener() {
+	}
 
 	void init(Vector3f position) {
 		set(AL_POSITION, position.x, position.y, position.z);

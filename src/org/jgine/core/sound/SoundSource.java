@@ -56,6 +56,12 @@ import org.jgine.utils.options.Options;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
+/**
+ * An openAL sound source.
+ * <p>
+ * See Also: <a href=
+ * "https://www.openal.org/documentation/">https://www.openal.org/documentation/</a>
+ */
 public class SoundSource {
 
 	public static final float DEFAULT_ROLLOFF = 1f;
@@ -369,8 +375,7 @@ public class SoundSource {
 			if (result.filter != null) {
 				set(AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, index, result.filter.id);
 				result.effect = null;
-			}
-			else {
+			} else {
 				set(AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, index, AL_FILTER_NULL);
 				effects.remove(index);
 			}
@@ -393,8 +398,7 @@ public class SoundSource {
 			if (result.effect != null) {
 				set(AL_AUXILIARY_SEND_FILTER, result.effect.id, index, AL_FILTER_NULL);
 				result.filter = null;
-			}
-			else {
+			} else {
 				set(AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, index, AL_FILTER_NULL);
 				effects.remove(index);
 			}
