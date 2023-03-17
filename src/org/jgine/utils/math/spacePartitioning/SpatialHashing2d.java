@@ -101,7 +101,7 @@ public class SpatialHashing2d implements SpacePartitioning {
 			for (int y = firstY; y <= lastY; y++) {
 				for (Entity object : tiles[x + y * cols]) {
 					if (object.transform.getX() >= xMin && object.transform.getY() >= yMin
-							&& object.transform.getX() < xMax && object.transform.getY() < yMax)
+							&& object.transform.getX() <= xMax && object.transform.getY() <= yMax)
 						result.add(object);
 				}
 			}

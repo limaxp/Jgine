@@ -46,8 +46,8 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 			Consumer<Entity> func) {
 		for (Entity entity : scene.getEntities())
 			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
-					&& entity.transform.getX() < xMax && entity.transform.getY() < yMax
-					&& entity.transform.getZ() < zMax)
+					&& entity.transform.getX() <= xMax && entity.transform.getY() <= yMax
+					&& entity.transform.getZ() <= zMax)
 				func.accept(entity);
 	}
 

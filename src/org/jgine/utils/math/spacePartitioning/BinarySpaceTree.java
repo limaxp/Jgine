@@ -152,8 +152,8 @@ public class BinarySpaceTree implements SpacePartitioning {
 
 		public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
 			for (Entity object : objects)
-				if (object.transform.getX() >= xMin && object.transform.getY() >= yMin && object.transform.getX() < xMax
-						&& object.transform.getY() < yMax)
+				if (object.transform.getX() >= xMin && object.transform.getY() >= yMin
+						&& object.transform.getX() <= xMax && object.transform.getY() <= yMax)
 					func.accept(object);
 
 			if (hasChilds()) {
