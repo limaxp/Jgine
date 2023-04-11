@@ -5,18 +5,27 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
+import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
-import org.jgine.render.Renderer;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
+import org.jgine.render.shader.PhongShader;
 import org.jgine.system.data.EntityListSystemScene;
+import org.jgine.utils.Color;
 
 public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 
+	private int ambientLight;
+	private List<PointLight> pointLights;
+	private DirectionalLight directionalLight;
+
 	public LightScene(LightSystem system, Scene scene) {
 		super(system, scene, Light.class);
+		ambientLight = Color.BLACK;
+		pointLights = new UnorderedArrayList<PointLight>(PhongShader.MAX_POINT_LIGHTS);
+		directionalLight = new DirectionalLight();
 	}
 
 	@Override
@@ -31,9 +40,9 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	@Override
 	public int addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
-			Renderer.PHONG_SHADER.getPointLights().add((PointLight) object);
+			pointLights.add((PointLight) object);
 		if (object instanceof DirectionalLight)
-			;
+			directionalLight = (DirectionalLight) object;
 		return super.addObject(entity, object);
 	}
 
@@ -41,14 +50,10 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	public Light removeObject(int index) {
 		Light object = super.removeObject(index);
 		if (object instanceof PointLight)
-			Renderer.PHONG_SHADER.getPointLights().remove((PointLight) object);
+			pointLights.remove((PointLight) object);
 		if (object instanceof DirectionalLight)
-			;
+			directionalLight = new DirectionalLight();
 		return object;
-	}
-
-	public List<PointLight> getPointLights() {
-		return Renderer.PHONG_SHADER.getPointLights();
 	}
 
 	@Override
@@ -70,5 +75,21 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	public void save(Light object, DataOutput out) throws IOException {
 		out.writeInt(object.getType().getId());
 		object.save(out);
+	}
+
+	public void setAmbientLight(int ambientLight) {
+		this.ambientLight = ambientLight;
+	}
+
+	public int getAmbientLight() {
+		return ambientLight;
+	}
+
+	public List<PointLight> getPointLights() {
+		return pointLights;
+	}
+
+	public DirectionalLight getDirectionalLight() {
+		return directionalLight;
 	}
 }

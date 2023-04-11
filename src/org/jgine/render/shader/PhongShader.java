@@ -2,15 +2,13 @@ package org.jgine.render.shader;
 
 import java.util.List;
 
-import org.jgine.core.manager.SystemManager;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
-import org.jgine.system.systems.camera.CameraSystem;
+import org.jgine.system.systems.camera.Camera;
 import org.jgine.utils.Color;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;
 
 public class PhongShader extends TextureShader {
@@ -29,47 +27,8 @@ public class PhongShader extends TextureShader {
 	protected final int uniforms_pointLights[][] = addUniforms("pointLights", MAX_POINT_LIGHTS, new String[] {
 			"base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos", "range" });
 
-	private int ambientLight;
-	private List<PointLight> pointLights;
-	private DirectionalLight directionalLight;
-
-	public PhongShader(String name, List<PointLight> pointLights) {
+	public PhongShader(String name) {
 		super(name);
-		ambientLight = Color.BLACK;
-		this.pointLights = pointLights;
-		directionalLight = new DirectionalLight();
-		directionalLight.setIntensity(0.8f);
-		directionalLight.setDirection(new Vector3f(1f, 1f, -1f));
-	}
-
-	@Override
-	public void bind() {
-		super.bind();
-
-		setUniform3f(uniform_ambientLight, Color.toVector(ambientLight));
-
-		int pointLightSize = FastMath.min(pointLights.size(), MAX_POINT_LIGHTS);
-		setUniformi(uniform_pointLightSize, pointLightSize);
-		for (int i = 0; i < pointLightSize; i++) {
-			PointLight pointLight = pointLights.get(i);
-			int[] pointLightUniforms = uniforms_pointLights[i];
-			Vector4f color2 = Color.toVector(pointLight.getColor());
-			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
-			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
-			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
-			setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
-			setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
-			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
-			setUniformf(pointLightUniforms[6], pointLight.getRange());
-		}
-
-		Vector4f color = Color.toVector(directionalLight.getColor());
-		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
-		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
-		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
-
-		setUniform3f(uniform_camPos,
-				((CameraSystem) SystemManager.get("camera")).getMainCamera().getTransform().getPosition());
 	}
 
 	@Override
@@ -86,18 +45,38 @@ public class PhongShader extends TextureShader {
 	}
 
 	public void setAmbientLight(int color) {
-		this.ambientLight = color;
+		setAmbientLight(Color.toVector(color));
 	}
 
-	public int getAmbientLight() {
-		return ambientLight;
+	public void setAmbientLight(Vector4f color) {
+		setUniform3f(uniform_ambientLight, color);
 	}
 
-	public List<PointLight> getPointLights() {
-		return pointLights;
+	public void setPointLights(List<PointLight> pointLights) {
+		int pointLightSize = FastMath.min(pointLights.size(), MAX_POINT_LIGHTS);
+		setUniformi(uniform_pointLightSize, pointLightSize);
+		for (int i = 0; i < pointLightSize; i++) {
+			PointLight pointLight = pointLights.get(i);
+			int[] pointLightUniforms = uniforms_pointLights[i];
+			Vector4f color2 = Color.toVector(pointLight.getColor());
+			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
+			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
+			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
+			setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
+			setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
+			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
+			setUniformf(pointLightUniforms[6], pointLight.getRange());
+		}
 	}
 
-	public DirectionalLight getDirectionalLight() {
-		return directionalLight;
+	public void setDirectionalLight(DirectionalLight directionalLight) {
+		Vector4f color = Color.toVector(directionalLight.getColor());
+		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
+		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
+		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
+	}
+
+	public void setCameraPosition(Camera camera) {
+		setUniform3f(uniform_camPos, camera.getTransform().getPosition());
 	}
 }

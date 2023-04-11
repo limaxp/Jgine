@@ -1,10 +1,7 @@
 package org.jgine.system.systems.camera;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
@@ -13,14 +10,10 @@ import org.jgine.utils.Property;
 
 public class CameraSystem extends EngineSystem {
 
-	private List<Camera> cameras;
-	private List<Camera> cameras_view;
 	private Camera mainCamera;
 
 	public CameraSystem() {
 		super("camera");
-		cameras = new FastArrayList<Camera>();
-		cameras_view = Collections.unmodifiableList(cameras);
 		ServiceManager.register("camera", new Property<Camera>() {
 
 			@Override
@@ -48,17 +41,11 @@ public class CameraSystem extends EngineSystem {
 	}
 
 	protected void addCamera(Camera camera) {
-		cameras.add(0, camera);
 		if (mainCamera == null)
 			mainCamera = camera;
 	}
 
 	protected void removeCamera(Camera camera) {
-		cameras.remove(camera);
-	}
-
-	public List<Camera> getCameras() {
-		return cameras_view;
 	}
 
 	public Camera getMainCamera() {

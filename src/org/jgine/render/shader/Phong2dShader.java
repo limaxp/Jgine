@@ -17,21 +17,25 @@ public class Phong2dShader extends TextureShader {
 			new String[] { "base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos",
 					"range" });
 
-	private int ambientLight;
-	private List<PointLight> pointLights;
-
-	public Phong2dShader(String name, List<PointLight> pointLights) {
+	public Phong2dShader(String name) {
 		super(name);
-		ambientLight = Color.BLACK;
-		this.pointLights = pointLights;
 	}
 
 	@Override
-	public void bind() {
-		super.bind();
+	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
+		super.setTransform(matrix, projectionMatrix);
+		setUniformMatrix4f(uniform_transform, matrix);
+	}
 
-		setUniform3f(uniform_ambientLight, Color.toVector(ambientLight));
+	public void setAmbientLight(int color) {
+		setAmbientLight(Color.toVector(color));
+	}
 
+	public void setAmbientLight(Vector4f color) {
+		setUniform3f(uniform_ambientLight, color);
+	}
+
+	public void setPointLights(List<PointLight> pointLights) {
 		int pointLightSize = FastMath.min(pointLights.size(), PhongShader.MAX_POINT_LIGHTS);
 		setUniformi(uniform_pointLightSize, pointLightSize);
 		for (int i = 0; i < pointLightSize; i++) {
@@ -46,23 +50,5 @@ public class Phong2dShader extends TextureShader {
 			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
 			setUniformf(pointLightUniforms[6], pointLight.getRange());
 		}
-	}
-
-	@Override
-	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
-		super.setTransform(matrix, projectionMatrix);
-		setUniformMatrix4f(uniform_transform, matrix);
-	}
-
-	public void setAmbientLight(int color) {
-		this.ambientLight = color;
-	}
-
-	public int getAmbientLight() {
-		return ambientLight;
-	}
-
-	public List<PointLight> getPointLights() {
-		return pointLights;
 	}
 }

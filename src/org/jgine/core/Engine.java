@@ -28,11 +28,13 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 import org.jgine.system.systems.ai.AiSystem;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.system.systems.camera.CameraScene;
 import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.collision.CollisionSystem;
 import org.jgine.system.systems.graphic.Graphic2DSystem;
 import org.jgine.system.systems.graphic.GraphicSystem;
 import org.jgine.system.systems.input.InputSystem;
+import org.jgine.system.systems.light.LightScene;
 import org.jgine.system.systems.light.LightSystem;
 import org.jgine.system.systems.particle.ParticleSystem;
 import org.jgine.system.systems.physic.PhysicSystem;
@@ -168,38 +170,39 @@ public class Engine {
 		if (!scene.hasUpdateOrder()) {
 			for (SystemScene<?, ?> systemScene : scene.getSystems())
 				systemScene.update(dt);
-			return;
-		}
-		new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
+		} else
+			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
 	public void onRender() {
 	}
 
 	private final void render() {
-		renderCameras();
+		for (Scene scene : scenes)
+			if (!scene.isPaused())
+				renderScene(scene);
 		Renderer.renderFrame(renderConfigs);
 		window.swapBuffers();
 		onRender();
 	}
 
-	private final void renderCameras() {
-		for (Camera camera : SystemManager.get(CameraSystem.class).getCameras()) {
-			Scene scene = camera.getTransform().getEntity().scene;
-			if (scene.isPaused())
-				continue;
-			Renderer.setCamera(camera);
-			renderScene(scene);
-		}
-	}
-
 	private final void renderScene(Scene scene) {
+		LightScene lightScene = scene.getSystem(LIGHT_SYSTEM);
+		if (lightScene != null)
+			Renderer.setLights(lightScene);
+
 		if (!scene.hasRenderOrder()) {
-			for (SystemScene<?, ?> systemScene : scene.getSystems())
-				systemScene.render();
-			return;
+			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
+				Renderer.setCamera(camera);
+				for (SystemScene<?, ?> systemScene : scene.getSystems())
+					systemScene.render();
+			}
+		} else {
+			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
+				Renderer.setCamera(camera);
+				new SceneRender(scene, scene.getRenderOrder()).start();
+			}
 		}
-		new SceneRender(scene, scene.getRenderOrder()).start();
 	}
 
 	public final Window getWindow() {

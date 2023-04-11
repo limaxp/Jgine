@@ -25,35 +25,8 @@ public class TileMapShader extends Shader {
 			new String[] { "base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos",
 					"range" });
 
-	private int ambientLight;
-	private List<PointLight> pointLights;
-
-	public TileMapShader(String name, List<PointLight> pointLights) {
+	public TileMapShader(String name) {
 		super(name);
-		ambientLight = Color.BLACK;
-		this.pointLights = pointLights;
-	}
-
-	@Override
-	public void bind() {
-		super.bind();
-
-		setUniform3f(uniform_ambientLight, Color.toVector(ambientLight));
-
-		int pointLightSize = FastMath.min(pointLights.size(), PhongShader.MAX_POINT_LIGHTS);
-		setUniformi(uniform_pointLightSize, pointLightSize);
-		for (int i = 0; i < pointLightSize; i++) {
-			PointLight pointLight = pointLights.get(i);
-			int[] pointLightUniforms = uniforms_pointLights[i];
-			Vector4f color2 = Color.toVector(pointLight.getColor());
-			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
-			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
-			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
-			setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
-			setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
-			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
-			setUniformf(pointLightUniforms[6], pointLight.getRange());
-		}
 	}
 
 	@Override
@@ -72,14 +45,27 @@ public class TileMapShader extends Shader {
 	}
 
 	public void setAmbientLight(int color) {
-		this.ambientLight = color;
+		setAmbientLight(Color.toVector(color));
 	}
 
-	public int getAmbientLight() {
-		return ambientLight;
+	public void setAmbientLight(Vector4f color) {
+		setUniform3f(uniform_ambientLight, color);
 	}
 
-	public List<PointLight> getPointLights() {
-		return pointLights;
+	public void setPointLights(List<PointLight> pointLights) {
+		int pointLightSize = FastMath.min(pointLights.size(), PhongShader.MAX_POINT_LIGHTS);
+		setUniformi(uniform_pointLightSize, pointLightSize);
+		for (int i = 0; i < pointLightSize; i++) {
+			PointLight pointLight = pointLights.get(i);
+			int[] pointLightUniforms = uniforms_pointLights[i];
+			Vector4f color2 = Color.toVector(pointLight.getColor());
+			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
+			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
+			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);
+			setUniformf(pointLightUniforms[3], pointLight.getAttenuation().linear);
+			setUniformf(pointLightUniforms[4], pointLight.getAttenuation().exponent);
+			setUniform3f(pointLightUniforms[5], pointLight.getPosition());
+			setUniformf(pointLightUniforms[6], pointLight.getRange());
+		}
 	}
 }

@@ -3,7 +3,6 @@ package org.jgine.render;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
@@ -24,6 +23,7 @@ import org.jgine.render.shader.Shader;
 import org.jgine.render.shader.TextureShader;
 import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.system.systems.light.LightScene;
 import org.jgine.utils.Color;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
@@ -55,11 +55,10 @@ public class Renderer {
 
 		BASIC_SHADER = new BasicShader("Basic");
 		TEXTURE_SHADER = new TextureShader("Texture");
-		List<PointLight> pointLights = new UnorderedArrayList<PointLight>(PhongShader.MAX_POINT_LIGHTS);
-		PHONG_SHADER = new PhongShader("Phong", pointLights);
-		PHONG_2D_SHADER = new Phong2dShader("Phong2d", pointLights);
+		PHONG_SHADER = new PhongShader("Phong");
+		PHONG_2D_SHADER = new Phong2dShader("Phong2d");
 		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
-		TILE_MAP_SHADER = new TileMapShader("TileMap", pointLights);
+		TILE_MAP_SHADER = new TileMapShader("TileMap");
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 		BASIC_COMPUTE_SHADER = new ComputeShader("BasicCompute");
 
@@ -238,6 +237,24 @@ public class Renderer {
 	@Nullable
 	public static RenderTarget getRenderTarget() {
 		return renderTarget;
+	}
+
+	public static void setLights(LightScene lightScene) {
+		Vector4f ambientLight = Color.toVector(lightScene.getAmbientLight());
+		List<PointLight> pointLights = lightScene.getPointLights();
+		PHONG_SHADER.bind();
+		PHONG_SHADER.setAmbientLight(ambientLight);
+		PHONG_SHADER.setPointLights(pointLights);
+		PHONG_SHADER.setDirectionalLight(lightScene.getDirectionalLight());
+		PHONG_SHADER.setCameraPosition(camera);
+
+		PHONG_2D_SHADER.bind();
+		PHONG_2D_SHADER.setAmbientLight(ambientLight);
+		PHONG_2D_SHADER.setPointLights(pointLights);
+
+		TILE_MAP_SHADER.bind();
+		TILE_MAP_SHADER.setAmbientLight(ambientLight);
+		TILE_MAP_SHADER.setPointLights(pointLights);
 	}
 
 	public static void enableWireframeMode() {
