@@ -59,7 +59,7 @@ public class Renderer {
 		PHONG_SHADER = new PhongShader("Phong", pointLights);
 		PHONG_2D_SHADER = new Phong2dShader("Phong2d", pointLights);
 		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
-		TILE_MAP_SHADER = new TileMapShader("TileMap");
+		TILE_MAP_SHADER = new TileMapShader("TileMap", pointLights);
 		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
 		BASIC_COMPUTE_SHADER = new ComputeShader("BasicCompute");
 

@@ -8,8 +8,10 @@ layout (location = 3) in vec2 tileText;
 layout (location = 4) in vec2 tileData;
 
 out vec2 textCoord;
+out vec3 position;
 
 uniform mat4 transformProjected;
+uniform mat4 transform;
 uniform int textureColums;
 uniform int textureRows;
 
@@ -46,7 +48,9 @@ vec2 rotateUV(vec2 uv, float rotation, float mid)
 }
 
 void main() {	
-	gl_Position = transformProjected * vec4(pos.x + tilePos.x, pos.y - tilePos.y, 0, 1);
+	vec4 calcPos = vec4(pos.x + tilePos.x, pos.y - tilePos.y, 0, 1);
+	position = (transform * calcPos).xyz;
+	gl_Position = transformProjected * calcPos;
 	
 	float rotation = tileData.x;
 	vec2 uv;
