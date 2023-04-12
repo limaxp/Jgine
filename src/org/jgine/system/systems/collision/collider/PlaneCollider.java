@@ -51,9 +51,9 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x += x;
+		this.y += y;
+		this.z += z;
 	}
 
 	@Override
@@ -117,6 +117,15 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
+		Object zData = data.get("z");
+		if (zData != null)
+			z = YamlHelper.toFloat(zData);
 		Object normalData = data.get("normal");
 		if (normalData != null) {
 			Vector3f normal = YamlHelper.toVector3f(normalData);
@@ -171,7 +180,7 @@ public class PlaneCollider extends Collider {
 	public float getZ() {
 		return z;
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return Float.MAX_VALUE;

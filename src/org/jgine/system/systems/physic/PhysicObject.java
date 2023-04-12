@@ -18,8 +18,8 @@ public class PhysicObject implements SystemObject {
 	public boolean hasGravity = true;
 	public float stiffness = 0.5f;
 	public float x, y, z;
-	private float oldX, oldY, oldZ;
 	public float motX, motY, motZ;
+	private float oldX, oldY, oldZ;
 	private boolean isMoving;
 
 	final boolean updatePosition(float dt, float gravity, float airResistanceFactor) {
@@ -46,41 +46,39 @@ public class PhysicObject implements SystemObject {
 		return false;
 	}
 
-	final void initPosition(Vector3f vector) {
-		initPosition(vector.x, vector.y, vector.z);
-	}
-
 	final void initPosition(float x, float y, float z) {
 		this.x = oldX = x;
 		this.y = oldY = y;
 		this.z = oldZ = z;
 	}
 
-	final void setPosition(float x, float y, float z) {
-		float deltaX = x - this.x;
-		float deltaY = y - this.y;
-		float deltaZ = z - this.z;
-		this.x += deltaX;
-		this.y += deltaY;
-		this.z += deltaZ;
-		this.oldX += deltaX;
-		this.oldY += deltaY;
-		this.oldZ += deltaZ;
-
-//		alternative
-//		float deltaX = this.x - oldX;
-//		float deltaY = this.y - oldY;
-//		float deltaZ = this.z - oldZ;
-//		this.x = oldX = x;
-//		this.y = oldY = y;
-//		this.z = oldZ = z;
-//		this.oldX -= deltaX;
-//		this.oldY -= deltaY;
-//		this.oldZ -= deltaZ;
+	final void movePosition(float dx, float dy, float dz) {
+		this.x += dx;
+		this.y += dy;
+		this.z += dz;
+		this.oldX += dx;
+		this.oldY += dy;
+		this.oldZ += dz;
 	}
 
 	public final Vector3f getPosition() {
 		return new Vector3f(x, y, z);
+	}
+
+	public final Vector3f getOldPosition() {
+		return new Vector3f(oldX, oldY, oldZ);
+	}
+
+	public float getOldX() {
+		return oldX;
+	}
+
+	public float getOldY() {
+		return oldY;
+	}
+
+	public float getOldZ() {
+		return oldZ;
 	}
 
 	public final void accelerate(Vector3f vector) {

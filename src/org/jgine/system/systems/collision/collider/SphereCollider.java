@@ -44,9 +44,9 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x += x;
+		this.y += y;
+		this.z += z;
 	}
 
 	@Override
@@ -110,6 +110,15 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
+		Object zData = data.get("z");
+		if (zData != null)
+			z = YamlHelper.toFloat(zData);
 		Object radiusData = data.get("radius");
 		if (radiusData != null)
 			r = YamlHelper.toFloat(radiusData);

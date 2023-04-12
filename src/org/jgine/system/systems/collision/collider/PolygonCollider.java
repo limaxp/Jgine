@@ -72,8 +72,8 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 	}
 
 	@Override
@@ -115,6 +115,12 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
 		Object points = data.get("points");
 		if (points instanceof String) {
 			String pointsString = (String) points;

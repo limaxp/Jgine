@@ -46,8 +46,8 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 	}
 
 	@Override
@@ -105,6 +105,12 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
 		Object normalData = data.get("normal");
 		if (normalData != null) {
 			Vector2f normal = YamlHelper.toVector2f(normalData);
@@ -154,7 +160,7 @@ public class LineCollider extends Collider {
 	public float getZ() {
 		return 0.0f;
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return Float.MAX_VALUE;
