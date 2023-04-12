@@ -288,7 +288,7 @@ public class Scene {
 
 	@Nullable
 	public final Entity getEntity(float x, float y) {
-		return spacePartitioning.get(x, y, 0.0, null);
+		return spacePartitioning.get(x, y, 0.0f, null);
 	}
 
 	@Nullable
@@ -306,7 +306,7 @@ public class Scene {
 	}
 
 	public final Entity getEntity(float x, float y, Entity defaultValue) {
-		return spacePartitioning.get(x, y, 0.0, defaultValue);
+		return spacePartitioning.get(x, y, 0.0f, defaultValue);
 	}
 
 	public final Entity getEntity(Vector3f pos, Entity defaultValue) {
@@ -318,62 +318,105 @@ public class Scene {
 	}
 
 	public final void forEntity(Vector2f min, Vector2f max, Consumer<Entity> func) {
-		spacePartitioning.forEach(min.x, min.y, 0.0, max.x, max.y, 0.0, func);
+		forEntity(min.x, min.y, max.x, max.y, func);
 	}
 
 	public final void forEntity(float xMin, float yMin, float xMax, float yMax, Consumer<Entity> func) {
-		spacePartitioning.forEach(xMin, yMin, 0.0, xMax, yMax, 0.0, func);
+		spacePartitioning.forNear(xMin, yMin, 0.0f, xMax, yMax, 0.0f, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getX() <= xMax
+					&& entity.transform.getY() <= yMax)
+				func.accept(entity);
+		});
 	}
 
 	public final void forEntity(Vector3f min, Vector3f max, Consumer<Entity> func) {
-		spacePartitioning.forEach(min.x, min.y, min.z, max.x, max.y, max.z, func);
+		forEntity(min.x, min.y, min.z, max.x, max.y, max.z, func);
 	}
 
 	public final void forEntity(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax,
 			Consumer<Entity> func) {
-		spacePartitioning.forEach(xMin, yMin, zMin, xMax, yMax, zMax, func);
+		spacePartitioning.forNear(xMin, yMin, zMin, xMax, yMax, zMax, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
+					&& entity.transform.getX() <= xMax && entity.transform.getY() <= yMax
+					&& entity.transform.getZ() <= zMax)
+				func.accept(entity);
+		});
 	}
 
-	public final Collection<Entity> getEntities(Vector2f min, Vector2f max) {
-		return spacePartitioning.get(min.x, min.y, 0.0f, max.x, max.y, 0.0f);
+	public final List<Entity> getEntities(Vector2f min, Vector2f max) {
+		return getEntities(min.x, min.y, max.x, max.y);
 	}
 
-	public final Collection<Entity> getEntities(float xMin, float yMin, float xMax, float yMax) {
-		return spacePartitioning.get(xMin, yMin, 0.0f, xMax, yMax, 0.0f);
+	public final List<Entity> getEntities(float xMin, float yMin, float xMax, float yMax) {
+		List<Entity> result = new UnorderedIdentityArrayList<Entity>();
+		spacePartitioning.forNear(xMin, yMin, 0.0f, xMax, yMax, 0.0f, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getX() <= xMax
+					&& entity.transform.getY() <= yMax)
+				result.add(entity);
+		});
+		return result;
 	}
 
-	public final Collection<Entity> getEntities(Vector3f min, Vector3f max) {
-		return spacePartitioning.get(min.x, min.y, min.z, max.x, max.y, max.z);
+	public final List<Entity> getEntities(Vector3f min, Vector3f max) {
+		return getEntities(min.x, min.y, min.z, max.x, max.y, max.z);
 	}
 
-	public final Collection<Entity> getEntities(float xMin, float yMin, float zMin, float xMax, float yMax,
-			float zMax) {
-		return spacePartitioning.get(xMin, yMin, zMin, xMax, yMax, zMax);
+	public final List<Entity> getEntities(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
+		List<Entity> result = new UnorderedIdentityArrayList<Entity>();
+		spacePartitioning.forNear(xMin, yMin, zMin, xMax, yMax, zMax, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
+					&& entity.transform.getX() <= xMax && entity.transform.getY() <= yMax
+					&& entity.transform.getZ() <= zMax)
+				result.add(entity);
+		});
+		return result;
 	}
 
-	public final Collection<Entity> getEntitiesNear(Vector2f pos, float range) {
+	public final List<Entity> getEntitiesNear(Vector2f pos, float range) {
 		return getEntitiesNear(pos.x, pos.y, range, range);
 	}
 
-	public final Collection<Entity> getEntitiesNear(Vector2f pos, Vector2f range) {
+	public final List<Entity> getEntitiesNear(Vector2f pos, Vector2f range) {
 		return getEntitiesNear(pos.x, pos.y, range.x, range.y);
 	}
 
-	public final Collection<Entity> getEntitiesNear(float x, float y, float xRange, float yRange) {
-		return spacePartitioning.get(x - xRange, y - yRange, 0.0f, x + xRange, y + yRange, 0.0f);
+	public final List<Entity> getEntitiesNear(float x, float y, float xRange, float yRange) {
+		float xMin = x - xRange;
+		float yMin = y - yRange;
+		float xMax = x + xRange;
+		float yMax = y + yRange;
+		List<Entity> result = new UnorderedIdentityArrayList<Entity>();
+		spacePartitioning.forNear(xMin, yMin, 0.0f, xMax, yMax, 0.0f, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getX() <= xMax
+					&& entity.transform.getY() <= yMax)
+				result.add(entity);
+		});
+		return result;
 	}
 
-	public final Collection<Entity> getEntitiesNear(Vector3f pos, float range) {
+	public final List<Entity> getEntitiesNear(Vector3f pos, float range) {
 		return getEntitiesNear(pos.x, pos.y, pos.z, range, range, range);
 	}
 
-	public final Collection<Entity> getEntitiesNear(Vector3f pos, Vector3f range) {
+	public final List<Entity> getEntitiesNear(Vector3f pos, Vector3f range) {
 		return getEntitiesNear(pos.x, pos.y, pos.z, range.x, range.y, range.z);
 	}
 
-	public final Collection<Entity> getEntitiesNear(float x, float y, float z, float xRange, float yRange,
-			float zRange) {
-		return spacePartitioning.get(x - xRange, y - yRange, z - zRange, x + xRange, y + yRange, z + zRange);
+	public final List<Entity> getEntitiesNear(float x, float y, float z, float xRange, float yRange, float zRange) {
+		float xMin = x - xRange;
+		float yMin = y - yRange;
+		float zMin = z - zRange;
+		float xMax = x + xRange;
+		float yMax = y + yRange;
+		float zMax = z + zRange;
+		List<Entity> result = new UnorderedIdentityArrayList<Entity>();
+		spacePartitioning.forNear(xMin, yMin, zMin, xMax, yMax, zMax, (entity) -> {
+			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
+					&& entity.transform.getX() <= xMax && entity.transform.getY() <= yMax
+					&& entity.transform.getZ() <= zMax)
+				result.add(entity);
+		});
+		return result;
 	}
 
 	public void setUpdateOrder(@Nullable UpdateOrder updateOrder) {

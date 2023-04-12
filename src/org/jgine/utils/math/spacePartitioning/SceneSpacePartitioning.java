@@ -3,9 +3,7 @@ package org.jgine.utils.math.spacePartitioning;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.jgine.core.Engine;
@@ -42,20 +40,14 @@ public class SceneSpacePartitioning implements SpacePartitioning {
 	}
 
 	@Override
-	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+	public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Entity> func) {
-		for (Entity entity : scene.getEntities())
-			if (entity.transform.getX() >= xMin && entity.transform.getY() >= yMin && entity.transform.getZ() >= zMin
-					&& entity.transform.getX() <= xMax && entity.transform.getY() <= yMax
-					&& entity.transform.getZ() <= zMax)
-				func.accept(entity);
+		getNear(xMin, yMin, zMin, xMax, yMax, zMax).forEach(func);
 	}
 
 	@Override
-	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		List<Entity> result = new ArrayList<Entity>();
-		forEach(xMin, yMin, zMin, xMax, yMax, zMax, result::add);
-		return result;
+	public Collection<Entity> getNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		return scene.getEntities();
 	}
 
 	@Override

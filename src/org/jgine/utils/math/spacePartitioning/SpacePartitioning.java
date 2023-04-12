@@ -30,12 +30,13 @@ public interface SpacePartitioning {
 		}
 
 		@Override
-		public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+		public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 				Consumer<Entity> func) {
 		}
 
 		@Override
-		public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+		public Collection<Entity> getNear(double xMin, double yMin, double zMin, double xMax, double yMax,
+				double zMax) {
 			return new ArrayList<Entity>();
 		}
 
@@ -68,10 +69,10 @@ public interface SpacePartitioning {
 
 	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew);
 
-	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+	public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Entity> func);
 
-	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax);
+	public Collection<Entity> getNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax);
 
 	public Entity get(double x, double y, double z, Entity opt_default);
 

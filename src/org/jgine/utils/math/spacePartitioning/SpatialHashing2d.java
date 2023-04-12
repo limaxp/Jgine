@@ -85,13 +85,13 @@ public class SpatialHashing2d implements SpacePartitioning {
 //	}
 
 	@Override
-	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+	public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Entity> func) {
-		get(xMin, yMin, zMin, xMax, yMax, zMax).forEach(func);
+		getNear(xMin, yMin, zMin, xMax, yMax, zMax).forEach(func);
 	}
 
 	@Override
-	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+	public Collection<Entity> getNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		Set<Entity> result = new HashSet<Entity>();
 		int firstX = getTileX(xMin);
 		int firstY = getTileY(yMin);
@@ -99,11 +99,8 @@ public class SpatialHashing2d implements SpacePartitioning {
 		int lastY = getTileY(yMax);
 		for (int x = firstX; x <= lastX; x++) {
 			for (int y = firstY; y <= lastY; y++) {
-				for (Entity object : tiles[x + y * cols]) {
-					if (object.transform.getX() >= xMin && object.transform.getY() >= yMin
-							&& object.transform.getX() <= xMax && object.transform.getY() <= yMax)
-						result.add(object);
-				}
+				for (Entity object : tiles[x + y * cols])
+					result.add(object);
 			}
 		}
 		return result;
