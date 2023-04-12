@@ -89,26 +89,26 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		size = index + size;
 		for (; index < size; index++) {
 			Collider object = objects[index];
-			for (int i = index + 1; i < this.size; ++i)
-				resolveCollision(index, object, i, objects[i]);
+//			for (int i = index + 1; i < this.size; ++i)
+//				resolveCollision(index, object, i, objects[i]);
 
-//			scene.forEntity(physic.x - 100.0f, physic.y - 100.0f, physic.z - 100.0f, physic.x + 100.0f,
-//					physic.y + 100.0f, physic.z + 100.0f, (targetEntity) -> {
-//						if (targetEntity == entity)
-//							return;
-//						Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
-//						if (targetObject != null)
-//							resolveCollision(entity, object, targetEntity, targetObject);
-//					});
+			Entity entity = entities[index];
+			scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
+					object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
+					object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {
+						if (targetEntity == entity)
+							return;
+						Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
+						if (targetObject != null)
+							resolveCollision(entity, object, targetEntity, targetObject);
+					});
 		}
 	}
 
-	private void resolveCollision(int index1, Collider collider1, int index2, Collider collider2) {
+	private void resolveCollision(Entity entity1, Collider collider1, Entity entity2, Collider collider2) {
 		CollisionData collision = collider1.resolveCollision(collider2);
 		if (collision == null)
 			return;
-		Entity entity1 = entities[index1];
-		Entity entity2 = entities[index2];
 		if (!collider1.noResolve && !collider2.noResolve) {
 			PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 			PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);

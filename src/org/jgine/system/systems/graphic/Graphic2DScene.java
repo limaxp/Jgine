@@ -16,6 +16,7 @@ import org.jgine.render.FrustumCulling2D;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.system.SystemObject;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.utils.scheduler.TaskHelper;
@@ -52,11 +53,12 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 			if (frustumCulling.containsPoint(transforms[index].getPosition()))
 				renderQueue.addAll(Arrays.asList(transforms[index], object));
 		}
-//		scene.forEntity(frustumCulling.x1, frustumCulling.y1, frustumCulling.x2, frustumCulling.y2, (entity) -> {
-//			SystemObject[] materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
-//			for (SystemObject material : materials)
-//				renderQueue.addAll(Arrays.asList(entity.transform, material));
-//		});
+//		scene.getSpacePartitioning().forNear(frustumCulling.x1, frustumCulling.y1, 0.0f, frustumCulling.x2,
+//				frustumCulling.y2, 0.0f, (entity) -> {
+//					SystemObject[] materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
+//					for (SystemObject material : materials)
+//						renderQueue.addAll(Arrays.asList(entity.transform, material));
+//				});
 	}
 
 	@Override

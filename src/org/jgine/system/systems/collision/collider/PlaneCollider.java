@@ -156,4 +156,34 @@ public class PlaneCollider extends Collider {
 		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), x, y, z, xNorm, yNorm, zNorm, Float.MAX_VALUE,
 				Float.MAX_VALUE, Float.MAX_VALUE), new Material());
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return z;
+	}
+	
+	@Override
+	public float getWidth() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getHeight() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getDepth() {
+		return Float.MAX_VALUE;
+	}
 }

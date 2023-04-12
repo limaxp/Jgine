@@ -36,6 +36,18 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 	public abstract void render();
 
+	public abstract float getX();
+
+	public abstract float getY();
+
+	public abstract float getZ();
+
+	public abstract float getWidth();
+
+	public abstract float getHeight();
+
+	public abstract float getDepth();
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final <T extends SystemObject> T copy() {

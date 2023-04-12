@@ -137,4 +137,34 @@ public class CylinderCollider extends Collider {
 		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"));
 		Renderer.disableWireframeMode();
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return z;
+	}
+
+	@Override
+	public float getWidth() {
+		return r;
+	}
+
+	@Override
+	public float getHeight() {
+		return h;
+	}
+
+	@Override
+	public float getDepth() {
+		return r;
+	}
 }

@@ -161,4 +161,34 @@ public class AxisAlignedBoundingBox extends Collider {
 		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), new Material());
 		Renderer.disableWireframeMode();
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return z;
+	}
+
+	@Override
+	public float getWidth() {
+		return w;
+	}
+
+	@Override
+	public float getHeight() {
+		return h;
+	}
+
+	@Override
+	public float getDepth() {
+		return d;
+	}
 }

@@ -4,13 +4,16 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
+import org.jgine.system.systems.collision.Collider;
 import org.jgine.utils.math.FastMath;
 
 /**
@@ -46,21 +49,36 @@ public class SpatialHashing2d implements SpacePartitioning {
 		int size = cols * rows;
 		tiles = new List[size];
 		for (int i = 0; i < size; i++)
-			tiles[i] = new UnorderedIdentityArrayList<Entity>();
+			tiles[i] = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 	}
 
 	@Override
 	public void add(Entity object) {
+//		Collider collider = object.getSystem(Engine.COLLISION_SYSTEM);
+//		if (collider != null) {
+//			add(object, collider);
+//			return;
+//		}
 		tiles[getTilePos(object.transform.getX(), object.transform.getY())].add(object);
 	}
 
 	@Override
 	public void remove(Entity object) {
+//		Collider collider = object.getSystem(Engine.COLLISION_SYSTEM);
+//		if (collider != null) {
+//			remove(object, collider);
+//			return;
+//		}
 		tiles[getTilePos(object.transform.getX(), object.transform.getY())].remove(object);
 	}
 
 	@Override
 	public void move(Entity object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
+//		Collider collider = object.getSystem(Engine.COLLISION_SYSTEM);
+//		if (collider != null) {
+//			move(object, collider, xOld, yOld, zOld, xNew, yNew, zNew);
+//			return;
+//		}
 		int oldPos = getTilePos(xOld, yOld);
 		int newPos = getTilePos(xNew, yNew);
 		if (oldPos != newPos) {
@@ -69,20 +87,50 @@ public class SpatialHashing2d implements SpacePartitioning {
 		}
 	}
 
-// TODO: collider hashing!
-//	public void add(Transform object, Collider collider) {
-//		float boundX = object.getBoundX();
-//		float boundY = object.getBoundX();
-//		int firstX = getTileX(object.getX() - boundX);
-//		int firstY = getTileY(object.getY() - boundY);
-//		int lastX = getTileX(object.getX() + boundX);
-//		int lastY = getTileY(object.getY() + boundY);
-//		for (int x = firstX; x <= lastX; x++) {
-//			for (int y = firstY; y <= lastY; y++) {
-//				tiles[x + y * cols].add(object);
-//			}
-//		}
-//	}
+	public void add(Entity object, Collider collider) {
+		float boundX = collider.getWidth();
+		float boundY = collider.getHeight();
+		int firstX = getTileX(collider.getX() - boundX);
+		int firstY = getTileY(collider.getY() - boundY);
+		int lastX = getTileX(collider.getX() + boundX);
+		int lastY = getTileY(collider.getY() + boundY);
+		for (int x = firstX; x <= lastX; x++)
+			for (int y = firstY; y <= lastY; y++)
+				tiles[x + y * cols].add(object);
+	}
+
+	public void remove(Entity object, Collider collider) {
+		float boundX = collider.getWidth();
+		float boundY = collider.getHeight();
+		int firstX = getTileX(collider.getX() - boundX);
+		int firstY = getTileY(collider.getY() - boundY);
+		int lastX = getTileX(collider.getX() + boundX);
+		int lastY = getTileY(collider.getY() + boundY);
+		for (int x = firstX; x <= lastX; x++)
+			for (int y = firstY; y <= lastY; y++)
+				tiles[x + y * cols].remove(object);
+	}
+
+	public void move(Entity object, Collider collider, double xOld, double yOld, double zOld, double xNew, double yNew,
+			double zNew) {
+		float boundX = collider.getWidth();
+		float boundY = collider.getHeight();
+		int firstX = getTileX(xOld - boundX);
+		int firstY = getTileY(yOld - boundY);
+		int lastX = getTileX(xOld + boundX);
+		int lastY = getTileY(yOld + boundY);
+		for (int x = firstX; x <= lastX; x++)
+			for (int y = firstY; y <= lastY; y++)
+				tiles[x + y * cols].remove(object);
+
+		firstX = getTileX(xNew - boundX);
+		firstY = getTileY(yNew - boundY);
+		lastX = getTileX(xNew + boundX);
+		lastY = getTileY(yNew + boundY);
+		for (int x = firstX; x <= lastX; x++)
+			for (int y = firstY; y <= lastY; y++)
+				tiles[x + y * cols].add(object);
+	}
 
 	@Override
 	public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
@@ -97,12 +145,10 @@ public class SpatialHashing2d implements SpacePartitioning {
 		int firstY = getTileY(yMin);
 		int lastX = getTileX(xMax);
 		int lastY = getTileY(yMax);
-		for (int x = firstX; x <= lastX; x++) {
-			for (int y = firstY; y <= lastY; y++) {
+		for (int x = firstX; x <= lastX; x++)
+			for (int y = firstY; y <= lastY; y++)
 				for (Entity object : tiles[x + y * cols])
 					result.add(object);
-			}
-		}
 		return result;
 	}
 

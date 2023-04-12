@@ -142,4 +142,34 @@ public class SphereCollider extends Collider {
 		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"));
 		Renderer.disableWireframeMode();
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return z;
+	}
+
+	@Override
+	public float getWidth() {
+		return r;
+	}
+
+	@Override
+	public float getHeight() {
+		return r;
+	}
+
+	@Override
+	public float getDepth() {
+		return r;
+	}
 }

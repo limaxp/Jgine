@@ -139,4 +139,34 @@ public class CircleCollider extends Collider {
 		}
 		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), new Material(), true, points);
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getWidth() {
+		return r;
+	}
+
+	@Override
+	public float getHeight() {
+		return r;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
+	}
 }

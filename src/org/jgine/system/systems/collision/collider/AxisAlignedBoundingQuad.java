@@ -141,4 +141,34 @@ public class AxisAlignedBoundingQuad extends Collider {
 		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), new Material(), true,
 				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getWidth() {
+		return w;
+	}
+
+	@Override
+	public float getHeight() {
+		return h;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
+	}
 }

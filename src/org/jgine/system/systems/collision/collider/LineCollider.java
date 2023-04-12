@@ -139,4 +139,34 @@ public class LineCollider extends Collider {
 		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Float.MAX_VALUE, Float.MAX_VALUE),
 				new Material(), yNorm, -xNorm, -yNorm, xNorm);
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+	
+	@Override
+	public float getWidth() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getHeight() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
+	}
 }
