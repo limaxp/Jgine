@@ -232,8 +232,13 @@ public class Scene {
 
 	public final void removeEntity(Entity entity) {
 		if (entity.isAlive()) {
-			Entity.freeId(entity.id);
-			Scheduler.runTaskSynchron(() -> removeEntityIntern(entity));
+			entity.markDeath();
+			Scheduler.runTaskSynchron(() -> {
+				if (Entity.isUsed(entity.id)) {
+					removeEntityIntern(entity);
+					Entity.freeId(entity.id);
+				}
+			});
 		}
 	}
 
@@ -257,8 +262,8 @@ public class Scene {
 		}
 
 		for (Entity child : entity.getChilds()) {
-			Entity.freeId(child.id);
 			removeChildIntern(child);
+			Entity.freeId(child.id);
 		}
 		entity.cleanupChilds();
 		entity.transform.cleanupEntity();

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.bitSet.IntBitSet;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
@@ -27,9 +28,15 @@ import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A container for game entity data. Stores info about id, {@link Scene},
- * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>
- * and the scene graph. This is supposed to link all together in an easy to use
- * way.
+ * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>,
+ * the scene graph and a 32 bit flag. This is supposed to link all together in
+ * an easy to use way.
+ * 
+ * <pre>
+Currently used flags:
+
+	0 - If entity is dead
+ * </pre>
  */
 public class Entity {
 
@@ -38,6 +45,8 @@ public class Entity {
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
+
+	public static final byte DEATH_FLAG = 0;
 
 	private static int generateId() {
 		int id;
@@ -59,6 +68,14 @@ public class Entity {
 		ID_MAP[index] = null;
 	}
 
+	public static boolean isUsed(int id) {
+		return ID_GENERATOR.isAlive(id);
+	}
+
+	public static boolean isFree(int id) {
+		return !ID_GENERATOR.isAlive(id);
+	}
+
 	public static boolean isLocal(int id) {
 		return IdGenerator.index(id) <= MAX_ENTITIES + 1;
 	}
@@ -74,6 +91,8 @@ public class Entity {
 	private Prefab prefab;
 	private Entity parent;
 	private List<Entity> childs;
+	public int flag;
+	public boolean flag2;
 
 	public Entity(Scene scene) {
 		this(scene, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
@@ -133,16 +152,32 @@ public class Entity {
 		scene.removeEntity(this);
 	}
 
-	public final boolean isAlive() {
-		return ID_GENERATOR.isAlive(id);
-	}
-
 	public final boolean isLocal() {
 		return isLocal(id);
 	}
 
 	public final boolean isRemote() {
 		return isRemote(id);
+	}
+
+	public final boolean isAlive() {
+		return !getFlag(DEATH_FLAG);
+	}
+
+	public final boolean isDeath() {
+		return getFlag(DEATH_FLAG);
+	}
+
+	public final void markDeath() {
+		setFlag(DEATH_FLAG, true);
+	}
+
+	public final void setFlag(int index, boolean bit) {
+		IntBitSet.set(flag, index, bit);
+	}
+
+	public final boolean getFlag(int index) {
+		return IntBitSet.get(flag, index);
 	}
 
 	public final <T extends SystemObject> T addSystem(String name, T object) {
