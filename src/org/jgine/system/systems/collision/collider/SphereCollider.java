@@ -12,11 +12,10 @@ import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
+import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector3f;
-import org.jgine.system.systems.collision.CollisionChecks;
 
 /**
  * Represents an BoundingSphere for 3D with float precision. An BoundingSphere
@@ -24,6 +23,9 @@ import org.jgine.system.systems.collision.CollisionChecks;
  */
 public class SphereCollider extends Collider {
 
+	public float x;
+	public float y;
+	public float z;
 	public float r;
 
 	public SphereCollider() {
@@ -33,55 +35,77 @@ public class SphereCollider extends Collider {
 		this.r = r;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
-		if (scale.x == scale.y && scale.y == scale.z)
-			r *= scale.x;
-		else
-			r *= (int) (scale.x + scale.y + scale.z) / 3;
+	public SphereCollider(float x, float y, float z, float r) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.r = r;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.spherevsPoint(pos.x, pos.y, pos.z, r, point.x, point.y, point.z);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof SphereCollider)
-			return CollisionChecks.spherevsSphere(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
-					((SphereCollider) other).r);
-		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.spherevsCube(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
-					((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
-					((AxisAlignedBoundingBox) other).d);
-		else if (other instanceof PlaneCollider)
-			return CollisionChecks.spherevsPlane(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
-					((PlaneCollider) other).xNorm, ((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
-		else if (other instanceof CylinderCollider)
-			return CollisionChecks.spherevsCylinder(pos.x, pos.y, pos.z, r, otherPos.x, otherPos.y, otherPos.z,
-					((CylinderCollider) other).r, ((CylinderCollider) other).h);
+	public void scale(float x, float y, float z) {
+		this.r *= (x + y + z) * 0.3333333f;
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.spherevsPoint(this.x, this.y, this.z, r, x, y, z);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.spherevsSphere(x, y, z, r, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.spherevsCube(x, y, z, r, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.spherevsPlane(x, y, z, r, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
+		}
+
+		else if (other instanceof CylinderCollider) {
+			CylinderCollider o = (CylinderCollider) other;
+			return CollisionChecks.spherevsCylinder(x, y, z, r, o.x, o.y, o.z, o.r, o.h);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof SphereCollider)
-			return CollisionChecks.resolveSpherevsSphere(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(SphereCollider) other);
-		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.resolveSpherevsCube(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(AxisAlignedBoundingBox) other);
-		else if (other instanceof PlaneCollider)
-			return CollisionChecks.resolveSpherevsPlane(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(PlaneCollider) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.resolveSpherevsSphere(x, y, z, r, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.resolveSpherevsCube(x, y, z, r, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.resolveSpherevsPlane(x, y, z, r, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
+		}
 		return null;
 	}
 
 	@Override
 	public SphereCollider clone() {
-		return new SphereCollider(r);
+		return new SphereCollider(x, y, z, r);
 	}
 
 	@Override
@@ -93,11 +117,17 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		z = in.readFloat();
 		r = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(z);
 		out.writeFloat(r);
 	}
 
@@ -107,10 +137,9 @@ public class SphereCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
+	public void render() {
 		Renderer.enableWireframeMode();
-		Renderer.render(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(r)),
-				ResourceManager.getModel("ball"));
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"));
 		Renderer.disableWireframeMode();
 	}
 }

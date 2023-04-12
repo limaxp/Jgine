@@ -24,6 +24,9 @@ import org.jgine.utils.math.vector.Vector3f;
  */
 public class PlaneCollider extends Collider {
 
+	public float x;
+	public float y;
+	public float z;
 	public float xNorm;
 	public float yNorm;
 	public float zNorm;
@@ -31,60 +34,85 @@ public class PlaneCollider extends Collider {
 	public PlaneCollider() {
 	}
 
-	public PlaneCollider(Vector3f normal) {
-		this(normal.x, normal.y, normal.z);
-	}
-
 	public PlaneCollider(float xNorm, float yNorm, float zNorm) {
 		this.xNorm = xNorm;
 		this.yNorm = yNorm;
+		this.zNorm = zNorm;
+	}
+
+	public PlaneCollider(float x, float y, float z, float xNorm, float yNorm, float zNorm) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.xNorm = xNorm;
+		this.yNorm = yNorm;
+		this.zNorm = zNorm;
 	}
 
 	@Override
-	public void scale(Vector3f scale) {
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.planevsPoint(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, point.x, point.y, point.z);
+	public void scale(float x, float y, float z) {
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof PlaneCollider)
-			return CollisionChecks.planevsPlane(xNorm, yNorm, zNorm, ((PlaneCollider) other).xNorm,
-					((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
-		else if (other instanceof SphereCollider)
-			return CollisionChecks.planevsSphere(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
-					otherPos.z, ((SphereCollider) other).r);
-		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.planevsCube(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
-					otherPos.z, ((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
-					((AxisAlignedBoundingBox) other).d);
-		else if (other instanceof CylinderCollider)
-			return CollisionChecks.planevsCylinder(pos.x, pos.y, pos.z, xNorm, yNorm, zNorm, otherPos.x, otherPos.y,
-					otherPos.z, ((CylinderCollider) other).r, ((CylinderCollider) other).h);
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.planevsPoint(this.x, this.y, this.z, xNorm, yNorm, zNorm, x, y, z);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.planevsPlane(xNorm, yNorm, zNorm, o.xNorm, o.yNorm, o.zNorm);
+		}
+
+		else if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.planevsSphere(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.planevsCube(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof CylinderCollider) {
+			CylinderCollider o = (CylinderCollider) other;
+			return CollisionChecks.planevsCylinder(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r, o.h);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof PlaneCollider)
-			return CollisionChecks.resolvePlanevsPlane(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(PlaneCollider) other);
-		else if (other instanceof SphereCollider)
-			return CollisionChecks.resolvePlanevsSphere(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(SphereCollider) other);
-		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.resolvePlanevsCube(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(AxisAlignedBoundingBox) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.resolvePlanevsPlane(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.xNorm, o.yNorm,
+					o.zNorm);
+		}
+
+		else if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.resolvePlanevsSphere(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.resolvePlanevsCube(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
 		return null;
 	}
 
 	@Override
 	public PlaneCollider clone() {
-		return new PlaneCollider(xNorm, yNorm, zNorm);
+		return new PlaneCollider(x, y, z, xNorm, yNorm, zNorm);
 	}
 
 	@Override
@@ -100,6 +128,9 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		z = in.readFloat();
 		xNorm = in.readFloat();
 		yNorm = in.readFloat();
 		zNorm = in.readFloat();
@@ -107,6 +138,9 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(z);
 		out.writeFloat(xNorm);
 		out.writeFloat(yNorm);
 		out.writeFloat(zNorm);
@@ -118,8 +152,8 @@ public class PlaneCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
-		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(xNorm, yNorm, zNorm),
-				new Vector3f(Float.MAX_VALUE)), new Material());
+	public void render() {
+		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), x, y, z, xNorm, yNorm, zNorm, Float.MAX_VALUE,
+				Float.MAX_VALUE, Float.MAX_VALUE), new Material());
 	}
 }

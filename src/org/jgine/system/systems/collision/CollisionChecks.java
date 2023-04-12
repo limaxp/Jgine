@@ -1,13 +1,7 @@
 package org.jgine.system.systems.collision;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.system.systems.collision.collider.AxisAlignedBoundingBox;
-import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
-import org.jgine.system.systems.collision.collider.CircleCollider;
-import org.jgine.system.systems.collision.collider.LineCollider;
-import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
-import org.jgine.system.systems.collision.collider.SphereCollider;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
@@ -204,241 +198,256 @@ public class CollisionChecks {
 	}
 
 	@Nullable
-	public static CollisionData resolveCirclevsCircle(float x1, float y1, CircleCollider a, float x2, float y2,
-			CircleCollider b) {
+	public static CollisionData resolveCirclevsCircle(float x1, float y1, float r1, float x2, float y2, float r2) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float xPow = axisX * axisX;
 		float yPow = axisY * axisY;
-		float minDist = a.r + b.r;
+		float minDist = r1 + r2;
 
 		if (xPow + yPow < minDist * minDist) {
 			float dist = FastMath.sqrt(xPow + yPow);
 			float delta = minDist - dist;
-			return new CollisionData(a, b, axisX, axisY, x1 + delta, y1 + delta, delta, delta, false);
+			return new CollisionData(axisX, axisY, x1 + delta, y1 + delta, delta, delta, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveSpherevsSphere(float x1, float y1, float z1, SphereCollider a, float x2,
-			float y2, float z2, SphereCollider b) {
+	public static CollisionData resolveSpherevsSphere(float x1, float y1, float z1, float r1, float x2, float y2,
+			float z2, float r2) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float axisZ = z1 - z2;
 		float xPow = axisX * axisX;
 		float yPow = axisY * axisY;
 		float zPow = axisZ * axisZ;
-		float minDist = a.r + b.r;
+		float minDist = r1 + r2;
 
 		if (xPow + yPow + zPow < minDist * minDist) {
 			float dist = FastMath.sqrt(xPow + yPow + zPow);
 			float delta = minDist - dist;
-			return new CollisionData(a, b, axisX, axisY, axisZ, x1 + delta, y1 + delta, z1 + delta, delta, delta, delta,
+			return new CollisionData(axisX, axisY, axisZ, x1 + delta, y1 + delta, z1 + delta, delta, delta, delta,
 					false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveQuadvsQuad(float x1, float y1, AxisAlignedBoundingQuad a, float x2, float y2,
-			AxisAlignedBoundingQuad b) {
+	public static CollisionData resolveQuadvsQuad(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
+			float h2) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float distX = Math.abs(axisX);
 		float distY = Math.abs(axisY);
-		float minDistX = a.w + b.w;
-		float minDistY = a.h + b.h;
+		float minDistX = w1 + w2;
+		float minDistY = h1 + h2;
 
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new CollisionData(a, b, axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
+			return new CollisionData(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveCubevsCube(float x1, float y1, float z1, AxisAlignedBoundingBox a, float x2,
-			float y2, float z2, AxisAlignedBoundingBox b) {
+	public static CollisionData resolveCubevsCube(float x1, float y1, float z1, float w1, float h1, float d1, float x2,
+			float y2, float z2, float w2, float h2, float d2) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float axisZ = z1 - z2;
 		float distX = Math.abs(axisX);
 		float distY = Math.abs(axisY);
 		float distZ = Math.abs(axisZ);
-		float minDistX = a.w + b.w;
-		float minDistY = a.h + b.h;
-		float minDistZ = a.d + b.d;
+		float minDistX = w1 + w2;
+		float minDistY = h1 + h2;
+		float minDistZ = d1 + d2;
 
 		if (distX < minDistX && distY < minDistY && distZ < minDistZ) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
 			float deltaZ = minDistZ - distZ;
-			return new CollisionData(a, b, axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
-					deltaZ, true);
+			return new CollisionData(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ,
+					true);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveCirclevsQuad(float x1, float y1, CircleCollider a, float x2, float y2,
-			AxisAlignedBoundingQuad b) {
-		return resolveQuadvsCircle(x2, y2, b, x1, y1, a);
+	public static CollisionData resolveCirclevsQuad(float x1, float y1, float r, float x2, float y2, float w, float h) {
+		CollisionData collision = resolveQuadvsCircle(x2, y2, w, h, x1, y1, r);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveQuadvsCircle(float x1, float y1, AxisAlignedBoundingQuad a, float x2, float y2,
-			CircleCollider b) {
+	public static CollisionData resolveQuadvsCircle(float x1, float y1, float w, float h, float x2, float y2, float r) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float distX = Math.abs(axisX);
 		float distY = Math.abs(axisY);
-		float minDistX = a.w + b.r;
-		float minDistY = a.h + b.r;
+		float minDistX = w + r;
+		float minDistY = h + r;
 
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new CollisionData(a, b, axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
+			return new CollisionData(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveSpherevsCube(float x1, float y1, float z1, SphereCollider a, float x2, float y2,
-			float z2, AxisAlignedBoundingBox b) {
-		return resolveCubevsSphere(x2, y2, z2, b, x1, y1, z1, a);
+	public static CollisionData resolveSpherevsCube(float x1, float y1, float z1, float r, float x2, float y2, float z2,
+			float w, float h, float d) {
+		CollisionData collision = resolveCubevsSphere(x2, y2, z2, w, h, d, x1, y1, z1, r);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveCubevsSphere(float x1, float y1, float z1, AxisAlignedBoundingBox a, float x2,
-			float y2, float z2, SphereCollider b) {
+	public static CollisionData resolveCubevsSphere(float x1, float y1, float z1, float w, float h, float d, float x2,
+			float y2, float z2, float r) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float axisZ = z1 - z2;
 		float distX = Math.abs(axisX);
 		float distY = Math.abs(axisY);
 		float distZ = Math.abs(axisZ);
-		float minDistX = a.w + b.r;
-		float minDistY = a.h + b.r;
-		float minDistZ = a.d + b.r;
+		float minDistX = w + r;
+		float minDistY = h + r;
+		float minDistZ = d + r;
 
 		if (distX < minDistX && distY < minDistY && distZ < minDistZ) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
 			float deltaZ = minDistZ - distZ;
-			return new CollisionData(a, b, axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
-					deltaZ, true);
+			return new CollisionData(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ,
+					true);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveLinevsLine(float x1, float y1, LineCollider a, float x2, float y2,
-			LineCollider b) {
-		float dist = Vector2f.cross(a.xNorm, a.yNorm, b.xNorm, b.yNorm);
+	public static CollisionData resolveLinevsLine(float x1, float y1, float xNorm1, float yNorm1, float x2, float y2,
+			float xNorm2, float yNorm2) {
+		float dist = Vector2f.cross(xNorm1, yNorm1, xNorm2, yNorm2);
 		if (dist != 0) {
-			float axisX = a.xNorm - b.xNorm;
-			float axisY = a.yNorm - b.yNorm;
+			float axisX = xNorm1 - xNorm2;
+			float axisY = yNorm1 - yNorm2;
 			// TODO pos
-			return new CollisionData(a, b, axisX, axisY, x1, y1, dist, dist, false);
+			return new CollisionData(axisX, axisY, x1, y1, dist, dist, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolvePlanevsPlane(float x1, float y1, float z1, PlaneCollider a, float x2, float y2,
-			float z2, PlaneCollider b) {
-		Vector3f dist = Vector3f.cross(a.xNorm, a.yNorm, a.zNorm, b.xNorm, b.yNorm, b.zNorm);
+	public static CollisionData resolvePlanevsPlane(float x1, float y1, float z1, float xNorm1, float yNorm1,
+			float zNorm1, float x2, float y2, float z2, float xNorm2, float yNorm2, float zNorm2) {
+		Vector3f dist = Vector3f.cross(xNorm1, yNorm1, zNorm1, xNorm2, yNorm2, zNorm2);
 		if (dist.x != 0 && dist.y != 0 && dist.z != 0) {
-			float axisX = a.xNorm - b.xNorm;
-			float axisY = a.yNorm - b.yNorm;
-			float axisZ = a.zNorm - b.zNorm;
+			float axisX = xNorm1 - xNorm2;
+			float axisY = yNorm1 - yNorm2;
+			float axisZ = zNorm1 - zNorm2;
 			// TODO pos
-			return new CollisionData(a, b, axisX, axisY, axisZ, x1, y1, z1, dist.x, dist.y, dist.z, false);
+			return new CollisionData(axisX, axisY, axisZ, x1, y1, z1, dist.x, dist.y, dist.z, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveQuadvsLine(float x1, float y1, AxisAlignedBoundingQuad a, float x2, float y2,
-			LineCollider b) {
-		return resolveLinevsQuad(x2, y2, b, x1, y1, a);
+	public static CollisionData resolveQuadvsLine(float x1, float y1, float w, float h, float x2, float y2, float xNorm,
+			float yNorm) {
+		CollisionData collision = resolveLinevsQuad(x2, y2, xNorm, yNorm, x1, y1, w, h);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveLinevsQuad(float x1, float y1, LineCollider a, float x2, float y2,
-			AxisAlignedBoundingQuad b) {
-		float distX = (x2 - x1) * a.xNorm;
-		float distY = (y2 - y1) * a.yNorm;
-		if (distX < b.w && distY < b.h) {
-			float deltaX = b.w - distX;
-			float deltaY = b.h - distY;
-			return new CollisionData(a, b, -a.xNorm, -a.yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
+	public static CollisionData resolveLinevsQuad(float x1, float y1, float xNorm, float yNorm, float x2, float y2,
+			float w, float h) {
+		float distX = (x2 - x1) * xNorm;
+		float distY = (y2 - y1) * yNorm;
+		if (distX < w && distY < h) {
+			float deltaX = w - distX;
+			float deltaY = h - distY;
+			return new CollisionData(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveCubevsPlane(float x1, float y1, float z1, AxisAlignedBoundingBox a, float x2,
-			float y2, float z2, PlaneCollider b) {
-		return resolvePlanevsCube(x2, y2, z2, b, x1, y1, z1, a);
+	public static CollisionData resolveCubevsPlane(float x1, float y1, float z1, float w, float h, float d, float x2,
+			float y2, float z2, float xNorm, float yNorm, float zNorm) {
+		CollisionData collision = resolvePlanevsCube(x2, y2, z2, xNorm, yNorm, zNorm, x1, y1, z1, w, h, d);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolvePlanevsCube(float x1, float y1, float z1, PlaneCollider a, float x2, float y2,
-			float z2, AxisAlignedBoundingBox b) {
-		float distX = (x2 - x1) * a.xNorm;
-		float distY = (y2 - y1) * a.yNorm;
-		float distZ = (z2 - z1) * a.zNorm;
-		if (distX < b.w && distY < b.h && distZ < b.d) {
-			float deltaX = b.w - distX;
-			float deltaY = b.h - distY;
-			float deltaZ = b.d - distZ;
-			return new CollisionData(a, b, -a.xNorm, -a.yNorm, -a.zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX,
-					deltaY, deltaZ, false);
+	public static CollisionData resolvePlanevsCube(float x1, float y1, float z1, float xNorm, float yNorm, float zNorm,
+			float x2, float y2, float z2, float w, float h, float d) {
+		float distX = (x2 - x1) * xNorm;
+		float distY = (y2 - y1) * yNorm;
+		float distZ = (z2 - z1) * zNorm;
+		if (distX < w && distY < h && distZ < d) {
+			float deltaX = w - distX;
+			float deltaY = h - distY;
+			float deltaZ = d - distZ;
+			return new CollisionData(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
+					deltaZ, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveCirclevsLine(float x1, float y1, CircleCollider a, float x2, float y2,
-			LineCollider b) {
-		return resolveLinevsCircle(x2, y2, b, x1, y1, a);
+	public static CollisionData resolveCirclevsLine(float x1, float y1, float r, float x2, float y2, float xNorm,
+			float yNorm) {
+		CollisionData collision = resolveLinevsCircle(x2, y2, xNorm, yNorm, x1, y1, r);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveLinevsCircle(float x1, float y1, LineCollider a, float x2, float y2,
-			CircleCollider b) {
-		float distX = (x2 - x1) * a.xNorm;
-		float distY = (y2 - y1) * a.yNorm;
-		if (distX + distY < b.r) {
-			float deltaX = b.r - distX;
-			float deltaY = b.r - distY;
-			return new CollisionData(a, b, -a.xNorm, -a.yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
+	public static CollisionData resolveLinevsCircle(float x1, float y1, float xNorm, float yNorm, float x2, float y2,
+			float r) {
+		float distX = (x2 - x1) * xNorm;
+		float distY = (y2 - y1) * yNorm;
+		if (distX + distY < r) {
+			float deltaX = r - distX;
+			float deltaY = r - distY;
+			return new CollisionData(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolveSpherevsPlane(float x1, float y1, float z1, SphereCollider a, float x2, float y2,
-			float z2, PlaneCollider b) {
-		return resolvePlanevsSphere(x2, y2, z2, b, x1, y1, z1, a);
+	public static CollisionData resolveSpherevsPlane(float x1, float y1, float z1, float r, float x2, float y2,
+			float z2, float xNorm, float yNorm, float zNorm) {
+		CollisionData collision = resolvePlanevsSphere(x2, y2, z2, xNorm, yNorm, zNorm, x1, y1, z1, r);
+		if (collision != null)
+			return collision.reverse();
+		return null;
 	}
 
 	@Nullable
-	public static CollisionData resolvePlanevsSphere(float x1, float y1, float z1, PlaneCollider a, float x2, float y2,
-			float z2, SphereCollider b) {
-		float distX = (x2 - x1) * a.xNorm;
-		float distY = (y2 - y1) * a.yNorm;
-		float distZ = (z2 - z1) * a.zNorm;
-		if (distX + distY + distZ < b.r) {
-			float deltaX = b.r - distX;
-			float deltaY = b.r - distY;
-			float deltaZ = b.r - distZ;
-			return new CollisionData(a, b, -a.xNorm, -a.yNorm, -a.zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX,
-					deltaY, deltaZ, false);
+	public static CollisionData resolvePlanevsSphere(float x1, float y1, float z1, float xNorm, float yNorm,
+			float zNorm, float x2, float y2, float z2, float r) {
+		float distX = (x2 - x1) * xNorm;
+		float distY = (y2 - y1) * yNorm;
+		float distZ = (z2 - z1) * zNorm;
+		if (distX + distY + distZ < r) {
+			float deltaX = r - distX;
+			float deltaY = r - distY;
+			float deltaZ = r - distZ;
+			return new CollisionData(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
+					deltaZ, false);
 		}
 		return null;
 	}
@@ -552,7 +561,6 @@ public class CollisionChecks {
 			}
 		}
 		// TODO pos
-		return new CollisionData(sa, sb, collisionAxisX, collisionAxisY, x1, y1, collisionOverlap, collisionOverlap,
-				false);
+		return new CollisionData(collisionAxisX, collisionAxisY, x1, y1, collisionOverlap, collisionOverlap, false);
 	}
 }

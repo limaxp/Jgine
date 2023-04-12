@@ -8,17 +8,16 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.render.FrustumCulling2D;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.utils.scheduler.TaskHelper;
 
 public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Material> {
@@ -41,7 +40,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	@Override
 	public void update(float dt) {
 		renderQueue.clear();
-		Camera camera = SystemManager.get(CameraSystem.class).getMainCamera();
+		Camera camera = Engine.CAMERA_SYSTEM.getMainCamera();
 		frustumCulling.applyCamera(camera, 50);
 		TaskHelper.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}
@@ -53,6 +52,11 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 			if (frustumCulling.containsPoint(transforms[index].getPosition()))
 				renderQueue.addAll(Arrays.asList(transforms[index], object));
 		}
+//		scene.forEntity(frustumCulling.x1, frustumCulling.y1, frustumCulling.x2, frustumCulling.y2, (entity) -> {
+//			SystemObject[] materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
+//			for (SystemObject material : materials)
+//				renderQueue.addAll(Arrays.asList(entity.transform, material));
+//		});
 	}
 
 	@Override

@@ -8,16 +8,15 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.render.FrustumCulling;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.utils.scheduler.TaskHelper;
 
 public class GraphicScene extends TransformListSystemScene<GraphicSystem, GraphicObject> {
@@ -40,7 +39,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	@Override
 	public void update(float dt) {
 		renderQueue.clear();
-		Camera camera = SystemManager.get(CameraSystem.class).getMainCamera();
+		Camera camera = Engine.CAMERA_SYSTEM.getMainCamera();
 		frustumCulling.applyCamera(camera, 0);
 		TaskHelper.execute(size, (index, size) -> update(frustumCulling, index, size));
 	}

@@ -18,14 +18,15 @@ import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents a PolygonCollider for 2D with float precision. A PolygonCollider
- * is represented by center point and multiple corner points.
+ * is represented by center point(x, y) and multiple corner points(x, y).
  */
 public class PolygonCollider extends Collider {
 
+	public float x;
+	public float y;
 	public float[] points;
 
 	public PolygonCollider() {
@@ -46,39 +47,59 @@ public class PolygonCollider extends Collider {
 		this.points = points;
 	}
 
+	public PolygonCollider(float x, float y, Vector2f[] points) {
+		this(points);
+		this.x = x;
+		this.y = y;
+	}
+
+	public PolygonCollider(float x, float y, float[] points) {
+		this.x = x;
+		this.y = y;
+		this.points = points;
+	}
+
 	@Override
-	public void scale(Vector3f scale) {
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+	}
+
+	@Override
+	public void scale(float x, float y, float z) {
 		for (int i = 0; i < points.length; i += 2) {
-			points[i] *= scale.x;
-			points[i + 1] *= scale.y;
+			points[i] *= x;
+			points[i + 1] *= y;
 		}
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
+	public boolean containsPoint(float x, float y, float z) {
 		return false;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof PolygonCollider)
-			return CollisionChecks.polygonvsPolygon(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(PolygonCollider) other);
+	public boolean checkCollision(Collider other) {
+		if (other instanceof PolygonCollider) {
+			PolygonCollider o = (PolygonCollider) other;
+			return CollisionChecks.polygonvsPolygon(x, y, this, o.x, o.y, o);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof PolygonCollider)
-			return CollisionChecks.resolvePolygonvsPolygon(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(PolygonCollider) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof PolygonCollider) {
+			PolygonCollider o = (PolygonCollider) other;
+			return CollisionChecks.resolvePolygonvsPolygon(x, y, this, o.x, o.y, o);
+		}
 		return null;
 	}
 
 	@Override
 	public PolygonCollider clone() {
-		return new PolygonCollider(points.clone());
+		return new PolygonCollider(x, y, points.clone());
 	}
 
 	@Override
@@ -103,6 +124,8 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
 		int length = in.readInt();
 		points = new float[length];
 		for (int i = 0; i < length; i++)
@@ -111,6 +134,8 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
 		out.writeInt(points.length);
 		for (int i = 0; i < points.length; i++)
 			out.writeFloat(points[i]);
@@ -122,8 +147,7 @@ public class PolygonCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(1, 1)), new Material(),
-				true, points);
+	public void render() {
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, 1, 1), new Material(), true, points);
 	}
 }

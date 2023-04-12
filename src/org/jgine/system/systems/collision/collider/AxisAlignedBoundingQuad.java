@@ -16,16 +16,16 @@ import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector2f;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents an AxisAlignedBoundingQuad for 2D with float precision. An
- * AxisAlignedBoundingQuad is represented by center point, width(w), height(h)
- * and depth(d).
+ * AxisAlignedBoundingQuad is represented by center point(x, y), width(w) and
+ * height(h).
  */
 public class AxisAlignedBoundingQuad extends Collider {
 
+	public float x;
+	public float y;
 	public float w;
 	public float h;
 
@@ -37,47 +37,72 @@ public class AxisAlignedBoundingQuad extends Collider {
 		this.h = h;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
-		w *= scale.x;
-		h *= scale.y;
+	public AxisAlignedBoundingQuad(float x, float y, float w, float h) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.quadvsPoint(pos.x, pos.y, w, h, point.x, point.y);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.quadvsQuad(pos.x, pos.y, w, h, otherPos.x, otherPos.y,
-					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
-		else if (other instanceof CircleCollider)
-			return CollisionChecks.quadvsCircle(pos.x, pos.y, w, h, otherPos.x, otherPos.y, ((CircleCollider) other).r);
-		else if (other instanceof LineCollider)
-			return CollisionChecks.quadvsLine(pos.x, pos.y, w, h, otherPos.x, otherPos.y, ((LineCollider) other).xNorm,
-					((LineCollider) other).yNorm);
+	public void scale(float x, float y, float z) {
+		this.w *= x;
+		this.h *= y;
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.quadvsPoint(this.x, this.y, this.w, this.h, x, y);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.quadvsQuad(x, y, w, h, o.x, o.y, o.w, o.h);
+		}
+
+		else if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.quadvsCircle(x, y, w, h, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.quadvsLine(x, y, w, h, o.x, o.y, o.xNorm, o.yNorm);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.resolveQuadvsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(AxisAlignedBoundingQuad) other);
-		else if (other instanceof CircleCollider)
-			return CollisionChecks.resolveQuadvsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(CircleCollider) other);
-		else if (other instanceof LineCollider)
-			return CollisionChecks.resolveQuadvsLine(pos.x, pos.y, this, otherPos.x, otherPos.y, (LineCollider) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.resolveQuadvsQuad(x, y, w, h, o.x, o.y, o.w, o.h);
+		}
+
+		else if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.resolveQuadvsCircle(x, y, w, h, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.resolveQuadvsLine(x, y, w, h, o.x, o.y, o.xNorm, o.yNorm);
+		}
 		return null;
 	}
 
 	@Override
 	public AxisAlignedBoundingQuad clone() {
-		return new AxisAlignedBoundingQuad(w, h);
+		return new AxisAlignedBoundingQuad(x, y, w, h);
 	}
 
 	@Override
@@ -92,12 +117,16 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
 		w = in.readFloat();
 		h = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
 		out.writeFloat(w);
 		out.writeFloat(h);
 	}
@@ -108,8 +137,8 @@ public class AxisAlignedBoundingQuad extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(w, h)), new Material(),
-				true, new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+	public void render() {
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), new Material(), true,
+				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
 	}
 }

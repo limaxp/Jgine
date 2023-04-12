@@ -5,40 +5,34 @@ import org.jgine.utils.math.vector.Vector3f;
 
 public class CollisionData {
 
-	public final float axisX;
-	public final float axisY;
-	public final float axisZ;
+	private float axisX;
+	private float axisY;
+	private float axisZ;
 	public final float positionX;
 	public final float positionY;
 	public final float positionZ;
 	public final float overlapX;
 	public final float overlapY;
 	public final float overlapZ;
-	public final Collider collider1;
-	public final Collider collider2;
 	public final boolean strictResolve;
 
-	public CollisionData(Collider collider1, Collider collider2, Vector2f collisionAxis, Vector2f collisionPosition,
-			Vector2f overlap, boolean strictResolve) {
-		this(collider1, collider2, collisionAxis.x, collisionAxis.y, 0, collisionPosition.x, collisionPosition.y, 0,
-				overlap.x, overlap.y, 0, strictResolve);
+	public CollisionData(Vector2f collisionAxis, Vector2f collisionPosition, Vector2f overlap, boolean strictResolve) {
+		this(collisionAxis.x, collisionAxis.y, 0, collisionPosition.x, collisionPosition.y, 0, overlap.x, overlap.y, 0,
+				strictResolve);
 	}
 
-	public CollisionData(Collider collider1, Collider collider2, Vector3f collisionAxis, Vector3f collisionPosition,
-			Vector3f overlap, boolean strictResolve) {
-		this(collider1, collider2, collisionAxis.x, collisionAxis.y, collisionAxis.z, collisionPosition.x,
-				collisionPosition.y, collisionPosition.z, overlap.x, overlap.y, overlap.z, strictResolve);
+	public CollisionData(Vector3f collisionAxis, Vector3f collisionPosition, Vector3f overlap, boolean strictResolve) {
+		this(collisionAxis.x, collisionAxis.y, collisionAxis.z, collisionPosition.x, collisionPosition.y,
+				collisionPosition.z, overlap.x, overlap.y, overlap.z, strictResolve);
 	}
 
-	public CollisionData(Collider collider1, Collider collider2, float axisX, float axisY, float positionX,
-			float positionY, float overlapX, float overlapY, boolean strictResolve) {
-		this(collider1, collider2, axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0, strictResolve);
+	public CollisionData(float axisX, float axisY, float positionX, float positionY, float overlapX, float overlapY,
+			boolean strictResolve) {
+		this(axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0, strictResolve);
 	}
 
-	public CollisionData(Collider collider1, Collider collider2, float axisX, float axisY, float axisZ, float positionX,
-			float positionY, float positionZ, float overlapX, float overlapY, float overlapZ, boolean strictResolve) {
-		this.collider1 = collider1;
-		this.collider2 = collider2;
+	public CollisionData(float axisX, float axisY, float axisZ, float positionX, float positionY, float positionZ,
+			float overlapX, float overlapY, float overlapZ, boolean strictResolve) {
 		this.axisX = axisX;
 		this.axisY = axisY;
 		this.axisZ = axisZ;
@@ -49,6 +43,25 @@ public class CollisionData {
 		this.overlapY = overlapY;
 		this.overlapZ = overlapZ;
 		this.strictResolve = strictResolve;
+	}
+
+	CollisionData reverse() {
+		axisX = -axisX;
+		axisY = -axisY;
+		axisZ = -axisZ;
+		return this;
+	}
+
+	public float getAxisX() {
+		return axisX;
+	}
+
+	public float getAxisY() {
+		return axisY;
+	}
+
+	public float getAxisZ() {
+		return axisZ;
 	}
 
 	public final Vector3f getCollisionAxis3d() {

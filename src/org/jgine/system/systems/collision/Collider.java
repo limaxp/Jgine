@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * The default Collider class.
@@ -16,22 +15,16 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 	public boolean noResolve = false;
 
-	public void scale(float scae) {
-		scale(new Vector3f(scae));
-	}
+	public abstract void move(float x, float y, float z);
 
-	public void scale(float x, float y, float z) {
-		scale(new Vector3f(x, y, z));
-	}
+	public abstract void scale(float x, float y, float z);
 
-	public abstract void scale(Vector3f scale);
+	public abstract boolean containsPoint(float x, float y, float z);
 
-	public abstract boolean containsPoint(Vector3f pos, Vector3f point);
-
-	public abstract boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos);
+	public abstract boolean checkCollision(Collider other);
 
 	@Nullable
-	public abstract CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos);
+	public abstract CollisionData resolveCollision(Collider other);
 
 	public abstract void load(Map<String, Object> data);
 
@@ -41,7 +34,7 @@ public abstract class Collider implements SystemObject, Cloneable {
 
 	public abstract ColliderType<? extends Collider> getType();
 
-	public abstract void render(Vector3f pos);
+	public abstract void render();
 
 	@SuppressWarnings("unchecked")
 	@Override

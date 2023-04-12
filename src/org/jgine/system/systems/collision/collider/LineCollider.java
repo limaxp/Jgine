@@ -17,22 +17,19 @@ import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents a LineCollider for 2D with float precision. A LineCollider is
- * represented by center point and normal vector(xNorm, yNorm).
+ * represented by center point(x, y) and normal vector(xNorm, yNorm).
  */
 public class LineCollider extends Collider {
 
+	public float x;
+	public float y;
 	public float xNorm;
 	public float yNorm;
 
 	public LineCollider() {
-	}
-
-	public LineCollider(Vector2f normal) {
-		this(normal.x, normal.y);
 	}
 
 	public LineCollider(float xNorm, float yNorm) {
@@ -40,45 +37,70 @@ public class LineCollider extends Collider {
 		this.yNorm = yNorm;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
+	public LineCollider(float x, float y, float xNorm, float yNorm) {
+		this.x = x;
+		this.y = y;
+		this.xNorm = xNorm;
+		this.yNorm = yNorm;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.linevsPoint(pos.x, pos.y, xNorm, yNorm, point.x, point.y);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof LineCollider)
-			return CollisionChecks.linevsLine(xNorm, yNorm, ((LineCollider) other).xNorm, ((LineCollider) other).yNorm);
-		else if (other instanceof CircleCollider)
-			return CollisionChecks.linevsCircle(pos.x, pos.y, xNorm, yNorm, otherPos.x, otherPos.y,
-					((CircleCollider) other).r);
-		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.linevsQuad(pos.x, pos.y, xNorm, yNorm, otherPos.x, otherPos.y,
-					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
+	public void scale(float x, float y, float z) {
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.linevsPoint(this.x, this.y, this.xNorm, this.yNorm, x, y);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.linevsLine(xNorm, yNorm, o.xNorm, o.yNorm);
+		}
+
+		else if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.linevsCircle(x, y, xNorm, yNorm, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.linevsQuad(x, y, xNorm, yNorm, o.x, o.y, o.w, o.h);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof LineCollider)
-			return CollisionChecks.resolveLinevsLine(pos.x, pos.y, this, otherPos.x, otherPos.y, (LineCollider) other);
-		else if (other instanceof CircleCollider)
-			return CollisionChecks.resolveLinevsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(CircleCollider) other);
-		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.resolveLinevsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(AxisAlignedBoundingQuad) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.resolveLinevsLine(x, y, xNorm, yNorm, o.x, o.y, o.xNorm, o.yNorm);
+		}
+
+		else if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.resolveLinevsCircle(x, y, xNorm, yNorm, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.resolveLinevsQuad(x, y, xNorm, yNorm, o.x, o.y, o.w, o.h);
+		}
 		return null;
 	}
 
 	@Override
 	public LineCollider clone() {
-		return new LineCollider(xNorm, yNorm);
+		return new LineCollider(x, y, xNorm, yNorm);
 	}
 
 	@Override
@@ -93,12 +115,16 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
 		xNorm = in.readFloat();
 		yNorm = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
 		out.writeFloat(xNorm);
 		out.writeFloat(yNorm);
 	}
@@ -109,8 +135,8 @@ public class LineCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
-		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(Float.MAX_VALUE)),
+	public void render() {
+		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Float.MAX_VALUE, Float.MAX_VALUE),
 				new Material(), yNorm, -xNorm, -yNorm, xNorm);
 	}
 }

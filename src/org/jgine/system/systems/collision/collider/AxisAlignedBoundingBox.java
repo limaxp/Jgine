@@ -16,7 +16,6 @@ import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents an AxisAlignedBoundingBox for 3D with float precision. An
@@ -25,6 +24,9 @@ import org.jgine.utils.math.vector.Vector3f;
  */
 public class AxisAlignedBoundingBox extends Collider {
 
+	public float x;
+	public float y;
+	public float z;
 	public float w;
 	public float h;
 	public float d;
@@ -38,54 +40,81 @@ public class AxisAlignedBoundingBox extends Collider {
 		this.d = d;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
-		w *= scale.x;
-		h *= scale.y;
-		d *= scale.z;
+	public AxisAlignedBoundingBox(float x, float y, float z, float w, float h, float d) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+		this.h = h;
+		this.d = d;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.cubevsPoint(pos.x, pos.y, pos.z, w, h, d, point.x, point.y, point.z);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.cubevsCube(pos.x, pos.y, pos.z, w, h, d, otherPos.x, otherPos.y, otherPos.z,
-					((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
-					((AxisAlignedBoundingBox) other).d);
-		else if (other instanceof SphereCollider)
-			return CollisionChecks.cubevsSphere(pos.x, pos.y, pos.z, w, h, d, otherPos.x, otherPos.y, otherPos.z,
-					((SphereCollider) other).r);
-		else if (other instanceof PlaneCollider)
-			return CollisionChecks.cubevsPlane(pos.x, pos.y, pos.z, w, h, d, otherPos.x, otherPos.y, otherPos.z,
-					((PlaneCollider) other).xNorm, ((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
-		else if (other instanceof CylinderCollider)
-			return CollisionChecks.cubevsCylinder(pos.x, pos.y, pos.z, w, h, d, otherPos.x, otherPos.y, otherPos.z,
-					((CylinderCollider) other).r, ((CylinderCollider) other).h);
+	public void scale(float x, float y, float z) {
+		this.w *= x;
+		this.h *= y;
+		this.d *= z;
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.cubevsPoint(this.x, this.y, this.z, w, h, d, x, y, z);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.cubevsCube(x, y, z, w, h, d, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.cubevsSphere(x, y, z, w, h, d, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.cubevsPlane(x, y, z, w, h, d, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
+		}
+
+		else if (other instanceof CylinderCollider) {
+			CylinderCollider o = (CylinderCollider) other;
+			return CollisionChecks.cubevsCylinder(x, y, z, w, h, d, o.x, o.y, o.z, o.r, o.h);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.resolveCubevsCube(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(AxisAlignedBoundingBox) other);
-		else if (other instanceof SphereCollider)
-			return CollisionChecks.resolveCubevsSphere(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(SphereCollider) other);
-		else if (other instanceof PlaneCollider)
-			return CollisionChecks.resolveCubevsPlane(pos.x, pos.y, pos.z, this, otherPos.x, otherPos.y, otherPos.z,
-					(PlaneCollider) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.resolveCubevsCube(x, y, z, w, h, d, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.resolveCubevsSphere(x, y, z, w, h, d, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.resolveCubevsPlane(x, y, z, w, h, d, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
+		}
 		return null;
 	}
 
 	@Override
 	public AxisAlignedBoundingBox clone() {
-		return new AxisAlignedBoundingBox(w, h, d);
+		return new AxisAlignedBoundingBox(x, y, z, w, h, d);
 	}
 
 	@Override
@@ -103,6 +132,9 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		z = in.readFloat();
 		w = in.readFloat();
 		h = in.readFloat();
 		d = in.readFloat();
@@ -110,6 +142,9 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(z);
 		out.writeFloat(w);
 		out.writeFloat(h);
 		out.writeFloat(d);
@@ -121,9 +156,9 @@ public class AxisAlignedBoundingBox extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
+	public void render() {
 		Renderer.enableWireframeMode();
-		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(w, h, d)), new Material());
+		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), new Material());
 		Renderer.disableWireframeMode();
 	}
 }

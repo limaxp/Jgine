@@ -17,15 +17,15 @@ import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector2f;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
- * Represents a BoundingCircle for 2D with float precision. A BoundingCircle is
- * represented by center point and radius(r).
+ * Represents a CircleCollider for 2D with float precision. A CircleCollider is
+ * represented by center point(x, y) and radius(r).
  */
 public class CircleCollider extends Collider {
 
+	public float x;
+	public float y;
 	public float r;
 
 	public CircleCollider() {
@@ -35,50 +35,70 @@ public class CircleCollider extends Collider {
 		this.r = r;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
-		if (scale.x == scale.y && scale.y == scale.z)
-			r *= scale.x;
-		else
-			r *= (int) (scale.x + scale.y + scale.z) / 3;
+	public CircleCollider(float x, float y, float r) {
+		this.x = x;
+		this.y = y;
+		this.r = r;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.circlevsPoint(pos.x, pos.y, r, point.x, point.y);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof CircleCollider)
-			return CollisionChecks.circlevsCircle(pos.x, pos.y, r, otherPos.x, otherPos.y, ((CircleCollider) other).r);
-		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.circlevsQuad(pos.x, pos.y, r, otherPos.x, otherPos.y,
-					((AxisAlignedBoundingQuad) other).w, ((AxisAlignedBoundingQuad) other).h);
-		else if (other instanceof LineCollider)
-			return CollisionChecks.circlevsLine(pos.x, pos.y, r, otherPos.x, otherPos.y, ((LineCollider) other).xNorm,
-					((LineCollider) other).yNorm);
+	public void scale(float x, float y, float z) {
+		this.r *= (x + y) * 0.5f;
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.circlevsPoint(this.x, this.y, this.r, x, y);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.circlevsCircle(x, y, r, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.circlevsQuad(x, y, r, o.x, o.y, o.w, o.h);
+		}
+
+		else if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.circlevsLine(x, y, r, o.x, o.y, o.xNorm, o.yNorm);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof CircleCollider)
-			return CollisionChecks.resolveCirclevsCircle(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(CircleCollider) other);
-		else if (other instanceof AxisAlignedBoundingQuad)
-			return CollisionChecks.resolveCirclevsQuad(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(AxisAlignedBoundingQuad) other);
-		else if (other instanceof LineCollider)
-			return CollisionChecks.resolveCirclevsLine(pos.x, pos.y, this, otherPos.x, otherPos.y,
-					(LineCollider) other);
+	public CollisionData resolveCollision(Collider other) {
+		if (other instanceof CircleCollider) {
+			CircleCollider o = (CircleCollider) other;
+			return CollisionChecks.resolveCirclevsCircle(x, y, r, o.x, o.y, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingQuad) {
+			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+			return CollisionChecks.resolveCirclevsQuad(x, y, r, o.x, o.y, o.w, o.h);
+		}
+
+		else if (other instanceof LineCollider) {
+			LineCollider o = (LineCollider) other;
+			return CollisionChecks.resolveCirclevsLine(x, y, r, o.x, o.y, o.xNorm, o.yNorm);
+		}
 		return null;
 	}
 
 	@Override
 	public CircleCollider clone() {
-		return new CircleCollider(r);
+		return new CircleCollider(x, y, r);
 	}
 
 	@Override
@@ -90,11 +110,15 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
 		r = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
 		out.writeFloat(r);
 	}
 
@@ -104,7 +128,7 @@ public class CircleCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
+	public void render() {
 		float points[] = new float[32 * 2];
 		float angle = (float) FastMath.PI2 / 32;
 		int i = 0;
@@ -113,7 +137,6 @@ public class CircleCollider extends Collider {
 			points[i + 1] = FastMath.cos(phi);
 			i += 2;
 		}
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), pos, new Vector2f(r, r)), new Material(),
-				true, points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), new Material(), true, points);
 	}
 }

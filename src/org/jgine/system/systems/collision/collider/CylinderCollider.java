@@ -16,7 +16,6 @@ import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Represents an BoundingCylinder for 3D with float precision. An
@@ -24,6 +23,9 @@ import org.jgine.utils.math.vector.Vector3f;
  */
 public class CylinderCollider extends Collider {
 
+	public float x;
+	public float y;
+	public float z;
 	public float r;
 	public float h;
 
@@ -35,47 +37,65 @@ public class CylinderCollider extends Collider {
 		this.h = h;
 	}
 
-	@Override
-	public void scale(Vector3f scale) {
-		if (scale.x == scale.z)
-			r *= scale.x;
-		else
-			r *= (int) (scale.x + scale.z) / 2;
-		h *= scale.y;
+	public CylinderCollider(float x, float y, float z, float r, float h) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.r = r;
+		this.h = h;
 	}
 
 	@Override
-	public boolean containsPoint(Vector3f pos, Vector3f point) {
-		return CollisionChecks.cylindervsPoint(pos.x, pos.y, pos.z, r, h, point.x, point.y, point.z);
+	public void move(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
-	public boolean checkCollision(Vector3f pos, Collider other, Vector3f otherPos) {
-		if (other instanceof CylinderCollider)
-			return CollisionChecks.cylindervsCylinder(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
-					((CylinderCollider) other).r, ((CylinderCollider) other).h);
-		else if (other instanceof SphereCollider)
-			return CollisionChecks.cylindervsSphere(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
-					((SphereCollider) other).r);
-		else if (other instanceof AxisAlignedBoundingBox)
-			return CollisionChecks.cylindervsCube(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
-					((AxisAlignedBoundingBox) other).w, ((AxisAlignedBoundingBox) other).h,
-					((AxisAlignedBoundingBox) other).d);
-		else if (other instanceof PlaneCollider)
-			return CollisionChecks.cylindervsPlane(pos.x, pos.y, pos.z, r, h, otherPos.x, otherPos.y, otherPos.z,
-					((PlaneCollider) other).xNorm, ((PlaneCollider) other).yNorm, ((PlaneCollider) other).zNorm);
+	public void scale(float x, float y, float z) {
+		this.r *= (x + z) * 0.5f;
+		this.h *= y;
+	}
+
+	@Override
+	public boolean containsPoint(float x, float y, float z) {
+		return CollisionChecks.cylindervsPoint(this.x, this.y, this.z, r, h, x, y, z);
+	}
+
+	@Override
+	public boolean checkCollision(Collider other) {
+		if (other instanceof CylinderCollider) {
+			CylinderCollider o = (CylinderCollider) other;
+			return CollisionChecks.cylindervsCylinder(x, y, z, r, h, o.x, o.y, o.z, o.r, o.h);
+		}
+
+		else if (other instanceof SphereCollider) {
+			SphereCollider o = (SphereCollider) other;
+			return CollisionChecks.cylindervsSphere(x, y, z, r, h, o.x, o.y, o.z, o.r);
+		}
+
+		else if (other instanceof AxisAlignedBoundingBox) {
+			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+			return CollisionChecks.cylindervsCube(x, y, z, r, h, o.x, o.y, o.z, o.w, o.h, o.d);
+		}
+
+		else if (other instanceof PlaneCollider) {
+			PlaneCollider o = (PlaneCollider) other;
+			return CollisionChecks.cylindervsPlane(x, y, z, r, h, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
+		}
 		return false;
 	}
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Vector3f pos, Collider other, Vector3f otherPos) {
+	public CollisionData resolveCollision(Collider other) {
 		return null;
 	}
 
 	@Override
 	public CylinderCollider clone() {
-		return new CylinderCollider(r, h);
+		return new CylinderCollider(x, y, z, r, h);
 	}
 
 	@Override
@@ -90,12 +110,18 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		z = in.readFloat();
 		r = in.readFloat();
-		r = in.readFloat();
+		h = in.readFloat();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(z);
 		out.writeFloat(r);
 		out.writeFloat(h);
 	}
@@ -106,10 +132,9 @@ public class CylinderCollider extends Collider {
 	}
 
 	@Override
-	public void render(Vector3f pos) {
+	public void render() {
 		Renderer.enableWireframeMode();
-		Renderer.render(Transform.calculateMatrix(new Matrix(), pos, new Vector3f(r, h, r)),
-				ResourceManager.getModel("ball"));
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"));
 		Renderer.disableWireframeMode();
 	}
 }
