@@ -111,7 +111,7 @@ public class UILabel extends UIObject {
 		Vector2i windowSize = Input.getWindow().getSize();
 		int width = (int) (windowSize.x * scale.x * windowScale.x);
 		int height = (int) (windowSize.y * scale.y * windowScale.y);
-		this.text = TextBuilder.createText(text, font, size, width, height);
+		setText(TextBuilder.createText(text, font, size, width, height));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -187,12 +187,12 @@ public class UILabel extends UIObject {
 			TrueTypeFont font = TrueTypeFont.get(in.readUTF());
 			if (font == null)
 				font = TrueTypeFont.ARIAL;
-			this.text = new TrueTypeText(font, in.readInt(), in.readUTF());
+			setText(this.text = new TrueTypeText(font, in.readInt(), in.readUTF()));
 		} else if (textType == Text.TYPE_BITMAP) {
 			BitmapFont font = BitmapFont.get(in.readUTF());
 			if (font == null)
 				font = BitmapFont.CONSOLAS;
-			this.text = new BitmapText(font, in.readInt(), in.readUTF());
+			setText(this.text = new BitmapText(font, in.readInt(), in.readUTF()));
 		}
 		textOffsetX = in.readInt();
 		textOffsetY = in.readInt();
@@ -233,6 +233,8 @@ public class UILabel extends UIObject {
 	}
 
 	public void setText(@Nullable Text text) {
+		if (this.text != null)
+			this.text.close();
 		this.text = text;
 	}
 
