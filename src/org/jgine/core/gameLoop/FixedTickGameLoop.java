@@ -18,12 +18,12 @@ public class FixedTickGameLoop extends GameLoop {
 
 	public FixedTickGameLoop(int tickTime) {
 		this.tickTime = tickTime;
-		previousTime = System.nanoTime() / 1000000.0;
+		previousTime = System.nanoTime() * 0.000001;
 	}
 
 	@Override
 	public void run() {
-		double currentTime = System.nanoTime() / 1000000.0;
+		double currentTime = System.nanoTime() * 0.000001;
 		double passedtime = currentTime - previousTime;
 		previousTime = currentTime;
 		lag += passedtime;
@@ -31,7 +31,7 @@ public class FixedTickGameLoop extends GameLoop {
 
 		while (lag >= tickTime) {
 			lag -= tickTime;
-			update();
+			update(tickTime * 0.001f);
 
 			if (frameTime >= 1000) {
 				fps = frames;

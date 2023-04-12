@@ -86,7 +86,6 @@ public class Engine {
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
 	private final List<RenderConfiguration> renderConfigs;
-	private long lastUpdateTime = System.currentTimeMillis();
 
 	public Engine(String name) {
 		instance = this;
@@ -97,6 +96,8 @@ public class Engine {
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
 		DisplayManager.init();
 		window = new Window(name);
+		window.setWindowPosCallback((id, x, y) -> gameLoop.run());
+		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
@@ -149,11 +150,7 @@ public class Engine {
 	public void onUpdate() {
 	}
 
-	private final void update() {
-		long time = System.currentTimeMillis();
-		float dt = (time - lastUpdateTime) / 1000.0f;
-		lastUpdateTime = time;
-
+	private final void update(float dt) {
 		ConnectionManager.update();
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
