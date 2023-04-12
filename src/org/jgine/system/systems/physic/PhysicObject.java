@@ -56,10 +56,6 @@ public class PhysicObject implements SystemObject {
 		this.z = oldZ = z;
 	}
 
-	final void setPosition(Vector3f vector) {
-		setPosition(vector.x, vector.y, vector.z);
-	}
-
 	final void setPosition(float x, float y, float z) {
 		float deltaX = x - this.x;
 		float deltaY = y - this.y;

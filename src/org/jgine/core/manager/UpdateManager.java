@@ -1,10 +1,10 @@
 package org.jgine.core.manager;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
-import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * Helper class for updating values between {@link EngineSystem}<code>s</code>.
@@ -19,34 +19,38 @@ public class UpdateManager {
 		}
 	};
 
-	@SuppressWarnings("unchecked")
-	private static BiConsumer<Entity, Vector3f> transformPosition = NULL_FUNCTION;
-	@SuppressWarnings("unchecked")
-	private static BiConsumer<Entity, Vector3f> transformScale = NULL_FUNCTION;
-	@SuppressWarnings("unchecked")
-	private static BiConsumer<Entity, Vector3f> physicPosition = NULL_FUNCTION;
+	public static final UpdateFunction NULL_UPDATE_FUNCTION = new UpdateFunction() {
 
-	public static void addTransformPosition(BiConsumer<Entity, Vector3f> func) {
+		@Override
+		public void accept(Entity entity, float x, float y, float z) {
+		}
+	};
+
+	private static UpdateFunction transformPosition = NULL_UPDATE_FUNCTION;
+	private static UpdateFunction transformScale = NULL_UPDATE_FUNCTION;
+	private static UpdateFunction physicPosition = NULL_UPDATE_FUNCTION;
+
+	public static void addTransformPosition(UpdateFunction func) {
 		transformPosition = addUpdate(transformPosition, func);
 	}
 
-	public static BiConsumer<Entity, Vector3f> getTransformPosition() {
+	public static UpdateFunction getTransformPosition() {
 		return transformPosition;
 	}
 
-	public static void addTransformScale(BiConsumer<Entity, Vector3f> func) {
+	public static void addTransformScale(UpdateFunction func) {
 		transformScale = addUpdate(transformScale, func);
 	}
 
-	public static BiConsumer<Entity, Vector3f> getTransformScale() {
+	public static UpdateFunction getTransformScale() {
 		return transformScale;
 	}
 
-	public static void addPhysicPosition(BiConsumer<Entity, Vector3f> func) {
+	public static void addPhysicPosition(UpdateFunction func) {
 		physicPosition = addUpdate(physicPosition, func);
 	}
 
-	public static BiConsumer<Entity, Vector3f> getPhysicPosition() {
+	public static UpdateFunction getPhysicPosition() {
 		return physicPosition;
 	}
 
@@ -55,5 +59,27 @@ public class UpdateManager {
 			return old.andThen(func);
 		else
 			return func;
+	}
+
+	public static UpdateFunction addUpdate(UpdateFunction old, UpdateFunction func) {
+		if (old != NULL_UPDATE_FUNCTION)
+			return old.andThen(func);
+		else
+			return func;
+	}
+
+	public static interface UpdateFunction {
+
+		public void accept(Entity entity, float x, float y, float z);
+
+		default UpdateFunction andThen(UpdateFunction after) {
+			Objects.requireNonNull(after);
+
+			return (e, x, y, z) -> {
+				accept(e, x, y, z);
+				after.accept(e, x, y, z);
+			};
+		}
+
 	}
 }

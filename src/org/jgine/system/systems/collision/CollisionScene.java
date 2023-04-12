@@ -23,20 +23,20 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	private static final PhysicObject EMPTY_DUMMY = new PhysicObject();
 
 	static {
-		UpdateManager.addTransformPosition((entity, pos) -> {
+		UpdateManager.addTransformPosition((entity, x, y, z) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
-				collider.move(pos.x, pos.y, pos.z);
+				collider.move(x, y, z);
 		});
-		UpdateManager.addTransformScale((entity, scale) -> {
+		UpdateManager.addTransformScale((entity, x, y, z) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
-				collider.scale(scale.x, scale.y, scale.z);
+				collider.scale(x, y, z);
 		});
-		UpdateManager.addPhysicPosition((entity, pos) -> {
+		UpdateManager.addPhysicPosition((entity, x, y, z) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
-				collider.move(pos.x, pos.y, pos.z);
+				collider.move(x, y, z);
 		});
 	}
 

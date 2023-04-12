@@ -16,10 +16,10 @@ import org.jgine.utils.scheduler.TaskHelper;
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
 	static {
-		UpdateManager.addTransformPosition((entity, pos) -> {
+		UpdateManager.addTransformPosition((entity, x, y, z) -> {
 			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
 			if (physic != null)
-				physic.setPosition(pos);
+				physic.setPosition(x, y, z);
 		});
 	}
 
@@ -88,8 +88,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 			PhysicObject object = objects[index];
 			if (object.updatePosition(dt, gravity, airResistanceFactor)) {
 				Entity entity = entities[index];
-				UpdateManager.getPhysicPosition().accept(entity,
-						entity.transform.setPositionIntern(object.x, object.y, object.z));
+				Transform transform = entity.transform;
+				transform.setPositionIntern(object.x, object.y, object.z);
+				UpdateManager.getPhysicPosition().accept(entity, transform.getX(), transform.getY(), transform.getZ());
 			}
 		}
 	}
