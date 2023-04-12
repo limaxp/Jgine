@@ -21,8 +21,9 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 
 	@Override
 	public int addObject(Entity entity, T2 object) {
-		transforms[size] = entity.transform;
-		return super.addObject(entity, object);
+		int index = super.addObject(entity, object);
+		transforms[index] = entity.transform;
+		return index;
 	}
 
 	@Override
