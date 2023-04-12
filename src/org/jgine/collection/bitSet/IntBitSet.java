@@ -89,10 +89,6 @@ public class IntBitSet implements Cloneable, Serializable {
 		this.bits ^= bits;
 	}
 
-	public int cardinality() {
-		return cardinality(bits);
-	}
-
 	public void intersects(IntBitSet bits) {
 		intersects(bits.getBits());
 	}
@@ -165,19 +161,6 @@ public class IntBitSet implements Cloneable, Serializable {
 
 	public static int xor(int bits1, int bits2) {
 		return bits1 ^= bits2;
-	}
-
-	public static int cardinality(int bits) {
-		if (bits == 0)
-			return 0;
-
-		// Successively collapse alternating bit groups into a sum.
-		bits = ((bits >> 1) & 0x55555555) + (bits & 0x55555555);
-		bits = ((bits >> 2) & 0x33333333) + (bits & 0x33333333);
-		int b = (int) ((bits >>> 32) + bits);
-		b = ((b >> 4) & 0x0f0f0f0f) + (b & 0x0f0f0f0f);
-		b = ((b >> 8) & 0x00ff00ff) + (b & 0x00ff00ff);
-		return ((b >> 16) & 0x0000ffff) + (b & 0x0000ffff);
 	}
 
 	public static boolean intersects(int bits1, int bits2) {
