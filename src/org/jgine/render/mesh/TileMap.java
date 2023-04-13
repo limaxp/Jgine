@@ -32,13 +32,17 @@ public class TileMap implements AutoCloseable {
 	protected int tilewidth;
 	protected TileMapLayer[] layers;
 	protected Material material;
+	protected int colums;
+	protected int rows;
 
-	public TileMap(TileMapData data, Material material) {
+	public TileMap(TileMapData data, Material material, int colums, int rows) {
 		this.tilesheight = data.tilesheight;
 		this.tileswidth = data.tileswidth;
 		this.tileheight = data.tileheight;
 		this.tilewidth = data.tilewidth;
 		this.material = material;
+		this.colums = colums;
+		this.rows = rows;
 		int layerSize = data.layers.length;
 		layers = new TileMapLayer[layerSize];
 		for (int i = 0; i < layerSize; i++) {
@@ -56,10 +60,6 @@ public class TileMap implements AutoCloseable {
 	public final void render() {
 		for (int i = 0; i < layers.length; i++)
 			layers[i].render();
-	}
-
-	public Material getMaterial() {
-		return material;
 	}
 
 	public TileMapLayer getLayer(int index) {
@@ -92,6 +92,18 @@ public class TileMap implements AutoCloseable {
 
 	public int getTilesheight() {
 		return tilesheight;
+	}
+
+	public Material getMaterial() {
+		return material;
+	}
+
+	public int getColums() {
+		return colums;
+	}
+
+	public int getRows() {
+		return rows;
 	}
 
 	public class TileMapLayer extends BaseMesh {
@@ -146,7 +158,6 @@ public class TileMap implements AutoCloseable {
 			for (TileMapTile tile : tiles) {
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
-				int colums = material.getTexture().getColums();
 				buffer.put(tile.tile % colums);
 				buffer.put(tile.tile / colums);
 				buffer.put(tile.rotation);
@@ -162,7 +173,6 @@ public class TileMap implements AutoCloseable {
 				FloatBuffer buffer = stack.mallocFloat(TILE_SIZE);
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
-				int colums = material.getTexture().getColums();
 				buffer.put(tile.tile % colums);
 				buffer.put(tile.tile / colums);
 				buffer.put(tile.rotation);
@@ -182,7 +192,6 @@ public class TileMap implements AutoCloseable {
 				data.y = (int) buffer.get() / tileheight;
 				int colum = (int) buffer.get();
 				int row = (int) buffer.get();
-				int colums = material.getTexture().getColums();
 				data.tile = row * colums + colum;
 				data.rotation = (int) buffer.get();
 				data.flipX = buffer.get() == 1.0f ? true : false;

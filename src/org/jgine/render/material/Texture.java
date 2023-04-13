@@ -189,8 +189,6 @@ public class Texture implements ITexture, AutoCloseable {
 	private int target;
 	private int width;
 	private int height;
-	private int colums;
-	private int rows;
 
 	private AnimationFrame[] animation;
 
@@ -200,8 +198,6 @@ public class Texture implements ITexture, AutoCloseable {
 
 	public Texture(String name) {
 		this.name = name;
-		colums = 1;
-		rows = 1;
 	}
 
 	@Override
@@ -322,29 +318,6 @@ public class Texture implements ITexture, AutoCloseable {
 
 	public int getTarget() {
 		return target;
-	}
-
-	public final void setGrid(int colums, int rows) {
-		this.colums = colums;
-		this.rows = rows;
-	}
-
-	public final void setColums(int colums) {
-		this.colums = colums;
-	}
-
-	@Override
-	public final int getColums() {
-		return colums;
-	}
-
-	public final void setRows(int rows) {
-		this.rows = rows;
-	}
-
-	@Override
-	public final int getRows() {
-		return rows;
 	}
 
 	@Override

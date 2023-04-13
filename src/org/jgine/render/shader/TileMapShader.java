@@ -3,7 +3,6 @@ package org.jgine.render.shader;
 import java.util.List;
 
 import org.jgine.render.light.PointLight;
-import org.jgine.render.material.ITexture;
 import org.jgine.render.material.Material;
 import org.jgine.utils.Color;
 import org.jgine.utils.math.FastMath;
@@ -37,11 +36,13 @@ public class TileMapShader extends Shader {
 
 	@Override
 	public void setMaterial(Material material) {
-		ITexture texture = material.getTexture();
 		setUniformi(uniform_uTexture, 0);
-		setUniformi(uniform_textureColums, texture.getColums());
-		setUniformi(uniform_textureRows, texture.getRows());
 		setUniformColor(uniform_color, material.color);
+	}
+
+	public void setTileMapData(int colums, int rows) {
+		setUniformi(uniform_textureColums, colums);
+		setUniformi(uniform_textureRows, rows);
 	}
 
 	public void setAmbientLight(int color) {
