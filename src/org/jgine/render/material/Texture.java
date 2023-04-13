@@ -91,7 +91,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.TextureAnimationHandler.TextureAnimation;
 import org.jgine.utils.math.FastMath;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
@@ -190,7 +190,7 @@ public class Texture implements ITexture, AutoCloseable {
 	private int width;
 	private int height;
 
-	private AnimationFrame[] animation;
+	private TextureAnimation animation;
 
 	public Texture() {
 		this("");
@@ -335,11 +335,11 @@ public class Texture implements ITexture, AutoCloseable {
 		return name;
 	}
 
-	public final void setAnimation(AnimationFrame[] animation) {
+	public final void setAnimation(TextureAnimation animation) {
 		this.animation = animation;
 	}
 
-	public final AnimationFrame[] getAnimation() {
+	public final TextureAnimation getAnimation() {
 		return animation;
 	}
 
