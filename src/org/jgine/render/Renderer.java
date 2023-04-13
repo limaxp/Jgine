@@ -246,7 +246,8 @@ public class Renderer {
 		PHONG_SHADER.setAmbientLight(ambientLight);
 		PHONG_SHADER.setPointLights(pointLights);
 		PHONG_SHADER.setDirectionalLight(lightScene.getDirectionalLight());
-		PHONG_SHADER.setCameraPosition(camera);
+		if (camera != null)
+			PHONG_SHADER.setCameraPosition(camera);
 
 		PHONG_2D_SHADER.bind();
 		PHONG_2D_SHADER.setAmbientLight(ambientLight);
