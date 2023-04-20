@@ -9,6 +9,7 @@ import org.jgine.system.systems.ui.objects.UILabel;
 import org.jgine.system.systems.ui.objects.UIList;
 import org.jgine.system.systems.ui.objects.UIRadioButton;
 import org.jgine.system.systems.ui.objects.UIScrollBar;
+import org.jgine.system.systems.ui.objects.UISlideBar;
 import org.jgine.system.systems.ui.objects.UITextInput;
 import org.jgine.utils.registry.Registry;
 
@@ -21,6 +22,8 @@ public class UIObjectTypes {
 	public static final UIObjectType<UIHotbar> HOTBAR = a("hotbar", UIHotbar::new);
 
 	public static final UIObjectType<UIScrollBar> SCROLLBAR = a("scrollbar", UIScrollBar::new);
+
+	public static final UIObjectType<UISlideBar> SLIDEBAR = a("slidebar", UISlideBar::new);
 
 	public static final UIObjectType<UILabel> LABEL = a("label", UILabel::new);
 

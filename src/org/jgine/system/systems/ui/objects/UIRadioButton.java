@@ -34,6 +34,7 @@ public class UIRadioButton extends UIObject {
 		UIRadioButton obj = (UIRadioButton) super.clone();
 		obj.background = background.clone();
 		obj.button = button.clone();
+		obj.buttonTransform = new Matrix(buttonTransform);
 		return obj;
 	}
 

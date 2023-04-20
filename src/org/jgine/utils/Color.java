@@ -22,6 +22,7 @@ public class Color {
 	public static final int CYAN = 0xff00ffff;
 	public static final int GRAY = rgb(0.5f, 0.5f, 0.5f);
 	public static final int DARK_GRAY = rgb(0.3f, 0.3f, 0.3f);
+	public static final int DARKEST_GRAY = rgb(0.2f, 0.2f, 0.2f);
 	public static final int LIGHT_GRAY = rgb(0.7f, 0.7f, 0.7f);
 	public static final int PINK = rgb(255, 175, 175);
 	public static final int ORANGE = rgb(255, 125, 0);
