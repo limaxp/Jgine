@@ -12,7 +12,6 @@ import static org.lwjgl.opengl.GL15.glGetBufferSubData;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.nio.FloatBuffer;
@@ -50,13 +49,6 @@ public class InstancedMesh extends Mesh {
 		super.close();
 		glDeleteBuffers(databo);
 		databo = 0;
-	}
-
-	@Override
-	public final void render() {
-		glBindVertexArray(vao);
-		glDrawArraysInstanced(mode, 0, size, instanceSize);
-		glBindVertexArray(0);
 	}
 
 	public final void setData(FloatBuffer data) {

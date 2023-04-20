@@ -131,7 +131,7 @@ public class RenderTarget implements AutoCloseable {
 		renderTarget.setTexture(Texture.RGB, COLOR_ATTACHMENT0, width, height);
 		renderTarget.setRenderBuffer(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, width, height);
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		unbind();
 		return renderTarget;
 	}
 
@@ -141,7 +141,7 @@ public class RenderTarget implements AutoCloseable {
 		renderTarget.setTextureMultisample(Texture.RGB, COLOR_ATTACHMENT0, samples, width, height);
 		renderTarget.setRenderBufferMultisample(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, samples, width, height);
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		unbind();
 		return renderTarget;
 	}
 
@@ -151,7 +151,7 @@ public class RenderTarget implements AutoCloseable {
 		renderTarget.setRenderBuffer(Texture.RGB, COLOR_ATTACHMENT0, width, height);
 		renderTarget.setRenderBuffer(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, width, height);
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		unbind();
 		return renderTarget;
 	}
 
@@ -161,7 +161,7 @@ public class RenderTarget implements AutoCloseable {
 		renderTarget.setRenderBufferMultisample(Texture.RGB, COLOR_ATTACHMENT0, samples, width, height);
 		renderTarget.setRenderBufferMultisample(DEPTH24_STENCIL8, DEPTH_STENCIL_ATTACHMENT, samples, width, height);
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		unbind();
 		return renderTarget;
 	}
 
@@ -183,6 +183,10 @@ public class RenderTarget implements AutoCloseable {
 		}
 		glDeleteFramebuffers(fbo);
 		fbo = 0;
+	}
+
+	public boolean isClosed() {
+		return fbo == 0;
 	}
 
 	public void checkStatus() {
@@ -249,7 +253,7 @@ public class RenderTarget implements AutoCloseable {
 		glViewport(0, 0, attach.getWidth(), attach.getHeight());
 	}
 
-	public void unbindViewport() {
+	public static void unbindViewport() {
 		unbind();
 		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
 		glViewport(0, 0, windowSize.x, windowSize.y);
@@ -259,7 +263,7 @@ public class RenderTarget implements AutoCloseable {
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	}
 
-	public void unbind() {
+	public static void unbind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -267,7 +271,7 @@ public class RenderTarget implements AutoCloseable {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	}
 
-	public void unbindRead() {
+	public static void unbindRead() {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	}
 
@@ -275,7 +279,7 @@ public class RenderTarget implements AutoCloseable {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	}
 
-	public void unbindDraw() {
+	public static void unbindDraw() {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 

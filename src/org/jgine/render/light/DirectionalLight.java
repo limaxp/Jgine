@@ -13,7 +13,7 @@ import org.jgine.utils.math.vector.Vector3f;
 
 public class DirectionalLight extends Light {
 
-	private Vector3f direction = Vector3f.Z_AXIS;
+	private Vector3f direction = Vector3f.UP;
 
 	@Override
 	public void setEntity(Entity entity) {

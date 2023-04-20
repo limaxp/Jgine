@@ -128,6 +128,7 @@ public class UICompound extends UIObject {
 	protected void addChildIntern(UIObject child) {
 		childs.add(child);
 		child.parent = this;
+		child.depth = depth + 1;
 	}
 
 	public int removeChild(UIObject child) {

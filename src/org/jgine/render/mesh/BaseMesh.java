@@ -18,11 +18,6 @@ public class BaseMesh extends Mesh {
 		super(dimension, type, hasNormals);
 	}
 
-	@Override
-	public void render() {
-		drawArrays();
-	}
-
 	public void loadVertices(float[] vertices, @Nullable float[] textureChords) {
 		loadVertices(FloatBuffer.wrap(vertices), textureChords != null ? FloatBuffer.wrap(textureChords) : null);
 	}

@@ -9,5 +9,9 @@ uniform sampler2D uTexture;
 out vec4 fragColor;
 
 void main() {
-	fragColor = texture(uTexture, textCoord) * baseColor;
+  	vec4 texColor = texture(uTexture, textCoord) * baseColor;
+    if(texColor.a < 0.01)
+        discard;
+        
+	fragColor = texColor;
 }

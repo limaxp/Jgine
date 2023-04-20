@@ -9,9 +9,6 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
@@ -120,20 +117,8 @@ public class Mesh implements AutoCloseable {
 		ibo = 0;
 	}
 
-	public void render() {
-		drawElements();
-	}
-
-	protected final void drawArrays() {
-		glBindVertexArray(vao);
-		glDrawArrays(mode, 0, size);
-		glBindVertexArray(0);
-	}
-
-	protected final void drawElements() {
-		glBindVertexArray(vao);
-		glDrawElements(mode, size, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+	public boolean isClosed() {
+		return vao == 0;
 	}
 
 	public void loadData(AIMesh mesh) {
@@ -430,6 +415,22 @@ public class Mesh implements AutoCloseable {
 
 	public final boolean hasNormals() {
 		return vertexSize - TEXT_CORD_SIZE - getDimension() != 0;
+	}
+
+	public final int getVao() {
+		return vao;
+	}
+
+	public final int getVbo() {
+		return vbo;
+	}
+
+	public final int getIbo() {
+		return ibo;
+	}
+
+	public final int getSize() {
+		return size;
 	}
 
 	public static FloatBuffer calculateNormals2d(FloatBuffer vertices, IntBuffer indices) {

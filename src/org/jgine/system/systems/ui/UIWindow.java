@@ -13,7 +13,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.RenderTarget;
-import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -87,21 +86,21 @@ public class UIWindow extends UICompound {
 	public void render() {
 		if (hide)
 			return;
-		UIRenderer.renderQuad(getTransform(), background);
+		UIRenderer.renderQuad(getTransform(), background, depth);
 		renderChilds();
 		UIRenderer.renderLine2d(getTransform(), border, true,
-				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f });
+				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f }, depth + 1);
 	}
 
 	@Override
 	protected void renderChilds() {
-		RenderTarget tmp = Renderer.getRenderTarget();
-		Renderer.setRenderTarget(renderTarget);
+		RenderTarget tmp = UIRenderer.getRenderTarget();
+		UIRenderer.setRenderTarget(renderTarget);
 		renderTarget.clear();
 		for (UIObject child : getVisibleChilds())
 			child.render();
-		Renderer.setRenderTarget(tmp);
-		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
+		UIRenderer.setRenderTarget(tmp);
+		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth + 1);
 	}
 
 	@Override
@@ -354,8 +353,10 @@ public class UIWindow extends UICompound {
 		renderTarget.bind();
 		renderTarget.setTexture(Texture.RGBA, RenderTarget.COLOR_ATTACHMENT0, Options.RESOLUTION_X.getInt(),
 				Options.RESOLUTION_Y.getInt());
+		renderTarget.setRenderBuffer(RenderTarget.DEPTH24_STENCIL8, RenderTarget.DEPTH_STENCIL_ATTACHMENT,
+				Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt());
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		RenderTarget.unbind();
 		return renderTarget;
 	}
 

@@ -16,7 +16,6 @@ import org.jgine.render.FrustumCulling2D;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
-import org.jgine.system.SystemObject;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.utils.scheduler.TaskHelper;

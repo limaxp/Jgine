@@ -13,7 +13,6 @@ import static org.lwjgl.opengl.GL15.glGetBufferSubData;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.nio.FloatBuffer;
@@ -57,9 +56,8 @@ public class TileMap implements AutoCloseable {
 			layers[i].close();
 	}
 
-	public final void render() {
-		for (int i = 0; i < layers.length; i++)
-			layers[i].render();
+	public boolean isClosed() {
+		return layers[0].isClosed();
 	}
 
 	public TileMapLayer getLayer(int index) {
@@ -144,13 +142,6 @@ public class TileMap implements AutoCloseable {
 			super.close();
 			glDeleteBuffers(databo);
 			databo = 0;
-		}
-
-		@Override
-		public final void render() {
-			glBindVertexArray(vao);
-			glDrawArraysInstanced(mode, 0, size, tileswidth * tilesheight);
-			glBindVertexArray(0);
 		}
 
 		public final FloatBuffer buildFloatBuffer(TileMapTile[] tiles) {

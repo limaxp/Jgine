@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
+import org.jgine.render.RenderQueue;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -69,9 +70,12 @@ public class UILabel extends UIObject {
 
 	@Override
 	public void render() {
-		UIRenderer.renderQuad(getTransform(), usedBackground);
-		if (text != null)
-			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial());
+		UIRenderer.renderQuad(getTransform(), usedBackground, getDepth());
+		if (text != null) {
+			UIRenderer.setShader(UIRenderer.TEXT_SHADER);
+			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial(), getDepth() + 1);
+			UIRenderer.setShader(UIRenderer.TEXTURE_SHADER);
+		}
 	}
 
 	@Override
@@ -234,7 +238,7 @@ public class UILabel extends UIObject {
 
 	public void setText(@Nullable Text text) {
 		if (this.text != null)
-			this.text.close();
+			RenderQueue.deleteMesh(this.text.getMesh());
 		this.text = text;
 	}
 

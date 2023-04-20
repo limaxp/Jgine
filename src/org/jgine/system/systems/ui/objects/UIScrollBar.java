@@ -68,7 +68,7 @@ public class UIScrollBar extends UICompound {
 
 	@Override
 	public void render() {
-		UIRenderer.renderQuad(getTransform(), background);
+		UIRenderer.renderQuad(getTransform(), background, getDepth());
 		super.render();
 	}
 

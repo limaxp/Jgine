@@ -147,7 +147,7 @@ public class Engine {
 		return isRunning;
 	}
 
-	public void onUpdate() {
+	protected void onUpdate() {
 	}
 
 	private final void update(float dt) {
@@ -171,14 +171,15 @@ public class Engine {
 			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
-	public void onRender() {
+	protected void onRender() {
 	}
 
 	private final void render() {
+		Renderer.start();
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene);
-		Renderer.renderFrame(renderConfigs);
+		Renderer.finish(renderConfigs);
 		window.swapBuffers();
 		onRender();
 	}
