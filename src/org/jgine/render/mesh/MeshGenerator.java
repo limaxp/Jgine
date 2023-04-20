@@ -31,6 +31,14 @@ public class MeshGenerator {
 		return mesh;
 	}
 
+	public static BaseMesh quadHollow(float size) {
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(new float[] { -size, -size, size, -size, size, size, -size, size },
+				new float[] { 0, 0, 1, 0, 0, 1, 1, 1 });
+		mesh.mode = Mesh.LINE_LOOP;
+		return mesh;
+	}
+
 	public static Mesh cube(float size) {
 		Mesh mesh = new Mesh(3, true);
 		mesh.loadVertices(
@@ -74,6 +82,44 @@ public class MeshGenerator {
 		BaseMesh mesh = new BaseMesh(2, false);
 		mesh.loadVertices(vertices);
 		mesh.mode = Mesh.TRIANGLE_FAN;
+		return mesh;
+	}
+
+	public static BaseMesh circleHollow(float radius, int steps) {
+		FloatBuffer vertices = BufferUtils.createFloatBuffer(steps * 4);
+		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
+		float angle = (float) FastMath.PI2 / steps;
+		for (float phi = angle; phi < FastMath.PI2; phi += angle)
+			addVertice(vertices, radius * FastMath.sin(phi), radius * FastMath.cos(phi));
+		vertices.flip();
+
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(vertices);
+		mesh.mode = Mesh.LINE_LOOP;
+		return mesh;
+	}
+
+	public static BaseMesh line(float x1, float y1, float x2, float y2) {
+		BaseMesh mesh = new BaseMesh(2, false);
+		mesh.loadVertices(new float[] { x1, y1, x2, y2 }, null);
+		mesh.mode = Mesh.LINES;
+		return mesh;
+	}
+
+	public static BaseMesh line(float x1, float y1, float z1, float x2, float y2, float z2) {
+		BaseMesh mesh = new BaseMesh(3, false);
+		mesh.loadVertices(new float[] { x1, y1, z1, x2, y2, z2 }, null);
+		mesh.mode = Mesh.LINES;
+		return mesh;
+	}
+
+	public static BaseMesh line(int dimension, boolean loop, float[] points) {
+		BaseMesh mesh = new BaseMesh(dimension, false);
+		mesh.loadVertices(points, null);
+		if (loop)
+			mesh.mode = Mesh.LINE_LOOP;
+		else
+			mesh.mode = Mesh.LINE_STRIP;
 		return mesh;
 	}
 

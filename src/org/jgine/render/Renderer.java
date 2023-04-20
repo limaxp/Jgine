@@ -26,6 +26,8 @@ import org.jgine.render.shader.TextShader;
 import org.jgine.render.shader.TextureShader;
 import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.systems.camera.Camera;
+import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
+import org.jgine.system.systems.collision.collider.CircleCollider;
 import org.jgine.system.systems.light.LightScene;
 import org.jgine.utils.Color;
 import org.jgine.utils.math.Matrix;
@@ -85,6 +87,9 @@ public class Renderer {
 	public static void terminate() {
 		QUAD_MESH.close();
 		CUBE_MESH.close();
+		CircleCollider.COLLIDER_MESH.close();
+		AxisAlignedBoundingQuad.COLLIDER_MESH.close();
+
 		OpenGL.terminate();
 	}
 
@@ -163,46 +168,32 @@ public class Renderer {
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
-		BaseMesh lineMesh = new BaseMesh(2, false);
-		lineMesh.loadVertices(new float[] { x1, y1, x2, y2 }, null);
-		lineMesh.mode = Mesh.LINES;
-		RenderQueue.render(lineMesh.getVao(), lineMesh.mode, lineMesh.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-		RenderQueue.deleteTempMesh(lineMesh);
+		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
 			float z2) {
-		BaseMesh lineMesh = new BaseMesh(3, false);
-		lineMesh.loadVertices(new float[] { x1, y1, z1, x2, y2, z2 }, null);
-		lineMesh.mode = Mesh.LINES;
-		RenderQueue.render(lineMesh.getVao(), lineMesh.mode, lineMesh.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-		RenderQueue.deleteTempMesh(lineMesh);
+		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
-		BaseMesh lineMesh = new BaseMesh(3, false);
-		lineMesh.loadVertices(points, null);
-		if (loop)
-			lineMesh.mode = Mesh.LINE_LOOP;
-		else
-			lineMesh.mode = Mesh.LINE_STRIP;
-		RenderQueue.render(lineMesh.getVao(), lineMesh.mode, lineMesh.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-		RenderQueue.deleteTempMesh(lineMesh);
+		BaseMesh mesh = MeshGenerator.line(3, loop, points);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
-		BaseMesh lineMesh = new BaseMesh(2, false);
-		lineMesh.loadVertices(points, null);
-		if (loop)
-			lineMesh.mode = Mesh.LINE_LOOP;
-		else
-			lineMesh.mode = Mesh.LINE_STRIP;
-		RenderQueue.render(lineMesh.getVao(), lineMesh.mode, lineMesh.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-		RenderQueue.deleteTempMesh(lineMesh);
+		BaseMesh mesh = MeshGenerator.line(2, loop, points);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void setShader(Shader shader) {

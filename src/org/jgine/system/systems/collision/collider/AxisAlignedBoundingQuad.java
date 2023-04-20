@@ -9,6 +9,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.render.mesh.BaseMesh;
+import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
@@ -23,6 +25,8 @@ import org.jgine.utils.math.Matrix;
  * height(h).
  */
 public class AxisAlignedBoundingQuad extends Collider {
+
+	public static final BaseMesh COLLIDER_MESH = MeshGenerator.quadHollow(1.0f);
 
 	public float x;
 	public float y;
@@ -144,8 +148,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), new Material(), true,
-				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), COLLIDER_MESH, new Material());
 	}
 
 	@Override

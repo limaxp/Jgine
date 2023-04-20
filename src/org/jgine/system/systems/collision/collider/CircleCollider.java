@@ -9,13 +9,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.render.mesh.BaseMesh;
+import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
-import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
 
 /**
@@ -23,6 +24,8 @@ import org.jgine.utils.math.Matrix;
  * represented by center point(x, y) and radius(r).
  */
 public class CircleCollider extends Collider {
+
+	public static final BaseMesh COLLIDER_MESH = MeshGenerator.circleHollow(1.0f, 16);
 
 	public float x;
 	public float y;
@@ -135,15 +138,7 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void render() {
-		float points[] = new float[32 * 2];
-		float angle = (float) FastMath.PI2 / 32;
-		int i = 0;
-		for (float phi = 0; phi < FastMath.PI2; phi += angle) {
-			points[i] = FastMath.sin(phi);
-			points[i + 1] = FastMath.cos(phi);
-			i += 2;
-		}
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), new Material(), true, points);
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, new Material());
 	}
 
 	@Override
