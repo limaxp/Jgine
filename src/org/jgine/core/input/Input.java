@@ -298,7 +298,10 @@ public class Input {
 	}
 
 	public static void setJoystickCallback(@Nullable JoystickCallback callback) {
-		glfwSetJoystickCallback(callback::invoke);
+		if (callback == null)
+			glfwSetJoystickCallback(null);
+		else
+			glfwSetJoystickCallback(callback::invoke);
 	}
 
 	@FunctionalInterface

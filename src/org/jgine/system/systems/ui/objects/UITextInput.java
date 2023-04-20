@@ -77,18 +77,18 @@ public class UITextInput extends UILabel {
 
 		private void checkClicks() {
 			Keyboard keyboard = Input.getKeyboard();
-			if (keyboard.isKeyPressed(Key.KEY_ESCAPE) || keyboard.isKeyPressed(Key.KEY_ENTER)) {
+			if (keyboard.isPressedIntern(Key.KEY_ESCAPE) || keyboard.isPressedIntern(Key.KEY_ENTER)) {
 				label.getText().setText(text);
 				cancel();
-			} else if (keyboard.isKeyPressed(Key.KEY_LEFT)) {
+			} else if (keyboard.isPressedIntern(Key.KEY_LEFT)) {
 				if (pos > 0)
 					pos--;
 				clickCooldown = 5;
-			} else if (keyboard.isKeyPressed(Key.KEY_RIGHT)) {
+			} else if (keyboard.isPressedIntern(Key.KEY_RIGHT)) {
 				if (pos < label.getText().getText().length() - 1)
 					pos++;
 				clickCooldown = 5;
-			} else if (keyboard.isKeyPressed(Key.KEY_BACKSPACE)) {
+			} else if (keyboard.isPressedIntern(Key.KEY_BACKSPACE)) {
 				if (pos > 0) {
 					pos--;
 					text = deleteChar();
