@@ -94,7 +94,8 @@ public class Material implements SystemObject, Cloneable {
 	}
 
 	public final void bind(Shader shader) {
-		setAnimationFrame(animationHandler.getAnimation(), animationHandler.getAnimationFrame());
+		if (animationHandler != TextureAnimationHandler.NONE)
+			setAnimationFrame(animationHandler.getAnimation(), animationHandler.getAnimationFrame());
 		texture.bind();
 		shader.setMaterial(this);
 	}
