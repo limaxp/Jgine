@@ -7,7 +7,9 @@ import org.jgine.system.systems.ui.objects.UIGrid;
 import org.jgine.system.systems.ui.objects.UIHotbar;
 import org.jgine.system.systems.ui.objects.UILabel;
 import org.jgine.system.systems.ui.objects.UIList;
+import org.jgine.system.systems.ui.objects.UIRadioButton;
 import org.jgine.system.systems.ui.objects.UIScrollBar;
+import org.jgine.system.systems.ui.objects.UITextInput;
 import org.jgine.utils.registry.Registry;
 
 public class UIObjectTypes {
@@ -22,7 +24,11 @@ public class UIObjectTypes {
 
 	public static final UIObjectType<UILabel> LABEL = a("label", UILabel::new);
 
+	public static final UIObjectType<UITextInput> TEXT_INPUT = a("input", UITextInput::new);
+
 	public static final UIObjectType<UIBar> BAR = a("bar", UIBar::new);
+
+	public static final UIObjectType<UIRadioButton> RADIO_BUTTON = a("radio", UIRadioButton::new);
 
 	public static final UIObjectType<UIList> LIST = a("list", UIList::new);
 

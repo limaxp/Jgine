@@ -28,7 +28,7 @@ public class UIBar extends UIObject {
 	private byte barType;
 
 	public UIBar() {
-		background = new Material(Color.TRANSLUCENT_STRONG);
+		background = new Material(Color.DARK_GRAY);
 		bar = new Material(Color.RED);
 		filled = 1.0f;
 		barTransform = new Matrix();

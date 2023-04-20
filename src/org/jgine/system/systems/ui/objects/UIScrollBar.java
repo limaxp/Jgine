@@ -39,6 +39,7 @@ public class UIScrollBar extends UICompound {
 		UILabel button = new UILabel();
 		addChild(button);
 		button.set(0.0f, 0.2f, 1.0f, 0.6f);
+		button.getBackground().color = Color.GRAY;
 		button.setClickFunction((object, key) -> {
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(object));
 		});
