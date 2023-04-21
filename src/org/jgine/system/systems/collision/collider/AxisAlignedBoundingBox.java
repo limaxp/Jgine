@@ -167,7 +167,8 @@ public class AxisAlignedBoundingBox extends Collider {
 	@Override
 	public void render() {
 		Renderer.enableWireframeMode();
-		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), new Material());
+		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), Renderer.BASIC_SHADER,
+				new Material());
 		Renderer.disableWireframeMode();
 	}
 

@@ -163,7 +163,7 @@ public class PlaneCollider extends Collider {
 	@Override
 	public void render() {
 		Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), x, y, z, xNorm, yNorm, zNorm, Float.MAX_VALUE,
-				Float.MAX_VALUE, Float.MAX_VALUE), new Material());
+				Float.MAX_VALUE, Float.MAX_VALUE), Renderer.BASIC_SHADER, new Material());
 	}
 
 	@Override

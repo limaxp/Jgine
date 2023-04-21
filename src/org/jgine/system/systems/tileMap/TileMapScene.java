@@ -64,11 +64,10 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 	@Override
 	public void render() {
 		TileMapShader shader = Renderer.TILE_MAP_SHADER;
-		Renderer2D.setShader(shader);
 		for (int i = 0; i < size; i++) {
 			TileMapObject object = objects[i];
 			shader.setTileMapData(object.getColums(), object.getRows());
-			Renderer2D.render(transforms[i].getMatrix(), object, object.getMaterial());
+			Renderer2D.render(transforms[i].getMatrix(), object, shader, object.getMaterial());
 		}
 	}
 

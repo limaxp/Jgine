@@ -191,13 +191,13 @@ public class Engine {
 
 		if (!scene.hasRenderOrder()) {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
-				Renderer.setCamera(camera);
+				Renderer.setCamera_UNSAFE(camera);
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
 					systemScene.render();
 			}
 		} else {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
-				Renderer.setCamera(camera);
+				Renderer.setCamera_UNSAFE(camera);
 				new SceneRender(scene, scene.getRenderOrder()).start();
 			}
 		}

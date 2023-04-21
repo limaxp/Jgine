@@ -143,7 +143,8 @@ public class CylinderCollider extends Collider {
 	@Override
 	public void render() {
 		Renderer.enableWireframeMode();
-		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"));
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"),
+				Renderer.BASIC_SHADER);
 		Renderer.disableWireframeMode();
 	}
 

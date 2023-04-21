@@ -86,21 +86,21 @@ public class UIWindow extends UICompound {
 	public void render() {
 		if (hide)
 			return;
-		UIRenderer.renderQuad(getTransform(), background, depth);
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
 		renderChilds();
-		UIRenderer.renderLine2d(getTransform(), border, true,
+		UIRenderer.renderLine2d(getTransform(), UIRenderer.TEXTURE_SHADER, border, true,
 				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f }, depth + 1);
 	}
 
 	@Override
 	protected void renderChilds() {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
-		UIRenderer.setRenderTarget(renderTarget);
+		UIRenderer.setRenderTarget_UNSAFE(renderTarget);
 		renderTarget.clear();
 		for (UIObject child : getVisibleChilds())
 			child.render();
-		UIRenderer.setRenderTarget(tmp);
-		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth + 1);
+		UIRenderer.setRenderTarget_UNSAFE(tmp);
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, renderTargetMaterial, depth + 1);
 	}
 
 	@Override

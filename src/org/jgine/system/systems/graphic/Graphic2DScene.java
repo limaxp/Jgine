@@ -62,10 +62,10 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 
 	@Override
 	public void render() {
-		Renderer2D.setShader(Renderer.PHONG_2D_SHADER);
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())
-			Renderer2D.renderQuad(((Transform) iter.next()).getMatrix(), (Material) iter.next());
+			Renderer2D.renderQuad(((Transform) iter.next()).getMatrix(), Renderer.PHONG_2D_SHADER,
+					(Material) iter.next());
 	}
 
 	@Override

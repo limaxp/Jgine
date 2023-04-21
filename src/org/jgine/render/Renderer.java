@@ -2,7 +2,6 @@ package org.jgine.render;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
@@ -53,7 +52,6 @@ public class Renderer {
 	protected static final BaseMesh QUAD_MESH;
 	protected static final Mesh CUBE_MESH;
 
-	protected static Shader shader = Shader.NULL;
 	protected static Camera camera;
 	protected static RenderTarget renderTarget;
 
@@ -126,102 +124,6 @@ public class Renderer {
 		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0);
 	}
 
-	public static void render(Matrix transform, Model model) {
-		Mesh[] meshes = model.getMeshes();
-		Material[] materials = model.getMaterials();
-		for (int i = 0; i < meshes.length; i++)
-			render(transform, meshes[i], materials[i]);
-	}
-
-	public static void render(Matrix transform, Mesh mesh, Material material) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, camera.getMatrix(), material,
-				renderTarget, shader);
-	}
-
-	public static void render(Matrix transform, BaseMesh mesh, Material material) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
-	}
-
-	public static void render(Matrix transform, TileMap tileMap, Material material) {
-		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
-		for (int i = 0; i < tileMap.getLayerSize(); i++) {
-			TileMapLayer layer = tileMap.getLayer(i);
-			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
-					material, renderTarget, shader, amount);
-		}
-	}
-
-	public static void render(Matrix transform, BillboardParticle particle, Material material) {
-		RenderQueue.renderInstanced(particle.getVao(), particle.mode, particle.getSize(), 0, transform,
-				camera.getMatrix(), material, renderTarget, shader, particle.getInstanceSize());
-	}
-
-	public static void renderQuad(Matrix transform, Material material) {
-		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-	}
-
-	public static void renderCube(Matrix transform, Material material) {
-		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
-	}
-
-	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
-		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
-		RenderQueue.deleteTempMesh(mesh);
-	}
-
-	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
-			float z2) {
-		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
-		RenderQueue.deleteTempMesh(mesh);
-	}
-
-	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
-		BaseMesh mesh = MeshGenerator.line(3, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
-		RenderQueue.deleteTempMesh(mesh);
-	}
-
-	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
-		BaseMesh mesh = MeshGenerator.line(2, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
-		RenderQueue.deleteTempMesh(mesh);
-	}
-
-	public static void setShader(Shader shader) {
-		Renderer.shader = shader;
-	}
-
-	public static Shader getShader() {
-		return shader;
-	}
-
-	public static void setCamera(Camera camera) {
-		Renderer.camera = camera;
-		setRenderTarget(camera.getRenderTarget());
-	}
-
-	public static Camera getCamera() {
-		return camera;
-	}
-
-	public static void setRenderTarget(@Nullable RenderTarget renderTarget) {
-		Renderer.renderTarget = renderTarget;
-	}
-
-	@Nullable
-	public static RenderTarget getRenderTarget() {
-		return renderTarget;
-	}
-
 	public static void setLights(LightScene lightScene) {
 		Vector4f ambientLight = Color.toVector(lightScene.getAmbientLight());
 		List<PointLight> pointLights = lightScene.getPointLights();
@@ -229,8 +131,6 @@ public class Renderer {
 		PHONG_SHADER.setAmbientLight(ambientLight);
 		PHONG_SHADER.setPointLights(pointLights);
 		PHONG_SHADER.setDirectionalLight(lightScene.getDirectionalLight());
-		if (camera != null)
-			PHONG_SHADER.setCameraPosition(camera);
 
 		PHONG_2D_SHADER.bind();
 		PHONG_2D_SHADER.setAmbientLight(ambientLight);
@@ -239,6 +139,101 @@ public class Renderer {
 		TILE_MAP_SHADER.bind();
 		TILE_MAP_SHADER.setAmbientLight(ambientLight);
 		TILE_MAP_SHADER.setPointLights(pointLights);
+	}
+
+	public static void render(Matrix transform, Model model, Shader shader) {
+		Mesh[] meshes = model.getMeshes();
+		Material[] materials = model.getMaterials();
+		for (int i = 0; i < meshes.length; i++)
+			render(transform, meshes[i], shader, materials[i]);
+	}
+
+	public static void render(Matrix transform, Mesh mesh, Shader shader, Material material) {
+		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, camera.getMatrix(), material,
+				renderTarget, shader);
+	}
+
+	public static void render(Matrix transform, BaseMesh mesh, Shader shader, Material material) {
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+	}
+
+	public static void render(Matrix transform, TileMap tileMap, Shader shader, Material material) {
+		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
+		for (int i = 0; i < tileMap.getLayerSize(); i++) {
+			TileMapLayer layer = tileMap.getLayer(i);
+			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
+					material, renderTarget, shader, amount);
+		}
+	}
+
+	public static void render(Matrix transform, BillboardParticle particle, Shader shader, Material material) {
+		RenderQueue.renderInstanced(particle.getVao(), particle.mode, particle.getSize(), 0, transform,
+				camera.getMatrix(), material, renderTarget, shader, particle.getInstanceSize());
+	}
+
+	public static void renderQuad(Matrix transform, Shader shader, Material material) {
+		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, camera.getMatrix(),
+				material, renderTarget, shader);
+	}
+
+	public static void renderCube(Matrix transform, Shader shader, Material material) {
+		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, camera.getMatrix(),
+				material, renderTarget, shader);
+	}
+
+	public static void renderLine(Matrix transform, Shader shader, Material material, float x1, float y1, float x2,
+			float y2) {
+		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
+	}
+
+	public static void renderLine(Matrix transform, Shader shader, Material material, float x1, float y1, float z1,
+			float x2, float y2, float z2) {
+		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
+	}
+
+	public static void renderLine3d(Matrix transform, Shader shader, Material material, boolean loop, float[] points) {
+		BaseMesh mesh = MeshGenerator.line(3, loop, points);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
+	}
+
+	public static void renderLine2d(Matrix transform, Shader shader, Material material, boolean loop, float[] points) {
+		BaseMesh mesh = MeshGenerator.line(2, loop, points);
+		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
+				renderTarget, shader);
+		RenderQueue.deleteTempMesh(mesh);
+	}
+
+	/**
+	 * IMPORTANT: Can only be used synchronously!
+	 */
+	public static void setCamera_UNSAFE(Camera camera) {
+		Renderer.camera = camera;
+		renderTarget = camera.getRenderTarget();
+		PHONG_SHADER.setCameraPosition(camera);
+	}
+
+	public static Camera getCamera() {
+		return camera;
+	}
+
+	/**
+	 * IMPORTANT: Can only be used synchronously!
+	 */
+	public static void setRenderTarget_UNSAFE(RenderTarget renderTarget) {
+		Renderer.renderTarget = renderTarget;
+	}
+
+	public static RenderTarget getRenderTarget() {
+		return renderTarget;
 	}
 
 	public static void enableWireframeMode() {

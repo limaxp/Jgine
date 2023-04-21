@@ -70,12 +70,10 @@ public class UILabel extends UIObject {
 
 	@Override
 	public void render() {
-		UIRenderer.renderQuad(getTransform(), usedBackground, getDepth());
-		if (text != null) {
-			UIRenderer.setShader(UIRenderer.TEXT_SHADER);
-			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial(), getDepth() + 1);
-			UIRenderer.setShader(UIRenderer.TEXTURE_SHADER);
-		}
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, usedBackground, getDepth());
+		if (text != null)
+			UIRenderer.render(textTransform, text.getMesh(), UIRenderer.TEXT_SHADER, text.getMaterial(),
+					getDepth() + 1);
 	}
 
 	@Override

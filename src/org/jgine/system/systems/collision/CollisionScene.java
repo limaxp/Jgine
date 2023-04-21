@@ -64,7 +64,6 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	public void render() {
 		if (!system.showHitBox())
 			return;
-		Renderer.setShader(Renderer.BASIC_SHADER);
 		Renderer.enableDepthTest();
 		for (int i = 0; i < size; i++)
 			objects[i].render();

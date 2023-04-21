@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.render.mesh.BaseMesh;
@@ -138,7 +139,8 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, new Material());
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, Renderer.BASIC_SHADER,
+				new Material());
 	}
 
 	@Override
