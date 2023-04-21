@@ -9,7 +9,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.render.RenderQueue;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -28,6 +27,7 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 public class UILabel extends UIObject {
 
@@ -236,7 +236,7 @@ public class UILabel extends UIObject {
 
 	public void setText(@Nullable Text text) {
 		if (this.text != null)
-			RenderQueue.deleteMesh(this.text.getMesh());
+			Scheduler.runTaskSynchron(this.text.getMesh()::close);
 		this.text = text;
 	}
 

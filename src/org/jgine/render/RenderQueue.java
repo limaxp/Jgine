@@ -41,8 +41,6 @@ public class RenderQueue {
 	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> data = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
 	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> usedData = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
 	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
-	private static final List<Mesh> DELETE_MESHES = Collections
-			.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
 	private static int drawCallAmount;
 
 	public static void clear() {
@@ -54,7 +52,6 @@ public class RenderQueue {
 			for (Mesh mesh : TEMP_MESHES)
 				mesh.close();
 			TEMP_MESHES.clear();
-			drawCallAmount = 0;
 		}
 	}
 
@@ -110,6 +107,7 @@ public class RenderQueue {
 
 	public static void draw() {
 		synchronized (LOCK) {
+			drawCallAmount = 0;
 			Renderer.enableDepthTest();
 
 			for (Entry<RenderTarget, Map<Shader, Map<Material, RenderData>>> a : usedData.entrySet()) {
@@ -140,21 +138,14 @@ public class RenderQueue {
 									command.amount);
 						}
 					}
+
+					shader.unbind();
 				}
 			}
 
+			glBindVertexArray(0);
 			RenderTarget.unbindViewport();
-//			glBindVertexArray(0);
-//			if (material != null)
-//				material.unbind();
-//			if (shader != null)
-//				shader.unbind();
-//			Renderer.setRenderTarget(null);
 			Renderer.disableDepthTest();
-
-			for (Mesh mesh : DELETE_MESHES)
-				mesh.close();
-			DELETE_MESHES.clear();
 		}
 	}
 
@@ -176,10 +167,6 @@ public class RenderQueue {
 
 	public static void deleteTempMesh(Mesh mesh) {
 		TEMP_MESHES.add(mesh);
-	}
-
-	public static void deleteMesh(Mesh mesh) {
-		DELETE_MESHES.add(mesh);
 	}
 
 	public static int getDrawCallAmount() {
