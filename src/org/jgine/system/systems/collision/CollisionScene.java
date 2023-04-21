@@ -9,7 +9,6 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
-import org.jgine.render.Renderer;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
@@ -64,10 +63,8 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	public void render() {
 		if (!system.showHitBox())
 			return;
-		Renderer.enableDepthTest();
 		for (int i = 0; i < size; i++)
 			objects[i].render();
-		Renderer.disableDepthTest();
 	}
 
 	@Override

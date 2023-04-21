@@ -55,12 +55,10 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 
 	@Override
 	public void render() {
-		Renderer.enableDepthTest();
 		Iterator<Object> iter = renderQueue.iterator();
 		while (iter.hasNext())
 			Renderer.render(((Transform) iter.next()).getMatrix(), ((GraphicObject) iter.next()).model,
 					Renderer.PHONG_SHADER);
-		Renderer.disableDepthTest();
 	}
 
 	@Override

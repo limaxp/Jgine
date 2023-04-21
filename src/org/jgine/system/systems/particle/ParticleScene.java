@@ -49,13 +49,11 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 
 	@Override
 	public void render() {
-		Renderer.enableDepthTest();
 		for (int i = 0; i < size; i++) {
 			ParticleObject object = objects[i];
 			if (object.isActive())
 				Renderer.render(transforms[i].getMatrix(), object, Renderer.PARTICLE_SHADER, object.material);
 		}
-		Renderer.disableDepthTest();
 	}
 
 	@Override
