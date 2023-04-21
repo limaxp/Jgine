@@ -1,34 +1,49 @@
 package org.jgine.system.systems.script;
 
-import javax.script.ScriptEngine;
-
 import org.jgine.core.entity.Entity;
+import org.jgine.system.SystemObject;
 
-public abstract class ScriptObjectJava extends ScriptObject implements IScript {
+public abstract class ScriptObjectJava extends IScriptObject implements IScript, Cloneable {
 
 	protected Entity entity;
 
 	public ScriptObjectJava() {
-		super(null);
-		setName(getType().name);
-		scriptInterface = this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
 	}
 
 	@Override
 	public ScriptObjectJava clone() {
-		ScriptObjectJava obj = (ScriptObjectJava) super.clone();
-		obj.scriptInterface = obj;
-		return obj;
+		try {
+			return (ScriptObjectJava) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
-	public ScriptEngine getEngine() {
-		return null;
+	protected void setEntity(Entity entity) {
+		this.entity = entity;
 	}
 
 	@Override
 	public Entity getEntity() {
 		return entity;
+	}
+
+	@Override
+	public String getName() {
+		return getType().name;
+	}
+
+	@Override
+	public IScript getInterface() {
+		return this;
 	}
 
 	public ScriptType<?> getType() {

@@ -11,12 +11,11 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.data.ListSystemScene;
-import org.jgine.utils.script.ScriptManager;
 
-public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
+public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 
 	public ScriptScene(ScriptSystem system, Scene scene) {
-		super(system, scene, ScriptObject.class);
+		super(system, scene, IScriptObject.class);
 	}
 
 	@Override
@@ -24,25 +23,22 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
-	public void initObject(Entity entity, ScriptObject object) {
-		if (object instanceof ScriptObjectJava)
-			((ScriptObjectJava) object).entity = entity;
-		else
-			object.scriptInterface = (IScript) ScriptManager.invoke(object.engine, "create", entity);
-		object.scriptInterface.onEnable();
+	public void initObject(Entity entity, IScriptObject object) {
+		object.setEntity(entity);
+		object.getInterface().onEnable();
 	}
 
 	@Override
-	public ScriptObject removeObject(int index) {
-		ScriptObject object = super.removeObject(index);
-		object.scriptInterface.onDisable();
+	public IScriptObject removeObject(int index) {
+		IScriptObject object = super.removeObject(index);
+		object.getInterface().onDisable();
 		return object;
 	}
 
 	@Override
 	public void update(float dt) {
 		for (int i = 0; i < size; i++)
-			objects[i].scriptInterface.update();
+			objects[i].getInterface().update();
 	}
 
 	@Override
@@ -51,11 +47,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 
 	@Override
 	public Entity getEntity(int index) {
-		ScriptObject object = objects[index];
-		if (object instanceof ScriptObjectJava)
-			return ((ScriptObjectJava) object).entity;
-		else
-			return object.scriptInterface.getEntity();
+		return objects[index].getEntity();
 	}
 
 	@Override
@@ -64,7 +56,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
-	public ScriptObject load(DataInput in) throws IOException {
+	public IScriptObject load(DataInput in) throws IOException {
 		String scriptName = in.readUTF();
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
 		if (scriptEngine != null)
@@ -76,7 +68,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, ScriptObject> {
 	}
 
 	@Override
-	public void save(ScriptObject object, DataOutput out) throws IOException {
+	public void save(IScriptObject object, DataOutput out) throws IOException {
 		out.writeUTF(object.getName());
 	}
 }

@@ -2,11 +2,13 @@ package org.jgine.system.systems.script;
 
 import javax.script.ScriptEngine;
 
+import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.script.ScriptManager;
 
-public class ScriptObject implements SystemObject, Cloneable {
+public class ScriptObject extends IScriptObject implements Cloneable {
 
-	private String name;
+	public final String name;
 	protected ScriptEngine engine;
 	protected IScript scriptInterface;
 
@@ -35,18 +37,22 @@ public class ScriptObject implements SystemObject, Cloneable {
 		}
 	}
 
-	void setName(String name) {
-		this.name = name;
+	@Override
+	protected void setEntity(Entity entity) {
+		scriptInterface = (IScript) ScriptManager.invoke(engine, "create", entity);
 	}
 
+	@Override
+	public Entity getEntity() {
+		return scriptInterface.getEntity();
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	public ScriptEngine getEngine() {
-		return engine;
-	}
-
+	@Override
 	public IScript getInterface() {
 		return scriptInterface;
 	}
