@@ -41,7 +41,7 @@ public class RenderQueue {
 	private static final List<Mesh> DELETE_MESHES = new UnorderedIdentityArrayList<Mesh>();
 	private static int drawCallAmount;
 
-	public static void start() {
+	public static void clear() {
 		Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> tmp = usedData;
 		usedData = data;
 		data = tmp;
@@ -100,7 +100,7 @@ public class RenderQueue {
 		return data;
 	}
 
-	public static void render() {
+	public static void draw() {
 		Renderer.enableDepthTest();
 
 		for (Entry<RenderTarget, Map<Shader, Map<Material, RenderData>>> a : usedData.entrySet()) {

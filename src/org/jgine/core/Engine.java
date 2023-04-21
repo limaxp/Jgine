@@ -104,7 +104,7 @@ public class Engine {
 		SoundManager.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
-		gameLoop.setRenderFunction(this::render);
+		gameLoop.setRenderFunction(this::draw);
 	}
 
 	private final void terminate() {
@@ -161,6 +161,7 @@ public class Engine {
 		Input.update();
 		SoundManager.update();
 		onUpdate();
+		render();
 	}
 
 	private final void updateScene(Scene scene, float dt) {
@@ -175,13 +176,16 @@ public class Engine {
 	}
 
 	private final void render() {
-		Renderer.start();
+		Renderer.clear();
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene);
-		Renderer.finish(renderConfigs);
-		window.swapBuffers();
 		onRender();
+	}
+
+	private final void draw() {
+		Renderer.draw(renderConfigs);
+		window.swapBuffers();
 	}
 
 	private final void renderScene(Scene scene) {

@@ -91,12 +91,12 @@ public class Renderer {
 		OpenGL.terminate();
 	}
 
-	public static void start() {
-		RenderQueue.start();
+	public static void clear() {
+		RenderQueue.clear();
 	}
 
-	public static void finish(List<RenderConfiguration> renderConfigs) {
-		RenderQueue.render();
+	public static void draw(List<RenderConfiguration> renderConfigs) {
+		RenderQueue.draw();
 		for (RenderConfiguration renderConfig : renderConfigs) {
 			RenderTarget configTarget = renderConfig.getRenderTarget();
 			RenderTarget intermediateTarget = renderConfig.getIntermediateTarget();
