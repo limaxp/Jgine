@@ -7,6 +7,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,21 +36,26 @@ Order:
  */
 public class RenderQueue {
 
+	private static final Object LOCK = new Object();
+
 	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> data = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
 	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> usedData = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
-	private static final List<Mesh> TEMP_MESHES = new UnorderedIdentityArrayList<Mesh>();
-	private static final List<Mesh> DELETE_MESHES = new UnorderedIdentityArrayList<Mesh>();
+	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
+	private static final List<Mesh> DELETE_MESHES = Collections
+			.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
 	private static int drawCallAmount;
 
 	public static void clear() {
-		Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> tmp = usedData;
-		usedData = data;
-		data = tmp;
-		data.clear();
-		for (Mesh mesh : TEMP_MESHES)
-			mesh.close();
-		TEMP_MESHES.clear();
-		drawCallAmount = 0;
+		synchronized (LOCK) {
+			Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> tmp = usedData;
+			usedData = data;
+			data = tmp;
+			data.clear();
+			for (Mesh mesh : TEMP_MESHES)
+				mesh.close();
+			TEMP_MESHES.clear();
+			drawCallAmount = 0;
+		}
 	}
 
 	public static void render(int vao, int mode, int numVertices, int numIndices, Matrix model, Matrix viewProjection,
@@ -82,70 +88,74 @@ public class RenderQueue {
 	}
 
 	private static RenderData getData(RenderTarget renderTarget, Shader shader, Material material) {
-		Map<Shader, Map<Material, RenderData>> a = data.get(renderTarget);
-		if (a == null) {
-			a = new IdentityHashMap<Shader, Map<Material, RenderData>>();
-			data.put(renderTarget, a);
+		synchronized (LOCK) {
+			Map<Shader, Map<Material, RenderData>> a = data.get(renderTarget);
+			if (a == null) {
+				a = new IdentityHashMap<Shader, Map<Material, RenderData>>();
+				data.put(renderTarget, a);
+			}
+			Map<Material, RenderData> b = a.get(shader);
+			if (b == null) {
+				b = new IdentityHashMap<Material, RenderData>();
+				a.put(shader, b);
+			}
+			RenderData data = b.get(material);
+			if (data == null) {
+				data = new RenderData();
+				b.put(material, data);
+			}
+			return data;
 		}
-		Map<Material, RenderData> b = a.get(shader);
-		if (b == null) {
-			b = new IdentityHashMap<Material, RenderData>();
-			a.put(shader, b);
-		}
-		RenderData data = b.get(material);
-		if (data == null) {
-			data = new RenderData();
-			b.put(material, data);
-		}
-		return data;
 	}
 
 	public static void draw() {
-		Renderer.enableDepthTest();
+		synchronized (LOCK) {
+			Renderer.enableDepthTest();
 
-		for (Entry<RenderTarget, Map<Shader, Map<Material, RenderData>>> a : usedData.entrySet()) {
-			RenderTarget renderTarget = a.getKey();
-			if (renderTarget.isClosed())
-				continue;
-			renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
-			renderTarget.clear();
+			for (Entry<RenderTarget, Map<Shader, Map<Material, RenderData>>> a : usedData.entrySet()) {
+				RenderTarget renderTarget = a.getKey();
+				if (renderTarget.isClosed())
+					continue;
+				renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
+				renderTarget.clear();
 
-			for (Entry<Shader, Map<Material, RenderData>> b : a.getValue().entrySet()) {
-				Shader shader = b.getKey();
-				shader.bind();
+				for (Entry<Shader, Map<Material, RenderData>> b : a.getValue().entrySet()) {
+					Shader shader = b.getKey();
+					shader.bind();
 
-				for (Entry<Material, RenderData> c : b.getValue().entrySet()) {
-					Material material = c.getKey();
-					material.bind(shader);
+					for (Entry<Material, RenderData> c : b.getValue().entrySet()) {
+						Material material = c.getKey();
+						material.bind(shader);
 
-					RenderData data = c.getValue();
-					drawCallAmount += data.commands.size() + data.commandsInstanced.size();
-					for (RenderCommand command : data.commands) {
-						shader.setTransform(command.transform, command.transformProjected);
-						render(command.vao, command.mode, command.numVertices, command.numIndices);
-					}
+						RenderData data = c.getValue();
+						drawCallAmount += data.commands.size() + data.commandsInstanced.size();
+						for (RenderCommand command : data.commands) {
+							shader.setTransform(command.transform, command.transformProjected);
+							render(command.vao, command.mode, command.numVertices, command.numIndices);
+						}
 
-					for (RenderInstancedCommand command : data.commandsInstanced) {
-						shader.setTransform(command.transform, command.transformProjected);
-						renderInstanced(command.vao, command.mode, command.numVertices, command.numIndices,
-								command.amount);
+						for (RenderInstancedCommand command : data.commandsInstanced) {
+							shader.setTransform(command.transform, command.transformProjected);
+							renderInstanced(command.vao, command.mode, command.numVertices, command.numIndices,
+									command.amount);
+						}
 					}
 				}
 			}
+
+			RenderTarget.unbindViewport();
+//			glBindVertexArray(0);
+//			if (material != null)
+//				material.unbind();
+//			if (shader != null)
+//				shader.unbind();
+//			Renderer.setRenderTarget(null);
+			Renderer.disableDepthTest();
+
+			for (Mesh mesh : DELETE_MESHES)
+				mesh.close();
+			DELETE_MESHES.clear();
 		}
-
-		RenderTarget.unbindViewport();
-//		glBindVertexArray(0);
-//		if (material != null)
-//			material.unbind();
-//		if (shader != null)
-//			shader.unbind();
-//		Renderer.setRenderTarget(null);
-		Renderer.disableDepthTest();
-
-		for (Mesh mesh : DELETE_MESHES)
-			mesh.close();
-		DELETE_MESHES.clear();
 	}
 
 	public static void render(int vao, int mode, int numVertices, int numIndices) {
@@ -178,8 +188,9 @@ public class RenderQueue {
 
 	private static class RenderData {
 
-		protected List<RenderCommand> commands = new IdentityArrayList<RenderCommand>();
-		protected List<RenderInstancedCommand> commandsInstanced = new IdentityArrayList<RenderInstancedCommand>();
+		protected List<RenderCommand> commands = Collections.synchronizedList(new IdentityArrayList<RenderCommand>());
+		protected List<RenderInstancedCommand> commandsInstanced = Collections
+				.synchronizedList(new IdentityArrayList<RenderInstancedCommand>());
 	}
 
 	private static class RenderCommand {
