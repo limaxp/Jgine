@@ -1,5 +1,8 @@
 package org.jgine.utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -10,16 +13,130 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jgine.utils.logger.Logger;
 
 /**
  * Helper class for reflection.
  */
-public class Reflection {
+public class Reflection implements Iterable<Class<?>> {
 
 	private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+
+	private final List<Class<?>> classList;
+
+	public Reflection(String pkg) {
+		if (pkg == null)
+			classList = getClasses();
+		else
+			classList = getClasses(pkg);
+	}
+
+	public List<Class<?>> perType(Class<?> type) {
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		forEach(type, result::add);
+		return result;
+	}
+
+	public void forEach(Class<?> type, Consumer<? super Class<?>> func) {
+		for (Class<?> clazz : classList)
+			if (type.isAssignableFrom(clazz))
+				func.accept(clazz);
+	}
+
+	public List<Class<?>> perName(String name) {
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		forEach(name, result::add);
+		return result;
+	}
+
+	public void forEach(String name, Consumer<? super Class<?>> func) {
+		for (Class<?> clazz : classList)
+			if (clazz.getSimpleName().contains(name))
+				func.accept(clazz);
+	}
+
+	public List<Class<?>> startsWith(String name) {
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		forEach(name, result::add);
+		return result;
+	}
+
+	public void forEach_StartsWith(String name, Consumer<? super Class<?>> func) {
+		for (Class<?> clazz : classList)
+			if (clazz.getSimpleName().startsWith(name))
+				func.accept(clazz);
+	}
+
+	public List<Class<?>> values() {
+		return Collections.unmodifiableList(classList);
+	}
+
+	@Override
+	public void forEach(Consumer<? super Class<?>> func) {
+		classList.forEach(func);
+	}
+
+	@Override
+	public Iterator<Class<?>> iterator() {
+		return classList.iterator();
+	}
+
+	public static List<Class<?>> getClasses() {
+		return getClassStream().collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesPerType(Class<?> type) {
+		return getClassStream().filter((clazz) -> type.isAssignableFrom(clazz)).collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesPerName(String name) {
+		return getClassStream().filter((clazz) -> clazz.getSimpleName().contains(name)).collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesStartsWithName(String name) {
+		return getClassStream().filter((clazz) -> clazz.getSimpleName().startsWith(name)).collect(Collectors.toList());
+	}
+
+	public static Stream<Class<?>> getClassStream() {
+		Stream<Class<?>> stream;
+		Package[] pkgs = ClassLoader.getSystemClassLoader().getDefinedPackages();
+		stream = getClassStream(pkgs[0].getName());
+		for (int i = 1; i < pkgs.length; i++) {
+			stream = Stream.concat(stream, getClassStream(pkgs[i].getName()));
+		}
+		return stream;
+	}
+
+	public static List<Class<?>> getClasses(String pkg) {
+		return getClassStream(pkg).collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesPerType(String pkg, Class<?> type) {
+		return getClassStream(pkg).filter((clazz) -> type.isAssignableFrom(clazz)).collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesPerName(String pkg, String name) {
+		return getClassStream(pkg).filter((clazz) -> clazz.getSimpleName().contains(name)).collect(Collectors.toList());
+	}
+
+	public static List<Class<?>> getClassesStartsWithName(String pkg, String name) {
+		return getClassStream(pkg).filter((clazz) -> clazz.getSimpleName().startsWith(name))
+				.collect(Collectors.toList());
+	}
+
+	public static Stream<Class<?>> getClassStream(String pkg) {
+		InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(pkg.replaceAll("[.]", "/"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		return reader.lines().filter(line -> line.endsWith(".class"))
+				.map(line -> getClass(pkg, line.substring(0, line.lastIndexOf('.'))));
+	}
 
 	public static Class<?> getClass(String path) {
 		try {
