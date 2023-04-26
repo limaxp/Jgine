@@ -43,10 +43,10 @@ public class UIRadioButton extends UIObject {
 	}
 
 	@Override
-	public void render() {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, getDepth());
+	public void render(int depth) {
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
 		if (activated)
-			UIRenderer.renderQuad(buttonTransform, UIRenderer.TEXTURE_SHADER, button, getDepth() + 1);
+			UIRenderer.renderQuad(buttonTransform, UIRenderer.TEXTURE_SHADER, button, depth + 1);
 	}
 
 	@Override

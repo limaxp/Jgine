@@ -33,7 +33,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	};
 
 	UICompound parent;
-	int depth;
 	private float x;
 	private float y;
 	private float width;
@@ -81,7 +80,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	protected abstract void free();
 
-	public abstract void render();
+	public abstract void render(int depth);
 
 	public abstract UIObjectType<?> getType();
 
@@ -292,10 +291,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public boolean hasParent() {
 		return parent != null;
-	}
-
-	public int getDepth() {
-		return depth;
 	}
 
 	public UIWindow getWindow() {

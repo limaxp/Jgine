@@ -13,7 +13,7 @@ import org.jgine.utils.math.Matrix;
 
 public class UIRenderer extends Renderer {
 
-	private static final double MIN_DEPTH_VALUE = -0.9999900;
+	private static final double MIN_DEPTH_VALUE = -0.9999000;
 	private static final double DEPTH_SIZE = 0.0000001;
 
 	private static float calculateDepth(int depth) {

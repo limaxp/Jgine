@@ -26,13 +26,13 @@ public class UICompound extends UIObject {
 	}
 
 	@Override
-	public void render() {
-		renderChilds();
+	public void render(int depth) {
+		renderChilds(depth + 1);
 	}
 
-	protected void renderChilds() {
+	protected void renderChilds(int depth) {
 		for (UIObject child : getVisibleChilds())
-			child.render();
+			child.render(depth);
 	}
 
 	@Override
@@ -128,7 +128,6 @@ public class UICompound extends UIObject {
 	protected void addChildIntern(UIObject child) {
 		childs.add(child);
 		child.parent = this;
-		child.depth = depth + 1;
 	}
 
 	public int removeChild(UIObject child) {
