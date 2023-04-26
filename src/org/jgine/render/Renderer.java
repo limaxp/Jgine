@@ -91,8 +91,9 @@ public class Renderer {
 		OpenGL.terminate();
 	}
 
-	public static void clear() {
+	public static void update(float dt) {
 		RenderQueue.clear();
+		POST_PROCESS_SHADER.update(dt);
 	}
 
 	public static void draw(List<RenderConfiguration> renderConfigs) {
@@ -290,5 +291,13 @@ public class Renderer {
 
 	public static int getClearColor() {
 		return OpenGL.getClearColor();
+	}
+
+	public static void screenShake(float time) {
+		POST_PROCESS_SHADER.shake(time);
+	}
+
+	public static void screenShake(float time, float strength) {
+		POST_PROCESS_SHADER.shake(time, strength);
 	}
 }

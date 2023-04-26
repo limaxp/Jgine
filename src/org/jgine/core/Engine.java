@@ -161,7 +161,7 @@ public class Engine {
 		Input.update();
 		SoundManager.update();
 		onUpdate();
-		render();
+		render(dt);
 	}
 
 	private final void updateScene(Scene scene, float dt) {
@@ -175,8 +175,8 @@ public class Engine {
 	protected void onRender() {
 	}
 
-	private final void render() {
-		Renderer.clear();
+	private final void render(float dt) {
+		Renderer.update(dt);
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene);
