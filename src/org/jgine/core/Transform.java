@@ -183,8 +183,11 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setScale(float x, float y, float z) {
+		float oldX = getScaleX();
+		float oldY = getScaleY();
+		float oldZ = getScaleZ();
 		setScaleIntern(x, y, z);
-		UpdateManager.getTransformScale().accept(entity, getX(), getY(), getZ());
+		UpdateManager.getTransformScale().accept(entity, getScaleX() - oldX, getScaleY() - oldY, getScaleZ() - oldZ);
 	}
 
 	public final void setScaleIntern(float x, float y, float z) {
