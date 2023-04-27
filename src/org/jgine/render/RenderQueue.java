@@ -38,17 +38,30 @@ public class RenderQueue {
 
 	private static final Object LOCK = new Object();
 
-	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> data = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
-	private static Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> usedData = new IdentityHashMap<RenderTarget, Map<Shader, Map<Material, RenderData>>>();
+	private static Map<RenderTarget, TargetData> data = new IdentityHashMap<RenderTarget, TargetData>();
+	private static Map<RenderTarget, TargetData> usedData = new IdentityHashMap<RenderTarget, TargetData>();
 	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
 	private static int drawCallAmount;
 
+	private static class TargetData {
+
+		protected Map<Shader, Map<Material, RenderData>> data = new IdentityHashMap<Shader, Map<Material, RenderData>>();
+	}
+
+	private static class RenderData {
+
+		protected List<RenderCommand> commands = Collections.synchronizedList(new IdentityArrayList<RenderCommand>());
+		protected List<RenderInstancedCommand> commandsInstanced = Collections
+				.synchronizedList(new IdentityArrayList<RenderInstancedCommand>());
+	}
+
 	public static void clear() {
 		synchronized (LOCK) {
-			Map<RenderTarget, Map<Shader, Map<Material, RenderData>>> tmp = usedData;
+			Map<RenderTarget, TargetData> tmp = usedData;
 			usedData = data;
 			data = tmp;
 			data.clear();
+
 			for (Mesh mesh : TEMP_MESHES)
 				mesh.close();
 			TEMP_MESHES.clear();
@@ -86,15 +99,15 @@ public class RenderQueue {
 
 	private static RenderData getData(RenderTarget renderTarget, Shader shader, Material material) {
 		synchronized (LOCK) {
-			Map<Shader, Map<Material, RenderData>> a = data.get(renderTarget);
+			TargetData a = data.get(renderTarget);
 			if (a == null) {
-				a = new IdentityHashMap<Shader, Map<Material, RenderData>>();
+				a = new TargetData();
 				data.put(renderTarget, a);
 			}
-			Map<Material, RenderData> b = a.get(shader);
+			Map<Material, RenderData> b = a.data.get(shader);
 			if (b == null) {
 				b = new IdentityHashMap<Material, RenderData>();
-				a.put(shader, b);
+				a.data.put(shader, b);
 			}
 			RenderData data = b.get(material);
 			if (data == null) {
@@ -110,14 +123,14 @@ public class RenderQueue {
 			drawCallAmount = 0;
 			Renderer.enableDepthTest();
 
-			for (Entry<RenderTarget, Map<Shader, Map<Material, RenderData>>> a : usedData.entrySet()) {
+			for (Entry<RenderTarget, TargetData> a : usedData.entrySet()) {
 				RenderTarget renderTarget = a.getKey();
 				if (renderTarget.isClosed())
 					continue;
 				renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
 				renderTarget.clear();
 
-				for (Entry<Shader, Map<Material, RenderData>> b : a.getValue().entrySet()) {
+				for (Entry<Shader, Map<Material, RenderData>> b : a.getValue().data.entrySet()) {
 					Shader shader = b.getKey();
 					shader.bind();
 
@@ -171,13 +184,6 @@ public class RenderQueue {
 
 	public static int getDrawCallAmount() {
 		return drawCallAmount;
-	}
-
-	private static class RenderData {
-
-		protected List<RenderCommand> commands = Collections.synchronizedList(new IdentityArrayList<RenderCommand>());
-		protected List<RenderInstancedCommand> commandsInstanced = Collections
-				.synchronizedList(new IdentityArrayList<RenderInstancedCommand>());
 	}
 
 	private static class RenderCommand {

@@ -98,7 +98,7 @@ public class UIWindow extends UICompound {
 		UIRenderer.setRenderTarget_UNSAFE(renderTarget);
 		renderTarget.clear();
 		for (UIObject child : getVisibleChilds())
-			child.render(depth);
+			child.render(0);
 		UIRenderer.setRenderTarget_UNSAFE(tmp);
 		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, renderTargetMaterial, depth);
 	}
