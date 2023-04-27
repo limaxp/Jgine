@@ -1,7 +1,7 @@
 package org.jgine.utils.id;
 
+import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import org.jgine.utils.math.FastMath;
 
@@ -41,7 +41,7 @@ public class IdGenerator {
 		generation = new byte[maxId];
 		size = startId;
 		minimumFreeIndices = FastMath.min(maxId - 2 - startId, MINIMUM_FREE_INDICES);
-		freeIndices = new ArrayBlockingQueue<Integer>(minimumFreeIndices + 1000);
+		freeIndices = new ArrayDeque<Integer>(minimumFreeIndices + 1000);
 	}
 
 	public int generate() {
