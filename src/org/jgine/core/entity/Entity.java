@@ -92,7 +92,6 @@ public class Entity {
 	private Entity parent;
 	private List<Entity> childs;
 	public int flag;
-	public boolean flag2;
 
 	public Entity(Scene scene) {
 		this(scene, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
