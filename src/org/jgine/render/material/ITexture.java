@@ -10,10 +10,6 @@ public interface ITexture extends AutoCloseable, Attachment {
 
 	public int getHeight();
 
-	public int getColums();
-
-	public int getRows();
-
 	public void bind();
 
 	public void unbind();

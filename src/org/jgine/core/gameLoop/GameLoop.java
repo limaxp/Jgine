@@ -1,6 +1,7 @@
 package org.jgine.core.gameLoop;
 
 import org.jgine.core.Engine;
+import org.jgine.utils.function.FloatConsumer;
 
 /**
  * Abstract game loop class. Extend to make a custom game loop and overwrite
@@ -16,24 +17,31 @@ public abstract class GameLoop implements Runnable {
 		}
 	};
 
-	private Runnable updateFunction = NULL;
+	private static FloatConsumer NULL_FLOAT_CONSUMER = new FloatConsumer() {
+
+		@Override
+		public void accept(float f) {
+		}
+	};
+
+	private FloatConsumer updateFunction = NULL_FLOAT_CONSUMER;
 	private Runnable renderFunction = NULL;
 
 	public abstract int getFps();
 
-	public final void update() {
-		updateFunction.run();
+	public final void update(float dt) {
+		updateFunction.accept(dt);
 	}
 
 	public final void render() {
 		renderFunction.run();
 	}
 
-	public final void setUpdateFunction(Runnable updateFunction) {
+	public final void setUpdateFunction(FloatConsumer updateFunction) {
 		this.updateFunction = updateFunction;
 	}
 
-	public final Runnable getUpdateFunction() {
+	public final FloatConsumer getUpdateFunction() {
 		return updateFunction;
 	}
 

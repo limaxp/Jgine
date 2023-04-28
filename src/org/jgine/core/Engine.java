@@ -38,6 +38,7 @@ import org.jgine.system.systems.light.LightScene;
 import org.jgine.system.systems.light.LightSystem;
 import org.jgine.system.systems.particle.ParticleSystem;
 import org.jgine.system.systems.physic.PhysicSystem;
+import org.jgine.system.systems.script.ScriptObjectJava;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
@@ -86,7 +87,6 @@ public class Engine {
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
 	private final List<RenderConfiguration> renderConfigs;
-	private long lastUpdateTime = System.currentTimeMillis();
 
 	public Engine(String name) {
 		instance = this;
@@ -97,13 +97,16 @@ public class Engine {
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
 		DisplayManager.init();
 		window = new Window(name);
+		window.setWindowPosCallback((id, x, y) -> gameLoop.run());
+		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
 		SoundManager.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
-		gameLoop.setRenderFunction(this::render);
+		gameLoop.setRenderFunction(this::draw);
+		ScriptObjectJava.register(getClass().getPackage());
 	}
 
 	private final void terminate() {
@@ -146,14 +149,10 @@ public class Engine {
 		return isRunning;
 	}
 
-	public void onUpdate() {
+	protected void onUpdate() {
 	}
 
-	private final void update() {
-		long time = System.currentTimeMillis();
-		float dt = (time - lastUpdateTime) / 1000.0f;
-		lastUpdateTime = time;
-
+	private final void update(float dt) {
 		ConnectionManager.update();
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
@@ -164,6 +163,7 @@ public class Engine {
 		Input.update();
 		SoundManager.update();
 		onUpdate();
+		render(dt);
 	}
 
 	private final void updateScene(Scene scene, float dt) {
@@ -174,16 +174,20 @@ public class Engine {
 			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
-	public void onRender() {
+	protected void onRender() {
 	}
 
-	private final void render() {
+	private final void render(float dt) {
+		Renderer.update(dt);
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene);
-		Renderer.renderFrame(renderConfigs);
-		window.swapBuffers();
 		onRender();
+	}
+
+	private final void draw() {
+		Renderer.draw(renderConfigs);
+		window.swapBuffers();
 	}
 
 	private final void renderScene(Scene scene) {
@@ -193,13 +197,13 @@ public class Engine {
 
 		if (!scene.hasRenderOrder()) {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
-				Renderer.setCamera(camera);
+				Renderer.setCamera_UNSAFE(camera);
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
 					systemScene.render();
 			}
 		} else {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
-				Renderer.setCamera(camera);
+				Renderer.setCamera_UNSAFE(camera);
 				new SceneRender(scene, scene.getRenderOrder()).start();
 			}
 		}

@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import java.util.Map;
 
 import org.jgine.core.manager.ResourceManager;
-import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.TextureAnimationHandler.TextureAnimation;
 import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
 import org.jgine.utils.Color;
@@ -31,9 +31,7 @@ public class Material implements SystemObject, Cloneable {
 	public float specularIntesity;
 	public float specularPower; // how wide
 	private ITexture texture = Texture.NONE;
-	// this here makes every entity to move at same time
 	private TextureAnimationHandler animationHandler = TextureAnimationHandler.NONE;
-	private AnimationFrame animationFrame = animationHandler.getAnimationFrame();
 	private float textureX = 0.0f;
 	private float textureY = 0.0f;
 	private float textureWidth = 1.0f;
@@ -96,7 +94,8 @@ public class Material implements SystemObject, Cloneable {
 	}
 
 	public final void bind(Shader shader) {
-		setAnimationFrame(animationHandler.getAnimationFrame());
+		if (animationHandler != TextureAnimationHandler.NONE)
+			setAnimationFrame(animationHandler.getAnimation(), animationHandler.getAnimationFrame());
 		texture.bind();
 		shader.setMaterial(this);
 	}
@@ -107,7 +106,7 @@ public class Material implements SystemObject, Cloneable {
 
 	public final void set(Material material) {
 		apply(material);
-		texture = material.texture;
+		setTexture(material.texture);
 		textureX = material.textureX;
 		textureY = material.textureY;
 		textureWidth = material.textureWidth;
@@ -179,18 +178,11 @@ public class Material implements SystemObject, Cloneable {
 		return new Vector4f(textureX, textureY, textureWidth, textureHeight);
 	}
 
-	private void setAnimationFrame(AnimationFrame animationFrame) {
-		if (animationFrame == this.animationFrame)
-			return;
-		this.animationFrame = animationFrame;
-		textureX = animationFrame.x;
-		textureY = animationFrame.y;
-		textureWidth = animationFrame.width * flipX;
-		textureHeight = animationFrame.height * flipY;
-	}
-
-	public AnimationFrame getAnimationFrame() {
-		return animationFrame;
+	private void setAnimationFrame(TextureAnimation animation, int animationFrame) {
+		textureX = animation.getX(animationFrame);
+		textureY = animation.getY(animationFrame);
+		textureWidth = animation.getWidth(animationFrame) * flipX;
+		textureHeight = animation.getHeight(animationFrame) * flipY;
 	}
 
 	public void flipX() {

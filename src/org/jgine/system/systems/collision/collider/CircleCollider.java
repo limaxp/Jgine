@@ -7,15 +7,17 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.render.mesh.BaseMesh;
+import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
 import org.jgine.system.systems.collision.CollisionData;
 import org.jgine.utils.loader.YamlHelper;
-import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
 
 /**
@@ -23,6 +25,8 @@ import org.jgine.utils.math.Matrix;
  * represented by center point(x, y) and radius(r).
  */
 public class CircleCollider extends Collider {
+
+	public static final BaseMesh COLLIDER_MESH = MeshGenerator.circleHollow(1.0f, 16);
 
 	public float x;
 	public float y;
@@ -43,8 +47,8 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 	}
 
 	@Override
@@ -103,6 +107,12 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
 		Object radiusData = data.get("radius");
 		if (radiusData != null)
 			r = YamlHelper.toFloat(radiusData);
@@ -129,14 +139,37 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void render() {
-		float points[] = new float[32 * 2];
-		float angle = (float) FastMath.PI2 / 32;
-		int i = 0;
-		for (float phi = 0; phi < FastMath.PI2; phi += angle) {
-			points[i] = FastMath.sin(phi);
-			points[i + 1] = FastMath.cos(phi);
-			i += 2;
-		}
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), new Material(), true, points);
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, Renderer.BASIC_SHADER,
+				new Material());
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getWidth() {
+		return r;
+	}
+
+	@Override
+	public float getHeight() {
+		return r;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
 	}
 }

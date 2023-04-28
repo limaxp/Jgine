@@ -28,7 +28,7 @@ public class UIBar extends UIObject {
 	private byte barType;
 
 	public UIBar() {
-		background = new Material(Color.TRANSLUCENT_STRONG);
+		background = new Material(Color.DARK_GRAY);
 		bar = new Material(Color.RED);
 		filled = 1.0f;
 		barTransform = new Matrix();
@@ -49,9 +49,9 @@ public class UIBar extends UIObject {
 	}
 
 	@Override
-	public void render() {
-		UIRenderer.renderQuad(getTransform(), background);
-		UIRenderer.renderQuad(barTransform, bar);
+	public void render(int depth) {
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
+		UIRenderer.renderQuad(barTransform, UIRenderer.TEXTURE_SHADER, bar, depth + 1);
 	}
 
 	@Override

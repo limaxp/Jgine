@@ -55,7 +55,7 @@ public class RenderConfiguration implements AutoCloseable {
 		this.intermediateTarget.setRenderBuffer(Texture.RGB, RenderTarget.COLOR_ATTACHMENT0, attachment.getWidth(),
 				attachment.getHeight());
 		this.intermediateTarget.checkStatus();
-		this.intermediateTarget.unbind();
+		RenderTarget.unbind();
 	}
 
 	public RenderTarget getIntermediateTarget() {

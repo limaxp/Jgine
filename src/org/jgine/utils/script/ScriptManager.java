@@ -16,8 +16,6 @@ import javax.script.ScriptException;
 
 import org.jgine.utils.logger.Logger;
 
-import bsh.BshScriptEngineFactory;
-
 /**
  * Manager class for scripts.
  */
@@ -29,7 +27,6 @@ public class ScriptManager {
 
 	static {
 		ENGINE_MANAGER = new ScriptEngineManager();
-		registerFactory(new BshScriptEngineFactory());
 	}
 
 	public static void registerFactory(ScriptEngineFactory factory) {

@@ -24,13 +24,6 @@ import org.jgine.core.window.Window;
 import org.jgine.utils.FileUtils;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
-import org.lwjgl.glfw.GLFWCharCallbackI;
-import org.lwjgl.glfw.GLFWCursorEnterCallbackI;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWJoystickCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
-import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
-import org.lwjgl.glfw.GLFWScrollCallbackI;
 
 /**
  * Manager that handles input and stores {@link InputDevice}<code>s</code>. Has
@@ -262,31 +255,94 @@ public class Input {
 		window.setDefaultCursor();
 	}
 
-	public static void setKeyCallback(GLFWKeyCallbackI callback) {
-		window.setKeyCallback(callback);
+	public static void setKeyCallback(@Nullable KeyCallback callback) {
+		if (callback == null)
+			window.setKeyCallback(null);
+		else
+			window.setKeyCallback(callback::invoke);
 	}
 
-	public static void setCharCallback(GLFWCharCallbackI callback) {
-		window.setCharCallback(callback);
+	public static void setCharCallback(@Nullable CharCallback callback) {
+		if (callback == null)
+			window.setCharCallback(null);
+		else
+			window.setCharCallback(callback::invoke);
 	}
 
-	public static void setCursorPosCallback(GLFWCursorPosCallbackI callback) {
-		window.setCursorPosCallback(callback);
+	public static void setCursorPosCallback(@Nullable CursorPosCallback callback) {
+		if (callback == null)
+			window.setCursorPosCallback(null);
+		else
+			window.setCursorPosCallback(callback::invoke);
 	}
 
-	public static void setMouseButtonCallback(GLFWMouseButtonCallbackI callback) {
-		window.setMouseButtonCallback(callback);
+	public static void setMouseButtonCallback(@Nullable MouseButtonCallback callback) {
+		if (callback == null)
+			window.setMouseButtonCallback(null);
+		else
+			window.setMouseButtonCallback(callback::invoke);
 	}
 
-	public static void setCursorEnterCallback(GLFWCursorEnterCallbackI callback) {
-		window.setCursorEnterCallback(callback);
+	public static void setCursorEnterCallback(@Nullable CursorEnterCallback callback) {
+		if (callback == null)
+			window.setCursorEnterCallback(null);
+		else
+			window.setCursorEnterCallback(callback::invoke);
 	}
 
-	public static void setScrollCallback(GLFWScrollCallbackI callback) {
-		window.setScrollCallback(callback);
+	public static void setScrollCallback(@Nullable ScrollCallback callback) {
+		if (callback == null)
+			window.setScrollCallback(null);
+		else
+			window.setScrollCallback(callback::invoke);
 	}
 
-	public static void setJoystickCallback(GLFWJoystickCallbackI callback) {
-		glfwSetJoystickCallback(callback);
+	public static void setJoystickCallback(@Nullable JoystickCallback callback) {
+		if (callback == null)
+			glfwSetJoystickCallback(null);
+		else
+			glfwSetJoystickCallback(callback::invoke);
+	}
+
+	@FunctionalInterface
+	public static interface KeyCallback {
+
+		public void invoke(long window, int key, int scancode, int action, int mods);
+	}
+
+	@FunctionalInterface
+	public static interface CharCallback {
+
+		public void invoke(long window, int codePoint);
+	}
+
+	@FunctionalInterface
+	public static interface CursorPosCallback {
+
+		public void invoke(long window, double xPos, double yPos);
+	}
+
+	@FunctionalInterface
+	public static interface MouseButtonCallback {
+
+		public void invoke(long window, int button, int action, int mods);
+	}
+
+	@FunctionalInterface
+	public static interface CursorEnterCallback {
+
+		public void invoke(long window, boolean entered);
+	}
+
+	@FunctionalInterface
+	public static interface ScrollCallback {
+
+		public void invoke(long window, double xoffset, double yoffset);
+	}
+
+	@FunctionalInterface
+	public static interface JoystickCallback {
+
+		public void invoke(int slot, int event);
 	}
 }

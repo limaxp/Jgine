@@ -91,6 +91,10 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal) {
 }
 
 void main() {
+ 	vec4 texColor = texture(uTexture, textCoord) * baseColor;
+    if(texColor.a < 0.01)
+        discard;
+
 	vec4 totalLight = vec4(ambientLight, 1.0);
 	
 	vec3 normal = normalize(normal);
@@ -99,5 +103,5 @@ void main() {
 	for(int i = 0; i < pointLightSize; i++) 
 		totalLight += calcPointLight(pointLights[i], normal);
 	
-	fragColor = texture(uTexture, textCoord) * baseColor * totalLight;
+	fragColor = texColor * totalLight;
 }

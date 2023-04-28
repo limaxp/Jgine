@@ -13,7 +13,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.RenderTarget;
-import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -84,24 +83,24 @@ public class UIWindow extends UICompound {
 	}
 
 	@Override
-	public void render() {
+	public void render(int depth) {
 		if (hide)
 			return;
-		UIRenderer.renderQuad(getTransform(), background);
-		renderChilds();
-		UIRenderer.renderLine2d(getTransform(), border, true,
-				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f });
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
+		renderChilds(depth + 1);
+		UIRenderer.renderLine2d(getTransform(), UIRenderer.TEXTURE_SHADER, border, true,
+				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f }, depth + 2);
 	}
 
 	@Override
-	protected void renderChilds() {
-		RenderTarget tmp = Renderer.getRenderTarget();
-		Renderer.setRenderTarget(renderTarget);
+	protected void renderChilds(int depth) {
+		RenderTarget tmp = UIRenderer.getRenderTarget();
+		UIRenderer.setRenderTarget_UNSAFE(renderTarget);
 		renderTarget.clear();
 		for (UIObject child : getVisibleChilds())
-			child.render();
-		Renderer.setRenderTarget(tmp);
-		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
+			child.render(0);
+		UIRenderer.setRenderTarget_UNSAFE(tmp);
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, renderTargetMaterial, depth);
 	}
 
 	@Override
@@ -354,8 +353,10 @@ public class UIWindow extends UICompound {
 		renderTarget.bind();
 		renderTarget.setTexture(Texture.RGBA, RenderTarget.COLOR_ATTACHMENT0, Options.RESOLUTION_X.getInt(),
 				Options.RESOLUTION_Y.getInt());
+		renderTarget.setRenderBuffer(RenderTarget.DEPTH24_STENCIL8, RenderTarget.DEPTH_STENCIL_ATTACHMENT,
+				Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt());
 		renderTarget.checkStatus();
-		renderTarget.unbind();
+		RenderTarget.unbind();
 		return renderTarget;
 	}
 

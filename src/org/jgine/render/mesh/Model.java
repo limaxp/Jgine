@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jgine.render.material.Material;
-import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMaterial;
@@ -34,11 +33,8 @@ public class Model implements SystemObject, AutoCloseable {
 			mesh.close();
 	}
 
-	public final void render(Shader shader) {
-		for (int i = 0; i < meshes.length; i++) {
-			materials[i].bind(shader);
-			meshes[i].render();
-		}
+	public boolean isClosed() {
+		return meshes[0].isClosed();
 	}
 
 	public Mesh[] setMeshes(Mesh mesh, Material material) {

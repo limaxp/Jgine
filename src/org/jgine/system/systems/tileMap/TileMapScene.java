@@ -13,6 +13,7 @@ import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.TileMap.TileMapLayer;
 import org.jgine.render.mesh.TileMap.TileMapTile;
+import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.physic.PhysicObject;
@@ -62,16 +63,17 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 
 	@Override
 	public void render() {
-		Renderer2D.setShader(Renderer.TILE_MAP_SHADER);
+		TileMapShader shader = Renderer.TILE_MAP_SHADER;
 		for (int i = 0; i < size; i++) {
 			TileMapObject object = objects[i];
-			Renderer2D.render(transforms[i].getMatrix(), object, object.getMaterial());
+			shader.setTileMapData(object.getColums(), object.getRows());
+			Renderer2D.render(transforms[i].getMatrix(), object, shader, object.getMaterial());
 		}
 	}
 
 	@Override
 	public TileMapObject load(DataInput in) throws IOException {
-		return new TileMapObject(new TileMapData(), new Material(Texture.NONE));
+		return new TileMapObject(new TileMapData(), new Material(Texture.NONE), 1, 1);
 	}
 
 	@Override

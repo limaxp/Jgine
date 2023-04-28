@@ -27,6 +27,7 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 public class UILabel extends UIObject {
 
@@ -68,10 +69,10 @@ public class UILabel extends UIObject {
 	}
 
 	@Override
-	public void render() {
-		UIRenderer.renderQuad(getTransform(), usedBackground);
+	public void render(int depth) {
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, usedBackground, depth);
 		if (text != null)
-			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial());
+			UIRenderer.render(textTransform, text.getMesh(), UIRenderer.TEXT_SHADER, text.getMaterial(), depth + 2);
 	}
 
 	@Override
@@ -111,7 +112,7 @@ public class UILabel extends UIObject {
 		Vector2i windowSize = Input.getWindow().getSize();
 		int width = (int) (windowSize.x * scale.x * windowScale.x);
 		int height = (int) (windowSize.y * scale.y * windowScale.y);
-		this.text = TextBuilder.createText(text, font, size, width, height);
+		setText(TextBuilder.createText(text, font, size, width, height));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -187,12 +188,12 @@ public class UILabel extends UIObject {
 			TrueTypeFont font = TrueTypeFont.get(in.readUTF());
 			if (font == null)
 				font = TrueTypeFont.ARIAL;
-			this.text = new TrueTypeText(font, in.readInt(), in.readUTF());
+			setText(this.text = new TrueTypeText(font, in.readInt(), in.readUTF()));
 		} else if (textType == Text.TYPE_BITMAP) {
 			BitmapFont font = BitmapFont.get(in.readUTF());
 			if (font == null)
 				font = BitmapFont.CONSOLAS;
-			this.text = new BitmapText(font, in.readInt(), in.readUTF());
+			setText(this.text = new BitmapText(font, in.readInt(), in.readUTF()));
 		}
 		textOffsetX = in.readInt();
 		textOffsetY = in.readInt();
@@ -233,6 +234,8 @@ public class UILabel extends UIObject {
 	}
 
 	public void setText(@Nullable Text text) {
+		if (this.text != null)
+			Scheduler.runTaskSynchron(this.text.getMesh()::close);
 		this.text = text;
 	}
 

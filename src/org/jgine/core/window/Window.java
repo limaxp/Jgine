@@ -595,62 +595,62 @@ public class Window {
 	/**
 	 * scanCode is platform dependent but save to save to disk!
 	 */
-	public void setKeyCallback(GLFWKeyCallbackI callback) {
+	public void setKeyCallback(@Nullable GLFWKeyCallbackI callback) {
 		glfwSetKeyCallback(id, callback);
 	}
 
 	/**
 	 * scanCode is platform dependent but save to save to disk!
 	 */
-	public void setCharCallback(GLFWCharCallbackI callback) {
+	public void setCharCallback(@Nullable GLFWCharCallbackI callback) {
 		glfwSetCharCallback(id, callback);
 	}
 
-	public void setCursorPosCallback(GLFWCursorPosCallbackI callback) {
+	public void setCursorPosCallback(@Nullable GLFWCursorPosCallbackI callback) {
 		glfwSetCursorPosCallback(id, callback);
 	}
 
-	public void setMouseButtonCallback(GLFWMouseButtonCallbackI callback) {
+	public void setMouseButtonCallback(@Nullable GLFWMouseButtonCallbackI callback) {
 		glfwSetMouseButtonCallback(id, callback);
 	}
 
-	public void setCursorEnterCallback(GLFWCursorEnterCallbackI callback) {
+	public void setCursorEnterCallback(@Nullable GLFWCursorEnterCallbackI callback) {
 		glfwSetCursorEnterCallback(id, callback);
 	}
 
-	public void setScrollCallback(GLFWScrollCallbackI callback) {
+	public void setScrollCallback(@Nullable GLFWScrollCallbackI callback) {
 		glfwSetScrollCallback(id, callback);
 	}
 
-	public void setWindowSizeCallback(GLFWWindowSizeCallbackI callback) {
+	public void setWindowSizeCallback(@Nullable GLFWWindowSizeCallbackI callback) {
 		glfwSetWindowSizeCallback(id, callback);
 	}
 
-	public void setWindowFocusCallback(GLFWWindowFocusCallbackI callback) {
+	public void setWindowFocusCallback(@Nullable GLFWWindowFocusCallbackI callback) {
 		glfwSetWindowFocusCallback(id, callback);
 	}
 
-	public void setWindowCloseCallback(GLFWWindowCloseCallbackI callback) {
+	public void setWindowCloseCallback(@Nullable GLFWWindowCloseCallbackI callback) {
 		glfwSetWindowCloseCallback(id, callback);
 	}
 
-	public void setWindowContentScaleCallback(GLFWWindowContentScaleCallbackI callback) {
+	public void setWindowContentScaleCallback(@Nullable GLFWWindowContentScaleCallbackI callback) {
 		glfwSetWindowContentScaleCallback(id, callback);
 	}
 
-	public void setWindowIconifyCallback(GLFWWindowIconifyCallbackI callback) {
+	public void setWindowIconifyCallback(@Nullable GLFWWindowIconifyCallbackI callback) {
 		glfwSetWindowIconifyCallback(id, callback);
 	}
 
-	public void setWindowMaximizeCallback(GLFWWindowMaximizeCallbackI callback) {
+	public void setWindowMaximizeCallback(@Nullable GLFWWindowMaximizeCallbackI callback) {
 		glfwSetWindowMaximizeCallback(id, callback);
 	}
 
-	public void setWindowPosCallback(GLFWWindowPosCallbackI callback) {
+	public void setWindowPosCallback(@Nullable GLFWWindowPosCallbackI callback) {
 		glfwSetWindowPosCallback(id, callback);
 	}
 
-	public void setWindowRefreshCallback(GLFWWindowRefreshCallbackI callback) {
+	public void setWindowRefreshCallback(@Nullable GLFWWindowRefreshCallbackI callback) {
 		glfwSetWindowRefreshCallback(id, callback);
 	}
 }

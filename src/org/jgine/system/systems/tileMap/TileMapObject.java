@@ -7,8 +7,8 @@ import org.jgine.utils.loader.TileMapLoader.TileMapData;
 
 public class TileMapObject extends TileMap implements SystemObject {
 
-	public TileMapObject(TileMapData data, Material material) {
-		super(data, material);
+	public TileMapObject(TileMapData data, Material material, int colums, int rows) {
+		super(data, material, colums, rows);
 	}
 
 	@SuppressWarnings("unchecked")

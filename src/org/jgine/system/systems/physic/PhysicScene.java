@@ -10,16 +10,15 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
-import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
 	static {
-		UpdateManager.addTransformPosition((entity, x, y, z) -> {
+		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
 			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
 			if (physic != null)
-				physic.setPosition(x, y, z);
+				physic.movePosition(dx, dy, dz);
 		});
 	}
 
@@ -40,8 +39,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	@Override
 	public void initObject(Entity entity, PhysicObject object) {
 		Transform transform = entity.transform;
-		Vector3f pos = transform.getPosition();
-		object.initPosition(pos);
+		object.initPosition(transform.getX(), transform.getY(), transform.getZ());
 	}
 
 	@Override
@@ -90,7 +88,8 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 				Entity entity = entities[index];
 				Transform transform = entity.transform;
 				transform.setPositionIntern(object.x, object.y, object.z);
-				UpdateManager.getPhysicPosition().accept(entity, transform.getX(), transform.getY(), transform.getZ());
+				UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),
+						transform.getY() - object.getOldY(), transform.getZ() - object.getOldZ());
 			}
 		}
 	}

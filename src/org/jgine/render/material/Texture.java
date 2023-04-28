@@ -91,7 +91,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.render.material.TextureAnimationHandler.AnimationFrame;
+import org.jgine.render.material.TextureAnimationHandler.TextureAnimation;
 import org.jgine.utils.math.FastMath;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
@@ -189,10 +189,8 @@ public class Texture implements ITexture, AutoCloseable {
 	private int target;
 	private int width;
 	private int height;
-	private int colums;
-	private int rows;
 
-	private AnimationFrame[] animation;
+	private TextureAnimation animation;
 
 	public Texture() {
 		this("");
@@ -200,8 +198,6 @@ public class Texture implements ITexture, AutoCloseable {
 
 	public Texture(String name) {
 		this.name = name;
-		colums = 1;
-		rows = 1;
 	}
 
 	@Override
@@ -324,29 +320,6 @@ public class Texture implements ITexture, AutoCloseable {
 		return target;
 	}
 
-	public final void setGrid(int colums, int rows) {
-		this.colums = colums;
-		this.rows = rows;
-	}
-
-	public final void setColums(int colums) {
-		this.colums = colums;
-	}
-
-	@Override
-	public final int getColums() {
-		return colums;
-	}
-
-	public final void setRows(int rows) {
-		this.rows = rows;
-	}
-
-	@Override
-	public final int getRows() {
-		return rows;
-	}
-
 	@Override
 	public final int getWidth() {
 		return width;
@@ -362,11 +335,11 @@ public class Texture implements ITexture, AutoCloseable {
 		return name;
 	}
 
-	public final void setAnimation(AnimationFrame[] animation) {
+	public final void setAnimation(TextureAnimation animation) {
 		this.animation = animation;
 	}
 
-	public final AnimationFrame[] getAnimation() {
+	public final TextureAnimation getAnimation() {
 		return animation;
 	}
 

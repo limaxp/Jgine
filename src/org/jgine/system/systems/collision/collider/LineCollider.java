@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
@@ -46,8 +47,8 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 	}
 
 	@Override
@@ -105,6 +106,12 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
 		Object normalData = data.get("normal");
 		if (normalData != null) {
 			Vector2f normal = YamlHelper.toVector2f(normalData);
@@ -137,6 +144,36 @@ public class LineCollider extends Collider {
 	@Override
 	public void render() {
 		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Float.MAX_VALUE, Float.MAX_VALUE),
-				new Material(), yNorm, -xNorm, -yNorm, xNorm);
+				Renderer.BASIC_SHADER, new Material(), yNorm, -xNorm, -yNorm, xNorm);
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getWidth() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getHeight() {
+		return Float.MAX_VALUE;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
 	}
 }

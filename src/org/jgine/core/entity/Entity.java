@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.collection.bitSet.IntBitSet;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
@@ -27,9 +28,15 @@ import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A container for game entity data. Stores info about id, {@link Scene},
- * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>
- * and the scene graph. This is supposed to link all together in an easy to use
- * way.
+ * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>,
+ * the scene graph and a 32 bit flag. This is supposed to link all together in
+ * an easy to use way.
+ * 
+ * <pre>
+Currently used flags:
+
+	0 - If entity is dead
+ * </pre>
  */
 public class Entity {
 
@@ -38,6 +45,8 @@ public class Entity {
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
+
+	public static final byte DEATH_FLAG = 0;
 
 	private static int generateId() {
 		int id;
@@ -59,6 +68,14 @@ public class Entity {
 		ID_MAP[index] = null;
 	}
 
+	public static boolean isUsed(int id) {
+		return ID_GENERATOR.isAlive(id);
+	}
+
+	public static boolean isFree(int id) {
+		return !ID_GENERATOR.isAlive(id);
+	}
+
 	public static boolean isLocal(int id) {
 		return IdGenerator.index(id) <= MAX_ENTITIES + 1;
 	}
@@ -74,6 +91,7 @@ public class Entity {
 	private Prefab prefab;
 	private Entity parent;
 	private List<Entity> childs;
+	public int flag;
 
 	public Entity(Scene scene) {
 		this(scene, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
@@ -133,16 +151,32 @@ public class Entity {
 		scene.removeEntity(this);
 	}
 
-	public final boolean isAlive() {
-		return ID_GENERATOR.isAlive(id);
-	}
-
 	public final boolean isLocal() {
 		return isLocal(id);
 	}
 
 	public final boolean isRemote() {
 		return isRemote(id);
+	}
+
+	public final boolean isAlive() {
+		return !getFlag(DEATH_FLAG);
+	}
+
+	public final boolean isDeath() {
+		return getFlag(DEATH_FLAG);
+	}
+
+	public final void markDeath() {
+		setFlag(DEATH_FLAG, true);
+	}
+
+	public final void setFlag(int index, boolean bit) {
+		IntBitSet.set(flag, index, bit);
+	}
+
+	public final boolean getFlag(int index) {
+		return IntBitSet.get(flag, index);
 	}
 
 	public final <T extends SystemObject> T addSystem(String name, T object) {
@@ -172,7 +206,7 @@ public class Entity {
 
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(String name, T... objects) {
-		addSystem(scene.getSystem(SystemManager.get(name)), objects);
+		addSystem(scene.getSystem(name), objects);
 	}
 
 	@SafeVarargs
@@ -182,7 +216,7 @@ public class Entity {
 
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(int id, T... objects) {
-		addSystem(scene.getSystem(SystemManager.get(id)), objects);
+		addSystem(scene.getSystem(id), objects);
 	}
 
 	@SafeVarargs
@@ -208,7 +242,7 @@ public class Entity {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(String name) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(name)));
+		return removeSystem((SystemScene<?, T>) scene.getSystem(name));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -220,7 +254,7 @@ public class Entity {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(int id) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(id)));
+		return removeSystem((SystemScene<?, T>) scene.getSystem(id));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,7 +282,7 @@ public class Entity {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T removeSystem(String name, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(SystemManager.get(name)), object);
+		return removeSystem((SystemScene<?, T>) scene.getSystem(name), object);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -285,86 +319,77 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name) {
-		return getSystem(scene.getSystem(SystemManager.get(name)), 0);
+		return getSystem(SystemManager.get(name).getId(), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz) {
-		return getSystem(scene.getSystem(clazz), 0);
+		return getSystem(SystemManager.get(clazz).getId(), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(int id) {
-		return getSystem(scene.getSystem(SystemManager.get(id)), 0);
+		return getSystem(id, 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem system) {
-		return getSystem(scene.getSystem(system), 0);
+		return getSystem(system.getId(), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
-		return getSystem(systemScene, 0);
+		return getSystem(systemScene.system.getId(), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name, int index) {
-		return getSystem(scene.getSystem(SystemManager.get(name)), index);
+		return getSystem(SystemManager.get(name).getId(), index);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz, int index) {
-		return getSystem(scene.getSystem(clazz), index);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(int id, int index) {
-		return getSystem(scene.getSystem(SystemManager.get(id)), index);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
-		return getSystem(scene.getSystem(system), index);
+		return getSystem(SystemManager.get(clazz).getId(), index);
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
+	public final <T extends SystemObject> T getSystem(int id, int index) {
+		synchronized (systems) {
+			return (T) systems.get(id, index);
+		}
+	}
+
+	@Nullable
+	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
+		return getSystem(system.getId(), index);
+	}
+
+	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
-		if (systemScene == null)
-			return null;
-		synchronized (systems) {
-			return (T) systems.get(systemScene, index);
-		}
+		return getSystem(systemScene.system.getId(), index);
 	}
 
-	@Nullable
 	public final SystemObject[] getSystems(String name) {
-		return getSystems(scene.getSystem(SystemManager.get(name)));
+		return getSystems(SystemManager.get(name).getId());
 	}
 
-	@Nullable
 	public final SystemObject[] getSystems(Class<? extends EngineSystem> clazz) {
-		return getSystems(scene.getSystem(clazz));
+		return getSystems(SystemManager.get(clazz).getId());
 	}
 
-	@Nullable
 	public final SystemObject[] getSystems(int id) {
-		return getSystems(scene.getSystem(SystemManager.get(id)));
-	}
-
-	@Nullable
-	public final SystemObject[] getSystems(EngineSystem system) {
-		return getSystems(scene.getSystem(system));
-	}
-
-	@Nullable
-	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
-		if (systemScene == null)
-			return null;
 		synchronized (systems) {
-			return systems.get(systemScene);
+			return systems.get(id);
 		}
+	}
+
+	public final SystemObject[] getSystems(EngineSystem system) {
+		return getSystems(system.getId());
+	}
+
+	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
+		return getSystems(systemScene.system.getId());
 	}
 
 	public SystemMap getSystemMap() {

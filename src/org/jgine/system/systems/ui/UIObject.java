@@ -80,7 +80,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	protected abstract void free();
 
-	public abstract void render();
+	public abstract void render(int depth);
 
 	public abstract UIObjectType<?> getType();
 

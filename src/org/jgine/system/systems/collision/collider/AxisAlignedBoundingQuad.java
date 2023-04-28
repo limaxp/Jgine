@@ -7,8 +7,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
+import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
+import org.jgine.render.mesh.BaseMesh;
+import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
@@ -23,6 +26,8 @@ import org.jgine.utils.math.Matrix;
  * height(h).
  */
 public class AxisAlignedBoundingQuad extends Collider {
+
+	public static final BaseMesh COLLIDER_MESH = MeshGenerator.quadHollow(1.0f);
 
 	public float x;
 	public float y;
@@ -46,8 +51,8 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
+		this.x += x;
+		this.y += y;
 	}
 
 	@Override
@@ -107,6 +112,12 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
 		Object widthData = data.get("width");
 		if (widthData != null)
 			w = YamlHelper.toFloat(widthData);
@@ -138,7 +149,37 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), new Material(), true,
-				new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), COLLIDER_MESH, Renderer.BASIC_SHADER,
+				new Material());
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getWidth() {
+		return w;
+	}
+
+	@Override
+	public float getHeight() {
+		return h;
+	}
+
+	@Override
+	public float getDepth() {
+		return 0.0f;
 	}
 }

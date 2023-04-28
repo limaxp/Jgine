@@ -2,6 +2,7 @@ package org.jgine.render;
 
 import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_CLEAR_VALUE;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_CW;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
@@ -9,8 +10,8 @@ import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glCullFace;
@@ -19,17 +20,21 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glFrontFace;
 import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.opengl.GL11.glGetFloatv;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
 
+import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
+import org.jgine.utils.Color;
 import org.jgine.utils.options.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -58,7 +63,7 @@ public class OpenGL {
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glEnable(GL_MULTISAMPLE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		if (Options.DEBUG)
 			GLUtil.setupDebugMessageCallback();
 	}
@@ -101,6 +106,19 @@ public class OpenGL {
 
 	public static void setClearColor(float red, float green, float blue, float alpha) {
 		glClearColor(red, green, blue, alpha);
+	}
+
+	public static void setClearColor(int color) {
+		glClearColor((float) Color.red(color) / 255, (float) Color.green(color) / 255, (float) Color.blue(color) / 255,
+				(float) Color.alpha(color) / 255);
+	}
+
+	public static int getClearColor() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = stack.mallocFloat(4);
+			glGetFloatv(GL_COLOR_CLEAR_VALUE, buffer);
+			return Color.rgba(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+		}
 	}
 
 	public static GLCapabilities getCapabilities() {

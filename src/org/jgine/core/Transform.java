@@ -75,8 +75,11 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setPosition(float x, float y, float z) {
+		float oldX = getX();
+		float oldY = getY();
+		float oldZ = getZ();
 		setPositionIntern(x, y, z);
-		UpdateManager.getTransformPosition().accept(entity, getX(), getY(), getZ());
+		UpdateManager.getTransformPosition().accept(entity, getX() - oldX, getY() - oldY, getZ() - oldZ);
 	}
 
 	public final void setPositionIntern(float x, float y, float z) {
@@ -180,8 +183,12 @@ public class Transform implements Cloneable {
 	}
 
 	public final void setScale(float x, float y, float z) {
+		float oldX = getScaleX();
+		float oldY = getScaleY();
+		float oldZ = getScaleZ();
 		setScaleIntern(x, y, z);
-		UpdateManager.getTransformScale().accept(entity, getX(), getY(), getZ());
+		UpdateManager.getTransformScale().accept(entity, 1.0f + getScaleX() - oldX, 1.0f + getScaleY() - oldY,
+				1.0f + getScaleZ() - oldZ);
 	}
 
 	public final void setScaleIntern(float x, float y, float z) {

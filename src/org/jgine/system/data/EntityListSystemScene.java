@@ -21,8 +21,9 @@ public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends 
 
 	@Override
 	public int addObject(Entity entity, T2 object) {
-		entities[size] = entity;
-		return super.addObject(entity, object);
+		int index = super.addObject(entity, object);
+		entities[index] = entity;
+		return index;
 	}
 
 	@Override

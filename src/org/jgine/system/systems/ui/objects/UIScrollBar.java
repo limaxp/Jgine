@@ -34,11 +34,12 @@ public class UIScrollBar extends UICompound {
 
 	public UIScrollBar(float thickness) {
 		setThickness(thickness);
-		background = new Material(Color.DARK_GRAY);
+		background = new Material(Color.DARKEST_GRAY);
 
 		UILabel button = new UILabel();
 		addChild(button);
-		button.set(0.0f, 0.2f, 1.0f, 0.6f);
+		button.set(0.0f, 0.2f, 1.0f, 0.5f);
+		button.getBackground().color = Color.DARK_GRAY;
 		button.setClickFunction((object, key) -> {
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(object));
 		});
@@ -67,9 +68,9 @@ public class UIScrollBar extends UICompound {
 	}
 
 	@Override
-	public void render() {
-		UIRenderer.renderQuad(getTransform(), background);
-		super.render();
+	public void render(int depth) {
+		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
+		super.render(depth);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,30 +138,47 @@ public class UIScrollBar extends UICompound {
 		if (newY > 0.95f - label.getHeight())
 			newY = 0.95f - label.getHeight();
 		label.setY(newY);
+		float yValue = (newY - 0.05f) / (0.9f - label.getHeight());
+		System.out.println(yValue);
+	}
+
+	public UILabel getScrollButton() {
+		return (UILabel) getChilds().get(0);
+	}
+
+	public UILabel getUpButton() {
+		return (UILabel) getChilds().get(1);
+	}
+
+	public UILabel getDownButton() {
+		return (UILabel) getChilds().get(2);
 	}
 
 	public static class DragTask extends Task {
 
 		private UIObject label;
+		private UIWindow window;
 		private float dragY;
 
 		public DragTask(UIObject label) {
 			this.label = label;
-			Vector2f cursorPos = Input.getCursorPos();
-			Vector2i windowSize = Input.getWindow().getSize();
-			this.dragY = 1 - cursorPos.y / windowSize.y;
+			window = label.getParent().getWindow();
+			this.dragY = calculateY();
 		}
 
 		@Override
 		public void run() {
+			float y = calculateY();
+			setLabel(label, y - dragY);
+			this.dragY = y;
+		}
+
+		protected float calculateY() {
 			Vector2f cursorPos = Input.getCursorPos();
 			Vector2i windowSize = Input.getWindow().getSize();
 			float mouseY = 1 - cursorPos.y / windowSize.y;
-			float distance = (mouseY - dragY) * (mouseY - dragY);
-			if (distance > 0.001f) {
-				setLabel(label, mouseY - dragY);
-				this.dragY = mouseY;
-			}
+			float windowY = (mouseY - window.getY()) / window.getHeight();
+			return (windowY - label.getParent().getY()) / label.getParent().getHeight();
 		}
 	}
 }

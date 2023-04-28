@@ -47,15 +47,15 @@ public class BinarySpaceTree implements SpacePartitioning {
 	}
 
 	@Override
-	public void forEach(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
+	public void forNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax,
 			Consumer<Entity> func) {
-		root.forEach(xMin, yMin, xMax, yMax, func);
+		root.forNear(xMin, yMin, xMax, yMax, func);
 	}
 
 	@Override
-	public Collection<Entity> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
+	public Collection<Entity> getNear(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		List<Entity> result = new ArrayList<Entity>();
-		root.forEach(xMin, yMin, xMax, yMax, result::add);
+		root.forNear(xMin, yMin, xMax, yMax, result::add);
 		return result;
 	}
 
@@ -150,17 +150,15 @@ public class BinarySpaceTree implements SpacePartitioning {
 			}
 		}
 
-		public void forEach(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
+		public void forNear(double xMin, double yMin, double xMax, double yMax, Consumer<Entity> func) {
 			for (Entity object : objects)
-				if (object.transform.getX() >= xMin && object.transform.getY() >= yMin
-						&& object.transform.getX() <= xMax && object.transform.getY() <= yMax)
-					func.accept(object);
+				func.accept(object);
 
 			if (hasChilds()) {
 				if (yMin <= yCenter)
-					childA.forEach(xMin, yMin, xMax, yMax, func);
+					childA.forNear(xMin, yMin, xMax, yMax, func);
 				if (yMax > yCenter)
-					childB.forEach(xMin, yMin, xMax, yMax, func);
+					childB.forNear(xMin, yMin, xMax, yMax, func);
 			}
 		}
 

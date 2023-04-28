@@ -2,6 +2,8 @@ package org.jgine.utils;
 
 import java.text.NumberFormat;
 
+import org.jgine.utils.options.Options;
+
 /**
  * Helper class for {@link String} operations.
  */
@@ -73,6 +75,10 @@ public class StringUtils {
 			res.append(c);
 		}
 		return res.toString();
+	}
+
+	public static String format(double number) {
+		return format(number, Options.NUMBER_FORMAT);
 	}
 
 	public static String format(double number, NumberFormat format) {

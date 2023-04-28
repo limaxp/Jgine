@@ -47,9 +47,9 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public void move(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x += x;
+		this.y += y;
+		this.z += z;
 	}
 
 	@Override
@@ -100,6 +100,15 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public void load(Map<String, Object> data) {
+		Object xData = data.get("x");
+		if (xData != null)
+			x = YamlHelper.toFloat(xData);
+		Object yData = data.get("y");
+		if (yData != null)
+			y = YamlHelper.toFloat(yData);
+		Object zData = data.get("z");
+		if (zData != null)
+			z = YamlHelper.toFloat(zData);
 		Object radiusData = data.get("radius");
 		if (radiusData != null)
 			r = YamlHelper.toFloat(radiusData);
@@ -133,8 +142,37 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer.enableWireframeMode();
-		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"));
-		Renderer.disableWireframeMode();
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"),
+				Renderer.BASIC_SHADER);
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
+	@Override
+	public float getZ() {
+		return z;
+	}
+
+	@Override
+	public float getWidth() {
+		return r;
+	}
+
+	@Override
+	public float getHeight() {
+		return h;
+	}
+
+	@Override
+	public float getDepth() {
+		return r;
 	}
 }

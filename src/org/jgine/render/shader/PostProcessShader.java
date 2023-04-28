@@ -10,8 +10,9 @@ import org.jgine.utils.math.Matrix;
 
 public class PostProcessShader extends Shader {
 
-	private static final int MAX_KERNELS = 4;
-	private static final float offset = 1.0f / 300.0f;
+	public static final float DEFAULT_SHAKE_STRENGTH = 0.01f;
+	public static final int MAX_KERNELS = 4;
+	public static final float offset = 1.0f / 300.0f;
 	private static final float[] OFFSETS = { -offset, offset, // top-left
 			0.0f, offset, // top-center
 			offset, offset, // top-right
@@ -29,9 +30,13 @@ public class PostProcessShader extends Shader {
 	public final int uniform_offsets = addUniform("offsets");
 	public final int uniform_kernelSize = addUniform("kernelSize");
 	public final int[] uniform_kernel = addUniforms("kernel", MAX_KERNELS);
+	public final int uniform_time = addUniform("time");
+	public final int uniform_shakeStrength = addUniform("shakeStrength");
 
 	private List<float[]> kernel;
 	private boolean changedKernel = false;
+	private float shakeTime;
+	private float shakeStrength;
 
 	public PostProcessShader(String name) {
 		super(name);
@@ -39,6 +44,13 @@ public class PostProcessShader extends Shader {
 
 		bind();
 		setUniform2f(uniform_offsets, OFFSETS);
+	}
+
+	public void update(float dt) {
+		if (shakeTime > 0)
+			shakeTime -= dt;
+		else
+			shakeStrength = 0.0f;
 	}
 
 	@Override
@@ -51,6 +63,8 @@ public class PostProcessShader extends Shader {
 			for (int i = 0; i < kernelSize; i++)
 				setUniformMatrix3f(uniform_kernel[i], kernel.get(i));
 		}
+		setUniformf(uniform_time, shakeTime);
+		setUniformf(uniform_shakeStrength, shakeStrength);
 	}
 
 	@Override
@@ -81,5 +95,14 @@ public class PostProcessShader extends Shader {
 
 	public List<float[]> getKernel() {
 		return Collections.unmodifiableList(kernel);
+	}
+
+	public void shake(float time) {
+		shake(time, DEFAULT_SHAKE_STRENGTH);
+	}
+
+	public void shake(float time, float strength) {
+		this.shakeTime = time;
+		this.shakeStrength = strength;
 	}
 }

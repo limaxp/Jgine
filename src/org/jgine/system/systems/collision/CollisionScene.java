@@ -9,7 +9,6 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.UpdateManager;
-import org.jgine.render.Renderer;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
@@ -20,23 +19,22 @@ import org.jgine.utils.scheduler.TaskHelper;
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
 	public static final int SUB_STEPS = 4;
-	private static final PhysicObject EMPTY_DUMMY = new PhysicObject();
 
 	static {
-		UpdateManager.addTransformPosition((entity, x, y, z) -> {
+		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
-				collider.move(x, y, z);
+				collider.move(dx, dy, dz);
 		});
 		UpdateManager.addTransformScale((entity, x, y, z) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
 				collider.scale(x, y, z);
 		});
-		UpdateManager.addPhysicPosition((entity, x, y, z) -> {
+		UpdateManager.addPhysicPosition((entity, dx, dy, dz) -> {
 			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
 			if (collider != null)
-				collider.move(x, y, z);
+				collider.move(dx, dy, dz);
 		});
 	}
 
@@ -65,11 +63,8 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	public void render() {
 		if (!system.showHitBox())
 			return;
-		Renderer.setShader(Renderer.BASIC_SHADER);
-		Renderer.enableDepthTest();
 		for (int i = 0; i < size; i++)
 			objects[i].render();
-		Renderer.disableDepthTest();
 	}
 
 	@Override
@@ -89,72 +84,81 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		size = index + size;
 		for (; index < size; index++) {
 			Collider object = objects[index];
-			for (int i = index + 1; i < this.size; ++i)
-				resolveCollision(index, object, i, objects[i]);
+//			for (int i = index + 1; i < this.size; ++i)
+//				resolveCollision(entities[index], object, entities[i], objects[i]);
 
-//			scene.forEntity(physic.x - 100.0f, physic.y - 100.0f, physic.z - 100.0f, physic.x + 100.0f,
-//					physic.y + 100.0f, physic.z + 100.0f, (targetEntity) -> {
-//						if (targetEntity == entity)
-//							return;
-//						Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
-//						if (targetObject != null)
-//							resolveCollision(entity, object, targetEntity, targetObject);
-//					});
+			Entity entity = entities[index];
+			scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
+					object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
+					object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {
+						if (targetEntity == entity)
+							return;
+						Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
+						if (targetObject != null)
+							resolveCollision(entity, object, targetEntity, targetObject);
+					});
 		}
 	}
 
-	private void resolveCollision(int index1, Collider collider1, int index2, Collider collider2) {
+	private void resolveCollision(Entity entity1, Collider collider1, Entity entity2, Collider collider2) {
 		CollisionData collision = collider1.resolveCollision(collider2);
 		if (collision == null)
 			return;
-		Entity entity1 = entities[index1];
-		Entity entity2 = entities[index2];
 		if (!collider1.noResolve && !collider2.noResolve) {
 			PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 			PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
-
-			if (physic1 == null) {
-				if (physic2 != null) {
-					physic1 = EMPTY_DUMMY;
-					resolve(physic1, physic2, collision);
-					collider2.move(physic2.x, physic2.y, 0);
-				}
-			} else if (physic2 == null) {
-				physic2 = EMPTY_DUMMY;
-				resolve(physic1, physic2, collision);
-				collider1.move(physic1.x, physic1.y, 0);
-			} else {
-				resolve(physic1, physic2, collision);
-				collider1.move(physic1.x, physic1.y, 0);
-				collider2.move(physic2.x, physic2.y, 0);
-			}
+			if (collision.strictResolve)
+				resolveStrict(physic1, collider1, physic2, collider2, collision);
+			else
+				resolveDefault(physic1, collider1, physic2, collider2, collision);
 		}
 		callCollisionEvent(entity1, entity2, collider1, collider2, collision);
 	}
 
-	private static void resolve(PhysicObject physic1, PhysicObject physic2, CollisionData collision) {
-		if (collision.strictResolve)
-			resolveStrict(physic1, physic2, collision);
-		else
-			resolveDefault(physic1, physic2, collision);
-	}
-
-	private static void resolveDefault(PhysicObject physic1, PhysicObject physic2, CollisionData collision) {
+	private static void resolveDefault(PhysicObject physic1, Collider collider1, PhysicObject physic2,
+			Collider collider2, CollisionData collision) {
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
-		physic1.x += physic1.stiffness * collision.overlapX * axisNormal.x;
-		physic2.x -= physic2.stiffness * collision.overlapX * axisNormal.x;
-		physic1.y += physic1.stiffness * collision.overlapY * axisNormal.y;
-		physic2.y -= physic2.stiffness * collision.overlapY * axisNormal.y;
+		if (physic1 != null) {
+			float dx = physic1.stiffness * collision.overlapX * axisNormal.x;
+			float dy = physic1.stiffness * collision.overlapY * axisNormal.y;
+			physic1.x += dx;
+			physic1.y += dy;
+			collider1.move(dx, dy, 0.0f);
+		}
+		if (physic2 != null) {
+			float dx = -physic2.stiffness * collision.overlapX * axisNormal.x;
+			float dy = -physic2.stiffness * collision.overlapY * axisNormal.y;
+			physic2.x += dx;
+			physic2.y += dy;
+			collider2.move(dx, dy, 0.0f);
+		}
 	}
 
-	private static void resolveStrict(PhysicObject physic1, PhysicObject physic2, CollisionData collision) {
+	private static void resolveStrict(PhysicObject physic1, Collider collider1, PhysicObject physic2,
+			Collider collider2, CollisionData collision) {
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
 		if (collision.overlapX < collision.overlapY) {
-			physic1.x += physic1.stiffness * collision.overlapX * axisNormal.x;
-			physic2.x -= physic2.stiffness * collision.overlapX * axisNormal.x;
+			if (physic1 != null) {
+				float dx = physic1.stiffness * collision.overlapX * axisNormal.x;
+				physic1.x += dx;
+				collider1.move(dx, 0.0f, 0.0f);
+			}
+			if (physic2 != null) {
+				float dx = -physic2.stiffness * collision.overlapX * axisNormal.x;
+				physic2.x += dx;
+				collider2.move(dx, 0.0f, 0.0f);
+			}
 		} else {
-			physic1.y += physic1.stiffness * collision.overlapY * axisNormal.y;
-			physic2.y -= physic2.stiffness * collision.overlapY * axisNormal.y;
+			if (physic1 != null) {
+				float dy = physic1.stiffness * collision.overlapY * axisNormal.y;
+				physic1.y += dy;
+				collider1.move(0.0f, dy, 0.0f);
+			}
+			if (physic2 != null) {
+				float dy = -physic2.stiffness * collision.overlapY * axisNormal.y;
+				physic2.y += dy;
+				collider2.move(0.0f, dy, 0.0f);
+			}
 		}
 	}
 
