@@ -4,7 +4,6 @@ import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.light.LightType;
-import org.jgine.system.systems.script.ScriptType;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioningType;
 
@@ -31,8 +30,6 @@ public abstract class Registry<T> implements Iterable<T> {
 	public static final Registry<LightType<?>> LIGHT_TYPES = new GenIdRegistry<LightType<?>>("light", 1000);
 
 	public static final Registry<AiGoalType<?>> AI_GOAL_TYPES = new GenIdRegistry<AiGoalType<?>>("ai_goals", 1000);
-
-	public static final Registry<ScriptType<?>> SCRIPT_TYPES = new GenIdRegistry<ScriptType<?>>("scripts", 1000);
 
 	public final String name;
 

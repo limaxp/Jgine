@@ -61,10 +61,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
 		if (scriptEngine != null)
 			return new ScriptObject((String) scriptName, scriptEngine);
-		ScriptType<?> type = ScriptTypes.get((String) scriptName);
-		if (type != null)
-			return type.get();
-		return null;
+		return ScriptObjectJava.get(scriptName);
 	}
 
 	@Override

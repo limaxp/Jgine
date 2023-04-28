@@ -1,9 +1,26 @@
 package org.jgine.system.systems.script;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.Reflection;
+import org.reflections.Reflections;
 
 public abstract class ScriptObjectJava extends IScriptObject implements IScript, Cloneable {
+
+	private static final Map<String, Supplier<ScriptObjectJava>> MAP = new HashMap<String, Supplier<ScriptObjectJava>>();
+
+	public static void register(Package pkg) {
+		String name = pkg.getName();
+		Reflections reflections = new Reflections(name.substring(0, name.indexOf('.')));
+		for (Class<?> c : reflections.getSubTypesOf(ScriptObjectJava.class)) {
+			MAP.put(c.getSimpleName(), () -> (ScriptObjectJava) Reflection.newInstance(c));
+		}
+	}
 
 	protected Entity entity;
 
@@ -38,7 +55,7 @@ public abstract class ScriptObjectJava extends IScriptObject implements IScript,
 
 	@Override
 	public String getName() {
-		return getType().name;
+		return getClass().getSimpleName();
 	}
 
 	@Override
@@ -46,7 +63,8 @@ public abstract class ScriptObjectJava extends IScriptObject implements IScript,
 		return this;
 	}
 
-	public ScriptType<?> getType() {
-		return ScriptTypes.NONE;
+	@Nullable
+	public static ScriptObjectJava get(String name) {
+		return MAP.getOrDefault(name, () -> null).get();
 	}
 }

@@ -38,6 +38,7 @@ import org.jgine.system.systems.light.LightScene;
 import org.jgine.system.systems.light.LightSystem;
 import org.jgine.system.systems.particle.ParticleSystem;
 import org.jgine.system.systems.physic.PhysicSystem;
+import org.jgine.system.systems.script.ScriptObjectJava;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
@@ -105,6 +106,7 @@ public class Engine {
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		gameLoop.setRenderFunction(this::draw);
+		ScriptObjectJava.register(getClass().getPackage());
 	}
 
 	private final void terminate() {
