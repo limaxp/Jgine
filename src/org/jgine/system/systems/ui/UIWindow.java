@@ -16,7 +16,6 @@ import org.jgine.render.RenderTarget;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
@@ -58,8 +57,8 @@ public class UIWindow extends UICompound {
 		hide = false;
 		floating = false;
 		setScale(width, height);
-		background = new Material(Color.DARK_GRAY);
-		border = new Material(Color.BLACK);
+		background = new Material(BACKGROUND_COLOR);
+		border = new Material(BORDER_COLOR);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 		renderTarget = createRenderTarget();
 		renderTargetMaterial = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));

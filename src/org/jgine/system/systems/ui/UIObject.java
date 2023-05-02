@@ -11,11 +11,16 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.script.ScriptManager;
 
 public abstract class UIObject implements SystemObject, Cloneable {
+
+	public static final int BACKGROUND_COLOR = Color.rgb(0.15f, 0.15f, 0.15f);
+	public static final int BORDER_COLOR = Color.rgb(0.3f, 0.3f, 0.3f);
+	public static final int FOCUS_COLOR = Color.rgb(0.5f, 0.5f, 0.5f);
 
 	public static final Consumer<UIObject> NULL_FUNCTION = new Consumer<UIObject>() {
 

@@ -14,7 +14,6 @@ import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
-import org.jgine.utils.Color;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.scheduler.Scheduler;
@@ -27,12 +26,12 @@ public class UISlideBar extends UICompound {
 	private float value;
 
 	public UISlideBar() {
-		background = new Material(Color.DARKEST_GRAY);
+		background = new Material(BACKGROUND_COLOR);
 
 		UILabel button = new UILabel();
 		addChild(button);
 		button.set(0.0f, 0.0f, 0.1f, 1.0f);
-		button.getBackground().color = Color.DARK_GRAY;
+		button.getBackground().color = BORDER_COLOR;
 		button.setClickFunction((object, key) -> {
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(object));
 		});

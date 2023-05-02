@@ -15,7 +15,6 @@ import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
@@ -34,12 +33,12 @@ public class UIScrollBar extends UICompound {
 
 	public UIScrollBar(float thickness) {
 		setThickness(thickness);
-		background = new Material(Color.DARKEST_GRAY);
+		background = new Material(BACKGROUND_COLOR);
 
 		UILabel button = new UILabel();
 		addChild(button);
 		button.set(0.0f, 0.2f, 1.0f, 0.5f);
-		button.getBackground().color = Color.DARK_GRAY;
+		button.getBackground().color = BORDER_COLOR;
 		button.setClickFunction((object, key) -> {
 			Scheduler.runTaskTimerAsynchron(20, dragTask = new DragTask(object));
 		});
@@ -51,11 +50,13 @@ public class UIScrollBar extends UICompound {
 		UILabel upbutton = new UILabel();
 		addChild(upbutton);
 		upbutton.set(0.0f, 0.95f, 1.0f, 0.05f);
+		upbutton.getBackground().color = BORDER_COLOR;
 		upbutton.setClickFunction((object, key) -> ((UIScrollBar) object.getParent()).scroll(5));
 
 		UILabel downbutton = new UILabel();
 		addChild(downbutton);
 		downbutton.set(0.0f, 0.0f, 1.0f, 0.05f);
+		downbutton.getBackground().color = BORDER_COLOR;
 		downbutton.setClickFunction((object, key) -> ((UIScrollBar) object.getParent()).scroll(-5));
 	}
 

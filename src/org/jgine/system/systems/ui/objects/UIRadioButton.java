@@ -12,7 +12,6 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -24,8 +23,8 @@ public class UIRadioButton extends UIObject {
 	private boolean activated;
 
 	public UIRadioButton() {
-		background = new Material(Color.GRAY);
-		button = new Material(Color.BLACK);
+		background = new Material(BORDER_COLOR);
+		button = new Material(FOCUS_COLOR);
 		buttonTransform = new Matrix();
 	}
 

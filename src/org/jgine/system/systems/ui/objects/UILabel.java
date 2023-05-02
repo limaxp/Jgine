@@ -22,7 +22,6 @@ import org.jgine.render.mesh.text.TrueTypeText;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2i;
@@ -40,8 +39,8 @@ public class UILabel extends UIObject {
 	private Matrix textTransform;
 
 	public UILabel() {
-		background = new Material(Color.DARK_GRAY);
-		backgroundFocused = new Material(Color.GRAY);
+		background = new Material(BACKGROUND_COLOR);
+		backgroundFocused = new Material(FOCUS_COLOR);
 		usedBackground = background;
 		textTransform = new Matrix();
 	}
