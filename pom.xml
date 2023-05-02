@@ -31,6 +31,35 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>org.reflections</include>
+									<include>org.slf4j</include>
+									<include>org.javassist</include>
+									<include>com.google.guava</include>
+									<include>org.yaml</include>
+									<include>com.fasterxml.jackson.core</include>
+									<include>org.apache-extras.beanshell</include>
+									<include>org.luaj</include>
+									<include>org.lwjgl</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -90,6 +119,14 @@
 			<version>2.0</version>
 		</dependency>
 
+		<!--
+		https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.15.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache-extras.beanshell/bsh -->
 		<dependency>
 			<groupId>org.apache-extras.beanshell</groupId>
@@ -104,13 +141,6 @@
 			<version>3.0.1</version>
 		</dependency>
 
-		<!--
-		https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.15.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.lwjgl</groupId>

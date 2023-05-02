@@ -28,7 +28,8 @@ public class TrueTypeFont implements Font {
 	private static final TrueTypeFont[] ID_MAP = new TrueTypeFont[MAX_SIZE];
 	private static int increment;
 
-	public static TrueTypeFont ARIAL = TrueTypeFont.load("arial", FileUtils.getResourceStream("fonts/arial/ARIAL.TTF"));
+	public static TrueTypeFont ARIAL = TrueTypeFont.load("arial",
+			FileUtils.getResourceStream("assets/font/arial/ARIAL.TTF"));
 
 	public final int id;
 	public final String name;
@@ -63,12 +64,12 @@ public class TrueTypeFont implements Font {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public float getStringHeight(int fontHeight) {
 		return (ascent - descent + lineGap) * getScaleForPixelHeight(fontHeight);
 	}
-	
+
 	@Override
 	public float getStringWidth(String text, int fontHeight) {
 		return getStringWidth(text, 0, text.length(), fontHeight);
@@ -97,7 +98,7 @@ public class TrueTypeFont implements Font {
 			return width * stbtt_ScaleForPixelHeight(info, fontHeight);
 		}
 	}
-	
+
 	public float getScaleForPixelHeight(int size) {
 		return stbtt_ScaleForPixelHeight(info, size);
 	}

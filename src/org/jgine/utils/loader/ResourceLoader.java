@@ -103,23 +103,24 @@ public abstract class ResourceLoader {
 			} else
 				loadRecources(Paths.get(uri));
 		}
+		loadPrefabs();
 	}
 
 	private void loadRecources(Path path) throws IOException {
+		String pathName = path.getFileName().toString();
 		try (Stream<Path> walk = Files.walk(path, Integer.MAX_VALUE)) {
 			for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
 				Path subPath = it.next();
 				String fileName = subPath.getFileName().toString();
 				if (fileName.contains(".")) {
-					String resourcePath = path.getFileName().toString()
-							+ subPath.toString().split(path.getFileName().toString())[1];
+					String subPathString = subPath.toString();
+					String resourcePath = subPathString.substring(subPathString.indexOf(pathName));
 					InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 					if (is != null)
 						switchExtension(fileName, resourcePath, is);
 				}
 			}
 		}
-		loadPrefabs();
 	}
 
 	private void loadPrefabs() {
