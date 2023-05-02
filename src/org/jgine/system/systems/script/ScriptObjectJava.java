@@ -3,8 +3,6 @@ package org.jgine.system.systems.script;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
