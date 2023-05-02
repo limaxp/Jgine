@@ -84,6 +84,8 @@ public class UIWindow extends UICompound {
 
 	@Override
 	public void render(int depth) {
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
 		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
@@ -250,7 +252,7 @@ public class UIWindow extends UICompound {
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
 			Script script = Script.get((String) scriptName);
-			if (scriptEngine != null)
+			if (script != null)
 				this.scriptEngine = script;
 			else
 				this.scriptEngine = ResourceManager.getScript((String) scriptName);
@@ -293,6 +295,20 @@ public class UIWindow extends UICompound {
 	@Override
 	public UIObjectType<? extends UIWindow> getType() {
 		return UIObjectTypes.WINDOW;
+	}
+
+	@Override
+	public void onEnable() {
+		super.onEnable();
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onEnable(this);
+	}
+
+	@Override
+	public void onDisable() {
+		super.onDisable();
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onDisable(this);
 	}
 
 	public void setMoveAble(boolean moveAble) {

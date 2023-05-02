@@ -63,7 +63,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 		if (scriptEngine != null)
 			object = new ScriptObject((String) scriptName, scriptEngine);
 		else
-			object = ScriptObjectJava.get(scriptName);
+			object = (EntityScript) Script.get(scriptName);
 		if (object != null)
 			object.load(in);
 		return object;

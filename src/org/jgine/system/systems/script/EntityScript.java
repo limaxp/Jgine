@@ -4,14 +4,13 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
 
-public abstract class ScriptObjectJava extends AbstractScriptObject implements IScript, Script {
+public abstract class EntityScript extends AbstractScriptObject implements IScript, Script {
 
 	protected Entity entity;
 
-	public ScriptObjectJava() {
+	public EntityScript() {
 	}
 
 	@Override
@@ -40,10 +39,5 @@ public abstract class ScriptObjectJava extends AbstractScriptObject implements I
 
 	@Override
 	public void save(DataOutput out) throws IOException {
-	}
-
-	@Nullable
-	public static ScriptObjectJava get(String name) {
-		return (ScriptObjectJava) Script.get(name);
 	}
 }
