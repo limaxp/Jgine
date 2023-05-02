@@ -96,9 +96,12 @@ public class UIList extends UICompound {
 	}
 
 	protected void setChildFunctions(UIObject child) {
-		child.setClickFunction(getClickFunction());
-		child.setReleaseFunction(getReleaseFunction());
-		child.setScrollFunction((object, scroll) -> setScroll(scroll.intValue()));
+		if (child.getClickFunction() == NULL_VALUE_FUNCTION)
+			child.setClickFunction(getClickFunction());
+		if (child.getReleaseFunction() == NULL_VALUE_FUNCTION)
+			child.setReleaseFunction(getReleaseFunction());
+		if (child.getScrollFunction() == NULL_VALUE_FUNCTION)
+			child.setScrollFunction((object, scroll) -> setScroll(scroll.intValue()));
 	}
 
 	@Override

@@ -127,7 +127,8 @@ public class UIWindow extends UICompound {
 	}
 
 	protected void setChildFunctions(UIObject child) {
-		child.setScrollFunction((object, scroll) -> addScrollY(scroll.intValue()));
+		if (child.getScrollFunction() == NULL_VALUE_FUNCTION)
+			child.setScrollFunction((object, scroll) -> addScrollY(scroll.intValue()));
 	}
 
 	@Override
