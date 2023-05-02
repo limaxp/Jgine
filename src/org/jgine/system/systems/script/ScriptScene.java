@@ -59,13 +59,19 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 	public IScriptObject load(DataInput in) throws IOException {
 		String scriptName = in.readUTF();
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
+		IScriptObject object;
 		if (scriptEngine != null)
-			return new ScriptObject((String) scriptName, scriptEngine);
-		return ScriptObjectJava.get(scriptName);
+			object = new ScriptObject((String) scriptName, scriptEngine);
+		else
+			object = ScriptObjectJava.get(scriptName);
+		if (object != null)
+			object.load(in);
+		return object;
 	}
 
 	@Override
 	public void save(IScriptObject object, DataOutput out) throws IOException {
 		out.writeUTF(object.getName());
+		object.save(out);
 	}
 }

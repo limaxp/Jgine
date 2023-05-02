@@ -1,5 +1,10 @@
 package org.jgine.system.systems.script;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -61,6 +66,14 @@ public abstract class ScriptObjectJava extends IScriptObject implements IScript,
 	@Override
 	public IScript getInterface() {
 		return this;
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
 	}
 
 	@Nullable

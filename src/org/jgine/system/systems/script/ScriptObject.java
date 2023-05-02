@@ -1,5 +1,9 @@
 package org.jgine.system.systems.script;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import javax.script.ScriptEngine;
 
 import org.jgine.core.entity.Entity;
@@ -55,5 +59,13 @@ public class ScriptObject extends IScriptObject implements Cloneable {
 	@Override
 	public IScript getInterface() {
 		return scriptInterface;
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
 	}
 }
