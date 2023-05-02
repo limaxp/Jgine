@@ -7,9 +7,25 @@ import java.io.IOException;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
 
-public abstract class IScriptObject implements SystemObject {
+public abstract class AbstractScriptObject implements SystemObject, Cloneable {
 
 	protected abstract void setEntity(Entity entity);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final <T extends SystemObject> T copy() {
+		return (T) clone();
+	}
+
+	@Override
+	public AbstractScriptObject clone() {
+		try {
+			return (AbstractScriptObject) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public abstract Entity getEntity();
 

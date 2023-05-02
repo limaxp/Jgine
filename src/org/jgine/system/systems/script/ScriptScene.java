@@ -12,10 +12,10 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.data.ListSystemScene;
 
-public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
+public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObject> {
 
 	public ScriptScene(ScriptSystem system, Scene scene) {
-		super(system, scene, IScriptObject.class);
+		super(system, scene, AbstractScriptObject.class);
 	}
 
 	@Override
@@ -23,14 +23,14 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 	}
 
 	@Override
-	public void initObject(Entity entity, IScriptObject object) {
+	public void initObject(Entity entity, AbstractScriptObject object) {
 		object.setEntity(entity);
 		object.getInterface().onEnable();
 	}
 
 	@Override
-	public IScriptObject removeObject(int index) {
-		IScriptObject object = super.removeObject(index);
+	public AbstractScriptObject removeObject(int index) {
+		AbstractScriptObject object = super.removeObject(index);
 		object.getInterface().onDisable();
 		return object;
 	}
@@ -56,10 +56,10 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 	}
 
 	@Override
-	public IScriptObject load(DataInput in) throws IOException {
+	public AbstractScriptObject load(DataInput in) throws IOException {
 		String scriptName = in.readUTF();
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
-		IScriptObject object;
+		AbstractScriptObject object;
 		if (scriptEngine != null)
 			object = new ScriptObject((String) scriptName, scriptEngine);
 		else
@@ -70,7 +70,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, IScriptObject> {
 	}
 
 	@Override
-	public void save(IScriptObject object, DataOutput out) throws IOException {
+	public void save(AbstractScriptObject object, DataOutput out) throws IOException {
 		out.writeUTF(object.getName());
 		object.save(out);
 	}

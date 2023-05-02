@@ -26,7 +26,7 @@ public class ScriptSystem extends EngineSystem {
 	}
 
 	@Override
-	public IScriptObject load(Map<String, Object> data) {
+	public AbstractScriptObject load(Map<String, Object> data) {
 		Object scriptName = data.get("script");
 		if (!(scriptName instanceof String))
 			return null;
@@ -40,13 +40,13 @@ public class ScriptSystem extends EngineSystem {
 		SystemObject[] scripts = entity.getSystems(Engine.SCRIPT_SYSTEM);
 		if (scripts != null)
 			for (int i = 0; i < scripts.length; i++)
-				func.accept(((IScriptObject) scripts[i]).getInterface(), t);
+				func.accept(((AbstractScriptObject) scripts[i]).getInterface(), t);
 	}
 
 	public static <T1, T2> void callEvent(Entity entity, T1 t1, T2 t2, TriConsumer<IScript, T1, T2> func) {
 		SystemObject[] scripts = entity.getSystems(Engine.SCRIPT_SYSTEM);
 		if (scripts != null)
 			for (int i = 0; i < scripts.length; i++)
-				func.accept(((IScriptObject) scripts[i]).getInterface(), t1, t2);
+				func.accept(((AbstractScriptObject) scripts[i]).getInterface(), t1, t2);
 	}
 }
