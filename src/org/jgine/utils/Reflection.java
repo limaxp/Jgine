@@ -223,6 +223,22 @@ public class Reflection implements Iterable<Class<?>> {
 		return method;
 	}
 
+	public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		try {
+			return getDeclaredMethod_(clazz, name, parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+			Logger.err("Reflection: Error on reflecting method '" + name + "' for class '" + clazz.getName() + "'", e);
+			return null;
+		}
+	}
+
+	public static Method getDeclaredMethod_(Class<?> clazz, String name, Class<?>... parameterTypes)
+			throws NoSuchMethodException, SecurityException {
+		Method method = clazz.getDeclaredMethod(name, parameterTypes);
+		method.setAccessible(true);
+		return method;
+	}
+
 	public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes) {
 		try {
 			return getConstructor_(clazz, parameterTypes);
