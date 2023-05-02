@@ -178,10 +178,7 @@ public class RenderTarget implements AutoCloseable {
 		for (int i = 0; i < attachments.length; i++) {
 			if (attachments[i] == null)
 				continue;
-			Attachment attachment = attachments[i];
-			attachment.close();
-			if (attachment instanceof Texture)
-				((Texture) attachment).close();
+			attachments[i].close();
 			attachments[i] = null;
 		}
 		glDeleteFramebuffers(fbo);
