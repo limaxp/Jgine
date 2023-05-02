@@ -136,7 +136,7 @@ public class ResourceManager {
 	private static final Map<Object, ResourceData> DATA_MAP = new HashMap<Object, ResourceData>();
 
 	static {
-		loadResource("engine_assets");
+		loadResource("assets");
 	}
 
 	public static void terminate() {

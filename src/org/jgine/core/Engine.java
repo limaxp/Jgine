@@ -100,13 +100,13 @@ public class Engine {
 		window.setWindowPosCallback((id, x, y) -> gameLoop.run());
 		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
+		SoundManager.init();
+		ScriptObjectJava.register(getClass().getPackage());
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
-		SoundManager.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		gameLoop.setRenderFunction(this::draw);
-		ScriptObjectJava.register(getClass().getPackage());
 	}
 
 	private final void terminate() {

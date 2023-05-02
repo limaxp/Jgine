@@ -55,7 +55,7 @@ public class Input {
 				unregisterJoystick(slot);
 		});
 
-		updateGamepadMapping(Input.class.getResourceAsStream("gamecontrollerdb.txt"));
+		updateGamepadMapping(FileUtils.getResourceStream("assets/gamecontrollerdb.txt"));
 	}
 
 	public static void updateGamepadMapping(InputStream stream) {
