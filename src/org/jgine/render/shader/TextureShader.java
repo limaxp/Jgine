@@ -1,5 +1,6 @@
 package org.jgine.render.shader;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Material;
 import org.jgine.utils.math.Matrix;
 
@@ -10,8 +11,8 @@ public class TextureShader extends Shader {
 	public final int uniform_textureOffsets = addUniform("textureOffsets");
 	public final int uniform_baseColor = addUniform("baseColor");
 
-	public TextureShader(String name) {
-		super(name);
+	public TextureShader(@Nullable String vertex, @Nullable String geometry, @Nullable String fragment) {
+		super(vertex, geometry, fragment);
 	}
 
 	@Override

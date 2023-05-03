@@ -3,6 +3,7 @@ package org.jgine.render;
 import java.util.List;
 
 import org.jgine.core.Transform;
+import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
@@ -16,7 +17,6 @@ import org.jgine.render.mesh.TileMap.TileMapLayer;
 import org.jgine.render.mesh.particle.BillboardParticle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.BillboardParticleShader;
-import org.jgine.render.shader.ComputeShader;
 import org.jgine.render.shader.Phong2dShader;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.render.shader.PostProcessShader;
@@ -46,7 +46,6 @@ public class Renderer {
 	public static final BillboardParticleShader PARTICLE_SHADER;
 	public static final TileMapShader TILE_MAP_SHADER;
 	public static final PostProcessShader POST_PROCESS_SHADER;
-	public static final ComputeShader BASIC_COMPUTE_SHADER;
 
 	protected static final RenderTarget POST_PROCESS_TARGET;
 	protected static final BaseMesh QUAD_MESH;
@@ -58,15 +57,22 @@ public class Renderer {
 	static {
 		OpenGL.init();
 
-		BASIC_SHADER = new BasicShader("Basic");
-		TEXTURE_SHADER = new TextureShader("Texture");
-		TEXT_SHADER = new TextShader("Text");
-		PHONG_SHADER = new PhongShader("Phong");
-		PHONG_2D_SHADER = new Phong2dShader("Phong2d");
-		PARTICLE_SHADER = new BillboardParticleShader("BillboardParticle");
-		TILE_MAP_SHADER = new TileMapShader("TileMap");
-		POST_PROCESS_SHADER = new PostProcessShader("PostProcess");
-		BASIC_COMPUTE_SHADER = new ComputeShader("BasicCompute");
+		BASIC_SHADER = new BasicShader(ResourceManager.getShader("BasicVertex"), null,
+				ResourceManager.getShader("BasicFragment"));
+		TEXTURE_SHADER = new TextureShader(ResourceManager.getShader("TextureVertex"), null,
+				ResourceManager.getShader("TextureFragment"));
+		TEXT_SHADER = new TextShader(ResourceManager.getShader("TextVertex"), null,
+				ResourceManager.getShader("TextFragment"));
+		PHONG_SHADER = new PhongShader(ResourceManager.getShader("PhongVertex"), null,
+				ResourceManager.getShader("PhongFragment"));
+		PHONG_2D_SHADER = new Phong2dShader(ResourceManager.getShader("Phong2dVertex"), null,
+				ResourceManager.getShader("Phong2dFragment"));
+		PARTICLE_SHADER = new BillboardParticleShader(ResourceManager.getShader("BillboardParticleVertex"), null,
+				ResourceManager.getShader("BillboardParticleFragment"));
+		TILE_MAP_SHADER = new TileMapShader(ResourceManager.getShader("TileMapVertex"), null,
+				ResourceManager.getShader("TileMapFragment"));
+		POST_PROCESS_SHADER = new PostProcessShader(ResourceManager.getShader("PostProcessVertex"), null,
+				ResourceManager.getShader("PostProcessFragment"));
 
 		POST_PROCESS_TARGET = new RenderTarget();
 		POST_PROCESS_TARGET.bind();

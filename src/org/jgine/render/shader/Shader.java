@@ -46,13 +46,12 @@ import static org.lwjgl.opengl.GL30.glUniform3ui;
 import static org.lwjgl.opengl.GL30.glUniform3uiv;
 import static org.lwjgl.opengl.GL30.glUniform4ui;
 import static org.lwjgl.opengl.GL30.glUniform4uiv;
-import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
+import static org.lwjgl.opengl.GL32.*;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.material.Material;
 import org.jgine.utils.Color;
 import org.jgine.utils.logger.Logger;
@@ -66,9 +65,16 @@ import org.jgine.utils.math.vector.Vector4f;
 import org.jgine.utils.math.vector.Vector4i;
 import org.lwjgl.system.MemoryStack;
 
-public abstract class Shader {
+public class Shader {
 
-	public static final Shader NULL = new Shader(0) {
+	public static final int VERTEX_SHADER = GL_VERTEX_SHADER;
+	public static final int GEOMETRY_SHADER = GL_GEOMETRY_SHADER;
+	public static final int FRAGMENT_SHADER = GL_FRAGMENT_SHADER;
+
+	public static final int INTERLEAVED_ATTRIBS = GL_INTERLEAVED_ATTRIBS;
+	public static final int SEPARATE_ATTRIBS = GL_SEPARATE_ATTRIBS;
+
+	public static final Shader NULL = new Shader() {
 
 		@Override
 		public void setTransform(Matrix matrix, Matrix projectionMatrix) {
@@ -81,39 +87,31 @@ public abstract class Shader {
 
 	protected final int program;
 
-	public Shader(int id) {
-		program = id;
+	public Shader(int program) {
+		this.program = program;
 	}
 
-	public Shader(String name) {
-		this(name + "Vertex", name + "Geometry", name + "Fragment");
-	}
-
-	public Shader(String vertex, String geometry, String fragment) {
-		this(glCreateProgram());
+	public Shader() {
+		program = glCreateProgram();
 		if (program == 0) {
 			Logger.err("Shader: Creation failed!");
 			return;
 		}
+	}
 
-		int vertexShader = compileShader(GL_VERTEX_SHADER, ResourceManager.getShader(vertex));
-		int geometryShader = compileShader(GL_GEOMETRY_SHADER, ResourceManager.getShader(geometry));
-		int fragmentShader = compileShader(GL_FRAGMENT_SHADER, ResourceManager.getShader(fragment));
-		linkShader();
-		glDeleteShader(vertexShader);
-		glDeleteShader(geometryShader);
-		glDeleteShader(fragmentShader);
+	public Shader(@Nullable String vertex, @Nullable String geometry, @Nullable String fragment) {
+		this();
+		compile(VERTEX_SHADER, vertex);
+		compile(GEOMETRY_SHADER, geometry);
+		compile(FRAGMENT_SHADER, fragment);
+		link();
 	}
 
 	public final void delete() {
 		glDeleteProgram(program);
 	}
 
-	public abstract void setTransform(Matrix matrix, Matrix projectionMatrix);
-
-	public abstract void setMaterial(Material material);
-
-	protected final int compileShader(int type, @Nullable String text) {
+	public final int compile(int type, @Nullable String text) {
 		if (text == null)
 			return 0;
 
@@ -129,10 +127,11 @@ public abstract class Shader {
 			return 0;
 		}
 		glAttachShader(program, shader);
+		glDeleteShader(shader);
 		return shader;
 	}
 
-	protected final void linkShader() {
+	public final void link() {
 		glLinkProgram(program);
 		if (glGetProgrami(program, GL_LINK_STATUS) == 0) {
 			Logger.err(glGetProgramInfoLog(program, 1024));
@@ -151,6 +150,20 @@ public abstract class Shader {
 
 	public void unbind() {
 		glUseProgram(0);
+	}
+
+	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
+	}
+
+	public void setMaterial(Material material) {
+	}
+
+	public final void setTransformFeedback(int mode, String value) {
+		glTransformFeedbackVaryings(program, value, mode);
+	}
+
+	public final void setTransformFeedback(int mode, String... values) {
+		glTransformFeedbackVaryings(program, values, mode);
 	}
 
 	public final int addUniform(String uniform) {
