@@ -12,7 +12,6 @@ import org.jgine.render.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -28,8 +27,8 @@ public class UIBar extends UIObject {
 	private byte barType;
 
 	public UIBar() {
-		background = new Material(Color.DARK_GRAY);
-		bar = new Material(Color.RED);
+		background = new Material(BORDER_COLOR);
+		bar = new Material(FOCUS_COLOR);
 		filled = 1.0f;
 		barTransform = new Matrix();
 		barType = TYPE_NORMAL;

@@ -11,11 +11,17 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
+import org.jgine.system.systems.script.Script;
+import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.script.ScriptManager;
 
 public abstract class UIObject implements SystemObject, Cloneable {
+
+	public static final int BACKGROUND_COLOR = Color.rgb(0.15f, 0.15f, 0.15f);
+	public static final int BORDER_COLOR = Color.rgb(0.3f, 0.3f, 0.3f);
+	public static final int FOCUS_COLOR = Color.rgb(0.5f, 0.5f, 0.5f);
 
 	public static final Consumer<UIObject> NULL_FUNCTION = new Consumer<UIObject>() {
 
@@ -142,13 +148,13 @@ public abstract class UIObject implements SystemObject, Cloneable {
 			defocusFunction = new ScriptFunction(YamlHelper.toString(defocusFunctionData));
 		Object clickFunctionData = data.get("onClick");
 		if (clickFunctionData != null)
-			clickFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(clickFunctionData));
+			clickFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(clickFunctionData), int.class);
 		Object releaseFunctionData = data.get("onRelease");
 		if (releaseFunctionData != null)
-			releaseFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(releaseFunctionData));
+			releaseFunction = new ScriptValueFunction<Integer>(YamlHelper.toString(releaseFunctionData), int.class);
 		Object scrollFunctionData = data.get("onScroll");
 		if (scrollFunctionData != null)
-			scrollFunction = new ScriptValueFunction<Float>(YamlHelper.toString(scrollFunctionData));
+			scrollFunction = new ScriptValueFunction<Float>(YamlHelper.toString(scrollFunctionData), float.class);
 		calculateTransform();
 	}
 
@@ -161,9 +167,9 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		disableFunction = loadFunction(in);
 		focusFunction = loadFunction(in);
 		defocusFunction = loadFunction(in);
-		clickFunction = loadValueFunction(in);
-		releaseFunction = loadValueFunction(in);
-		scrollFunction = loadValueFunction(in);
+		clickFunction = loadValueFunction(in, int.class);
+		releaseFunction = loadValueFunction(in, int.class);
+		scrollFunction = loadValueFunction(in, float.class);
 		calculateTransform();
 	}
 
@@ -175,11 +181,11 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> BiConsumer<UIObject, T> loadValueFunction(DataInput in) throws IOException {
+	private static <T> BiConsumer<UIObject, T> loadValueFunction(DataInput in, Class<?> clazz) throws IOException {
 		String funcName = in.readUTF();
 		if (funcName.isEmpty())
 			return NULL_VALUE_FUNCTION;
-		return new ScriptValueFunction<T>(funcName);
+		return new ScriptValueFunction<T>(funcName, clazz);
 	}
 
 	public void save(DataOutput out) throws IOException {
@@ -305,7 +311,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		return isFocused;
 	}
 
-	protected ScriptEngine getScriptEngine() {
+	protected Object getScriptEngine() {
 		return parent.getScriptEngine();
 	}
 
@@ -398,7 +404,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	public void setClickFunction(String clickFunction) {
-		this.clickFunction = new ScriptValueFunction<Integer>(clickFunction);
+		this.clickFunction = new ScriptValueFunction<Integer>(clickFunction, int.class);
 	}
 
 	public void setClickFunction(BiConsumer<UIObject, Integer> clickFunction) {
@@ -419,7 +425,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	public void setReleaseFunction(String releaseFunction) {
-		this.releaseFunction = new ScriptValueFunction<Integer>(releaseFunction);
+		this.releaseFunction = new ScriptValueFunction<Integer>(releaseFunction, int.class);
 	}
 
 	public void setReleaseFunction(BiConsumer<UIObject, Integer> releaseFunction) {
@@ -440,7 +446,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	}
 
 	public void setScrollFunction(String scrollFunction) {
-		this.scrollFunction = new ScriptValueFunction<Float>(scrollFunction);
+		this.scrollFunction = new ScriptValueFunction<Float>(scrollFunction, float.class);
 	}
 
 	public void setScrollFunction(BiConsumer<UIObject, Float> scrollFunction) {
@@ -454,7 +460,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	public static class ScriptFunction implements Consumer<UIObject> {
 
-		public String functionName;
+		protected String functionName;
 
 		public ScriptFunction(String functionName) {
 			this.functionName = functionName;
@@ -462,19 +468,30 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 		@Override
 		public void accept(UIObject object) {
-			ScriptManager.invoke(object.getScriptEngine(), functionName, object);
+			Object scriptEngine = object.getScriptEngine();
+			if (scriptEngine instanceof Script)
+				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, object);
+			else
+				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object);
 		}
 	}
 
 	public static class ScriptValueFunction<E> extends ScriptFunction implements BiConsumer<UIObject, E> {
 
-		public ScriptValueFunction(String functionName) {
+		protected Class<?> clazz;
+
+		public ScriptValueFunction(String functionName, Class<?> clazz) {
 			super(functionName);
+			this.clazz = clazz;
 		}
 
 		@Override
 		public void accept(UIObject object, E value) {
-			ScriptManager.invoke(object.getScriptEngine(), functionName, object, value);
+			Object scriptEngine = object.getScriptEngine();
+			if (scriptEngine instanceof Script)
+				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, clazz, object, value);
+			else
+				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object, value);
 		}
 	}
 }

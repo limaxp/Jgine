@@ -16,7 +16,7 @@ import org.jgine.render.RenderTarget;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
-import org.jgine.utils.Color;
+import org.jgine.system.systems.script.Script;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
@@ -33,7 +33,7 @@ public class UIWindow extends UICompound {
 	private boolean floating;
 	private Material background;
 	private Material border;
-	ScriptEngine scriptEngine;
+	private Object scriptEngine;
 	private RenderTarget renderTarget;
 	private Material renderTargetMaterial;
 
@@ -58,8 +58,8 @@ public class UIWindow extends UICompound {
 		hide = false;
 		floating = false;
 		setScale(width, height);
-		background = new Material(Color.DARK_GRAY);
-		border = new Material(Color.BLACK);
+		background = new Material(BACKGROUND_COLOR);
+		border = new Material(BORDER_COLOR);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 		renderTarget = createRenderTarget();
 		renderTargetMaterial = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
@@ -84,6 +84,8 @@ public class UIWindow extends UICompound {
 
 	@Override
 	public void render(int depth) {
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
 		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
@@ -127,7 +129,8 @@ public class UIWindow extends UICompound {
 	}
 
 	protected void setChildFunctions(UIObject child) {
-		child.setScrollFunction((object, scroll) -> addScrollY(scroll.intValue()));
+		if (child.getScrollFunction() == NULL_VALUE_FUNCTION)
+			child.setScrollFunction((object, scroll) -> addScrollY(scroll.intValue()));
 	}
 
 	@Override
@@ -248,9 +251,11 @@ public class UIWindow extends UICompound {
 
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
-			ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
-			if (scriptEngine != null)
-				this.scriptEngine = scriptEngine;
+			Script script = Script.get((String) scriptName);
+			if (script != null)
+				this.scriptEngine = script;
+			else
+				this.scriptEngine = ResourceManager.getScript((String) scriptName);
 		}
 	}
 
@@ -262,9 +267,12 @@ public class UIWindow extends UICompound {
 		floating = in.readBoolean();
 		background.load(in);
 		border.load(in);
-		ScriptEngine loadedScript = ResourceManager.getScript(in.readUTF());
-		if (loadedScript != null)
-			scriptEngine = loadedScript;
+		String scriptName = in.readUTF();
+		Script script = Script.get(scriptName);
+		if (script != null)
+			scriptEngine = script;
+		else
+			scriptEngine = ResourceManager.getScript(scriptName);
 	}
 
 	@Override
@@ -275,12 +283,32 @@ public class UIWindow extends UICompound {
 		out.writeBoolean(floating);
 		background.save(out);
 		border.save(out);
-		out.writeUTF(ResourceManager.getScriptName(scriptEngine));
+		if (scriptEngine != null) {
+			if (scriptEngine instanceof Script)
+				out.writeUTF(scriptEngine.getClass().getSimpleName());
+			else
+				out.writeUTF(ResourceManager.getScriptName((ScriptEngine) scriptEngine));
+		} else
+			out.writeUTF("");
 	}
 
 	@Override
 	public UIObjectType<? extends UIWindow> getType() {
 		return UIObjectTypes.WINDOW;
+	}
+
+	@Override
+	public void onEnable() {
+		super.onEnable();
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onEnable(this);
+	}
+
+	@Override
+	public void onDisable() {
+		super.onDisable();
+		if (this.scriptEngine instanceof UIScript)
+			((UIScript) this.scriptEngine).onDisable(this);
 	}
 
 	public void setMoveAble(boolean moveAble) {
@@ -339,12 +367,16 @@ public class UIWindow extends UICompound {
 		return scene;
 	}
 
-	public void setScriptEngine(ScriptEngine scriptEngine) {
-		this.scriptEngine = scriptEngine;
+	public void setScript(ScriptEngine script) {
+		this.scriptEngine = script;
+	}
+
+	public void setScript(Script script) {
+		this.scriptEngine = script;
 	}
 
 	@Override
-	public ScriptEngine getScriptEngine() {
+	public Object getScriptEngine() {
 		return scriptEngine;
 	}
 

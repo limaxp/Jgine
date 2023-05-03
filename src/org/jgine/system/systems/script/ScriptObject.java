@@ -1,12 +1,15 @@
 package org.jgine.system.systems.script;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import javax.script.ScriptEngine;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.system.SystemObject;
 import org.jgine.utils.script.ScriptManager;
 
-public class ScriptObject extends IScriptObject implements Cloneable {
+public class ScriptObject extends AbstractScriptObject {
 
 	public final String name;
 	protected ScriptEngine engine;
@@ -19,22 +22,6 @@ public class ScriptObject extends IScriptObject implements Cloneable {
 	public ScriptObject(String name, ScriptEngine engine) {
 		this.name = name;
 		this.engine = engine;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
-	@Override
-	public ScriptObject clone() {
-		try {
-			return (ScriptObject) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	@Override
@@ -55,5 +42,13 @@ public class ScriptObject extends IScriptObject implements Cloneable {
 	@Override
 	public IScript getInterface() {
 		return scriptInterface;
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
 	}
 }

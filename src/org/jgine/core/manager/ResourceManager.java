@@ -222,6 +222,10 @@ public class ResourceManager {
 		return MODEL_MAP.get(name);
 	}
 
+	public static Model getModelOrDefault(String name, Model defaultValue) {
+		return MODEL_MAP.getOrDefault(name, defaultValue);
+	}
+
 	public static Collection<Model> getModels() {
 		return MODEL_MAP.values();
 	}
@@ -229,6 +233,10 @@ public class ResourceManager {
 	@Nullable
 	public static Texture getTexture(String name) {
 		return TEXTURE_MAP.get(name);
+	}
+
+	public static Texture getTextureOrDefault(String name, Texture defaultValue) {
+		return TEXTURE_MAP.getOrDefault(name, defaultValue);
 	}
 
 	@Nullable
@@ -253,6 +261,10 @@ public class ResourceManager {
 		return SHADER_MAP.get(name);
 	}
 
+	public static String getShaderOrDefault(String name, String defaultValue) {
+		return SHADER_MAP.getOrDefault(name, defaultValue);
+	}
+
 	public static Collection<String> getShaders() {
 		return SHADER_MAP.values();
 	}
@@ -262,6 +274,10 @@ public class ResourceManager {
 		return SOUND_MAP.get(name);
 	}
 
+	public static SoundBuffer getSoundOrDefault(String name, SoundBuffer defaultValue) {
+		return SOUND_MAP.getOrDefault(name, defaultValue);
+	}
+
 	public static Collection<SoundBuffer> getSounds() {
 		return SOUND_MAP.values();
 	}
@@ -269,6 +285,10 @@ public class ResourceManager {
 	@Nullable
 	public static ScriptEngine getScript(String name) {
 		return SCRIPT_MAP.get(name);
+	}
+
+	public static ScriptEngine getScriptOrDefault(String name, ScriptEngine defaultValue) {
+		return SCRIPT_MAP.getOrDefault(name, defaultValue);
 	}
 
 	@Nullable

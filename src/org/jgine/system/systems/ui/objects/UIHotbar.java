@@ -14,7 +14,6 @@ import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
 import org.jgine.system.systems.ui.UIWindow.DragTask;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.scheduler.Scheduler;
 
@@ -30,7 +29,7 @@ public class UIHotbar extends UIGrid {
 
 	public UIHotbar(float thickness) {
 		setThickness(thickness);
-		background = new Material(Color.DARK_GRAY);
+		background = new Material(BACKGROUND_COLOR);
 	}
 
 	@Override

@@ -38,7 +38,7 @@ import org.jgine.system.systems.light.LightScene;
 import org.jgine.system.systems.light.LightSystem;
 import org.jgine.system.systems.particle.ParticleSystem;
 import org.jgine.system.systems.physic.PhysicSystem;
-import org.jgine.system.systems.script.ScriptObjectJava;
+import org.jgine.system.systems.script.Script;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
@@ -101,7 +101,7 @@ public class Engine {
 		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
 		SoundManager.init();
-		ScriptObjectJava.register(getClass().getPackage());
+		Script.register(getClass().getPackage());
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
 		gameLoop = createGameLoop();
