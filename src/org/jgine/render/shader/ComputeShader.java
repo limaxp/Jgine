@@ -18,6 +18,7 @@ import static org.lwjgl.opengl.GL43.GL_COMPUTE_SHADER;
 import static org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BARRIER_BIT;
 import static org.lwjgl.opengl.GL43.glDispatchCompute;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Material;
 import org.jgine.utils.math.Matrix;
 
@@ -42,7 +43,15 @@ public class ComputeShader extends Shader {
 	public static final int SHADER_STORAGE_BARRIER_BIT = GL_SHADER_STORAGE_BARRIER_BIT;
 	public static final int ALL_BARRIER_BITS = GL_ALL_BARRIER_BITS;
 
-	public ComputeShader(String compute) {
+	public ComputeShader(int program) {
+		super(program);
+	}
+
+	public ComputeShader() {
+		super();
+	}
+
+	public ComputeShader(@Nullable String compute) {
 		super();
 		compile(COMPUTE_SHADER, compute);
 		link();

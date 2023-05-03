@@ -74,7 +74,7 @@ public class Shader {
 	public static final int INTERLEAVED_ATTRIBS = GL_INTERLEAVED_ATTRIBS;
 	public static final int SEPARATE_ATTRIBS = GL_SEPARATE_ATTRIBS;
 
-	public static final Shader NULL = new Shader() {
+	public static final Shader NULL = new Shader(0) {
 
 		@Override
 		public void setTransform(Matrix matrix, Matrix projectionMatrix) {
