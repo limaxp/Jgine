@@ -33,7 +33,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 		frustumCulling.applyCamera(Renderer.getCamera(), 0);
 
 		for (int i = 0; i < size; i++) {

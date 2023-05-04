@@ -62,7 +62,7 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 		TileMapShader shader = Renderer.TILE_MAP_SHADER;
 		for (int i = 0; i < size; i++) {
 			TileMapObject object = objects[i];

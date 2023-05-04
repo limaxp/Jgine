@@ -31,7 +31,7 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

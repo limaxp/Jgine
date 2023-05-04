@@ -42,7 +42,7 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

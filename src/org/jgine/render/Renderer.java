@@ -105,6 +105,7 @@ public class Renderer {
 
 	public static void update(float dt) {
 		RenderQueue.clear();
+		PARTICLE_CALC_SHADER.update(dt);
 		POST_PROCESS_SHADER.update(dt);
 	}
 

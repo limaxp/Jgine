@@ -38,7 +38,7 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

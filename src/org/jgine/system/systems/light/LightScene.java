@@ -61,7 +61,7 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

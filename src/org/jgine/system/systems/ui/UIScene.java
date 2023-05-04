@@ -154,7 +154,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 		for (int i = 0; i < size; i++)
 			objects[i].render(i * 3);
 	}
