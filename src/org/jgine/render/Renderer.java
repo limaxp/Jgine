@@ -14,9 +14,9 @@ import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
 import org.jgine.render.mesh.TileMap.TileMapLayer;
-import org.jgine.render.mesh.particle.BillboardParticle;
+import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.BasicShader;
-import org.jgine.render.shader.BillboardParticleShader;
+import org.jgine.render.shader.ParticleCalcShader;
 import org.jgine.render.shader.Phong2dShader;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.render.shader.PostProcessShader;
@@ -43,7 +43,9 @@ public class Renderer {
 	public static final TextShader TEXT_SHADER;
 	public static final PhongShader PHONG_SHADER;
 	public static final Phong2dShader PHONG_2D_SHADER;
-	public static final BillboardParticleShader PARTICLE_SHADER;
+	public static final TextureShader BILLBOARD_SHADER;
+	public static final ParticleCalcShader PARTICLE_CALC_SHADER;
+	public static final TextureShader PARTICLE_DRAW_SHADER;
 	public static final TileMapShader TILE_MAP_SHADER;
 	public static final PostProcessShader POST_PROCESS_SHADER;
 
@@ -67,8 +69,12 @@ public class Renderer {
 				ResourceManager.getShader("PhongFragment"));
 		PHONG_2D_SHADER = new Phong2dShader(ResourceManager.getShader("Phong2dVertex"), null,
 				ResourceManager.getShader("Phong2dFragment"));
-		PARTICLE_SHADER = new BillboardParticleShader(ResourceManager.getShader("BillboardParticleVertex"), null,
-				ResourceManager.getShader("BillboardParticleFragment"));
+		BILLBOARD_SHADER = new TextureShader(ResourceManager.getShader("BillboardVertex"), null,
+				ResourceManager.getShader("BillboardFragment"));
+		PARTICLE_CALC_SHADER = new ParticleCalcShader(ResourceManager.getShader("ParticleCalcVertex"),
+				ResourceManager.getShader("ParticleCalcGeometry"), null);
+		PARTICLE_DRAW_SHADER = new TextureShader(ResourceManager.getShader("ParticleDrawVertex"),
+				ResourceManager.getShader("ParticleDrawGeometry"), ResourceManager.getShader("ParticleDrawFragment"));
 		TILE_MAP_SHADER = new TileMapShader(ResourceManager.getShader("TileMapVertex"), null,
 				ResourceManager.getShader("TileMapFragment"));
 		POST_PROCESS_SHADER = new PostProcessShader(ResourceManager.getShader("PostProcessVertex"), null,
@@ -174,9 +180,9 @@ public class Renderer {
 		}
 	}
 
-	public static void render(Matrix transform, BillboardParticle particle, Shader shader, Material material) {
-		RenderQueue.renderInstanced(particle.getVao(), particle.mode, particle.getSize(), 0, transform,
-				camera.getMatrix(), material, renderTarget, shader, particle.getInstanceSize());
+	public static void render(Matrix transform, Particle particle, Shader shader, Material material) {
+		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
+				material, renderTarget, shader);
 	}
 
 	public static void renderQuad(Matrix transform, Shader shader, Material material) {

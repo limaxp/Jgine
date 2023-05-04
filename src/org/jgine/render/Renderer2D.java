@@ -7,6 +7,7 @@ import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
 import org.jgine.render.mesh.TileMap.TileMapLayer;
+import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.math.Matrix;
 
@@ -55,6 +56,15 @@ public class Renderer2D extends Renderer {
 			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
 					material, renderTarget, shader, amount, depth);
 		}
+	}
+
+	public static void render(Matrix transform, Particle particle, Shader shader, Material material) {
+		render(transform, particle, shader, material, transform.m13 / DEPTH_DIVISOR);
+	}
+
+	public static void render(Matrix transform, Particle particle, Shader shader, Material material, float depth) {
+		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
+				material, renderTarget, shader, depth);
 	}
 
 	public static void renderQuad(Matrix transform, Shader shader, Material material) {

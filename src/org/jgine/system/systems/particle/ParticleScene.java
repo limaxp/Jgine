@@ -5,12 +5,12 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.TransformListSystemScene;
-import org.jgine.utils.scheduler.TaskHelper;
+import org.jgine.system.data.ListSystemScene;
 
-public class ParticleScene extends TransformListSystemScene<ParticleSystem, ParticleObject> {
+public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObject> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
 		super(system, scene, ParticleObject.class);
@@ -24,6 +24,7 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 
 	@Override
 	public void initObject(Entity entity, ParticleObject object) {
+		object.transform = entity.transform;
 	}
 
 	@Override
@@ -35,24 +36,17 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 
 	@Override
 	public void update(float dt) {
-		TaskHelper.execute(size, this::updateParticle);
-	}
-
-	private void updateParticle(int index, int size) {
-		size = index + size;
-		for (; index < size; index++) {
-			ParticleObject object = objects[index];
-			if (object.isActive())
-				object.update();
-		}
 	}
 
 	@Override
 	public void render() {
+		Renderer.PARTICLE_CALC_SHADER.bind();
+		for (int i = 0; i < size; i++)
+			objects[i].update(objects[i].transform);
+
 		for (int i = 0; i < size; i++) {
 			ParticleObject object = objects[i];
-			if (object.isActive())
-				Renderer.render(transforms[i].getMatrix(), object, Renderer.PARTICLE_SHADER, object.material);
+			Renderer.render(object.transform.getMatrix(), object, Renderer.PARTICLE_DRAW_SHADER, object.material);
 		}
 	}
 
@@ -64,5 +58,15 @@ public class ParticleScene extends TransformListSystemScene<ParticleSystem, Part
 
 	@Override
 	public void save(ParticleObject object, DataOutput out) throws IOException {
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return getTransform(index).getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return objects[index].transform;
 	}
 }

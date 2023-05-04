@@ -1,16 +1,14 @@
 package org.jgine.system.systems.particle;
 
+import org.jgine.core.Transform;
 import org.jgine.render.material.Material;
-import org.jgine.render.mesh.particle.BillboardParticle;
+import org.jgine.render.mesh.particle.Particle;
 import org.jgine.system.SystemObject;
 
-public class ParticleObject extends BillboardParticle implements SystemObject {
+public class ParticleObject extends Particle implements SystemObject {
 
+	Transform transform;
 	protected Material material;
-	protected boolean isActive = true;
-
-	public void update() {
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -28,10 +26,6 @@ public class ParticleObject extends BillboardParticle implements SystemObject {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public boolean isActive() {
-		return isActive;
 	}
 
 	public Material setMaterial(Material material) {
