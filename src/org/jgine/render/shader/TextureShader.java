@@ -25,6 +25,6 @@ public class TextureShader extends Shader {
 		setUniformi(uniform_uTexture, 0);
 		setUniform4f(uniform_textureOffsets, material.getTextureX(), material.getTextureY(), material.getTextureWidth(),
 				material.getTextureHeight());
-		setUniformColor(uniform_baseColor, material.color);
+		setUniformRGBA(uniform_baseColor, material.color);
 	}
 }

@@ -376,9 +376,17 @@ public class Shader {
 		glUniform4fv(uniform, buffer);
 	}
 
-	public final void setUniformColor(int uniform, int color) {
+	public final void setUniformRGB(int uniform, int color) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer buffer = Color.toFloatBuffer(stack.mallocFloat(4), color);
+			FloatBuffer buffer = Color.toRGBBuffer(stack.mallocFloat(3), color);
+			buffer.flip();
+			glUniform3fv(uniform, buffer);
+		}
+	}
+
+	public final void setUniformRGBA(int uniform, int color) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = Color.toRGBABuffer(stack.mallocFloat(4), color);
 			buffer.flip();
 			glUniform4fv(uniform, buffer);
 		}

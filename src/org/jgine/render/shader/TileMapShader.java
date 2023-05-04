@@ -38,7 +38,7 @@ public class TileMapShader extends Shader {
 	@Override
 	public void setMaterial(Material material) {
 		setUniformi(uniform_uTexture, 0);
-		setUniformColor(uniform_color, material.color);
+		setUniformRGBA(uniform_color, material.color);
 	}
 
 	public void setTileMapData(int colums, int rows) {
