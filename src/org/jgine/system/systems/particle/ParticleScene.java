@@ -39,10 +39,13 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 		Renderer.PARTICLE_CALC_SHADER.bind();
-		for (int i = 0; i < size; i++)
-			objects[i].update(objects[i].transform);
+		for (int i = 0; i < size; i++) {
+			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);
+			objects[i].update();
+		}
+		Renderer.PARTICLE_CALC_SHADER.unbind();
 
 		for (int i = 0; i < size; i++) {
 			ParticleObject object = objects[i];
@@ -53,11 +56,13 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 	@Override
 	public ParticleObject load(DataInput in) throws IOException {
 		ParticleObject object = new ParticleObject();
+		object.load(in);
 		return object;
 	}
 
 	@Override
 	public void save(ParticleObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override

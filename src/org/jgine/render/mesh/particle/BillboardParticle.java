@@ -82,7 +82,7 @@ public class BillboardParticle extends BaseMesh {
 				buffer.put((float) vec3f[i + 1]);
 				buffer.put((float) vec3f[i + 2]);
 				buffer.put(size);
-				Color.toFloatBuffer(buffer, color);
+				Color.toRGBABuffer(buffer, color);
 			}
 			buffer.flip();
 			setData(buffer);
@@ -101,7 +101,7 @@ public class BillboardParticle extends BaseMesh {
 			buffer.put(y);
 			buffer.put(z);
 			buffer.put(size);
-			Color.toFloatBuffer(buffer, color);
+			Color.toRGBABuffer(buffer, color);
 			buffer.flip();
 			glBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
 		}

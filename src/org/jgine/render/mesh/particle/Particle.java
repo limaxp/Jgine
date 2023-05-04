@@ -32,21 +32,19 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.nio.FloatBuffer;
 
-import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
+import org.jgine.utils.Color;
 import org.lwjgl.system.MemoryStack;
 
-public class Particle {
+public class Particle implements AutoCloseable {
 
 	public static final int MAX_SIZE = 10000;
-	public static final int DATA_SIZE = 4; // x,y,z,type
+	public static final int DATA_SIZE = 12; // pos(x,y,z),vel(x,y,z),color(r,g,b),lifeTime,size,type
 
 	protected int[] vao;
 	protected int[] vbo;
-	protected int query;
 	protected int currentReadBuffer;
+	protected int query;
 	protected int instanceSize;
-	protected int numToGenerate;
 
 	public Particle() {
 		vao = new int[2];
@@ -62,12 +60,21 @@ public class Particle {
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 0 * Float.BYTES);
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 1, GL_INT, false, DATA_SIZE * Float.BYTES, 3 * Float.BYTES);
+			glVertexAttribPointer(1, 3, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 3 * Float.BYTES);
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 3, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 6 * Float.BYTES);
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 1, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 9 * Float.BYTES);
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 1, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 10 * Float.BYTES);
+			glEnableVertexAttribArray(5);
+			glVertexAttribPointer(5, 1, GL_INT, false, DATA_SIZE * Float.BYTES, 11 * Float.BYTES);
 		}
 		glBindVertexArray(0);
 		instanceSize = 1;
 	}
 
+	@Override
 	public void close() {
 		for (int i = 0; i < 2; i++) {
 			glDeleteVertexArrays(vao[i]);
@@ -77,9 +84,7 @@ public class Particle {
 		}
 	}
 
-	public void update(Transform transform) {
-		Renderer.PARTICLE_CALC_SHADER.setParticle(transform, this);
-
+	public void update() {
 		glEnable(GL_RASTERIZER_DISCARD);
 		glBindVertexArray(vao[currentReadBuffer]);
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, vbo[1 - currentReadBuffer]);
@@ -92,14 +97,11 @@ public class Particle {
 		glDisable(GL_RASTERIZER_DISCARD);
 
 		instanceSize = glGetQueryObjectui(query, GL_QUERY_RESULT);
-//		System.out.println("instances: " + instanceSize);
 		currentReadBuffer = 1 - currentReadBuffer;
-
-//		getData();
 	}
 
 	public final float[] getData() {
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[currentReadBuffer]);
+		glBindBuffer(GL_ARRAY_BUFFER, getVbo());
 		float[] result = new float[instanceSize * DATA_SIZE];
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer buffer = stack.mallocFloat(instanceSize * DATA_SIZE);
@@ -107,9 +109,37 @@ public class Particle {
 			int i = 0;
 			while (buffer.hasRemaining()) {
 				result[i++] = buffer.get();
-				System.out.println(result[i - 1]);
 			}
 			return result;
+		}
+	}
+
+	public final FloatBuffer getData(FloatBuffer target) {
+		return getData(0, target);
+	}
+
+	public final FloatBuffer getData(int index, FloatBuffer target) {
+		glBindBuffer(GL_ARRAY_BUFFER, getVbo());
+		glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, target);
+		return target;
+	}
+
+	public final ParticleData getData(int index) {
+		glBindBuffer(GL_ARRAY_BUFFER, getVbo());
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
+			glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
+			ParticleData data = new ParticleData();
+			data.x = buffer.get();
+			data.y = buffer.get();
+			data.z = buffer.get();
+			data.xVel = buffer.get();
+			data.yVel = buffer.get();
+			data.zVel = buffer.get();
+			data.color = Color.rgb(buffer.get(), buffer.get(), buffer.get());
+			data.lifeTime = buffer.get();
+			data.size = buffer.get();
+			return data;
 		}
 	}
 
@@ -121,16 +151,24 @@ public class Particle {
 		return vbo[currentReadBuffer];
 	}
 
+	public int getQuery() {
+		return query;
+	}
+
 	public int getInstanceSize() {
 		return instanceSize;
 	}
 
-	public void setNumToGenerate(int numToGenerate) {
-		this.numToGenerate = numToGenerate;
-	}
+	public static class ParticleData {
 
-	public int getNumToGenerate() {
-		return numToGenerate;
+		public float x;
+		public float y;
+		public float z;
+		public float xVel;
+		public float yVel;
+		public float zVel;
+		public int color;
+		public float lifeTime;
+		public float size;
 	}
-
 }
