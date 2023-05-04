@@ -3,6 +3,7 @@ package org.jgine.render.shader;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
 import org.jgine.render.material.Material;
 import org.jgine.utils.math.FastMath;
@@ -38,8 +39,8 @@ public class PostProcessShader extends Shader {
 	private float shakeTime;
 	private float shakeStrength;
 
-	public PostProcessShader(String name) {
-		super(name);
+	public PostProcessShader(@Nullable String vertex, @Nullable String geometry, @Nullable String fragment) {
+		super(vertex, geometry, fragment);
 		kernel = new UnorderedArrayList<float[]>(MAX_KERNELS);
 
 		bind();
@@ -75,7 +76,7 @@ public class PostProcessShader extends Shader {
 	@Override
 	public void setMaterial(Material material) {
 		setUniformi(uniform_uTexture, 0);
-		setUniformColor(uniform_baseColor, material.color);
+		setUniformRGBA(uniform_baseColor, material.color);
 	}
 
 	public void addKernel(float[] kernel) {

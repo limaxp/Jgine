@@ -6,7 +6,7 @@ import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
 public class ParticleSystem extends EngineSystem {
-	
+
 	public ParticleSystem() {
 		super("particle");
 	}
@@ -19,6 +19,7 @@ public class ParticleSystem extends EngineSystem {
 	@Override
 	public ParticleObject load(Map<String, Object> data) {
 		ParticleObject object = new ParticleObject();
+		object.load(data);
 		return object;
 	}
 }

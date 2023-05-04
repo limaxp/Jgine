@@ -106,10 +106,7 @@ public class TileMap implements AutoCloseable {
 
 	public class TileMapLayer extends BaseMesh {
 
-		public static final int TILE_POS_SIZE = 2;
-		public static final int TILE_TEXT_SIZE = 2;
-		public static final int TILE_DATA_SIZE = 2; // rot, flipX
-		public static final int TILE_SIZE = TILE_POS_SIZE + TILE_TEXT_SIZE + TILE_DATA_SIZE;
+		public static final int DATA_SIZE = 6; // x,y,textX,textY,rot,flipX
 
 		protected int databo;
 
@@ -126,13 +123,13 @@ public class TileMap implements AutoCloseable {
 			glBindBuffer(GL_ARRAY_BUFFER, databo);
 			glBufferData(GL_ARRAY_BUFFER, buildFloatBuffer(layerData.tiles), GL_STATIC_DRAW);
 			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, TILE_POS_SIZE, GL_FLOAT, false, TILE_SIZE * Float.BYTES, 0 * Float.BYTES);
+			glVertexAttribPointer(2, 2, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 0 * Float.BYTES);
 			glVertexAttribDivisor(2, 1);
 			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, TILE_TEXT_SIZE, GL_FLOAT, false, TILE_SIZE * Float.BYTES, 2 * Float.BYTES);
+			glVertexAttribPointer(3, 2, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 2 * Float.BYTES);
 			glVertexAttribDivisor(3, 1);
 			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, TILE_DATA_SIZE, GL_FLOAT, false, TILE_SIZE * Float.BYTES, 4 * Float.BYTES);
+			glVertexAttribPointer(4, 2, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 4 * Float.BYTES);
 			glVertexAttribDivisor(4, 1);
 			glBindVertexArray(0);
 		}
@@ -145,7 +142,7 @@ public class TileMap implements AutoCloseable {
 		}
 
 		public final FloatBuffer buildFloatBuffer(TileMapTile[] tiles) {
-			FloatBuffer buffer = BufferUtils.createFloatBuffer(tiles.length * TILE_SIZE);
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(tiles.length * DATA_SIZE);
 			for (TileMapTile tile : tiles) {
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
@@ -161,7 +158,7 @@ public class TileMap implements AutoCloseable {
 		public final void setTile(int index, TileMapTile tile) {
 			glBindBuffer(GL_ARRAY_BUFFER, databo);
 			try (MemoryStack stack = MemoryStack.stackPush()) {
-				FloatBuffer buffer = stack.mallocFloat(TILE_SIZE);
+				FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
 				buffer.put(tile.tile % colums);
@@ -169,15 +166,15 @@ public class TileMap implements AutoCloseable {
 				buffer.put(tile.rotation);
 				buffer.put(tile.flipX == true ? 1.0f : 0.0f);
 				buffer.flip();
-				glBufferSubData(GL_ARRAY_BUFFER, index * TILE_SIZE * Float.BYTES, buffer);
+				glBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
 			}
 		}
 
 		public final TileMapTile getTile(int index) {
 			glBindBuffer(GL_ARRAY_BUFFER, databo);
 			try (MemoryStack stack = MemoryStack.stackPush()) {
-				FloatBuffer buffer = stack.mallocFloat(TILE_SIZE);
-				glGetBufferSubData(GL_ARRAY_BUFFER, index * TILE_SIZE * Float.BYTES, buffer);
+				FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
+				glGetBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
 				TileMapTile data = new TileMapTile();
 				data.x = (int) buffer.get() / tilewidth;
 				data.y = (int) buffer.get() / tileheight;

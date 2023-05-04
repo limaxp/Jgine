@@ -181,7 +181,7 @@ public class Engine {
 		Renderer.update(dt);
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
-				renderScene(scene);
+				renderScene(scene, dt);
 		onRender();
 	}
 
@@ -190,7 +190,7 @@ public class Engine {
 		window.swapBuffers();
 	}
 
-	private final void renderScene(Scene scene) {
+	private final void renderScene(Scene scene, float dt) {
 		LightScene lightScene = scene.getSystem(LIGHT_SYSTEM);
 		if (lightScene != null)
 			Renderer.setLights(lightScene);
@@ -199,12 +199,12 @@ public class Engine {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
 				Renderer.setCamera_UNSAFE(camera);
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
-					systemScene.render();
+					systemScene.render(dt);
 			}
 		} else {
 			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
 				Renderer.setCamera_UNSAFE(camera);
-				new SceneRender(scene, scene.getRenderOrder()).start();
+				new SceneRender(scene, scene.getRenderOrder(), dt).start();
 			}
 		}
 	}
@@ -294,12 +294,10 @@ public class Engine {
 
 		protected int updatedSize;
 		protected final CompletionService<Object> completionService;
-		protected final float dt;
 
 		public SceneUpdate(Scene scene, UpdateOrder updateOrder, float dt) {
-			super(scene, updateOrder);
+			super(scene, updateOrder, dt);
 			completionService = new ExecutorCompletionService<Object>(TaskExecutor.getExecutor());
-			this.dt = dt;
 		}
 
 		@Override
@@ -342,10 +340,12 @@ public class Engine {
 		protected final Scene scene;
 		protected final UpdateOrder updateOrder;
 		protected final BitSet updated;
+		protected final float dt;
 
-		public SceneRender(Scene scene, UpdateOrder updateOrder) {
+		public SceneRender(Scene scene, UpdateOrder updateOrder, float dt) {
 			this.scene = scene;
 			this.updateOrder = updateOrder;
+			this.dt = dt;
 			updated = new BitSet(SystemManager.getSize());
 		}
 
@@ -356,7 +356,7 @@ public class Engine {
 		}
 
 		protected void update(int system) {
-			scene.getSystem(system).render();
+			scene.getSystem(system).render(dt);
 			updated.set(system, true);
 			checkUpdates(system);
 		}

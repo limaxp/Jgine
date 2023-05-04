@@ -60,7 +60,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 		if (!system.showHitBox())
 			return;
 		for (int i = 0; i < size; i++)

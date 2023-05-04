@@ -39,7 +39,7 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

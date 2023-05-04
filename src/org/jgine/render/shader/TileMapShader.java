@@ -2,6 +2,7 @@ package org.jgine.render.shader;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
 import org.jgine.utils.Color;
@@ -24,8 +25,8 @@ public class TileMapShader extends Shader {
 			new String[] { "base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos",
 					"range" });
 
-	public TileMapShader(String name) {
-		super(name);
+	public TileMapShader(@Nullable String vertex, @Nullable String geometry, @Nullable String fragment) {
+		super(vertex, geometry, fragment);
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class TileMapShader extends Shader {
 	@Override
 	public void setMaterial(Material material) {
 		setUniformi(uniform_uTexture, 0);
-		setUniformColor(uniform_color, material.color);
+		setUniformRGBA(uniform_color, material.color);
 	}
 
 	public void setTileMapData(int colums, int rows) {

@@ -43,7 +43,7 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract void update(float dt);
 
-	public abstract void render();
+	public abstract void render(float dt);
 
 	public abstract T2 load(DataInput in) throws IOException;
 

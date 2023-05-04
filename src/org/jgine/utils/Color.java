@@ -103,8 +103,15 @@ public class Color {
 		return new Vector4f((float) red(color) / 255, (float) green(color) / 255, (float) blue(color) / 255,
 				(float) alpha(color) / 255);
 	}
+	
+	public static FloatBuffer toRGBBuffer(FloatBuffer buffer, int color) {
+		buffer.put((float) red(color) / 255);
+		buffer.put((float) green(color) / 255);
+		buffer.put((float) blue(color) / 255);
+		return buffer;
+	}
 
-	public static FloatBuffer toFloatBuffer(FloatBuffer buffer, int color) {
+	public static FloatBuffer toRGBABuffer(FloatBuffer buffer, int color) {
 		buffer.put((float) red(color) / 255);
 		buffer.put((float) green(color) / 255);
 		buffer.put((float) blue(color) / 255);

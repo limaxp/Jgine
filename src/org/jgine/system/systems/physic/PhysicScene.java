@@ -49,7 +49,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	}
 
 	@Override
-	public void render() {
+	public void render(float dt) {
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.jgine.render.shader;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
@@ -27,8 +28,8 @@ public class PhongShader extends TextureShader {
 	protected final int uniforms_pointLights[][] = addUniforms("pointLights", MAX_POINT_LIGHTS, new String[] {
 			"base.color", "base.intensity", "atten.constant", "atten.linear", "atten.exponent", "pos", "range" });
 
-	public PhongShader(String name) {
-		super(name);
+	public PhongShader(@Nullable String vertex, @Nullable String geometry, @Nullable String fragment) {
+		super(vertex, geometry, fragment);
 	}
 
 	@Override

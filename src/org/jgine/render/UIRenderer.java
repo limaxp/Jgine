@@ -7,7 +7,7 @@ import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMap;
 import org.jgine.render.mesh.TileMap.TileMapLayer;
-import org.jgine.render.mesh.particle.BillboardParticle;
+import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.math.Matrix;
 
@@ -46,10 +46,9 @@ public class UIRenderer extends Renderer {
 		}
 	}
 
-	public static void render(Matrix transform, BillboardParticle particle, Shader shader, Material material,
-			int depth) {
-		RenderQueue.renderInstanced(particle.getVao(), particle.mode, particle.getSize(), 0, transform, UI_MATRIX,
-				material, renderTarget, shader, particle.getInstanceSize(), calculateDepth(depth));
+	public static void render(Matrix transform, Particle particle, Shader shader, Material material, int depth) {
+		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, UI_MATRIX,
+				material, renderTarget, shader, calculateDepth(depth));
 	}
 
 	public static void renderQuad(Matrix transform, Shader shader, Material material, int depth) {

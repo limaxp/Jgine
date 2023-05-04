@@ -18,12 +18,13 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import java.nio.FloatBuffer;
 
 import org.jgine.render.mesh.BaseMesh;
+import org.jgine.utils.Color;
 import org.lwjgl.system.MemoryStack;
 
 public class BillboardParticle extends BaseMesh {
 
 	public static final int MAX_SIZE = 10000;
-	public static final int DATA_SIZE = 4; // x,y,z,size
+	public static final int DATA_SIZE = 8; // x,y,z,size,r,g,b,a
 
 	protected int databo;
 	protected int instanceSize;
@@ -38,8 +39,11 @@ public class BillboardParticle extends BaseMesh {
 		glBindBuffer(GL_ARRAY_BUFFER, databo);
 		glBufferData(GL_ARRAY_BUFFER, MAX_SIZE * DATA_SIZE * Float.BYTES, GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, DATA_SIZE, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 0 * Float.BYTES);
+		glVertexAttribPointer(2, 4, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 0 * Float.BYTES);
 		glVertexAttribDivisor(2, 1);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, false, DATA_SIZE * Float.BYTES, 4 * Float.BYTES);
+		glVertexAttribDivisor(3, 1);
 		glBindVertexArray(0);
 	}
 
@@ -70,7 +74,7 @@ public class BillboardParticle extends BaseMesh {
 		return target;
 	}
 
-	public final void setData(double[] vec3f, float size) {
+	public final void setData(double[] vec3f, float size, int color) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer buffer = stack.mallocFloat(vec3f.length / 3 * DATA_SIZE);
 			for (int i = 0; i < vec3f.length; i += 3) {
@@ -78,6 +82,7 @@ public class BillboardParticle extends BaseMesh {
 				buffer.put((float) vec3f[i + 1]);
 				buffer.put((float) vec3f[i + 2]);
 				buffer.put(size);
+				Color.toRGBABuffer(buffer, color);
 			}
 			buffer.flip();
 			setData(buffer);
@@ -85,10 +90,10 @@ public class BillboardParticle extends BaseMesh {
 	}
 
 	public final void setData(int index, ParticleData data) {
-		setData(index, data.x, data.y, data.z, data.size);
+		setData(index, data.x, data.y, data.z, data.size, data.color);
 	}
 
-	public final void setData(int index, float x, float y, float z, float size) {
+	public final void setData(int index, float x, float y, float z, float size, int color) {
 		glBindBuffer(GL_ARRAY_BUFFER, databo);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
@@ -96,6 +101,7 @@ public class BillboardParticle extends BaseMesh {
 			buffer.put(y);
 			buffer.put(z);
 			buffer.put(size);
+			Color.toRGBABuffer(buffer, color);
 			buffer.flip();
 			glBufferSubData(GL_ARRAY_BUFFER, index * DATA_SIZE * Float.BYTES, buffer);
 		}
@@ -111,6 +117,7 @@ public class BillboardParticle extends BaseMesh {
 			data.y = buffer.get();
 			data.z = buffer.get();
 			data.size = buffer.get();
+			data.color = Color.rgba(buffer.get(), buffer.get(), buffer.get(), buffer.get());
 			return data;
 		}
 	}
@@ -125,5 +132,6 @@ public class BillboardParticle extends BaseMesh {
 		public float y;
 		public float z;
 		public float size;
+		public int color;
 	}
 }
