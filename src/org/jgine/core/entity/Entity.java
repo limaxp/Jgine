@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.bitSet.IntBitSet;
@@ -390,6 +391,28 @@ public class Entity {
 
 	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
 		return getSystems(systemScene.system.getId());
+	}
+
+	public final <T extends SystemObject> void forSystems(String name, Consumer<T> func) {
+		forSystems(SystemManager.get(name).getId(), func);
+	}
+
+	public final <T extends SystemObject> void forSystems(Class<? extends EngineSystem> clazz, Consumer<T> func) {
+		forSystems(SystemManager.get(clazz).getId(), func);
+	}
+
+	public final <T extends SystemObject> void forSystems(int id, Consumer<T> func) {
+		synchronized (systems) {
+			systems.forEach(id, func);
+		}
+	}
+
+	public final <T extends SystemObject> void forSystems(EngineSystem system, Consumer<T> func) {
+		forSystems(system.getId(), func);
+	}
+
+	public final <T extends SystemObject> void forSystems(SystemScene<?, ?> systemScene, Consumer<T> func) {
+		forSystems(systemScene.system.getId(), func);
 	}
 
 	public SystemMap getSystemMap() {

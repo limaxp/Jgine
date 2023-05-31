@@ -22,19 +22,13 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	static {
 		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
-			if (collider != null)
-				collider.move(dx, dy, dz);
+			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.move(dx, dy, dz));
 		});
 		UpdateManager.addTransformScale((entity, x, y, z) -> {
-			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
-			if (collider != null)
-				collider.scale(x, y, z);
+			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.scale(x, y, z));
 		});
 		UpdateManager.addPhysicPosition((entity, dx, dy, dz) -> {
-			Collider collider = entity.getSystem(Engine.COLLISION_SYSTEM);
-			if (collider != null)
-				collider.move(dx, dy, dz);
+			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.move(dx, dy, dz));
 		});
 	}
 

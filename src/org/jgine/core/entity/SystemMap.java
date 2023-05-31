@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
@@ -151,6 +152,23 @@ public class SystemMap {
 		for (; index < end; index++)
 			result[i++] = objects[index];
 		return result;
+	}
+
+	public <T extends SystemObject> void forEach(EngineSystem system, Consumer<T> func) {
+		forEach(system.getId(), func);
+	}
+
+	public <T extends SystemObject> void forEach(SystemScene<?, ?> systemScene, Consumer<T> func) {
+		forEach(systemScene.system.getId(), func);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends SystemObject> void forEach(int id, Consumer<T> func) {
+		int systemSize = size(id);
+		int index = id * OBJECTS_SIZE + 1;
+		int end = index + systemSize;
+		for (; index < end; index++)
+			func.accept((T) objects[index]);
 	}
 
 	@Nullable
