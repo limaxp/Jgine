@@ -172,7 +172,7 @@ public class Texture implements ITexture, AutoCloseable {
 	public static final Texture NONE;
 
 	static {
-		NONE = new Texture("none");
+		NONE = new Texture();
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			ByteBuffer buffer = stack.malloc(4);
 			buffer.put((byte) 255);
