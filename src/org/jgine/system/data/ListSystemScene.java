@@ -56,6 +56,10 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 		return objects[index];
 	}
 
+	@Override
+	public void relink(int index, Entity entity) {
+	}
+
 	protected void ensureCapacity(int minCapacity) {
 		int length = objects.length;
 		if (minCapacity > length)

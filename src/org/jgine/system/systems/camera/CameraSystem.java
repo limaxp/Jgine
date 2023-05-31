@@ -40,12 +40,9 @@ public class CameraSystem extends EngineSystem {
 		return camera;
 	}
 
-	protected void addCamera(Camera camera) {
+	protected void registerCamera(Camera camera) {
 		if (mainCamera == null)
 			mainCamera = camera;
-	}
-
-	protected void removeCamera(Camera camera) {
 	}
 
 	public Camera getMainCamera() {

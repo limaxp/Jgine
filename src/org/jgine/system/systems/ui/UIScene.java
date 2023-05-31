@@ -170,15 +170,21 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public UIWindow load(DataInput in) throws IOException {
-		UIWindow object = new UIWindow();
-		object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			UIWindow object = new UIWindow();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(UIWindow object, DataOutput out) throws IOException {
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			objects[i].save(out);
 	}
 
 	private int getTopWindowIndex(UIWindow object) {

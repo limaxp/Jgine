@@ -55,6 +55,11 @@ public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
+	public void relink(int index, Entity entity) {
+		entities[index] = entity;
+	}
+
+	@Override
 	protected void resize(int size) {
 		super.resize(size);
 		Entity[] newArray2 = new Entity[size];

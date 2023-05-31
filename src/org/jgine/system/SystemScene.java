@@ -45,13 +45,15 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract void render(float dt);
 
-	public abstract T2 load(DataInput in) throws IOException;
+	public abstract void load(DataInput in) throws IOException;
 
-	public abstract void save(T2 object, DataOutput out) throws IOException;
+	public abstract void save(DataOutput out) throws IOException;
+
+	public abstract void relink(int index, Entity entity);
 
 	@SuppressWarnings("unchecked")
-	public void save_(SystemObject object, DataOutput out) throws IOException {
-		save((T2) object, out);
+	public final void initObject_(Entity entity, SystemObject object) {
+		initObject(entity, (T2) object);
 	}
 
 	@Override

@@ -34,16 +34,11 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 
 	@Override
 	public void initObject(Entity entity, Light object) {
-		object.setEntity(entity);
-	}
-
-	@Override
-	public int addObject(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			pointLights.add((PointLight) object);
 		if (object instanceof DirectionalLight)
 			directionalLight = (DirectionalLight) object;
-		return super.addObject(entity, object);
+		object.setEntity(entity);
 	}
 
 	@Override
@@ -65,16 +60,24 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public Light load(DataInput in) throws IOException {
-		Light object = LightTypes.get(in.readInt()).get();
-		object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			Light object = LightTypes.get(in.readInt()).get();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(Light object, DataOutput out) throws IOException {
-		out.writeInt(object.getType().getId());
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++) {
+			Light object = objects[i];
+			out.writeInt(object.getType().getId());
+			object.save(out);
+		}
 	}
 
 	public void setAmbientLight(int ambientLight) {

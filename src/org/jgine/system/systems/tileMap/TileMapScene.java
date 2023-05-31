@@ -9,15 +9,12 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
-import org.jgine.render.material.Material;
-import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.TileMap.TileMapLayer;
 import org.jgine.render.mesh.TileMap.TileMapTile;
 import org.jgine.render.shader.TileMapShader;
 import org.jgine.system.data.TransformListSystemScene;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.physic.PhysicObject;
-import org.jgine.utils.loader.TileMapLoader.TileMapData;
 
 public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMapObject> {
 
@@ -72,11 +69,10 @@ public class TileMapScene extends TransformListSystemScene<TileMapSystem, TileMa
 	}
 
 	@Override
-	public TileMapObject load(DataInput in) throws IOException {
-		return new TileMapObject(new TileMapData(), new Material(Texture.NONE), 1, 1);
+	public void load(DataInput in) throws IOException {
 	}
 
 	@Override
-	public void save(TileMapObject object, DataOutput out) throws IOException {
+	public void save(DataOutput out) throws IOException {
 	}
 }

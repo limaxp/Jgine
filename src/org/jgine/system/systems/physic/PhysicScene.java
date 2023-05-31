@@ -53,15 +53,21 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	}
 
 	@Override
-	public PhysicObject load(DataInput in) throws IOException {
-		PhysicObject object = new PhysicObject();
-		object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			PhysicObject object = new PhysicObject();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(PhysicObject object, DataOutput out) throws IOException {
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			objects[i].save(out);
 	}
 
 	public void setGravity(float gravity) {

@@ -548,19 +548,19 @@ public class Entity {
 		return prefab.getTag(ids);
 	}
 
-	@SuppressWarnings("unchecked")
+	public final String getName() {
+		if (prefab == null)
+			return "unnamed";
+		return prefab.name;
+	}
+
 	public void load(DataInput in) throws IOException {
 		int prefabId = in.readInt();
 		if (prefabId != -1)
 			prefab = Prefab.get(prefabId);
+		flag = in.readInt();
 		transform.load(in);
-
-		int systemSize = in.readInt();
-		for (int i = 0; i < systemSize; i++) {
-			@SuppressWarnings("rawtypes")
-			SystemScene systemScene = scene.getSystem(in.readInt());
-			addSystem(systemScene, systemScene.load(in));
-		}
+		systems.load(in, this);
 
 		int childSize = in.readInt();
 		for (int i = 0; i < childSize; i++) {
@@ -575,18 +575,9 @@ public class Entity {
 			out.writeInt(prefab.id);
 		else
 			out.writeInt(-1);
+		out.writeInt(flag);
 		transform.save(out);
-
-		synchronized (systems) {
-			out.writeInt(systems.size());
-			Iterator<Entry<SystemScene<?, ?>, SystemObject>> entryIterator = getSystemEntryIterator();
-			while (entryIterator.hasNext()) {
-				Entry<SystemScene<?, ?>, SystemObject> entry = entryIterator.next();
-				SystemScene<?, ?> systemScene = entry.getKey();
-				out.writeInt(systemScene.system.getId());
-				systemScene.save_(entry.getValue(), out);
-			}
-		}
+		systems.save(out);
 
 		out.writeInt(childs.size());
 		for (Entity child : childs)

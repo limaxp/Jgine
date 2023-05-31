@@ -1,5 +1,8 @@
 package org.jgine.core.entity;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -264,6 +267,41 @@ public class SystemMap {
 
 	public Iterator<Entry<SystemScene<?, ?>, Integer>> getIdEntryIterator(Scene scene) {
 		return new IdEntryIterator(scene);
+	}
+
+	public void load(DataInput in, Entity entity) throws IOException {
+		Scene scene = entity.scene;
+		this.size = in.readInt();
+		int systemSize = in.readInt();
+		for (int id = 0; id < systemSize; id++) {
+			SystemScene<?, ?> systemScene = scene.getSystem(id);
+			int size = in.readInt();
+			setSize(id, size);
+			int index = id * OBJECTS_SIZE + 1;
+			int end = index + size;
+			for (; index < end; index++) {
+				int i = in.readInt();
+				SystemObject o = systemScene.getObject(i);
+				ids[index] = i;
+				objects[index] = o;
+				systemScene.relink(i, entity);
+				systemScene.initObject_(entity, o);
+			}
+		}
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		int systemSize = objects.length / OBJECTS_SIZE;
+		out.writeInt(systemSize);
+		for (int id = 0; id < systemSize; id++) {
+			int size = size(id);
+			out.writeInt(size);
+			int index = id * OBJECTS_SIZE + 1;
+			int end = index + size;
+			for (; index < end; index++)
+				out.writeInt(ids[index]);
+		}
 	}
 
 	private abstract class DataIterator<E> implements Iterator<E> {

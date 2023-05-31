@@ -54,15 +54,22 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 	}
 
 	@Override
-	public ParticleObject load(DataInput in) throws IOException {
-		ParticleObject object = new ParticleObject();
-		object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			@SuppressWarnings("resource")
+			ParticleObject object = new ParticleObject();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(ParticleObject object, DataOutput out) throws IOException {
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			objects[i].save(out);
 	}
 
 	@Override

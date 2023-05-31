@@ -20,6 +20,8 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 
 	@Override
 	public void free() {
+		for (int i = 0; i < size; i++)
+			objects[i].getInterface().onDisable();
 	}
 
 	@Override
@@ -56,22 +58,31 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 	}
 
 	@Override
-	public AbstractScriptObject load(DataInput in) throws IOException {
-		String scriptName = in.readUTF();
-		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
-		AbstractScriptObject object;
-		if (scriptEngine != null)
-			object = new ScriptObject((String) scriptName, scriptEngine);
-		else
-			object = (EntityScript) Script.get(scriptName);
-		if (object != null)
-			object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			String scriptName = in.readUTF();
+			ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
+			AbstractScriptObject object;
+			if (scriptEngine != null)
+				object = new ScriptObject((String) scriptName, scriptEngine);
+			else
+				object = (EntityScript) Script.get(scriptName);
+			if (object != null) {
+				object.load(in);
+				objects[i] = object;
+			}
+		}
 	}
 
 	@Override
-	public void save(AbstractScriptObject object, DataOutput out) throws IOException {
-		out.writeUTF(object.getName());
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++) {
+			AbstractScriptObject object = objects[i];
+			out.writeUTF(object.getName());
+			object.save(out);
+		}
 	}
 }

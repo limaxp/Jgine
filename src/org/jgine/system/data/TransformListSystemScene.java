@@ -56,6 +56,11 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 	}
 
 	@Override
+	public void relink(int index, Entity entity) {
+		transforms[index] = entity.transform;
+	}
+
+	@Override
 	protected final void resize(int size) {
 		super.resize(size);
 		Transform[] newArray2 = new Transform[size];

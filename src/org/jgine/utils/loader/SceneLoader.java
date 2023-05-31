@@ -59,8 +59,10 @@ public class SceneLoader {
 		scene.setSpacePartitioning(spacePartitioning);
 
 		int systemSize = in.readInt();
-		for (int i = 0; i < systemSize; i++)
-			scene.addSystem(in.readInt());
+		for (int i = 0; i < systemSize; i++) {
+			SystemScene<?, ?> systemScene = scene.addSystem(in.readInt());
+			systemScene.load(in);
+		}
 
 		int entitySize = in.readInt();
 		for (int i = 0; i < entitySize; i++)
@@ -81,14 +83,6 @@ public class SceneLoader {
 		return scene;
 	}
 
-	/**
-	 * Should be called synchronized (Scheduler.runTaskSynchron()) otherwise might
-	 * interfere with updating!
-	 * 
-	 * @param scene
-	 * @param out
-	 * @throws FileNotFoundException
-	 */
 	public static void write(Scene scene, DataOutput out) throws IOException {
 		out.writeUTF(scene.name);
 
@@ -98,8 +92,10 @@ public class SceneLoader {
 
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
 		out.writeInt(systems.size());
-		for (SystemScene<?, ?> systemScene : systems)
+		for (SystemScene<?, ?> systemScene : systems) {
 			out.writeInt(systemScene.system.getId());
+			systemScene.save(out);
+		}
 
 		List<Entity> entities = scene.getTopEntities();
 		out.writeInt(entities.size());

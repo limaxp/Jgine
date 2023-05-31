@@ -44,14 +44,20 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	}
 
 	@Override
-	public GraphicObject load(DataInput in) throws IOException {
-		GraphicObject object = new GraphicObject();
-		object.model = ResourceManager.getModel(in.readUTF());
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			GraphicObject object = new GraphicObject();
+			object.model = ResourceManager.getModel(in.readUTF());
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(GraphicObject object, DataOutput out) throws IOException {
-		out.writeUTF(object.model.name);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			out.writeUTF(objects[i].model.name);
 	}
 }

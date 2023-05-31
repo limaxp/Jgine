@@ -24,14 +24,7 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 		object.transform = entity.transform;
 		if (object.getRenderTarget() == null)
 			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
-		system.addCamera(object);
-	}
-
-	@Override
-	public Camera removeObject(int index) {
-		Camera object = super.removeObject(index);
-		system.removeCamera(object);
-		return object;
+		system.registerCamera(object);
 	}
 
 	@Override
@@ -53,14 +46,20 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public Camera load(DataInput in) throws IOException {
-		Camera object = new Camera();
-		object.load(in);
-		return object;
+	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			Camera object = new Camera();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
-	public void save(Camera object, DataOutput out) throws IOException {
-		object.save(out);
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			objects[i].save(out);
 	}
 }
