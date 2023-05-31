@@ -96,14 +96,14 @@ public class Color {
 	}
 
 	public static String toString(int color) {
-		return color + " [" + red(color) + "," + green(color) + "," + blue(color) + "," + alpha(color) + "]";
+		return color + "(" + red(color) + "," + green(color) + "," + blue(color) + "," + alpha(color) + ")";
 	}
 
 	public static Vector4f toVector(int color) {
 		return new Vector4f((float) red(color) / 255, (float) green(color) / 255, (float) blue(color) / 255,
 				(float) alpha(color) / 255);
 	}
-	
+
 	public static FloatBuffer toRGBBuffer(FloatBuffer buffer, int color) {
 		buffer.put((float) red(color) / 255);
 		buffer.put((float) green(color) / 255);

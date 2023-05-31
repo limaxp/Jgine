@@ -254,12 +254,6 @@ public class Transform implements Cloneable {
 	}
 
 	@Override
-	public final String toString() {
-		return super.toString() + "[pos: " + posX + "," + posY + "," + posZ + " rot: " + rotX + "," + rotY + "," + rotZ
-				+ " scale: " + scaleX + "," + scaleY + "," + scaleZ + "]";
-	}
-
-	@Override
 	public Transform clone() {
 		try {
 			Transform obj = (Transform) super.clone();
@@ -294,6 +288,12 @@ public class Transform implements Cloneable {
 		out.writeFloat(scaleX);
 		out.writeFloat(scaleY);
 		out.writeFloat(scaleZ);
+	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + "[pos: " + posX + "," + posY + "," + posZ + " | rot: " + rotX + "," + rotY + ","
+				+ rotZ + " | scale: " + scaleX + "," + scaleY + "," + scaleZ + "]";
 	}
 
 	public static Matrix calculateMatrix2d(Matrix matrix, Vector2f position, Vector2f rotation, Vector2f scale) {

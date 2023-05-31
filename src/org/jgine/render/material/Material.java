@@ -308,6 +308,13 @@ public class Material implements SystemObject, Cloneable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + " [texture: " + texture.getName() + "(" + textureX + "," + textureX + ","
+				+ textureWidth + "," + textureHeight + (isflippedX() ? ",xFlipped" : "")
+				+ (isflippedY() ? ",yFlipped" : "") + ")" + " | color: " + Color.toString(color) + "]";
+	}
+
 	protected static String loadStringAssimp(AIMaterial material, String key, int textureType, int textureIndex) {
 		AIString aiString = AIString.calloc();
 		if (Assimp.aiGetMaterialString(material, key, textureType, textureIndex, aiString) != 0)

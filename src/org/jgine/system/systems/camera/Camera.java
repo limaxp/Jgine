@@ -328,4 +328,11 @@ public class Camera implements SystemObject, Cloneable {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " [width: " + width + " | height: " + height + " | zNear: " + zNear + " | zFar: "
+				+ zFar + " | fov: " + fov + " | forward: " + forward.x + "," + forward.y + "," + forward.z + " | up: "
+				+ up.x + "," + up.y + "," + up.z + " | renderTarget: " + renderTarget + "]";
+	}
 }

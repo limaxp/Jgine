@@ -59,4 +59,9 @@ public abstract class Light implements SystemObject {
 	public float getIntensity() {
 		return intensity;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " [color: " + Color.toString(color) + " | intensity: " + intensity + "]";
+	}
 }

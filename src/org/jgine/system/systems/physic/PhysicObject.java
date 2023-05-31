@@ -145,4 +145,11 @@ public class PhysicObject implements SystemObject {
 		out.writeFloat(oldY);
 		out.writeFloat(oldZ);
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " [pos: " + x + "," + y + "," + z + " | oldPos: " + oldX + "," + oldY + "," + oldZ
+				+ " | mot: " + motX + "," + motY + "," + motZ + " | hasGravity: " + hasGravity + " | stiffness: "
+				+ stiffness + " | isMoving: " + isMoving + "]";
+	}
 }
