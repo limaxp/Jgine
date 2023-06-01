@@ -184,10 +184,6 @@ public class Entity {
 		return addSystem(scene.getSystem(name), object);
 	}
 
-	public final <T extends SystemObject> T addSystem(Class<? extends EngineSystem> clazz, T object) {
-		return addSystem(scene.getSystem(clazz), object);
-	}
-
 	public final <T extends SystemObject> T addSystem(int id, T object) {
 		return addSystem(scene.getSystem(id), object);
 	}
@@ -208,11 +204,6 @@ public class Entity {
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(String name, T... objects) {
 		addSystem(scene.getSystem(name), objects);
-	}
-
-	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(Class<? extends EngineSystem> clazz, T... objects) {
-		addSystem(scene.getSystem(clazz), objects);
 	}
 
 	@SafeVarargs
@@ -244,12 +235,6 @@ public class Entity {
 	@Nullable
 	public final <T extends SystemObject> T[] removeSystem(String name) {
 		return removeSystem((SystemScene<?, T>) scene.getSystem(name));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(Class<? extends EngineSystem> clazz) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -288,12 +273,6 @@ public class Entity {
 
 	@SuppressWarnings("unchecked")
 	@Nullable
-	public final <T extends SystemObject> T removeSystem(Class<? extends EngineSystem> clazz, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz), object);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
 	public final <T extends SystemObject> T removeSystem(int id, T object) {
 		return removeSystem((SystemScene<?, T>) scene.getSystem(id), object);
 	}
@@ -324,11 +303,6 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz) {
-		return getSystem(SystemManager.get(clazz).getId(), 0);
-	}
-
-	@Nullable
 	public final <T extends SystemObject> T getSystem(int id) {
 		return getSystem(id, 0);
 	}
@@ -346,11 +320,6 @@ public class Entity {
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name, int index) {
 		return getSystem(SystemManager.get(name).getId(), index);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz, int index) {
-		return getSystem(SystemManager.get(clazz).getId(), index);
 	}
 
 	@Nullable
@@ -375,10 +344,6 @@ public class Entity {
 		return getSystems(SystemManager.get(name).getId());
 	}
 
-	public final SystemObject[] getSystems(Class<? extends EngineSystem> clazz) {
-		return getSystems(SystemManager.get(clazz).getId());
-	}
-
 	public final SystemObject[] getSystems(int id) {
 		synchronized (systems) {
 			return systems.get(id);
@@ -395,10 +360,6 @@ public class Entity {
 
 	public final <T extends SystemObject> void forSystems(String name, Consumer<T> func) {
 		forSystems(SystemManager.get(name).getId(), func);
-	}
-
-	public final <T extends SystemObject> void forSystems(Class<? extends EngineSystem> clazz, Consumer<T> func) {
-		forSystems(SystemManager.get(clazz).getId(), func);
 	}
 
 	public final <T extends SystemObject> void forSystems(int id, Consumer<T> func) {

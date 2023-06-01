@@ -39,7 +39,6 @@ public class Scene {
 	public final int id;
 	public final String name;
 	private final Map<EngineSystem, SystemScene<?, ?>> systemMap;
-	private final Map<Class<? extends EngineSystem>, SystemScene<?, ?>> systemClassMap;
 	private final List<SystemScene<?, ?>> systemList;
 	private final List<Entity> entities;
 	private final List<Entity> topEntities;
@@ -53,7 +52,6 @@ public class Scene {
 		this.id = name.hashCode();
 		this.name = name;
 		systemMap = new ConcurrentHashMap<EngineSystem, SystemScene<?, ?>>();
-		systemClassMap = new ConcurrentHashMap<Class<? extends EngineSystem>, SystemScene<?, ?>>();
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
@@ -69,7 +67,6 @@ public class Scene {
 		for (SystemScene<?, ?> systemScene : systemList)
 			systemScene.free();
 		systemMap.clear();
-		systemClassMap.clear();
 		systemList.clear();
 	}
 
@@ -81,10 +78,6 @@ public class Scene {
 		return addSystem(SystemManager.get(name));
 	}
 
-	public final <T extends SystemScene<?, ?>> T addSystem(Class<? extends EngineSystem> clazz) {
-		return addSystem(SystemManager.get(clazz));
-	}
-
 	public final <T extends SystemScene<?, ?>> T addSystem(int id) {
 		return addSystem(SystemManager.get(id));
 	}
@@ -93,17 +86,12 @@ public class Scene {
 	public final <T extends SystemScene<?, ?>> T addSystem(EngineSystem system) {
 		SystemScene<?, ?> systemScene = system.createScene(this);
 		systemMap.put(system, systemScene);
-		systemClassMap.put(system.getClass(), systemScene);
 		Scheduler.runTaskSynchron(() -> systemList.add(systemScene));
 		return (T) systemScene;
 	}
 
 	public final <T extends SystemScene<?, ?>> T removeSystem(String name) {
 		return removeSystem(SystemManager.get(name));
-	}
-
-	public final <T extends SystemScene<?, ?>> T removeSystem(Class<? extends EngineSystem> clazz) {
-		return removeSystem(SystemManager.get(clazz));
 	}
 
 	public final <T extends SystemScene<?, ?>> T removeSystem(int id) {
@@ -114,7 +102,6 @@ public class Scene {
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem system) {
 		SystemScene<?, ?> systemScene = systemMap.remove(system);
-		systemClassMap.remove(system.getClass());
 		Scheduler.runTaskSynchron(() -> {
 			systemList.remove(systemScene);
 			systemScene.free();
@@ -125,12 +112,6 @@ public class Scene {
 	public final void addSystems(String... names) {
 		for (String name : names)
 			addSystem(SystemManager.get(name));
-	}
-
-	@SafeVarargs
-	public final void addSystems(Class<? extends EngineSystem>... classes) {
-		for (Class<? extends EngineSystem> clazz : classes)
-			addSystem(SystemManager.get(clazz));
 	}
 
 	public final void addSystems(int... ids) {
@@ -146,12 +127,6 @@ public class Scene {
 	public final void removeSystems(String... names) {
 		for (String name : names)
 			removeSystem(SystemManager.get(name));
-	}
-
-	@SafeVarargs
-	public final void removeSystems(Class<? extends EngineSystem>... classes) {
-		for (Class<? extends EngineSystem> clazz : classes)
-			removeSystem(SystemManager.get(clazz));
 	}
 
 	public final void removeSystems(int... ids) {
@@ -194,12 +169,6 @@ public class Scene {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(Class<? extends EngineSystem> clazz) {
-		return (T) systemClassMap.get(clazz);
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T getSystem(int id) {
 		return (T) systemMap.get(SystemManager.get(id));
 	}
@@ -212,10 +181,6 @@ public class Scene {
 
 	public final boolean hasSystem(String name) {
 		return systemMap.containsKey(SystemManager.get(name));
-	}
-
-	public final boolean hasSystem(Class<? extends EngineSystem> clazz) {
-		return systemMap.containsKey(SystemManager.get(clazz));
 	}
 
 	public final boolean hasSystem(int id) {

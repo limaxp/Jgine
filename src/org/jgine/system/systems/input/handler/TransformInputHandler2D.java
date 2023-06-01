@@ -7,7 +7,6 @@ import org.jgine.system.systems.input.InputHandler;
 import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
-import org.jgine.system.systems.physic.PhysicSystem;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.scheduler.Scheduler;
@@ -35,7 +34,7 @@ public class TransformInputHandler2D extends InputHandler {
 	@Override
 	protected void setEntity(Entity entity) {
 		super.setEntity(entity);
-		physicObject = entity.getSystem(PhysicSystem.class);
+		physicObject = entity.getSystem(Engine.PHYSIC_SYSTEM);
 
 		setGamepadLeftStickMove((pos) -> {
 			if (pos.x < -GAMEPAD_LEWAY)
