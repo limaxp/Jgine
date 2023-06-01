@@ -93,7 +93,7 @@ public class SceneLoader {
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
 		out.writeInt(systems.size());
 		for (SystemScene<?, ?> systemScene : systems) {
-			out.writeInt(systemScene.system.id);
+			out.writeInt(systemScene.id);
 			systemScene.save(out);
 		}
 

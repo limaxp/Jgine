@@ -18,10 +18,14 @@ import org.jgine.core.entity.Entity;
 public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObject> {
 
 	public final T1 system;
+	public final String name;
+	public final int id;
 	public final Scene scene;
 
 	public SystemScene(T1 system, Scene scene) {
 		this.system = system;
+		this.name = system.name;
+		this.id = system.id;
 		this.scene = scene;
 	}
 

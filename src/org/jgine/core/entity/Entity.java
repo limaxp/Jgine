@@ -314,7 +314,7 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
-		return getSystem(systemScene.system.id, 0);
+		return getSystem(systemScene.id, 0);
 	}
 
 	@Nullable
@@ -337,7 +337,7 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
-		return getSystem(systemScene.system.id, index);
+		return getSystem(systemScene.id, index);
 	}
 
 	public final SystemObject[] getSystems(String name) {
@@ -355,7 +355,7 @@ public class Entity {
 	}
 
 	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
-		return getSystems(systemScene.system.id);
+		return getSystems(systemScene.id);
 	}
 
 	public final <T extends SystemObject> void forSystems(String name, Consumer<T> func) {
@@ -373,7 +373,7 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void forSystems(SystemScene<?, ?> systemScene, Consumer<T> func) {
-		forSystems(systemScene.system.id, func);
+		forSystems(systemScene.id, func);
 	}
 
 	public SystemMap getSystemMap() {

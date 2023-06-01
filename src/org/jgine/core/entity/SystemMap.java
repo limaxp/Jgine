@@ -47,7 +47,7 @@ public class SystemMap {
 	}
 
 	public void add(SystemScene<?, ?> systemScene, SystemObject object) {
-		add(systemScene.system.id, object);
+		add(systemScene.id, object);
 	}
 
 	public void add(int id, SystemObject object) {
@@ -64,7 +64,7 @@ public class SystemMap {
 	}
 
 	public void add(SystemScene<?, ?> systemScene, SystemObject... objects) {
-		add(systemScene.system.id, objects);
+		add(systemScene.id, objects);
 	}
 
 	public void add(int id, SystemObject... objects) {
@@ -87,7 +87,7 @@ public class SystemMap {
 	}
 
 	public int remove(SystemScene<?, ?> systemScene, SystemObject object) {
-		return remove(systemScene.system.id, object);
+		return remove(systemScene.id, object);
 	}
 
 	public int remove(int id, SystemObject object) {
@@ -117,7 +117,7 @@ public class SystemMap {
 	}
 
 	public int[] remove(SystemScene<?, ?> systemScene) {
-		return remove(systemScene.system.id);
+		return remove(systemScene.id);
 	}
 
 	public int[] remove(int id) {
@@ -140,7 +140,7 @@ public class SystemMap {
 	}
 
 	public SystemObject[] get(SystemScene<?, ?> systemScene) {
-		return get(systemScene.system.id);
+		return get(systemScene.id);
 	}
 
 	public SystemObject[] get(int id) {
@@ -159,7 +159,7 @@ public class SystemMap {
 	}
 
 	public <T extends SystemObject> void forEach(SystemScene<?, ?> systemScene, Consumer<T> func) {
-		forEach(systemScene.system.id, func);
+		forEach(systemScene.id, func);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,7 +178,7 @@ public class SystemMap {
 
 	@Nullable
 	public SystemObject get(SystemScene<?, ?> systemScene, int index) {
-		return get(systemScene.system.id, index);
+		return get(systemScene.id, index);
 	}
 
 	@Nullable
@@ -191,7 +191,7 @@ public class SystemMap {
 	}
 
 	public int getId(SystemScene<?, ?> systemScene, int index) {
-		return getId(systemScene.system.id, index);
+		return getId(systemScene.id, index);
 	}
 
 	public int getId(int id, int index) {
@@ -203,7 +203,7 @@ public class SystemMap {
 	}
 
 	public int getId(SystemScene<?, ?> systemScene, SystemObject object) {
-		return getId(systemScene.system.id, object);
+		return getId(systemScene.id, object);
 	}
 
 	public int getId(int id, SystemObject object) {
@@ -221,7 +221,7 @@ public class SystemMap {
 	}
 
 	public void setId(SystemScene<?, ?> systemScene, SystemObject object, int objectId) {
-		setId(systemScene.system.id, object, objectId);
+		setId(systemScene.id, object, objectId);
 	}
 
 	public void setId(int id, SystemObject object, int objectId) {
@@ -244,7 +244,7 @@ public class SystemMap {
 	}
 
 	public int size(SystemScene<?, ?> systemScene) {
-		return size(systemScene.system.id);
+		return size(systemScene.id);
 	}
 
 	public int size(int id) {
