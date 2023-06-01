@@ -34,9 +34,9 @@ public class UpdateOrder {
 
 	public void add(EngineSystem system, Collection<EngineSystem> before) {
 		ensureCapacity();
-		int systemId = system.getId();
+		int systemId = system.id;
 		for (EngineSystem b : before) {
-			int beforeId = b.getId();
+			int beforeId = b.id;
 			this.before[systemId].add(beforeId);
 			this.after[beforeId].add(systemId);
 		}
@@ -54,9 +54,9 @@ public class UpdateOrder {
 
 	public void add(EngineSystem system, EngineSystem... before) {
 		ensureCapacity();
-		int systemId = system.getId();
+		int systemId = system.id;
 		for (int i = 0; i < before.length; i++) {
-			int beforeId = before[i].getId();
+			int beforeId = before[i].id;
 			this.before[systemId].add(beforeId);
 			this.after[beforeId].add(systemId);
 		}
@@ -74,7 +74,7 @@ public class UpdateOrder {
 	}
 
 	public void add(EngineSystem system, EngineSystem before) {
-		add(system.getId(), before.getId());
+		add(system.id, before.id);
 	}
 
 	public void add(int system, int before) {
@@ -85,7 +85,7 @@ public class UpdateOrder {
 	}
 
 	public void add(EngineSystem system) {
-		start.add(system.getId());
+		start.add(system.id);
 		size++;
 	}
 
@@ -99,7 +99,7 @@ public class UpdateOrder {
 	}
 
 	public IntList getBefore(EngineSystem system) {
-		return before[system.getId()];
+		return before[system.id];
 	}
 
 	public IntList getBefore(int system) {
@@ -107,7 +107,7 @@ public class UpdateOrder {
 	}
 
 	public IntList getAfter(EngineSystem system) {
-		return after[system.getId()];
+		return after[system.id];
 	}
 
 	public IntList getAfter(int system) {

@@ -19,16 +19,15 @@ public class SystemManager {
 	private static EngineSystem[] ID_MAP = new EngineSystem[MAX_SIZE];
 	private static int size;
 
-	public static <T extends EngineSystem> T register(T system) {
+	public static <T extends EngineSystem> int register(T system) {
 		if (NAME_MAP.containsKey(system.name)) {
 			Logger.warn("SystemManager: System '" + system.name + "' does already exist!");
-			return system;
+			return -1;
 		}
 		NAME_MAP.put(system.name, system);
 		int id = size++;
 		ID_MAP[id] = system;
-		system.init(id);
-		return system;
+		return id;
 	}
 
 	@SuppressWarnings("unchecked")

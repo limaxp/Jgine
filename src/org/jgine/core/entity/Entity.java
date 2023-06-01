@@ -299,7 +299,7 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name) {
-		return getSystem(SystemManager.get(name).getId(), 0);
+		return getSystem(SystemManager.get(name).id, 0);
 	}
 
 	@Nullable
@@ -309,17 +309,17 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem system) {
-		return getSystem(system.getId(), 0);
+		return getSystem(system.id, 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
-		return getSystem(systemScene.system.getId(), 0);
+		return getSystem(systemScene.system.id, 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(String name, int index) {
-		return getSystem(SystemManager.get(name).getId(), index);
+		return getSystem(SystemManager.get(name).id, index);
 	}
 
 	@Nullable
@@ -332,16 +332,16 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
-		return getSystem(system.getId(), index);
+		return getSystem(system.id, index);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
-		return getSystem(systemScene.system.getId(), index);
+		return getSystem(systemScene.system.id, index);
 	}
 
 	public final SystemObject[] getSystems(String name) {
-		return getSystems(SystemManager.get(name).getId());
+		return getSystems(SystemManager.get(name).id);
 	}
 
 	public final SystemObject[] getSystems(int id) {
@@ -351,15 +351,15 @@ public class Entity {
 	}
 
 	public final SystemObject[] getSystems(EngineSystem system) {
-		return getSystems(system.getId());
+		return getSystems(system.id);
 	}
 
 	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
-		return getSystems(systemScene.system.getId());
+		return getSystems(systemScene.system.id);
 	}
 
 	public final <T extends SystemObject> void forSystems(String name, Consumer<T> func) {
-		forSystems(SystemManager.get(name).getId(), func);
+		forSystems(SystemManager.get(name).id, func);
 	}
 
 	public final <T extends SystemObject> void forSystems(int id, Consumer<T> func) {
@@ -369,11 +369,11 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void forSystems(EngineSystem system, Consumer<T> func) {
-		forSystems(system.getId(), func);
+		forSystems(system.id, func);
 	}
 
 	public final <T extends SystemObject> void forSystems(SystemScene<?, ?> systemScene, Consumer<T> func) {
-		forSystems(systemScene.system.getId(), func);
+		forSystems(systemScene.system.id, func);
 	}
 
 	public SystemMap getSystemMap() {
