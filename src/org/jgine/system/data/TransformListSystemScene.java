@@ -1,8 +1,5 @@
 package org.jgine.system.data;
 
-import java.util.Collection;
-
-import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
@@ -39,10 +36,6 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 		objects[size] = null;
 		transforms[size] = null;
 		return element;
-	}
-
-	public Collection<Transform> getTransforms() {
-		return new FastArrayList<>(transforms, size);
 	}
 
 	@Override

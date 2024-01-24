@@ -1,9 +1,8 @@
 package org.jgine.system.data;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
+import java.util.function.Consumer;
 
-import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
@@ -47,8 +46,9 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	}
 
 	@Override
-	public Collection<T2> getObjects() {
-		return new FastArrayList<>(objects, size);
+	public void forEach(Consumer<T2> func) {
+		for (int i = 0; i < size; i++)
+			func.accept(objects[i]);
 	}
 
 	@Override

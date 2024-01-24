@@ -3,7 +3,7 @@ package org.jgine.system;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.function.Consumer;
 
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
@@ -37,13 +37,13 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract T2 removeObject(int index);
 
-	public abstract Collection<T2> getObjects();
-
 	public abstract T2 getObject(int index);
 
 	public abstract Entity getEntity(int index);
 
 	public abstract Transform getTransform(int index);
+
+	public abstract void forEach(Consumer<T2> func);
 
 	public abstract void update(float dt);
 

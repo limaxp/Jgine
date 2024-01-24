@@ -27,7 +27,6 @@ import org.jgine.render.Renderer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 import org.jgine.system.systems.ai.AiSystem;
-import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.camera.CameraScene;
 import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.collision.CollisionSystem;
@@ -196,16 +195,16 @@ public class Engine {
 			Renderer.setLights(lightScene);
 
 		if (!scene.hasRenderOrder()) {
-			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
+			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 				Renderer.setCamera_UNSAFE(camera);
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
 					systemScene.render(dt);
-			}
+			});
 		} else {
-			for (Camera camera : ((CameraScene) scene.getSystem(CAMERA_SYSTEM)).getObjects()) {
+			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 				Renderer.setCamera_UNSAFE(camera);
 				new SceneRender(scene, scene.getRenderOrder(), dt).start();
-			}
+			});
 		}
 	}
 

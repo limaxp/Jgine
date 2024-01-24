@@ -16,7 +16,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	static {
 		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			entity.<PhysicObject>forSystems(Engine.PHYSIC_SYSTEM, (physic) -> physic.movePosition(dx, dy, dz));
+			entity.forSystems(Engine.PHYSIC_SYSTEM, (PhysicObject physic) -> physic.movePosition(dx, dy, dz));
 		});
 	}
 
