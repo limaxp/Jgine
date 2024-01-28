@@ -6,7 +6,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
-import org.jgine.utils.Property;
+import org.jgine.utils.function.Property;
 
 public class CameraSystem extends EngineSystem {
 
