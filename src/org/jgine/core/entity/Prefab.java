@@ -1,6 +1,5 @@
 package org.jgine.core.entity;
 
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import org.jgine.core.TransformData;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
-import org.jgine.utils.Reflection;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
@@ -447,23 +445,6 @@ public class Prefab {
 		}
 		for (Prefab child : childs)
 			child.create(scene).setParent(entity);
-		return entity;
-	}
-
-	public final <T extends Entity> T create(Scene scene, T entity) {
-		entity.setPrefab(this);
-		for (int i = 0; i < size; i++) {
-			EngineSystem system = systems[i];
-			SystemObject[] subObjects = objects[i];
-			for (int j = 0; j < subObjects.length; j++)
-				entity.addSystem(system, subObjects[j].copy());
-		}
-		if (!childs.isEmpty()) {
-			Constructor<? extends Entity> constructor = Reflection.getDeclaredConstructor(entity.getClass(),
-					new Class[] { Scene.class });
-			for (Prefab child : childs)
-				child.create(scene, Reflection.newInstance(constructor, scene)).setParent(entity);
-		}
 		return entity;
 	}
 
