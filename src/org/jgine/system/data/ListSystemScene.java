@@ -26,29 +26,41 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 
 	@Override
 	public int addObject(Entity entity, T2 object) {
-		if (size == objects.length)
-			ensureCapacity(size + 1);
-		int index = size++;
-		objects[index] = object;
-		return index;
+		synchronized (objects) {
+			if (size == objects.length)
+				ensureCapacity(size + 1);
+			int index = size++;
+			objects[index] = object;
+			relink(index, entity);
+			return index;
+		}
 	}
 
 	@Override
 	public T2 removeObject(int index) {
-		T2 element = objects[index];
-		if (index != --size) {
-			T2 last = objects[size];
-			objects[index] = last;
-			getEntity(size).setSystemId(this, last, index);
+		synchronized (objects) {
+			T2 element = objects[index];
+			if (index != --size) {
+				T2 last = objects[size];
+				Entity lastEntity = getEntity(size);
+				objects[index] = last;
+				relink(index, lastEntity);
+				lastEntity.setSystemId(this, size, index);
+			}
+			objects[size] = null;
+			return element;
 		}
-		objects[size] = null;
-		return element;
+	}
+
+	protected void relinkEntity(int index) {
 	}
 
 	@Override
 	public void forEach(Consumer<T2> func) {
-		for (int i = 0; i < size; i++)
-			func.accept(objects[i]);
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				func.accept(objects[i]);
+		}
 	}
 
 	@Override
@@ -58,6 +70,11 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 
 	@Override
 	public void relink(int index, Entity entity) {
+	}
+
+	@Override
+	public int getSize() {
+		return size;
 	}
 
 	protected void ensureCapacity(int minCapacity) {

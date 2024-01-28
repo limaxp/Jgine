@@ -3,12 +3,8 @@ package org.jgine.core.entity;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Scene;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
@@ -18,220 +14,167 @@ import org.jgine.system.SystemScene;
 /**
  * Data structure used internally by {@link Entity} class to store their
  * {@link EngineSystem}<code>s</code>.
- * <p>
- * <strong>Note that this implementation is not synchronized.</strong> If
- * multiple threads access an {@code SystemMap} instance concurrently, and at
- * least one of the threads modifies the map structurally, it <i>must</i> be
- * synchronized externally. (A structural modification is any operation that
- * adds or deletes one or more elements, or explicitly resizes the backing
- * arrays; merely setting the value of an element is not a structural
- * modification.) This is typically accomplished by synchronizing on some object
- * that naturally encapsulates the map.
  */
 public class SystemMap {
 
-	private static final int OBJECTS_SIZE = Entity.MAX_OBJECTS_PER_SYSTEMS + 1;
+	private static final int[] NULL_ARRAY = new int[] { 0, -1 };
 
-	private SystemObject[] objects;
-	private int[] ids;
+	private int[][] data;
 	private int size;
 
 	public SystemMap() {
-		int size = SystemManager.getSize() * OBJECTS_SIZE;
-		objects = new SystemObject[size];
-		ids = new int[size];
+		int systemCount = SystemManager.getSize();
+		data = new int[systemCount][];
+		for (int i = 0; i < systemCount; i++)
+			data[i] = NULL_ARRAY;
 	}
 
-	public void add(EngineSystem system, SystemObject object) {
-		add(system.id, object);
-	}
-
-	public void add(SystemScene<?, ?> systemScene, SystemObject object) {
-		add(systemScene.id, object);
-	}
-
-	public void add(int id, SystemObject object) {
-		ensureCapacity(id);
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1 + systemSize;
-		objects[index] = object;
-		size++;
-		setSize(id, systemSize + 1);
-	}
-
-	public void add(EngineSystem system, SystemObject... objects) {
-		add(system.id, objects);
-	}
-
-	public void add(SystemScene<?, ?> systemScene, SystemObject... objects) {
-		add(systemScene.id, objects);
-	}
-
-	public void add(int id, SystemObject... objects) {
-		ensureCapacity(id);
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1 + systemSize;
-		int end = (id + 1) * OBJECTS_SIZE;
-		int addSize = 0;
-		for (; index < end; index++) {
-			objects[index] = objects[addSize++];
-			if (addSize >= objects.length)
-				break;
+	public void add(int id, int objectId) {
+		synchronized (data) {
+			int systemSize = size(id) + 1;
+			ensureCapacity(id, systemSize + 1);
+			data[id][systemSize] = objectId;
+			setSize(id, systemSize);
+			size++;
 		}
-		size += addSize;
-		setSize(id, systemSize + addSize);
 	}
 
-	public int remove(EngineSystem system, SystemObject object) {
-		return remove(system.id, object);
+	public void add(int id, int... objectIds) {
+		synchronized (data) {
+			int systemSize = size(id) + 1;
+			int addSize = objectIds.length;
+			ensureCapacity(id, systemSize + addSize);
+			int[] ids = data[id];
+			for (int i = 0; i < addSize; i++)
+				ids[systemSize + i] = objectIds[i];
+			setSize(id, systemSize - 1 + addSize);
+			size += addSize;
+		}
 	}
 
-	public int remove(SystemScene<?, ?> systemScene, SystemObject object) {
-		return remove(systemScene.id, object);
-	}
-
-	public int remove(int id, SystemObject object) {
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + systemSize;
-		int objectId = -1;
-		for (; index < end; index++) {
-			if (objects[index] == object) {
-				objectId = ids[index];
-				int last = id * OBJECTS_SIZE + systemSize;
-				if (index != last) {
-					objects[index] = objects[last];
-					ids[index] = ids[last];
+	public boolean set(int id, int oldId, int newId) {
+		synchronized (data) {
+			int[] ids = data[id];
+			int systemSize = size(id) + 1;
+			for (int i = 1; i < systemSize; i++)
+				if (ids[i] == oldId) {
+					ids[i] = newId;
+					return true;
 				}
-				objects[last] = null;
-				size--;
-				setSize(id, systemSize - 1);
-				break;
+			return false;
+		}
+	}
+
+	public boolean remove(int id, int objectId) {
+		synchronized (data) {
+			int[] ids = data[id];
+			int systemSize = size(id) + 1;
+			for (int i = 1; i < systemSize; i++) {
+				if (ids[i] == objectId) {
+					if (i != systemSize)
+						ids[i] = ids[systemSize];
+					ids[systemSize] = -1;
+					setSize(id, systemSize - 2);
+					size--;
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	public <T extends SystemObject> int remove(SystemScene<?, T> systemScene, T object) {
+		synchronized (data) {
+			int id = systemScene.id;
+			int[] ids = data[id];
+			int systemSize = size(id) + 1;
+			for (int i = 1; i < systemSize; i++) {
+				if (systemScene.getObject(ids[i]) == object) {
+					int result = ids[i];
+					ids[i] = -1;
+					return result;
+				}
+			}
+			return -1;
+		}
+	}
+
+	public void remove(int id) {
+		synchronized (data) {
+			int systemSize = size(id);
+			data[id] = NULL_ARRAY;
+			size -= systemSize;
+		}
+	}
+
+	public int get(int id, int index) {
+		return data[id][index + 1];
+	}
+
+	public <T extends SystemObject> void forEach(int id, IntConsumer func) {
+		synchronized (data) {
+			int[] ids = data[id];
+			int systemSize = size(id) + 1;
+			for (int i = 1; i < systemSize; i++)
+				func.accept(ids[i]);
+		}
+	}
+
+	public <T extends SystemObject> void forEach(IntConsumer func) {
+		synchronized (data) {
+			int size = SystemManager.getSize();
+			for (int id = 0; id < size; id++) {
+				int[] ids = data[id];
+				int systemSize = size(id) + 1;
+				for (int i = 1; i < systemSize; i++)
+					func.accept(ids[i]);
 			}
 		}
-		return objectId;
 	}
 
-	public int[] remove(EngineSystem system) {
-		return remove(system.id);
-	}
-
-	public int[] remove(SystemScene<?, ?> systemScene) {
-		return remove(systemScene.id);
-	}
-
-	public int[] remove(int id) {
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + systemSize;
-		int i = 0;
-		int[] result = new int[systemSize];
-		for (; index < end; index++) {
-			objects[index] = null;
-			result[i++] = ids[index];
-		}
-		size -= systemSize;
-		setSize(id, 0);
-		return result;
-	}
-
-	public SystemObject[] get(EngineSystem system) {
-		return get(system.id);
-	}
-
-	public SystemObject[] get(SystemScene<?, ?> systemScene) {
-		return get(systemScene.id);
-	}
-
-	public SystemObject[] get(int id) {
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + systemSize;
-		int i = 0;
-		SystemObject[] result = new SystemObject[systemSize];
-		for (; index < end; index++)
-			result[i++] = objects[index];
-		return result;
-	}
-
-	public <T extends SystemObject> void forEach(EngineSystem system, Consumer<T> func) {
-		forEach(system.id, func);
-	}
-
-	public <T extends SystemObject> void forEach(SystemScene<?, ?> systemScene, Consumer<T> func) {
-		forEach(systemScene.id, func);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends SystemObject> void forEach(int id, Consumer<T> func) {
-		int systemSize = size(id);
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + systemSize;
-		for (; index < end; index++)
-			func.accept((T) objects[index]);
-	}
-
-	@Nullable
-	public SystemObject get(EngineSystem system, int index) {
-		return get(system.id, index);
-	}
-
-	@Nullable
-	public SystemObject get(SystemScene<?, ?> systemScene, int index) {
-		return get(systemScene.id, index);
-	}
-
-	@Nullable
-	public SystemObject get(int id, int index) {
-		return objects[id * OBJECTS_SIZE + 1 + index];
-	}
-
-	public int getId(EngineSystem system, int index) {
-		return getId(system.id, index);
-	}
-
-	public int getId(SystemScene<?, ?> systemScene, int index) {
-		return getId(systemScene.id, index);
-	}
-
-	public int getId(int id, int index) {
-		return ids[id * OBJECTS_SIZE + 1 + index];
-	}
-
-	public int getId(EngineSystem system, SystemObject object) {
-		return getId(system.id, object);
-	}
-
-	public int getId(SystemScene<?, ?> systemScene, SystemObject object) {
-		return getId(systemScene.id, object);
-	}
-
-	public int getId(int id, SystemObject object) {
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + size(id);
-		for (; index < end; index++) {
-			if (objects[index] == object)
-				return ids[index];
-		}
-		return -1;
-	}
-
-	public void setId(EngineSystem system, SystemObject object, int objectId) {
-		setId(system.id, object, objectId);
-	}
-
-	public void setId(SystemScene<?, ?> systemScene, SystemObject object, int objectId) {
-		setId(systemScene.id, object, objectId);
-	}
-
-	public void setId(int id, SystemObject object, int objectId) {
-		int index = id * OBJECTS_SIZE + 1;
-		int end = index + size(id);
-		for (; index < end; index++) {
-			if (objects[index] == object) {
-				ids[index] = objectId;
-				break;
+	public <T extends SystemObject> void forEach(Scene scene, SystemMapConsumer func) {
+		synchronized (data) {
+			int size = SystemManager.getSize();
+			for (int id = 0; id < size; id++) {
+				int[] ids = data[id];
+				int systemSize = size(id) + 1;
+				SystemScene<?, ?> systemScene = scene.getSystem(id);
+				for (int i = 1; i < systemSize; i++)
+					func.accept(systemScene, ids[i]);
 			}
+		}
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		int systemCount = data.length;
+		out.writeInt(systemCount);
+		for (int id = 0; id < systemCount; id++) {
+			int[] ids = data[id];
+			int systemSize = size(id);
+			out.writeInt(systemSize);
+			systemSize++;
+			for (int i = 1; i < systemSize; i++)
+				out.writeInt(ids[i]);
+		}
+	}
+
+	public void load(DataInput in, Entity entity) throws IOException {
+		Scene scene = entity.scene;
+		this.size = in.readInt();
+		int systemCount = in.readInt();
+		for (int id = 0; id < systemCount; id++) {
+			SystemScene<?, ?> systemScene = scene.getSystem(id);
+			int[] ids = data[id];
+			int systemSize = in.readInt() + 1;
+			ensureCapacity(id, systemSize);
+			for (int i = 1; i < systemSize; i++) {
+				int objectId = in.readInt();
+				ids[i] = objectId;
+				systemScene.relink(objectId, entity);
+				systemScene.initObject_(entity, systemScene.getObject(objectId));
+			}
+			setSize(id, systemSize - 1);
 		}
 	}
 
@@ -239,148 +182,31 @@ public class SystemMap {
 		return size;
 	}
 
-	public int size(EngineSystem system) {
-		return size(system.id);
-	}
-
-	public int size(SystemScene<?, ?> systemScene) {
-		return size(systemScene.id);
-	}
-
 	public int size(int id) {
-		return ids[id * OBJECTS_SIZE];
+		return data[id][0];
 	}
 
 	private void setSize(int id, int size) {
-		ids[id * OBJECTS_SIZE] = size;
+		data[id][0] = size;
 	}
 
-	protected void ensureCapacity(int minCapacity) {
-		int size = minCapacity * OBJECTS_SIZE;
-		if (size > objects.length)
-			resize(size);
-	}
-
-	protected void resize(int size) {
-		SystemObject[] newObjects = new SystemObject[size];
-		System.arraycopy(objects, 0, newObjects, 0, objects.length);
-		objects = newObjects;
-
-		int[] newIds = new int[size];
-		System.arraycopy(ids, 0, newIds, 0, ids.length);
-		ids = newIds;
-	}
-
-	public Iterator<SystemObject> getSystemIterator() {
-		return new SystemIterator();
-	}
-
-	public Iterator<Integer> getIdIterator() {
-		return new IdIterator();
-	}
-
-	public Iterator<Entry<SystemScene<?, ?>, SystemObject>> getSystemEntryIterator(Scene scene) {
-		return new SystemEntryIterator(scene);
-	}
-
-	public Iterator<Entry<SystemScene<?, ?>, Integer>> getIdEntryIterator(Scene scene) {
-		return new IdEntryIterator(scene);
-	}
-
-	public void load(DataInput in, Entity entity) throws IOException {
-		Scene scene = entity.scene;
-		this.size = in.readInt();
-		int systemSize = in.readInt();
-		for (int id = 0; id < systemSize; id++) {
-			SystemScene<?, ?> systemScene = scene.getSystem(id);
-			int size = in.readInt();
-			setSize(id, size);
-			int index = id * OBJECTS_SIZE + 1;
-			int end = index + size;
-			for (; index < end; index++) {
-				int i = in.readInt();
-				SystemObject o = systemScene.getObject(i);
-				ids[index] = i;
-				objects[index] = o;
-				systemScene.relink(i, entity);
-				systemScene.initObject_(entity, o);
-			}
+	private void ensureCapacity(int id, int minCapacity) {
+		int[] ids = data[id];
+		int length = ids.length;
+		if (minCapacity > length | ids == NULL_ARRAY) {
+			int newLength = Math.max(length * 2, minCapacity);
+			int[] newIds = new int[newLength];
+			System.arraycopy(ids, 0, newIds, 0, length);
+			for (int i = length; i < newLength; i++)
+				newIds[i] = -1;
+			data[id] = newIds;
 		}
 	}
 
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		int systemSize = objects.length / OBJECTS_SIZE;
-		out.writeInt(systemSize);
-		for (int id = 0; id < systemSize; id++) {
-			int size = size(id);
-			out.writeInt(size);
-			int index = id * OBJECTS_SIZE + 1;
-			int end = index + size;
-			for (; index < end; index++)
-				out.writeInt(ids[index]);
-		}
+	@FunctionalInterface
+	public static interface SystemMapConsumer {
+
+		public void accept(SystemScene<?, ?> scene, int id);
 	}
 
-	private abstract class DataIterator<E> implements Iterator<E> {
-
-		protected int id;
-		protected int index;
-
-		@Override
-		public boolean hasNext() {
-			for (; id < SystemManager.getSize(); id++) {
-				if (index < size(id))
-					return true;
-				index = 0;
-			}
-			return false;
-		}
-	}
-
-	private class SystemIterator extends DataIterator<SystemObject> {
-
-		@Override
-		public SystemObject next() {
-			return objects[id * OBJECTS_SIZE + 1 + index++];
-		}
-	}
-
-	private class IdIterator extends DataIterator<Integer> {
-
-		@Override
-		public Integer next() {
-			return ids[id * OBJECTS_SIZE + 1 + index++];
-		}
-	}
-
-	private class SystemEntryIterator extends DataIterator<Entry<SystemScene<?, ?>, SystemObject>> {
-
-		protected Scene scene;
-
-		public SystemEntryIterator(Scene scene) {
-			this.scene = scene;
-		}
-
-		@Override
-		public Entry<SystemScene<?, ?>, SystemObject> next() {
-			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, SystemObject>(scene.getSystem(id),
-					objects[id * OBJECTS_SIZE + 1 + index++]);
-		}
-	}
-
-	private class IdEntryIterator extends DataIterator<Entry<SystemScene<?, ?>, Integer>> {
-
-		protected Scene scene;
-
-		public IdEntryIterator(Scene scene) {
-			this.scene = scene;
-		}
-
-		@Override
-		public Entry<SystemScene<?, ?>, Integer> next() {
-			return new AbstractMap.SimpleEntry<SystemScene<?, ?>, Integer>(scene.getSystem(id),
-					ids[id * OBJECTS_SIZE + 1 + index++]);
-		}
-	}
 }

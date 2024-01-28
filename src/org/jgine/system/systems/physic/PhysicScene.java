@@ -43,7 +43,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	@Override
 	public void update(float dt) {
 		this.dt = dt;
-		TaskHelper.execute(size, this::updatePositions);
+		synchronized (objects) {
+			TaskHelper.execute(size, this::updatePositions);
+		}
 	}
 
 	@Override

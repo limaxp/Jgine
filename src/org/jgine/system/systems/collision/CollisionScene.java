@@ -22,13 +22,13 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	static {
 		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.move(dx, dy, dz));
+			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.move(dx, dy, dz));
 		});
 		UpdateManager.addTransformScale((entity, x, y, z) -> {
-			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.scale(x, y, z));
+			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.scale(x, y, z));
 		});
 		UpdateManager.addPhysicPosition((entity, dx, dy, dz) -> {
-			entity.<Collider>forSystems(Engine.COLLISION_SYSTEM, (collider) -> collider.move(dx, dy, dz));
+			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.move(dx, dy, dz));
 		});
 	}
 
@@ -49,8 +49,10 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	@Override
 	public void update(float dt) {
-		for (int i = 0; i < SUB_STEPS; i++)
-			TaskHelper.execute(size, this::solveCollisions);
+		synchronized (objects) {
+			for (int i = 0; i < SUB_STEPS; i++)
+				TaskHelper.execute(size, this::solveCollisions);
+		}
 	}
 
 	@Override

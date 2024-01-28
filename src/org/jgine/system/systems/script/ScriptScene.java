@@ -20,8 +20,10 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].getInterface().onDisable();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].getInterface().onDisable();
+		}
 	}
 
 	@Override
@@ -39,8 +41,10 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 
 	@Override
 	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].getInterface().update();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].getInterface().update();
+		}
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package org.jgine.core;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -220,11 +219,7 @@ public class Scene {
 
 	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
-		Iterator<Entry<SystemScene<?, ?>, Integer>> entryIterator = entity.getIdEntryIterator();
-		while (entryIterator.hasNext()) {
-			Entry<SystemScene<?, ?>, Integer> entry = entryIterator.next();
-			entry.getKey().removeObject(entry.getValue());
-		}
+		entity.forSystems(SystemScene::removeObject);
 
 		for (Entity child : entity.getChilds()) {
 			removeChildIntern(child);

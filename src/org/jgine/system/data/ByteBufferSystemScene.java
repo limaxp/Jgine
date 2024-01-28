@@ -1,7 +1,6 @@
 package org.jgine.system.data;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.function.Consumer;
 
 import org.jgine.core.Scene;
@@ -53,7 +52,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	@Override
 	public void forEach(Consumer<T2> func) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

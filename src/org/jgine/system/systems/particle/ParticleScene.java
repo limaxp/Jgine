@@ -18,8 +18,10 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].close();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].close();
+		}
 	}
 
 	@Override
@@ -54,6 +56,16 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 	}
 
 	@Override
+	public Entity getEntity(int index) {
+		return getTransform(index).getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return objects[index].transform;
+	}
+
+	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
 		ensureCapacity(size);
@@ -70,15 +82,5 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 		out.writeInt(size);
 		for (int i = 0; i < size; i++)
 			objects[i].save(out);
-	}
-
-	@Override
-	public Entity getEntity(int index) {
-		return getTransform(index).getEntity();
-	}
-
-	@Override
-	public Transform getTransform(int index) {
-		return objects[index].transform;
 	}
 }

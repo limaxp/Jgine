@@ -3,6 +3,7 @@ package org.jgine.system.systems.graphic;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.List;
 
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
@@ -46,7 +47,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 
 		scene.getSpacePartitioning().forNear(frustumCulling.x1, frustumCulling.y1, 0.0f, frustumCulling.x2,
 				frustumCulling.y2, 0.0f, (entity) -> {
-					SystemObject[] materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
+					List<Material> materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
 					for (SystemObject material : materials)
 						Renderer2D.renderQuad(entity.transform.getMatrix(), Renderer.PHONG_2D_SHADER,
 								(Material) material);

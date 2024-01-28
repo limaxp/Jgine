@@ -17,8 +17,10 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].free();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].free();
+		}
 	}
 
 	@Override
@@ -35,8 +37,10 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].update(dt);
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].update(dt);
+		}
 	}
 
 	@Override

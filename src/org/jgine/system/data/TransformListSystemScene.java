@@ -17,25 +17,16 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
-		int index = super.addObject(entity, object);
+	public void relink(int index, Entity entity) {
 		transforms[index] = entity.transform;
-		return index;
 	}
 
 	@Override
-	public T2 removeObject(int index) {
-		T2 element = objects[index];
-		if (index != --size) {
-			T2 last = objects[size];
-			Transform lastTransform = transforms[size];
-			objects[index] = last;
-			transforms[index] = lastTransform;
-			lastTransform.getEntity().setSystemId(this, last, index);
-		}
-		objects[size] = null;
-		transforms[size] = null;
-		return element;
+	protected final void resize(int size) {
+		super.resize(size);
+		Transform[] newArray2 = new Transform[size];
+		System.arraycopy(transforms, 0, newArray2, 0, getSize());
+		transforms = newArray2;
 	}
 
 	@Override
@@ -46,18 +37,5 @@ public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 exten
 	@Override
 	public Transform getTransform(int index) {
 		return transforms[index];
-	}
-
-	@Override
-	public void relink(int index, Entity entity) {
-		transforms[index] = entity.transform;
-	}
-
-	@Override
-	protected final void resize(int size) {
-		super.resize(size);
-		Transform[] newArray2 = new Transform[size];
-		System.arraycopy(transforms, 0, newArray2, 0, this.size);
-		transforms = newArray2;
 	}
 }

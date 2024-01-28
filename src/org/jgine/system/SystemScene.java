@@ -55,6 +55,8 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract void relink(int index, Entity entity);
 
+	public abstract int getSize();
+
 	@SuppressWarnings("unchecked")
 	public final void initObject_(Entity entity, SystemObject object) {
 		initObject(entity, (T2) object);

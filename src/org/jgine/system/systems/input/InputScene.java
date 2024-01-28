@@ -26,8 +26,10 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 
 	@Override
 	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].checkInput();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].checkInput();
+		}
 	}
 
 	@Override

@@ -31,8 +31,10 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].free();
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].free();
+		}
 	}
 
 	@Override
@@ -75,17 +77,19 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		mouseX = cursorPos.x / windowSize.x;
 		mouseY = 1 - cursorPos.y / windowSize.y;
 
-		UIObject focusObject = null;
-		for (int i = size - 1; i >= 0; i--) {
-			UIWindow window = objects[i];
-			if (insideCheck(window, mouseX, mouseY)) {
-				focusObject = focusCheck(window, mouseX, mouseY);
-				break;
+		synchronized (objects) {
+			UIObject focusObject = null;
+			for (int i = size - 1; i >= 0; i--) {
+				UIWindow window = objects[i];
+				if (insideCheck(window, mouseX, mouseY)) {
+					focusObject = focusCheck(window, mouseX, mouseY);
+					break;
+				}
 			}
+			focus(focusObject);
+			clickCheck(focusObject);
+			scrollCheck(focusObject);
 		}
-		focus(focusObject);
-		clickCheck(focusObject);
-		scrollCheck(focusObject);
 	}
 
 	private void focus(UIObject object) {

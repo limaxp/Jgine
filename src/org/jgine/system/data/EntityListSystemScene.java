@@ -1,8 +1,5 @@
 package org.jgine.system.data;
 
-import java.util.Collection;
-
-import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
@@ -20,41 +17,6 @@ public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
-		int index = super.addObject(entity, object);
-		entities[index] = entity;
-		return index;
-	}
-
-	@Override
-	public T2 removeObject(int index) {
-		T2 element = objects[index];
-		if (index != --size) {
-			T2 last = objects[size];
-			Entity lastEntity = entities[size];
-			objects[index] = last;
-			entities[index] = lastEntity;
-			lastEntity.setSystemId(this, last, index);
-		}
-		objects[size] = null;
-		entities[size] = null;
-		return element;
-	}
-
-	public Collection<Entity> getEntities() {
-		return new FastArrayList<>(entities, size);
-	}
-
-	@Override
-	public Entity getEntity(int index) {
-		return entities[index];
-	}
-
-	public Transform getTransform(int index) {
-		return entities[index].transform;
-	}
-
-	@Override
 	public void relink(int index, Entity entity) {
 		entities[index] = entity;
 	}
@@ -63,7 +25,17 @@ public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends 
 	protected void resize(int size) {
 		super.resize(size);
 		Entity[] newArray2 = new Entity[size];
-		System.arraycopy(entities, 0, newArray2, 0, this.size);
+		System.arraycopy(entities, 0, newArray2, 0, getSize());
 		entities = newArray2;
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return entities[index];
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return entities[index].transform;
 	}
 }
