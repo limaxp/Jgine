@@ -26,7 +26,7 @@ public class SQLServer extends Database {
 	}
 
 	@Override
-	public List<Object[]> call(String procedure, List<Object> args) {
+	public List<Object[]> call(String procedure, Object[] args) {
 		return super.call("EXEC " + procedure, args);
 	}
 }

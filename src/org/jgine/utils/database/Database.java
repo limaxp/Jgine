@@ -33,6 +33,10 @@ public abstract class Database {
 		return DriverManager.getConnection(connectionUrl, user, password);
 	}
 
+	public CallableStatement prepareCall(String procedure) throws SQLException {
+		return openConnection().prepareCall(procedure);
+	}
+
 	public boolean exec(String sql) {
 		boolean result = false;
 		try (Connection connection = openConnection(); Statement statement = connection.createStatement()) {
