@@ -51,6 +51,15 @@ public class HttpSession implements Runnable {
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String input = in.readLine();
+			int postDataIndex = 0;
+			String headerLine = null;
+			while ((headerLine = in.readLine()).length() != 0) {
+				if (headerLine.startsWith("Content-Length:")) {
+					postDataIndex = Integer.parseInt(
+							headerLine.substring(headerLine.indexOf("Content-Length:") + 16, headerLine.length()));
+				}
+			}
+
 			StringTokenizer parse = new StringTokenizer(input);
 			String method = parse.nextToken().toUpperCase();
 			url = parse.nextToken().toLowerCase().substring(1);
@@ -59,7 +68,13 @@ public class HttpSession implements Runnable {
 				url = url.substring(0, urlLength);
 
 			Object[] args = null;
-			if (url.contains("?")) {
+			if (postDataIndex > 0) {
+				char[] charArray = new char[postDataIndex];
+				in.read(charArray, 0, postDataIndex);
+				args = parsePostArguments(new String(charArray));
+			}
+
+			else if (url.contains("?")) {
 				int argSeperatorIndex = url.lastIndexOf('?');
 				if (argSeperatorIndex != urlLength)
 					args = parseArguments(url.substring(argSeperatorIndex + 1));
@@ -90,15 +105,29 @@ public class HttpSession implements Runnable {
 		controller.invoke(method, url, args);
 	}
 
+	public static Object[] parsePostArguments(String s) {
+		Object[] args = null;
+		if (s.contains("&")) {
+			String[] argumentSplit = s.split("&");
+			args = new Object[argumentSplit.length];
+			int i = 0;
+			for (String argument : argumentSplit)
+				args[i++] = castArguments(argument.substring(argument.indexOf('=') + 1, argument.length()));
+		} else {
+			args = new Object[1];
+			args[0] = s;
+		}
+		return args;
+	}
+
 	public static Object[] parseArguments(String s) {
 		Object[] args = null;
 		if (s.contains("&")) {
 			String[] argumentSplit = s.split("&");
 			args = new Object[argumentSplit.length];
 			int i = 0;
-			for (String argument : argumentSplit) {
+			for (String argument : argumentSplit)
 				args[i++] = castArguments(argument);
-			}
 		} else {
 			args = new Object[1];
 			args[0] = s;
