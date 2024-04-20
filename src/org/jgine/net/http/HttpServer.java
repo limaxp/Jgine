@@ -35,6 +35,7 @@ public class HttpServer implements Runnable {
 
 	@Override
 	public void run() {
+		isRunning = true;
 		while (isRunning) {
 			Socket socket = null;
 			try {
