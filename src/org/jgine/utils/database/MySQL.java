@@ -23,8 +23,8 @@ public class MySQL extends Database {
 	}
 
 	@Override
-	public CallableStatement prepareCall(Connection connection, String procedure) throws SQLException {
-		return super.prepareCall(connection, "CALL " + procedure);
+	public CallableStatement prepareCall(String procedure) throws SQLException {
+		return super.prepareCall("CALL " + procedure);
 	}
 
 	@Override

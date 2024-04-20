@@ -23,8 +23,8 @@ public class SQLServer extends Database {
 	}
 
 	@Override
-	public CallableStatement prepareCall(Connection connection, String procedure) throws SQLException {
-		return super.prepareCall(connection, "EXEC " + procedure);
+	public CallableStatement prepareCall(String procedure) throws SQLException {
+		return super.prepareCall("EXEC " + procedure);
 	}
 
 	@Override

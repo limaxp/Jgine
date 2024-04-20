@@ -2,6 +2,7 @@ package org.jgine.utils.database;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,15 +38,32 @@ public abstract class Database {
 		return null;
 	}
 
-	public CallableStatement prepareCall(Connection connection, String procedure) throws SQLException {
-		return connection.prepareCall(procedure);
+	public Statement createStatement() throws SQLException {
+		return getConnection().createStatement();
 	}
 
-	public List<Object[]> query(String query) {
+	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+		return getConnection().createStatement(resultSetType, resultSetConcurrency);
+	}
+
+	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+			throws SQLException {
+		return getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+	}
+
+	public PreparedStatement prepareStatement(String sql) throws SQLException {
+		return getConnection().prepareStatement(sql);
+	}
+
+	public CallableStatement prepareCall(String procedure) throws SQLException {
+		return getConnection().prepareCall(procedure);
+	}
+
+	public List<Object[]> query(String sql) {
 		List<Object[]> list = new ArrayList<Object[]>();
 		try (Connection connection = getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(query)) {
+				ResultSet resultSet = statement.executeQuery(sql)) {
 			int columnsNumber = resultSet.getMetaData().getColumnCount();
 			int i;
 			Object[] arr;
@@ -56,27 +74,27 @@ public abstract class Database {
 				list.add(arr);
 			}
 		} catch (SQLException e) {
-			Logger.err("Database: Error in query [" + query + "]", e);
+			Logger.err("Database: Error in query [" + sql + "]", e);
 		}
 		return list;
 	}
 
-	public boolean exec(String query) {
+	public boolean exec(String sql) {
 		boolean result = false;
 		try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
-			result = statement.execute(query);
+			result = statement.execute(sql);
 		} catch (SQLException e) {
-			Logger.err("Database: Error in execute [" + query + "]", e);
+			Logger.err("Database: Error in execute [" + sql + "]", e);
 		}
 		return result;
 	}
 
-	public int update(String query) {
+	public int update(String sql) {
 		int result = 0;
 		try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
-			result = statement.executeUpdate(query);
+			result = statement.executeUpdate(sql);
 		} catch (SQLException e) {
-			Logger.err("Database: Error in update [" + query + "]", e);
+			Logger.err("Database: Error in update [" + sql + "]", e);
 		}
 		return result;
 	}
