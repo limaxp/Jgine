@@ -12,7 +12,7 @@ public class HomeController extends HttpController {
 	@Route("Home/Index")
 	@Method("GET")
 	public void index() {
-		HttpResponse.sendPage("home/index.html");
+		HttpResponse.sendResource(HttpResponse.HTML, "home/index.html");
 	}
 
 	@Route("HelloWorld")

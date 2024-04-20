@@ -24,15 +24,15 @@ public class HttpSession implements Runnable {
 	}
 
 	public static HttpServer server() {
-		return SESSION.get().getServer();
+		return SESSION.get().server;
 	}
 
 	public static Socket socket() {
 		return SESSION.get().socket;
 	}
 
-	private final HttpServer server;
-	private final Socket socket;
+	public final HttpServer server;
+	public final Socket socket;
 
 	public HttpSession(HttpServer server, Socket socket) {
 		this.server = server;
@@ -42,49 +42,30 @@ public class HttpSession implements Runnable {
 	@Override
 	public void run() {
 		SESSION.set(this);
+		parseMessage();
+	}
+
+	private void parseMessage() {
 		BufferedReader in = null;
 		String url = null;
-		String[] urlSplit = null;
-		Object[] args = null;
-
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String input = in.readLine();
 			StringTokenizer parse = new StringTokenizer(input);
 			String method = parse.nextToken().toUpperCase();
-			url = parse.nextToken().toLowerCase();
-			url = url.replaceFirst("/", "");
+			url = parse.nextToken().toLowerCase().substring(1);
 			int urlLength = url.length() - 1;
 			if (urlLength > -1 && url.charAt(urlLength) == '/')
 				url = url.substring(0, urlLength);
-			urlSplit = url.split("/");
 
+			Object[] args = null;
 			if (url.contains("?")) {
-				String[] urlSplit2 = url.split("\\?");
-				url = urlSplit2[0];
-				String argumentString = urlSplit2[1];
-				if (argumentString.contains("&")) {
-					String[] argumentSplit = argumentString.split("&");
-					args = new Object[argumentSplit.length];
-					int i = 0;
-					for (String argument : argumentSplit) {
-						args[i++] = castObjectType(argument);
-					}
-				} else {
-					args = new Object[1];
-					args[0] = argumentString;
-				}
+				int argSeperatorIndex = url.lastIndexOf('?');
+				if (argSeperatorIndex != urlLength)
+					args = parseArguments(url.substring(argSeperatorIndex + 1));
+				url = url.substring(0, argSeperatorIndex);
 			}
-
-			HttpController controller;
-			if (urlSplit.length > 1)
-				controller = server.getController(urlSplit[0]);
-			else
-				controller = server.getController("home");
-			if (controller == null)
-				controller = server.getController("home");
-			controller.invoke(method, url, args);
-
+			invokeController(method, url, args);
 		} catch (IOException e) {
 			Logger.err("Session: Error!", e);
 		} finally {
@@ -97,26 +78,47 @@ public class HttpSession implements Runnable {
 		}
 	}
 
-	public HttpServer getServer() {
-		return server;
+	public void invokeController(String method, String url, Object[] args) {
+		int seperatorIndex = url.indexOf('/');
+		HttpController controller;
+		if (seperatorIndex != -1)
+			controller = server.getController(url.substring(0, seperatorIndex));
+		else
+			controller = server.getController("home");
+		if (controller == null)
+			controller = server.getController("home");
+		controller.invoke(method, url, args);
 	}
 
-	public Socket getSocket() {
-		return socket;
+	public static Object[] parseArguments(String s) {
+		Object[] args = null;
+		if (s.contains("&")) {
+			String[] argumentSplit = s.split("&");
+			args = new Object[argumentSplit.length];
+			int i = 0;
+			for (String argument : argumentSplit) {
+				args[i++] = castArguments(argument);
+			}
+		} else {
+			args = new Object[1];
+			args[0] = s;
+		}
+		return args;
 	}
 
-	private static Object castObjectType(String str) {
-		if (StringUtils.isDouble(str))
-			return Double.parseDouble(str);
-		else if (StringUtils.isFloat(str))
-			return Float.parseFloat(str);
-		else if (StringUtils.isInteger(str))
-			return Integer.parseInt(str);
-		else if (StringUtils.isShort(str))
-			return Short.parseShort(str);
-		else if (StringUtils.isByte(str))
-			return Byte.parseByte(str);
-		return str;
+	public static Object castArguments(String s) {
+		if (StringUtils.isByte(s))
+			return Byte.parseByte(s);
+		else if (StringUtils.isShort(s))
+			return Short.parseShort(s);
+		else if (StringUtils.isInteger(s))
+			return Integer.parseInt(s);
+		else if (StringUtils.isLong(s))
+			return Long.parseLong(s);
+		else if (StringUtils.isFloat(s))
+			return Float.parseFloat(s);
+		else if (StringUtils.isDouble(s))
+			return Double.parseDouble(s);
+		return s;
 	}
-
 }

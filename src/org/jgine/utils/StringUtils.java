@@ -25,23 +25,8 @@ public class StringUtils {
 		return true;
 	}
 
-	public static boolean isInteger(String str) {
-		// if(str.matches("-?\\d+(\\.\\d+)?"))
-		if (str.matches("^-?\\d{1,8}$"))
-			return true;
-		return false;
-	}
-
-	public static boolean isDouble(String str) {
-		// if(str.matches("^-?\\d{1,23}\\.\\d{1,8}$"))
-		if (str.matches("(?=^.{1,30}$)^-?\\d{1,23}\\.\\d{1,8}$"))
-			return true;
-		return false;
-	}
-
-	// probably wrong!
-	public static boolean isFloat(String str) {
-		if (str.matches("^-?\\d{1,9}\\.\\d{1,9}$"))
+	public static boolean isByte(String str) {
+		if (str.matches("^-?\\d{1,2}$"))
 			return true;
 		return false;
 	}
@@ -52,8 +37,26 @@ public class StringUtils {
 		return false;
 	}
 
-	public static boolean isByte(String str) {
-		if (str.matches("^-?\\d{1,2}$"))
+	public static boolean isInteger(String str) {
+		if (str.matches("^-?\\d{1,8}$"))
+			return true;
+		return false;
+	}
+
+	public static boolean isLong(String str) {
+		if (str.matches("^-?\\d{1,19}$"))
+			return true;
+		return false;
+	}
+
+	public static boolean isFloat(String str) {
+		if (str.matches("[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)"))
+			return true;
+		return false;
+	}
+
+	public static boolean isDouble(String str) {
+		if (str.matches("/\\d{1,3}(,\\d{3})*\\.\\d*|\\d{1,3}(,\\d{3})*|\\.\\d+/"))
 			return true;
 		return false;
 	}
