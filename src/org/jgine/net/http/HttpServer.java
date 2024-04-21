@@ -14,19 +14,22 @@ import org.jgine.utils.logger.Logger;
 
 public class HttpServer implements Runnable {
 
-	private ServerSocket socket;
-	private boolean isRunning;
+	protected ServerSocket socket;
+	protected boolean isRunning;
 	private boolean isLogging;
 	private final Map<String, HttpController> controllerMap;
 
-	public HttpServer(int port) {
+	public HttpServer() {
+		controllerMap = new HashMap<String, HttpController>();
+	}
+
+	public void createSocket(int port) {
 		try {
 			this.socket = new ServerSocket(port);
 			this.socket.setSoTimeout(1000);
 		} catch (IOException e) {
-			Logger.err("HttpServer: Error creating socket!", e);
+			Logger.err("HttpServer: Error creating ServerSocket!", e);
 		}
-		controllerMap = new HashMap<String, HttpController>();
 	}
 
 	public void stop() {
@@ -56,7 +59,7 @@ public class HttpServer implements Runnable {
 		}
 	}
 
-	private void handleConnection(Socket socket) {
+	protected void handleConnection(Socket socket) {
 		HttpSession session = new HttpSession(this, socket);
 		if (isLogging)
 			Logger.log("HttpServer: Connection(" + new Date() + ")" + socket.getInetAddress() + ":"
@@ -90,5 +93,9 @@ public class HttpServer implements Runnable {
 
 	public boolean isLogging() {
 		return isLogging;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
 	}
 }
