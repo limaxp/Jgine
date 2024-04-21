@@ -17,7 +17,7 @@ public class HttpServer implements Runnable {
 	private ServerSocket socket;
 	private boolean isRunning;
 	private boolean isLogging;
-	private Map<String, HttpController> controllerMap;
+	private final Map<String, HttpController> controllerMap;
 
 	public HttpServer(int port) {
 		try {

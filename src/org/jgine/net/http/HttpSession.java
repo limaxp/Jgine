@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import org.jgine.net.http.controller.HttpController;
-import org.jgine.utils.StringUtils;
 import org.jgine.utils.logger.Logger;
 
 public class HttpSession implements Runnable {
@@ -47,107 +46,60 @@ public class HttpSession implements Runnable {
 
 	private void parseMessage() {
 		BufferedReader in = null;
-		String url = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String input = in.readLine();
 			int postDataIndex = 0;
 			String headerLine = null;
 			while ((headerLine = in.readLine()).length() != 0) {
-				if (headerLine.startsWith("Content-Length:")) {
-					postDataIndex = Integer.parseInt(
-							headerLine.substring(headerLine.indexOf("Content-Length:") + 16, headerLine.length()));
-				}
+				if (headerLine.startsWith("Content-Length:"))
+					postDataIndex = Integer.parseInt(headerLine, headerLine.indexOf("Content-Length:") + 16,
+							headerLine.length(), 10);
 			}
 
 			StringTokenizer parse = new StringTokenizer(input);
 			String method = parse.nextToken().toUpperCase();
-			url = parse.nextToken().toLowerCase().substring(1);
-			int urlLength = url.length() - 1;
-			if (urlLength > -1 && url.charAt(urlLength) == '/')
-				url = url.substring(0, urlLength);
+			String url = parse.nextToken();
+			int urlLength = url.length();
+			if (urlLength > 1 && url.charAt(urlLength - 1) == '/')
+				urlLength--;
+			url = url.substring(1, urlLength).toLowerCase();
 
-			Object[] args = null;
 			if (postDataIndex > 0) {
 				char[] charArray = new char[postDataIndex];
 				in.read(charArray, 0, postDataIndex);
-				args = parsePostArguments(new String(charArray));
+				getController(url).invoke(method, url, new String(charArray));
 			}
 
-			else if (url.contains("?")) {
+			else {
 				int argSeperatorIndex = url.lastIndexOf('?');
-				if (argSeperatorIndex != urlLength)
-					args = parseArguments(url.substring(argSeperatorIndex + 1));
-				url = url.substring(0, argSeperatorIndex);
+				if (argSeperatorIndex != -1)
+					getController(url).invoke(method, url.substring(0, argSeperatorIndex),
+							url.substring(argSeperatorIndex + 1));
+				else
+					getController(url).invoke(method, url);
 			}
-			invokeController(method, url, args);
 		} catch (IOException e) {
-			Logger.err("Session: Error!", e);
+			Logger.err("HttpSession: Error!", e);
 		} finally {
 			try {
 				in.close();
 				socket.close();
 			} catch (Exception e) {
-				Logger.err("Session: Error closing socket!", e);
+				Logger.err("HttpSession: Error closing socket!", e);
 			}
 		}
 	}
 
-	public void invokeController(String method, String url, Object[] args) {
+	public HttpController getController(String url) {
 		int seperatorIndex = url.indexOf('/');
 		HttpController controller;
-		if (seperatorIndex != -1)
+		if (seperatorIndex != -1) {
 			controller = server.getController(url.substring(0, seperatorIndex));
-		else
+			if (controller == null)
+				controller = server.getController("home");
+		} else
 			controller = server.getController("home");
-		if (controller == null)
-			controller = server.getController("home");
-		controller.invoke(method, url, args);
-	}
-
-	public static Object[] parsePostArguments(String s) {
-		Object[] args = null;
-		if (s.contains("&")) {
-			String[] argumentSplit = s.split("&");
-			args = new Object[argumentSplit.length];
-			int i = 0;
-			for (String argument : argumentSplit)
-				args[i++] = castArguments(argument.substring(argument.indexOf('=') + 1, argument.length()));
-		} else {
-			args = new Object[1];
-			args[0] = s;
-		}
-		return args;
-	}
-
-	public static Object[] parseArguments(String s) {
-		Object[] args = null;
-		if (s.contains("&")) {
-			String[] argumentSplit = s.split("&");
-			args = new Object[argumentSplit.length];
-			int i = 0;
-			for (String argument : argumentSplit)
-				args[i++] = castArguments(argument);
-		} else {
-			args = new Object[1];
-			args[0] = s;
-		}
-		return args;
-	}
-
-	public static Object castArguments(String s) {
-		if (StringUtils.isByte(s))
-			return Byte.parseByte(s);
-		else if (StringUtils.isShort(s))
-			return Short.parseShort(s);
-		else if (StringUtils.isInteger(s))
-			return Integer.parseInt(s);
-		else if (StringUtils.isLong(s))
-			return Long.parseLong(s);
-		else if (StringUtils.isFloat(s))
-			return Float.parseFloat(s);
-		else if (StringUtils.isDouble(s))
-			return Double.parseDouble(s);
-		return s;
+		return controller;
 	}
 }
