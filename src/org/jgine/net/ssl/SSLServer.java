@@ -1,26 +1,25 @@
-package org.jgine.net.http;
+package org.jgine.net.ssl;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.jgine.net.http.controller.HttpController;
 import org.jgine.utils.logger.Logger;
 
-public class HttpServer implements Runnable {
+public class SSLServer implements Runnable {
 
 	protected ServerSocket socket;
 	protected boolean isRunning;
 	private boolean isLogging;
-	private final Map<String, HttpController> controllerMap;
 
-	public HttpServer() {
-		controllerMap = new HashMap<String, HttpController>();
+	public SSLServer() {
 	}
 
 	public void createSocket(int port) {
@@ -43,13 +42,13 @@ public class HttpServer implements Runnable {
 			Socket socket = null;
 			try {
 				socket = this.socket.accept();
+				if (socket != null)
+					handleConnection(socket);
 			} catch (SocketTimeoutException e) {
 				// ignore
 			} catch (IOException e) {
 				Logger.err("HttpServer: Error listening for packets!", e);
 			}
-			if (socket != null)
-				handleConnection(socket);
 		}
 
 		try {
@@ -59,24 +58,20 @@ public class HttpServer implements Runnable {
 		}
 	}
 
-	protected void handleConnection(Socket socket) {
+	protected void handleConnection(Socket socket) throws IOException {
 		if (isLogging)
-			Logger.log("HttpServer: Connection(" + new Date() + ")" + socket.getInetAddress() + ":"
+			Logger.log("SSLServer: Connection(" + new Date() + ")" + socket.getInetAddress() + ":"
 					+ socket.getLocalPort());
-		HttpSession session = new HttpSession(this, socket);
-		new Thread(session).start();
-	}
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-	public void registerController(HttpController controller) {
-		controllerMap.put(controller.getClass().getSimpleName().replace("Controller", "").toLowerCase(), controller);
-	}
-
-	public void unregisterController(HttpController controller) {
-		controllerMap.remove(controller.getClass().getSimpleName().replace("Controller", "").toLowerCase());
-	}
-
-	public HttpController getController(String name) {
-		return controllerMap.get(name);
+		String msg;
+		while ((msg = in.readLine()) != null) {
+			System.out.println("Client: " + msg);
+			out.append("yes");
+			out.newLine();
+			out.flush();
+		}
 	}
 
 	public InetAddress getIp() {
