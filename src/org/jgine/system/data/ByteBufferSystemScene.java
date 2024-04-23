@@ -8,10 +8,11 @@ import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.memory.NativeResource;
 import org.lwjgl.system.MemoryUtil;
 
 public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
-		extends SystemScene<T1, T2> implements AutoCloseable {
+		extends SystemScene<T1, T2> implements NativeResource {
 
 	protected int objectSize;
 	protected ByteBuffer buffer;
@@ -69,7 +70,9 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 
 	protected void resize(int size) {
 		ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
-		buffer = newBuffer.put(0, buffer, 0, objectSize * bufferSize);
+		newBuffer.put(0, buffer, 0, objectSize * bufferSize);
+		MemoryUtil.memFree(buffer);
+		buffer = newBuffer;
 		bufferSize = size;
 	}
 }

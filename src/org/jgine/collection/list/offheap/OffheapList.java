@@ -111,7 +111,9 @@ public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 
 	protected void resize(int size) {
 		ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
-		buffer = newBuffer.put(0, buffer, 0, objectSize * bufferSize);
+		newBuffer.put(0, buffer, 0, objectSize * bufferSize);
+		MemoryUtil.memFree(buffer);
+		buffer = newBuffer;
 		bufferSize = size;
 		@SuppressWarnings("unchecked")
 		E[] newArray = (E[]) Array.newInstance(clazz, size);
