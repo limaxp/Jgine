@@ -14,7 +14,7 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.jgine.utils.logger.Logger;
+import maxLibs.utils.logger.Logger;
 
 /**
  * Manager class for scripts.

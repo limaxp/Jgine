@@ -18,8 +18,9 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import java.nio.FloatBuffer;
 
 import org.jgine.render.mesh.BaseMesh;
-import org.jgine.utils.Color;
 import org.lwjgl.system.MemoryStack;
+
+import maxLibs.utils.Color;
 
 public class BillboardParticle extends BaseMesh {
 

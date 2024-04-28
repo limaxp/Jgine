@@ -18,8 +18,9 @@ import org.jgine.system.systems.ui.UIWindow;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
-import org.jgine.utils.scheduler.Scheduler;
-import org.jgine.utils.scheduler.Task;
+
+import maxLibs.utils.scheduler.Scheduler;
+import maxLibs.utils.scheduler.Task;
 
 public class UIScrollBar extends UICompound {
 

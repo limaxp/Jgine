@@ -11,10 +11,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Date;
 
-import org.jgine.utils.FileUtils;
-import org.jgine.utils.logger.Logger;
-
-import com.google.common.io.ByteStreams;
+import maxLibs.utils.logger.Logger;
 
 public class HttpResponse {
 
@@ -82,7 +79,7 @@ public class HttpResponse {
 	}
 
 	public static void sendResource(String httpResponse, String contentType, String resource) {
-		InputStream is = FileUtils.getResourceStream(resource);
+		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
 		Socket socket = HttpSession.socket();
 		PrintWriter out = null;
 		OutputStream os = null;
@@ -90,7 +87,7 @@ public class HttpResponse {
 			out = new PrintWriter(socket.getOutputStream());
 			writeHTMLHeader(out, httpResponse, contentType, is.available());
 			os = new BufferedOutputStream(socket.getOutputStream());
-			ByteStreams.copy(is, os);
+			is.transferTo(os);
 			os.flush();
 		} catch (IOException e) {
 			Logger.err("HttpResponse: Error", e);

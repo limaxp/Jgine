@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.TextureAnimationHandler.TextureAnimation;
 
+import maxLibs.utils.loader.YamlLoader;
+
 public class TextureAnimationLoader {
 
 	@Nullable

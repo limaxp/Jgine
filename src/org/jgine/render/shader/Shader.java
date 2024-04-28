@@ -53,8 +53,6 @@ import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Material;
-import org.jgine.utils.Color;
-import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.rotation.Quaternionf;
 import org.jgine.utils.math.vector.Vector2f;
@@ -64,6 +62,9 @@ import org.jgine.utils.math.vector.Vector3i;
 import org.jgine.utils.math.vector.Vector4f;
 import org.jgine.utils.math.vector.Vector4i;
 import org.lwjgl.system.MemoryStack;
+
+import maxLibs.utils.Color;
+import maxLibs.utils.logger.Logger;
 
 public class Shader {
 

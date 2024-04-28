@@ -2,7 +2,7 @@ package org.jgine.utils.math.spacePartitioning;
 
 import java.util.function.Supplier;
 
-import org.jgine.utils.registry.Registry;
+import org.jgine.utils.Registry;
 
 /**
  * Helper class for {@link SpacePartitioningType} registration.

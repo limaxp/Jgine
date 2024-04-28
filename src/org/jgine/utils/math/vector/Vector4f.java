@@ -3,6 +3,8 @@ package org.jgine.utils.math.vector;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
 
+import maxLibs.utils.Color;
+
 /*
  * The MIT License
  *
@@ -43,6 +45,11 @@ public class Vector4f extends Vector3f {
 	public static final Vector4f X_AXIS = new Vector4f(1, 0, 0, 1);
 	public static final Vector4f Y_AXIS = new Vector4f(0, 1, 0, 1);
 	public static final Vector4f Z_AXIS = new Vector4f(0, 0, 1, 1);
+
+	public static Vector4f fromColor(int color) {
+		return new Vector4f((float) Color.red(color) / 255, (float) Color.green(color) / 255,
+				(float) Color.blue(color) / 255, (float) Color.alpha(color) / 255);
+	}
 
 	public final float w;
 

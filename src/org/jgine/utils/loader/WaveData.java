@@ -47,10 +47,11 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import org.jgine.utils.logger.Logger;
 import org.lwjgl.openal.AL10;
 
 import com.sun.media.sound.WaveFileReader;
+
+import maxLibs.utils.logger.Logger;
 
 /**
  * Utitlity class for loading wavefiles.

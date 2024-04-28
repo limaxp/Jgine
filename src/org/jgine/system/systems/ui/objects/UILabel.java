@@ -26,7 +26,8 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.math.vector.Vector3f;
-import org.jgine.utils.scheduler.Scheduler;
+
+import maxLibs.utils.scheduler.Scheduler;
 
 public class UILabel extends UIObject {
 

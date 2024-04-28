@@ -14,6 +14,8 @@ import org.jgine.core.entity.PrefabManager;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 
+import maxLibs.utils.loader.YamlLoader;
+
 /**
  * Helper class for loading {@link Prefab} files.
  */

@@ -2,12 +2,13 @@ package org.jgine.utils.math.rotation;
 
 import java.text.NumberFormat;
 
-import org.jgine.utils.StringUtils;
+import org.jgine.utils.Options;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;
-import org.jgine.utils.options.Options;
+
+import maxLibs.utils.StringUtils;
 
 /*
  * The MIT License

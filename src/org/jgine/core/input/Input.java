@@ -22,8 +22,9 @@ import org.jgine.core.input.device.Keyboard;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.core.window.Window;
 import org.jgine.utils.FileUtils;
-import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
+
+import maxLibs.utils.logger.Logger;
 
 /**
  * Manager that handles input and stores {@link InputDevice}<code>s</code>. Has

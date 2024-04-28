@@ -29,10 +29,11 @@ import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.loader.ModelLoader;
 import org.jgine.utils.loader.ResourceLoader;
-import org.jgine.utils.logger.Logger;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
+import maxLibs.utils.logger.Logger;
 
 /**
  * Manager that stores imported {@link Model}<code>s</code>,

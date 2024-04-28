@@ -1,7 +1,6 @@
 package org.jgine.utils;
 
 import java.awt.Desktop;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,9 +32,6 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.imageio.ImageIO;
-
-import org.jgine.render.material.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
@@ -313,46 +309,6 @@ public class FileUtils {
 
 	public static Stream<String> readStream(InputStream is) throws IOException {
 		return readStream(is, Charset.defaultCharset());
-	}
-
-	public static BufferedImage readBufferedImage(String path) throws IOException {
-		return readBufferedImage(new File(path));
-	}
-
-	public static BufferedImage readBufferedImage(Path path) throws IOException {
-		return readBufferedImage(path.toFile());
-	}
-
-	public static BufferedImage readBufferedImage(URL url) throws IOException {
-		return readBufferedImage(new File(url.getFile()));
-	}
-
-	public static BufferedImage readBufferedImage(File file) throws IOException {
-		return ImageIO.read(file);
-	}
-
-	public static BufferedImage readBufferedImage(InputStream is) throws IOException {
-		return ImageIO.read(is);
-	}
-
-	public static Image readImage(String path) throws IOException {
-		return readImage(new File(path));
-	}
-
-	public static Image readImage(Path path) throws IOException {
-		return readImage(path.toFile());
-	}
-
-	public static Image readImage(URL url) throws IOException {
-		return readImage(new File(url.getFile()));
-	}
-
-	public static Image readImage(File file) throws IOException {
-		return Image.read(file);
-	}
-
-	public static Image readImage(InputStream is) throws IOException {
-		return Image.read(is);
 	}
 
 	public static void writeFile(String path, String data) throws FileNotFoundException {

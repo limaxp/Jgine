@@ -1,7 +1,8 @@
 package org.jgine.core.gameLoop;
 
 import org.jgine.core.Engine;
-import org.jgine.utils.function.FloatConsumer;
+
+import it.unimi.dsi.fastutil.floats.FloatConsumer;
 
 /**
  * Abstract game loop class. Extend to make a custom game loop and overwrite

@@ -10,7 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.utils.function.Property;
-import org.jgine.utils.logger.Logger;
+
+import maxLibs.utils.logger.Logger;
 
 /**
  * Manager to register and run services and to register, set and get properties

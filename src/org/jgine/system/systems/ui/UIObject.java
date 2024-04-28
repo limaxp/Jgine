@@ -12,10 +12,11 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
 import org.jgine.system.systems.script.Script;
-import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.script.ScriptManager;
+
+import maxLibs.utils.Color;
 
 public abstract class UIObject implements SystemObject, Cloneable {
 

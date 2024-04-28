@@ -25,8 +25,9 @@ import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket.PlayerListAction;
 import org.jgine.utils.function.TriConsumer;
-import org.jgine.utils.id.IdGenerator;
-import org.jgine.utils.logger.Logger;
+
+import maxLibs.utils.id.IdGenerator;
+import maxLibs.utils.logger.Logger;
 
 public class GameServer implements Runnable {
 

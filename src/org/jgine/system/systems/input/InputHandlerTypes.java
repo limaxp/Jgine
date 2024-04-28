@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.jgine.system.systems.input.handler.CameraInputHandler;
 import org.jgine.system.systems.input.handler.TransformInputHandler;
 import org.jgine.system.systems.input.handler.TransformInputHandler2D;
-import org.jgine.utils.registry.Registry;
+import org.jgine.utils.Registry;
 
 public class InputHandlerTypes {
 

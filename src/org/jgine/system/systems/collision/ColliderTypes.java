@@ -7,10 +7,10 @@ import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.CircleCollider;
 import org.jgine.system.systems.collision.collider.CylinderCollider;
 import org.jgine.system.systems.collision.collider.SphereCollider;
+import org.jgine.utils.Registry;
 import org.jgine.system.systems.collision.collider.LineCollider;
 import org.jgine.system.systems.collision.collider.PlaneCollider;
 import org.jgine.system.systems.collision.collider.PolygonCollider;
-import org.jgine.utils.registry.Registry;
 
 public class ColliderTypes {
 

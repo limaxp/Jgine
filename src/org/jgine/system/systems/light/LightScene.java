@@ -13,7 +13,8 @@ import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.shader.PhongShader;
 import org.jgine.system.data.EntityListSystemScene;
-import org.jgine.utils.Color;
+
+import maxLibs.utils.Color;
 
 public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 

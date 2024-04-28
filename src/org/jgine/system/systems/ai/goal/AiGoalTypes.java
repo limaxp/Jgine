@@ -7,7 +7,7 @@ import org.jgine.system.systems.ai.goal.goals.GoalMeleeAttackTarget;
 import org.jgine.system.systems.ai.goal.goals.GoalMoveToTarget;
 import org.jgine.system.systems.ai.goal.goals.GoalRandomWalk;
 import org.jgine.system.systems.ai.goal.goals.GoalTargetNearTag;
-import org.jgine.utils.registry.Registry;
+import org.jgine.utils.Registry;
 
 public class AiGoalTypes {
 

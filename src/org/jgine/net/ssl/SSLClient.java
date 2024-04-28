@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import org.jgine.utils.logger.Logger;
+import maxLibs.utils.logger.Logger;
 
 public class SSLClient implements Runnable {
 

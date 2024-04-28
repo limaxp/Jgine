@@ -53,6 +53,8 @@
 									<include>com.fasterxml.jackson.core</include>
 									<include>org.apache-extras.beanshell</include>
 									<include>org.luaj</include>
+									<include>mysql</include>
+									<include>it.unimi.dsi</include>
 									<include>org.lwjgl</include>
 								</includes>
 							</artifactSet>
@@ -147,6 +149,14 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.33</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/it.unimi.dsi/fastutil -->
+		<dependency>
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>fastutil</artifactId>
+			<version>8.5.13</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.lwjgl</groupId>

@@ -17,9 +17,10 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.utils.FileUtils;
-import org.jgine.utils.logger.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.system.MemoryStack;
+
+import maxLibs.utils.logger.Logger;
 
 public class TrueTypeFont implements Font {
 

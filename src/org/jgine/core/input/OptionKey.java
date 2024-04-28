@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jgine.utils.options.Option;
-import org.jgine.utils.options.Options;
+import org.jgine.utils.Options;
+
+import maxLibs.utils.options.Option;
 
 /**
  * This class extends the {@link Key} class with {@link Option} functionality.

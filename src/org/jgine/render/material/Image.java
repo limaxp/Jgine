@@ -14,9 +14,10 @@ import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.utils.FileUtils;
-import org.jgine.utils.logger.Logger;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryStack;
+
+import maxLibs.utils.logger.Logger;
 
 public class Image {
 

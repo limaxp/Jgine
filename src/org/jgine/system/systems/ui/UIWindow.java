@@ -17,12 +17,13 @@ import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.system.systems.script.Script;
+import org.jgine.utils.Options;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
-import org.jgine.utils.options.Options;
-import org.jgine.utils.scheduler.Task;
 import org.jgine.utils.script.ScriptManager;
+
+import maxLibs.utils.scheduler.Task;
 
 public class UIWindow extends UICompound {
 

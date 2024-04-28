@@ -2,7 +2,7 @@ package org.jgine.utils.math;
 
 import java.util.List;
 
-import org.jgine.utils.options.Options;
+import org.jgine.utils.Options;
 
 /*
  * The MIT License

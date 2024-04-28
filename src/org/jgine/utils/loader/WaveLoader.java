@@ -7,8 +7,9 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import org.jgine.core.sound.Sound;
-import org.jgine.utils.logger.Logger;
 import org.lwjgl.openal.AL10;
+
+import maxLibs.utils.logger.Logger;
 
 public class WaveLoader {
 

@@ -3,9 +3,9 @@ package org.jgine.collection.list.offheap;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
-import org.jgine.utils.Reflection;
-import org.jgine.utils.SizeOf;
 import org.lwjgl.system.MemoryUtil;
+
+import maxLibs.utils.Reflection;
 
 public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 
@@ -25,7 +25,7 @@ public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 	@SuppressWarnings("unchecked")
 	public OffheapList(Class<E> clazz, int capacity) {
 		this.clazz = clazz;
-		this.objectSize = SizeOf.sizeOf(clazz);
+		this.objectSize = Reflection.sizeOf(clazz);
 		bufferSize = capacity;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 		pointer = (E[]) Array.newInstance(clazz, bufferSize);

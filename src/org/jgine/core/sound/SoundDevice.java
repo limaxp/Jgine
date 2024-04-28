@@ -30,13 +30,14 @@ import java.nio.IntBuffer;
 import java.util.List;
 
 import org.jgine.collection.list.arrayList.FastArrayList;
-import org.jgine.utils.logger.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.system.MemoryUtil;
+
+import maxLibs.utils.logger.Logger;
 
 /**
  * An openAL sound device.

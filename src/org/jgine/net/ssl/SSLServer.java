@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 
-import org.jgine.utils.logger.Logger;
+import maxLibs.utils.logger.Logger;
 
 public class SSLServer implements Runnable {
 

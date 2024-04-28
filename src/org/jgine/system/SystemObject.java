@@ -1,6 +1,6 @@
 package org.jgine.system;
 
-import org.jgine.utils.Reflection;
+import maxLibs.utils.Reflection;
 
 public interface SystemObject {
 

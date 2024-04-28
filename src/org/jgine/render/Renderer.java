@@ -28,11 +28,10 @@ import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.CircleCollider;
 import org.jgine.system.systems.light.LightScene;
-import org.jgine.utils.Color;
+import org.jgine.utils.Options;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;
-import org.jgine.utils.options.Options;
 
 public class Renderer {
 
@@ -138,7 +137,7 @@ public class Renderer {
 	}
 
 	public static void setLights(LightScene lightScene) {
-		Vector4f ambientLight = Color.toVector(lightScene.getAmbientLight());
+		Vector4f ambientLight = Vector4f.fromColor(lightScene.getAmbientLight());
 		List<PointLight> pointLights = lightScene.getPointLights();
 		PHONG_SHADER.bind();
 		PHONG_SHADER.setAmbientLight(ambientLight);
