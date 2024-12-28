@@ -18,6 +18,7 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
+import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
@@ -60,7 +61,7 @@ public class SceneLoader {
 
 		int systemSize = in.readInt();
 		for (int i = 0; i < systemSize; i++) {
-			SystemScene<?, ?> systemScene = scene.addSystem(in.readInt());
+			SystemScene<?, ?> systemScene = scene.setSystem(EngineSystem.get(in.readInt()));
 			systemScene.load(in);
 		}
 

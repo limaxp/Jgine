@@ -213,7 +213,7 @@ public class Engine {
 
 	public final Scene createScene(String name, EngineSystem<?, ?>... systems) {
 		Scene scene = createScene(name);
-		scene.addSystems(systems);
+		scene.setSystems(systems);
 		return scene;
 	}
 

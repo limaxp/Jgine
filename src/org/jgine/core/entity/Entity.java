@@ -179,10 +179,6 @@ public class Entity {
 		return IntBitSet.get(flag, index);
 	}
 
-	public final <T extends SystemObject> T addSystem(String name, T object) {
-		return addSystem(scene.getSystem(name), object);
-	}
-
 	public final <T extends SystemObject> T addSystem(int id, T object) {
 		return addSystem(scene.getSystem(id), object);
 	}
@@ -195,11 +191,6 @@ public class Entity {
 		systemScene.initObject(this, object);
 		systems.add(systemScene.id, systemScene.addObject(this, object));
 		return object;
-	}
-
-	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(String name, T... objects) {
-		addSystem(scene.getSystem(name), objects);
 	}
 
 	@SafeVarargs
@@ -222,10 +213,6 @@ public class Entity {
 		}
 	}
 
-	public final <T extends SystemObject> void removeSystem(String name) {
-		removeSystem(scene.getSystem(name));
-	}
-
 	public final <T extends SystemObject> void removeSystem(int id) {
 		removeSystem(scene.getSystem(id));
 	}
@@ -239,10 +226,6 @@ public class Entity {
 		systems.remove(systemScene.id);
 	}
 
-	public final <T extends SystemObject> void removeSystem(String name, T object) {
-		removeSystem(scene.getSystem(name), object);
-	}
-
 	public final <T extends SystemObject> void removeSystem(int id, T object) {
 		removeSystem(scene.getSystem(id), object);
 	}
@@ -253,10 +236,6 @@ public class Entity {
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, T object) {
 		systemScene.removeObject(systems.remove(systemScene, object));
-	}
-
-	public final <T extends SystemObject> void removeSystem(String name, int objectId) {
-		removeSystem(scene.getSystem(name), objectId);
 	}
 
 	public final <T extends SystemObject> void removeSystem(int id, int objectId) {
@@ -274,14 +253,6 @@ public class Entity {
 
 	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, int oldId, int newId) {
 		systems.set(systemScene.id, oldId, newId);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(String name) {
-		SystemScene<?, T> systemScene = scene.getSystem(name);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, 0);
 	}
 
 	@Nullable
@@ -303,14 +274,6 @@ public class Entity {
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
 		return getSystem(systemScene, 0);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(String name, int index) {
-		SystemScene<?, T> systemScene = scene.getSystem(name);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, index);
 	}
 
 	@Nullable
@@ -337,10 +300,6 @@ public class Entity {
 		return systemScene.getObject(id);
 	}
 
-	public final <T extends SystemObject> List<T> getSystems(String name) {
-		return getSystems(scene.getSystem(name));
-	}
-
 	public final <T extends SystemObject> List<T> getSystems(int id) {
 		return getSystems(scene.getSystem(id));
 	}
@@ -355,10 +314,6 @@ public class Entity {
 		List<T> result = new ArrayList<T>(systems.size(systemScene.id));
 		systems.forEach(systemScene.id, (index) -> result.add(systemScene.getObject(index)));
 		return result;
-	}
-
-	public final <T extends SystemObject> void forSystems(String name, Consumer<T> func) {
-		forSystems(scene.getSystem(name), func);
 	}
 
 	public final <T extends SystemObject> void forSystems(int id, Consumer<T> func) {
