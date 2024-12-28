@@ -52,9 +52,6 @@ public abstract class ListSystemScene<S extends EngineSystem<S, O>, O extends Sy
 		}
 	}
 
-	protected void relinkEntity(int index) {
-	}
-
 	@Override
 	public void forEach(Consumer<O> func) {
 		synchronized (objects) {
