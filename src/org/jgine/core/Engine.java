@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 
-import org.jgine.collection.list.IntList;
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
@@ -213,7 +212,7 @@ public class Engine {
 		return window;
 	}
 
-	public final Scene createScene(String name, EngineSystem... systems) {
+	public final Scene createScene(String name, EngineSystem<?, ?>... systems) {
 		Scene scene = createScene(name);
 		scene.addSystems(systems);
 		return scene;
@@ -317,17 +316,17 @@ public class Engine {
 		}
 
 		@Override
-		protected void update(int system) {
+		protected void update(EngineSystem<?, ?> system) {
 			if (Options.SYNCHRONIZED) {
 				scene.getSystem(system).update(dt);
-				updated.set(system, true);
+				updated.set(system.id, true);
 				checkUpdates(system);
 				return;
 			}
 			completionService.submit(() -> {
 				scene.getSystem(system).update(dt);
 				synchronized (updated) {
-					updated.set(system, true);
+					updated.set(system.id, true);
 					checkUpdates(system);
 				}
 				return system;
@@ -350,25 +349,25 @@ public class Engine {
 		}
 
 		public void start() {
-			IntList start = updateOrder.getStart();
+			List<EngineSystem<?, ?>> start = updateOrder.getStart();
 			for (int i = 0; i < start.size(); i++)
-				update(start.getInt(i));
+				update(start.get(i));
 		}
 
-		protected void update(int system) {
+		protected void update(EngineSystem<?, ?> system) {
 			scene.getSystem(system).render(dt);
-			updated.set(system, true);
+			updated.set(system.id, true);
 			checkUpdates(system);
 		}
 
-		protected void checkUpdates(int system) {
-			for (int currentAfter : updateOrder.getAfter(system))
+		protected void checkUpdates(EngineSystem<?, ?> system) {
+			for (EngineSystem<?, ?> currentAfter : updateOrder.getAfter(system))
 				checkUpdate(currentAfter);
 		}
 
-		protected void checkUpdate(int system) {
-			for (int before : updateOrder.getBefore(system))
-				if (!updated.get(before))
+		protected void checkUpdate(EngineSystem<?, ?> system) {
+			for (EngineSystem<?, ?> before : updateOrder.getBefore(system))
+				if (!updated.get(before.id))
 					return;
 			update(system);
 		}

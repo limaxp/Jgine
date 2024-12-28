@@ -4,9 +4,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
-import org.jgine.collection.list.IntList;
-import org.jgine.collection.list.arrayList.IntArrayList;
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 
@@ -16,102 +16,65 @@ import org.jgine.system.EngineSystem;
  */
 public class UpdateOrder {
 
-	private IntList start;
-	private IntList[] before;
-	private IntList[] after;
+	private List<EngineSystem<?, ?>> start;
+	private List<EngineSystem<?, ?>>[] before;
+	private List<EngineSystem<?, ?>>[] after;
 	private int size;
 
+	@SuppressWarnings("unchecked")
 	public UpdateOrder() {
-		start = new IntArrayList();
+		start = new IdentityArrayList<EngineSystem<?, ?>>();
 		int size = SystemManager.getSize();
-		before = new IntList[size];
-		after = new IntList[size];
+		before = new List[size];
+		after = new List[size];
 		for (int i = 0; i < size; i++) {
-			before[i] = new IntArrayList();
-			after[i] = new IntArrayList();
+			before[i] = new IdentityArrayList<EngineSystem<?, ?>>();
+			after[i] = new IdentityArrayList<EngineSystem<?, ?>>();
 		}
 	}
 
-	public void add(EngineSystem system, Collection<EngineSystem> before) {
-		ensureCapacity();
+	public void add(EngineSystem<?, ?> system, Collection<EngineSystem<?, ?>> before) {
 		int systemId = system.id;
-		for (EngineSystem b : before) {
+		for (EngineSystem<?, ?> b : before) {
 			int beforeId = b.id;
-			this.before[systemId].add(beforeId);
-			this.after[beforeId].add(systemId);
-		}
-		size++;
-	}
-
-	public void add(int system, Collection<Integer> before) {
-		ensureCapacity();
-		for (int beforeId : before) {
-			this.before[system].add(beforeId);
+			this.before[systemId].add(b);
 			this.after[beforeId].add(system);
 		}
 		size++;
 	}
 
-	public void add(EngineSystem system, EngineSystem... before) {
-		ensureCapacity();
+	public void add(EngineSystem<?, ?> system, EngineSystem<?, ?>... before) {
 		int systemId = system.id;
 		for (int i = 0; i < before.length; i++) {
-			int beforeId = before[i].id;
-			this.before[systemId].add(beforeId);
-			this.after[beforeId].add(systemId);
-		}
-		size++;
-	}
-
-	public void add(int system, int... before) {
-		ensureCapacity();
-		for (int i = 0; i < before.length; i++) {
-			int beforeId = before[i];
-			this.before[system].add(beforeId);
+			EngineSystem<?, ?> b = before[i];
+			int beforeId = b.id;
+			this.before[systemId].add(b);
 			this.after[beforeId].add(system);
 		}
 		size++;
 	}
 
-	public void add(EngineSystem system, EngineSystem before) {
-		add(system.id, before.id);
-	}
-
-	public void add(int system, int before) {
-		ensureCapacity();
-		this.before[system].add(before);
-		this.after[before].add(system);
+	public void add(EngineSystem<?, ?> system, EngineSystem<?, ?> before) {
+		this.before[system.id].add(before);
+		this.after[before.id].add(system);
 		size++;
 	}
 
-	public void add(EngineSystem system) {
-		start.add(system.id);
-		size++;
-	}
-
-	public void add(int system) {
+	public void add(EngineSystem<?, ?> system) {
 		start.add(system);
 		size++;
 	}
 
-	public IntList getStart() {
+	public List<EngineSystem<?, ?>> getStart() {
 		return start;
 	}
 
-	public IntList getBefore(EngineSystem system) {
+	public List<EngineSystem<?, ?>> getBefore(EngineSystem<?, ?> system) {
 		return before[system.id];
 	}
 
-	public IntList getBefore(int system) {
-		return before[system];
-	}
-
-	public IntList getAfter(EngineSystem system) {
+	public List<EngineSystem<?, ?>> getAfter(EngineSystem<?, ?> system) {
 		return after[system.id];
-	}
-
-	public IntList getAfter(int system) {
-		return after[system];
 	}
 
 	public int size() {
@@ -121,21 +84,20 @@ public class UpdateOrder {
 	public void load(DataInput in) throws IOException {
 		int startSize = in.readInt();
 		for (int i = 0; i < startSize; i++)
-			start.add(in.readInt());
+			start.add(SystemManager.get(in.readInt()));
 
 		int dataSize = in.readInt();
 		for (int i = 0; i < dataSize; i++) {
-			IntList beforeList = before[i];
+			List<EngineSystem<?, ?>> beforeList = before[i];
 			int beforeSize = in.readInt();
 			for (int j = 0; j < beforeSize; j++)
-				beforeList.add(in.readInt());
+				beforeList.add(SystemManager.get(in.readInt()));
 
-			IntList afterList = after[i];
+			List<EngineSystem<?, ?>> afterList = after[i];
 			int afterSize = in.readInt();
 			for (int j = 0; j < afterSize; j++)
-				afterList.add(in.readInt());
+				afterList.add(SystemManager.get(in.readInt()));
 		}
-
 		size = in.readInt();
 	}
 
@@ -143,39 +105,23 @@ public class UpdateOrder {
 		int startSize = start.size();
 		out.writeInt(startSize);
 		for (int i = 0; i < startSize; i++)
-			out.writeInt(start.getInt(i));
+			out.writeInt(start.get(i).id);
 
 		int dataSize = before.length;
 		out.writeInt(dataSize);
 		for (int i = 0; i < dataSize; i++) {
-			IntList beforeList = before[i];
+			List<EngineSystem<?, ?>> beforeList = before[i];
 			int beforeSize = beforeList.size();
 			out.writeInt(beforeSize);
 			for (int j = 0; j < beforeSize; j++)
-				out.writeInt(beforeList.getInt(j));
+				out.writeInt(beforeList.get(j).id);
 
-			IntList afterList = after[i];
+			List<EngineSystem<?, ?>> afterList = after[i];
 			int afterSize = afterList.size();
 			out.writeInt(afterSize);
 			for (int j = 0; j < afterSize; j++)
-				out.writeInt(afterList.getInt(j));
+				out.writeInt(afterList.get(j).id);
 		}
 		out.writeInt(size);
-	}
-
-	protected void ensureCapacity() {
-		if (before.length < SystemManager.getSize()) {
-			IntList[] newBefore = new IntList[SystemManager.getSize()];
-			System.arraycopy(before, 0, newBefore, 0, before.length);
-			for (int i = before.length - 1; i < newBefore.length; i++)
-				newBefore[i] = new IntArrayList();
-			before = newBefore;
-
-			IntList[] newAfter = new IntList[SystemManager.getSize()];
-			System.arraycopy(after, 0, newAfter, 0, after.length);
-			for (int i = after.length - 1; i < newAfter.length; i++)
-				newAfter[i] = new IntArrayList();
-			after = newAfter;
-		}
 	}
 }
