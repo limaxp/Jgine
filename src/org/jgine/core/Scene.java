@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
@@ -48,7 +47,7 @@ public class Scene {
 		this.id = name.hashCode();
 		this.name = name;
 		systemMap = new SystemScene<?, ?>[EngineSystem.size()];
-		systemList = new IdentityArrayList<SystemScene<?, ?>>();
+		systemList = new UnorderedIdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		spacePartitioning = new SceneSpacePartitioning(this);
