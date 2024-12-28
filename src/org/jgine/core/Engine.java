@@ -14,8 +14,6 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
 import org.jgine.core.input.Input;
-import org.jgine.core.manager.ResourceManager;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.core.sound.SoundManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
@@ -40,6 +38,9 @@ import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
 import org.jgine.utils.Options;
+import org.jgine.utils.Service;
+import org.jgine.utils.loader.ResourceManager;
+import org.lwjgl.system.MemoryUtil;
 
 import maxLibs.utils.logger.Logger;
 import maxLibs.utils.options.OptionFile;
@@ -155,7 +156,7 @@ public class Engine {
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				updateScene(scene, dt);
-		ServiceManager.distributeChanges();
+		Service.distributeChanges();
 		Scheduler.update();
 		TaskExecutor.execute(Scheduler::updateAsync);
 		Input.update();
@@ -369,6 +370,49 @@ public class Engine {
 				if (!updated.get(before.id))
 					return;
 			update(system);
+		}
+	}
+
+	public static class Info {
+
+		public static String operatingSystem() {
+			return System.getProperty("os.name");
+		}
+
+		public static String version() {
+			return System.getProperty("os.version");
+		}
+
+		public static String architecture() {
+			return System.getProperty("os.arch");
+		}
+
+		public static int bitArchitecture() {
+			return Integer.parseInt(System.getProperty("sun.arch.data.model"));
+		}
+
+		public static int processorsSize() {
+			return Runtime.getRuntime().availableProcessors();
+		}
+
+		public static long pageSize() {
+			return MemoryUtil.PAGE_SIZE;
+		}
+
+		public static long cacheLineSize() {
+			return MemoryUtil.CACHE_LINE_SIZE;
+		}
+
+		public static long freeMemory() {
+			return Runtime.getRuntime().freeMemory();
+		}
+
+		public static long totalMemory() {
+			return Runtime.getRuntime().totalMemory();
+		}
+
+		public static long maxMemory() {
+			return Runtime.getRuntime().maxMemory();
 		}
 	}
 }

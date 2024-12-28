@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.render.RenderTarget;
 import org.jgine.system.SystemObject;
 import org.jgine.utils.Options;
+import org.jgine.utils.Service;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
@@ -248,7 +248,7 @@ public class Camera implements SystemObject, Cloneable {
 	}
 
 	public final void setMainCamera() {
-		ServiceManager.set("camera", this);
+		Service.set("camera", this);
 	}
 
 	public void load(Map<String, Object> data) {

@@ -3,7 +3,6 @@ package org.jgine.render;
 import java.util.List;
 
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
@@ -29,6 +28,7 @@ import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.CircleCollider;
 import org.jgine.system.systems.light.LightScene;
 import org.jgine.utils.Options;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;

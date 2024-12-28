@@ -1,4 +1,4 @@
-package org.jgine.core.manager;
+package org.jgine.utils.loader;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +27,6 @@ import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
-import org.jgine.utils.loader.ModelLoader;
-import org.jgine.utils.loader.ResourceLoader;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

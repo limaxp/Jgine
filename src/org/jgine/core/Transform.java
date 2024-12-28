@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.UpdateManager;
+import org.jgine.system.UpdateManager;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.rotation.AxisAngle4f;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;

@@ -13,9 +13,9 @@ import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 

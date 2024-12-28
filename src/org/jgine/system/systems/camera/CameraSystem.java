@@ -3,8 +3,8 @@ package org.jgine.system.systems.camera;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.Service;
 import org.jgine.utils.function.Property;
 
 public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
@@ -13,7 +13,7 @@ public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
 
 	public CameraSystem() {
 		super("camera");
-		ServiceManager.register("camera", new Property<Camera>() {
+		Service.register("camera", new Property<Camera>() {
 
 			@Override
 			public void setValue(Camera obj) {

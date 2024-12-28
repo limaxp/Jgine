@@ -8,7 +8,7 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.UpdateManager;
+import org.jgine.system.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.utils.TaskHelper;
 

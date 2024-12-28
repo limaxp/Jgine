@@ -9,8 +9,8 @@ import javax.script.ScriptEngine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.data.ListSystemScene;
+import org.jgine.utils.loader.ResourceManager;
 
 public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObject> {
 

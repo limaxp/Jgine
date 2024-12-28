@@ -1,4 +1,4 @@
-package org.jgine.core.manager;
+package org.jgine.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,17 +20,17 @@ import maxLibs.utils.logger.Logger;
  * Services expose a system functionality while properties expose a system value
  * by identifier.
  */
-public class ServiceManager {
+public class Service {
 
 	private static final int MAX_UPDATES = 64;
 
-	private static final Map<Object, Service> SERVICES = new ConcurrentHashMap<Object, Service>();
+	private static final Map<Object, ServiceFunction> SERVICES = new ConcurrentHashMap<Object, ServiceFunction>();
 	@SuppressWarnings("rawtypes")
 	private static final Map<Object, ServiceProperty> PROPERTIES = new ConcurrentHashMap<Object, ServiceProperty>();
 	@SuppressWarnings("rawtypes")
 	private static final Queue<ServiceProperty> UPDATE_VALUES = new ConcurrentLinkedQueue<>();
 
-	public static void register(Object identifier, Service service) {
+	public static void register(Object identifier, ServiceFunction service) {
 		SERVICES.put(identifier, service);
 	}
 
@@ -100,12 +100,12 @@ public class ServiceManager {
 		}
 	}
 
-	public static class Service {
+	public static class ServiceFunction {
 
 		private Object provider;
 		private Method method;
 
-		public Service(Object provider, String methodName, Class<?>... parameterTypes) {
+		public ServiceFunction(Object provider, String methodName, Class<?>... parameterTypes) {
 			Method method;
 			try {
 				method = provider.getClass().getMethod(methodName, parameterTypes);
@@ -119,7 +119,7 @@ public class ServiceManager {
 			this.method = method;
 		}
 
-		public Service(Object provider, Method method) {
+		public ServiceFunction(Object provider, Method method) {
 			this.provider = provider;
 			this.method = method;
 		}

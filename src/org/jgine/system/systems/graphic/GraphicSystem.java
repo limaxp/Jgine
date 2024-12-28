@@ -3,8 +3,8 @@ package org.jgine.system.systems.graphic;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.loader.ResourceManager;
 
 public class GraphicSystem extends EngineSystem<GraphicSystem, GraphicObject> {
 

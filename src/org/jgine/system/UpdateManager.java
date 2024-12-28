@@ -1,10 +1,9 @@
-package org.jgine.core.manager;
+package org.jgine.system;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.system.EngineSystem;
 
 /**
  * Helper class for updating values between {@link EngineSystem}<code>s</code>.

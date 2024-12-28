@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Map;
 
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.material.TextureAnimationHandler.TextureAnimation;
 import org.jgine.render.shader.Shader;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;

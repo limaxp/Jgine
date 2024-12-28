@@ -7,10 +7,10 @@ import java.io.IOException;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.FrustumCulling;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.TransformListSystemScene;
+import org.jgine.utils.loader.ResourceManager;
 
 public class GraphicScene extends TransformListSystemScene<GraphicSystem, GraphicObject> {
 
