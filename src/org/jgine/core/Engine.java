@@ -67,9 +67,9 @@ public class Engine {
 	 * 
 	 * Transfrom is completely unusable! Does not get correct world coordinates!
 	 * 
-	 * System update code in Engine is horrible!
-	 * 
 	 * RenderQueue needs optimization!
+	 * 
+	 * Implement multi thread system update!
 	 * 
 	 * Adding Systems in update loop might block threads! Remove synchronized block
 	 * from update in system classes!
@@ -139,7 +139,6 @@ public class Engine {
 		Script.register(getClass().getPackage());
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
-		gameLoop.setRenderFunction(this::draw);
 		if (window)
 			createWindow();
 	}
@@ -152,6 +151,7 @@ public class Engine {
 		Input.setWindow(window);
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
+		gameLoop.setRenderFunction(this::draw);
 	}
 
 	private final void terminate() {
@@ -225,8 +225,6 @@ public class Engine {
 	}
 
 	private final void draw() {
-		if (window == null)
-			return;
 		Renderer.draw(renderConfigs);
 		window.swapBuffers();
 	}
@@ -240,7 +238,6 @@ public class Engine {
 			if (Options.SYNCHRONIZED)
 				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
 			else {
-//				new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
 			}
 		}
@@ -263,7 +260,6 @@ public class Engine {
 			else {
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
-//					new SceneRender(scene, scene.getRenderOrder(), dt).start();
 					new SynchronizedRender(scene, scene.getRenderOrder(), dt);
 				});
 			}

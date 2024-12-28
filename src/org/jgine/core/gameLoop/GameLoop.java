@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.floats.FloatConsumer;
  */
 public abstract class GameLoop implements Runnable {
 
-	private static Runnable NULL = new Runnable() {
+	private static Runnable NULL_RUNNABLE = new Runnable() {
 
 		@Override
 		public void run() {
@@ -26,7 +26,7 @@ public abstract class GameLoop implements Runnable {
 	};
 
 	private FloatConsumer updateFunction = NULL_FLOAT_CONSUMER;
-	private Runnable renderFunction = NULL;
+	private Runnable renderFunction = NULL_RUNNABLE;
 
 	public abstract int getFps();
 
