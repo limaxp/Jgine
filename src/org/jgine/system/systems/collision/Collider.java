@@ -11,7 +11,7 @@ import org.jgine.system.SystemObject;
 /**
  * The default Collider class.
  */
-public abstract class Collider implements SystemObject, Cloneable {
+public abstract class Collider implements SystemObject {
 
 	public boolean noResolve = false;
 
@@ -47,12 +47,6 @@ public abstract class Collider implements SystemObject, Cloneable {
 	public abstract float getHeight();
 
 	public abstract float getDepth();
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
 
 	@Override
 	public Collider clone() {

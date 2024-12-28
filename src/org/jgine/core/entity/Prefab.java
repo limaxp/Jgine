@@ -237,7 +237,7 @@ public class Prefab {
 			String[] subNames = parentNames[i];
 			SystemObject[] subObjects = parentObjects[i];
 			for (int j = 0; j < subNames.length; j++) {
-				set(parentSystem, subNames[j], subObjects[j].copy());
+				set(parentSystem, subNames[j], subObjects[j].clone());
 			}
 		}
 		setData(parent.data);
@@ -441,7 +441,7 @@ public class Prefab {
 			EngineSystem<?, ?> system = systems[i];
 			SystemObject[] subObjects = objects[i];
 			for (int j = 0; j < subObjects.length; j++)
-				entity.addSystem(system, subObjects[j].copy());
+				entity.addSystem(system, subObjects[j].clone());
 		}
 		for (Prefab child : childs)
 			child.create(scene).setParent(entity);

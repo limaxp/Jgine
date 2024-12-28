@@ -3,7 +3,7 @@ package org.jgine.system.systems.graphic;
 import org.jgine.render.mesh.Model;
 import org.jgine.system.SystemObject;
 
-public class GraphicObject implements SystemObject, Cloneable {
+public class GraphicObject implements SystemObject {
 
 	protected Model model;
 
@@ -12,12 +12,6 @@ public class GraphicObject implements SystemObject, Cloneable {
 
 	public GraphicObject(Model model) {
 		this.model = model;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
 	}
 
 	@Override

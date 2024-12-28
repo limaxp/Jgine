@@ -17,7 +17,7 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.script.ScriptManager;
 
-public abstract class UIObject implements SystemObject, Cloneable {
+public abstract class UIObject implements SystemObject {
 
 	public static final int BACKGROUND_COLOR = Color.rgb(0.15f, 0.15f, 0.15f);
 	public static final int BORDER_COLOR = Color.rgb(0.3f, 0.3f, 0.3f);
@@ -64,12 +64,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		clickFunction = NULL_VALUE_FUNCTION;
 		releaseFunction = NULL_VALUE_FUNCTION;
 		scrollFunction = NULL_VALUE_FUNCTION;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
 	}
 
 	@Override

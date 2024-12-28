@@ -20,7 +20,7 @@ import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIString;
 import org.lwjgl.assimp.Assimp;
 
-public class Material implements SystemObject, Cloneable {
+public class Material implements SystemObject {
 
 	public int ambientColor;
 	public int diffuseColor;
@@ -290,12 +290,6 @@ public class Material implements SystemObject, Cloneable {
 		out.writeFloat(textureHeight);
 		out.writeFloat(flipX);
 		out.writeFloat(flipY);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
 	}
 
 	@Override

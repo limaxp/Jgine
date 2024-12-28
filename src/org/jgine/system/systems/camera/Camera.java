@@ -19,7 +19,7 @@ import org.jgine.utils.options.Options;
  * 
  * @author Maximilian Paar
  */
-public class Camera implements SystemObject, Cloneable {
+public class Camera implements SystemObject {
 
 	public static final byte PERSPECTIVE_MODE = 1;
 	public static final byte ORTHOGRAPHIC_MODE = 2;
@@ -311,12 +311,6 @@ public class Camera implements SystemObject, Cloneable {
 		out.writeFloat(up.x);
 		out.writeFloat(up.y);
 		out.writeFloat(up.z);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
 	}
 
 	@Override

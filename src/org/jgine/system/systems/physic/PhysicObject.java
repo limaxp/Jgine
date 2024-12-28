@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.jgine.system.SystemObject;
 import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
@@ -151,5 +152,15 @@ public class PhysicObject implements SystemObject {
 		return super.toString() + " [pos: " + x + "," + y + "," + z + " | oldPos: " + oldX + "," + oldY + "," + oldZ
 				+ " | mot: " + motX + "," + motY + "," + motZ + " | hasGravity: " + hasGravity + " | stiffness: "
 				+ stiffness + " | isMoving: " + isMoving + "]";
+	}
+
+	@Override
+	public PhysicObject clone() {
+		try {
+			return (PhysicObject) super.clone();
+		} catch (CloneNotSupportedException e) {
+			Logger.err("PhysicObject: Error on clone!", e);
+			return null;
+		}
 	}
 }

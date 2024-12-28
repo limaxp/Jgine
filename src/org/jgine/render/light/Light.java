@@ -10,6 +10,7 @@ import org.jgine.system.SystemObject;
 import org.jgine.system.systems.light.LightType;
 import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
+import org.jgine.utils.logger.Logger;
 
 public abstract class Light implements SystemObject {
 
@@ -63,5 +64,15 @@ public abstract class Light implements SystemObject {
 	@Override
 	public String toString() {
 		return super.toString() + " [color: " + Color.toString(color) + " | intensity: " + intensity + "]";
+	}
+
+	@Override
+	public Light clone() {
+		try {
+			return (Light) super.clone();
+		} catch (CloneNotSupportedException e) {
+			Logger.err("Light: Error on clone!", e);
+			return null;
+		}
 	}
 }

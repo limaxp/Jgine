@@ -33,24 +33,6 @@ public class ParticleObject extends Particle implements SystemObject {
 	public float spawnTime = 0.2f;
 	private float elapsedTime;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
-	@Override
-	public ParticleObject clone() {
-		try {
-			ParticleObject obj = (ParticleObject) super.clone();
-			obj.material = material.clone();
-			return obj;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public boolean checkSpawnTime(float dt) {
 		elapsedTime += dt;
 		if (elapsedTime > spawnTime) {
@@ -161,5 +143,17 @@ public class ParticleObject extends Particle implements SystemObject {
 
 	public Transform getTransform() {
 		return transform;
+	}
+
+	@Override
+	public ParticleObject clone() {
+		try {
+			ParticleObject obj = (ParticleObject) super.clone();
+			obj.material = material.clone();
+			return obj;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

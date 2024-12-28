@@ -11,12 +11,6 @@ public class TileMapObject extends TileMap implements SystemObject {
 		super(data, material, colums, rows);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
 	@Override
 	public TileMapObject clone() {
 		try {

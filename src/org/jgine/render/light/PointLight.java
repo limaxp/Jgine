@@ -86,4 +86,11 @@ public class PointLight extends Light {
 	public LightType<PointLight> getType() {
 		return LightTypes.POINT;
 	}
+
+	@Override
+	public PointLight clone() {
+		PointLight object = (PointLight) super.clone();
+		object.attenuation = attenuation;
+		return object;
+	}
 }

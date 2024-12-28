@@ -12,10 +12,10 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.Struct;
 import org.lwjgl.system.StructBuffer;
 
-public abstract class StructSystemScene<S extends EngineSystem<S, O>, O extends Struct & SystemObject>
-		extends SystemScene<S, O> implements NativeResource {
+public abstract class StructSystemScene<S extends EngineSystem<S, O>, O extends /** Struct & **/
+SystemObject> extends SystemScene<S, O> implements NativeResource {
 
-	protected StructBuffer<O, ?> buffer;
+//	protected StructBuffer<O, ?> buffer;
 	protected int size;
 
 	public StructSystemScene(S system, Scene scene, Class<O> clazz) {
@@ -24,7 +24,7 @@ public abstract class StructSystemScene<S extends EngineSystem<S, O>, O extends 
 
 	@Override
 	public final void close() {
-		MemoryUtil.memFree(buffer);
+//		MemoryUtil.memFree(buffer);
 	}
 
 	@Override

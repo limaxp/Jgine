@@ -1,5 +1,6 @@
 package org.jgine.system.systems.input;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -12,15 +13,16 @@ import org.jgine.core.input.Key;
 import org.jgine.core.input.device.Gamepad;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
 
 public class InputHandler implements SystemObject {
 
 	private Entity entity;
 	protected InputDevice[] inputDevices;
-	private final Map<Integer, Runnable> keyboardMap;
-	private final Map<Integer, Runnable> mouseMap;
-	private final Map<Integer, Runnable> gamepadMap;
+	private Map<Integer, Runnable> keyboardMap;
+	private Map<Integer, Runnable> mouseMap;
+	private Map<Integer, Runnable> gamepadMap;
 
 	private Consumer<Vector2f> mouseMove = (pos) -> {
 	};
@@ -193,5 +195,20 @@ public class InputHandler implements SystemObject {
 
 	public final Consumer<Vector2f> getGamepadRightStickMove() {
 		return gamepadRightStickMove;
+	}
+
+	@Override
+	public InputHandler clone() {
+		try {
+			InputHandler object = (InputHandler) super.clone();
+			object.inputDevices = Arrays.copyOf(inputDevices, inputDevices.length);
+			object.keyboardMap = new HashMap<Integer, Runnable>(keyboardMap);
+			object.mouseMap = new HashMap<Integer, Runnable>(mouseMap);
+			object.gamepadMap = new HashMap<Integer, Runnable>(gamepadMap);
+			return object;
+		} catch (CloneNotSupportedException e) {
+			Logger.err("InputHandler: Error on clone!", e);
+			return null;
+		}
 	}
 }
