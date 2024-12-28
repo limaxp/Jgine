@@ -18,7 +18,6 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
 import org.jgine.core.entity.SystemMap.SystemMapConsumer;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.GameServer;
 import org.jgine.system.EngineSystem;
@@ -189,7 +188,7 @@ public class Entity {
 		return addSystem(scene.getSystem(id), object);
 	}
 
-	public final <T extends SystemObject> T addSystem(EngineSystem system, T object) {
+	public final <T extends SystemObject> T addSystem(EngineSystem<?, ?> system, T object) {
 		return addSystem(scene.getSystem(system), object);
 	}
 
@@ -210,7 +209,7 @@ public class Entity {
 	}
 
 	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(EngineSystem system, T... objects) {
+	public final <T extends SystemObject> void addSystem(EngineSystem<?, ?> system, T... objects) {
 		addSystem(scene.getSystem(system), objects);
 	}
 
@@ -232,7 +231,7 @@ public class Entity {
 		removeSystem(scene.getSystem(id));
 	}
 
-	public final <T extends SystemObject> void removeSystem(EngineSystem system) {
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system) {
 		removeSystem(scene.getSystem(system));
 	}
 
@@ -249,7 +248,7 @@ public class Entity {
 		removeSystem(scene.getSystem(id), object);
 	}
 
-	public final <T extends SystemObject> void removeSystem(EngineSystem system, T object) {
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system, T object) {
 		removeSystem(scene.getSystem(system), object);
 	}
 
@@ -265,7 +264,7 @@ public class Entity {
 		removeSystem(scene.getSystem(id), objectId);
 	}
 
-	public final <T extends SystemObject> void removeSystem(EngineSystem system, int objectId) {
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system, int objectId) {
 		removeSystem(scene.getSystem(system), objectId);
 	}
 
@@ -295,7 +294,7 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(EngineSystem system) {
+	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system) {
 		SystemScene<?, T> systemScene = scene.getSystem(system);
 		if (systemScene == null)
 			return null;
@@ -324,7 +323,7 @@ public class Entity {
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
+	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system, int index) {
 		SystemScene<?, T> systemScene = scene.getSystem(system);
 		if (systemScene == null)
 			return null;
@@ -347,7 +346,7 @@ public class Entity {
 		return getSystems(scene.getSystem(id));
 	}
 
-	public final <T extends SystemObject> List<T> getSystems(EngineSystem system) {
+	public final <T extends SystemObject> List<T> getSystems(EngineSystem<?, ?> system) {
 		return getSystems(scene.getSystem(system));
 	}
 
@@ -367,7 +366,7 @@ public class Entity {
 		forSystems(scene.getSystem(id), func);
 	}
 
-	public final <T extends SystemObject> void forSystems(EngineSystem system, Consumer<T> func) {
+	public final <T extends SystemObject> void forSystems(EngineSystem<?, ?> system, Consumer<T> func) {
 		forSystems(scene.getSystem(system), func);
 	}
 
@@ -376,14 +375,14 @@ public class Entity {
 	}
 
 	public final void forSystems(String name, IntConsumer func) {
-		forSystems(SystemManager.get(name).id, func);
+		forSystems(EngineSystem.get(name).id, func);
 	}
 
 	public final void forSystems(int id, IntConsumer func) {
 		systems.forEach(id, func);
 	}
 
-	public final void forSystems(EngineSystem system, IntConsumer func) {
+	public final void forSystems(EngineSystem<?, ?> system, IntConsumer func) {
 		forSystems(system.id, func);
 	}
 

@@ -13,7 +13,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
@@ -38,7 +37,7 @@ public class Scene {
 	public final Engine engine;
 	public final int id;
 	public final String name;
-	private final Map<EngineSystem, SystemScene<?, ?>> systemMap;
+	private final Map<EngineSystem<?, ?>, SystemScene<?, ?>> systemMap;
 	private final List<SystemScene<?, ?>> systemList;
 	private final List<Entity> entities;
 	private final List<Entity> topEntities;
@@ -51,7 +50,7 @@ public class Scene {
 		this.engine = engine;
 		this.id = name.hashCode();
 		this.name = name;
-		systemMap = new ConcurrentHashMap<EngineSystem, SystemScene<?, ?>>();
+		systemMap = new ConcurrentHashMap<EngineSystem<?, ?>, SystemScene<?, ?>>();
 		systemList = new IdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
@@ -75,15 +74,15 @@ public class Scene {
 	}
 
 	public final <T extends SystemScene<?, ?>> T addSystem(String name) {
-		return addSystem(SystemManager.get(name));
+		return addSystem(EngineSystem.get(name));
 	}
 
 	public final <T extends SystemScene<?, ?>> T addSystem(int id) {
-		return addSystem(SystemManager.get(id));
+		return addSystem(EngineSystem.get(id));
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T addSystem(EngineSystem system) {
+	public final <T extends SystemScene<?, ?>> T addSystem(EngineSystem<?, ?> system) {
 		SystemScene<?, ?> systemScene = system.createScene(this);
 		systemMap.put(system, systemScene);
 		Scheduler.runTaskSynchron(() -> systemList.add(systemScene));
@@ -91,16 +90,16 @@ public class Scene {
 	}
 
 	public final <T extends SystemScene<?, ?>> T removeSystem(String name) {
-		return removeSystem(SystemManager.get(name));
+		return removeSystem(EngineSystem.get(name));
 	}
 
 	public final <T extends SystemScene<?, ?>> T removeSystem(int id) {
-		return removeSystem(SystemManager.get(id));
+		return removeSystem(EngineSystem.get(id));
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem system) {
+	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem<?, ?> system) {
 		SystemScene<?, ?> systemScene = systemMap.remove(system);
 		Scheduler.runTaskSynchron(() -> {
 			systemList.remove(systemScene);
@@ -111,45 +110,45 @@ public class Scene {
 
 	public final void addSystems(String... names) {
 		for (String name : names)
-			addSystem(SystemManager.get(name));
+			addSystem(EngineSystem.get(name));
 	}
 
 	public final void addSystems(int... ids) {
 		for (int id : ids)
-			addSystem(SystemManager.get(id));
+			addSystem(EngineSystem.get(id));
 	}
 
-	public final void addSystems(EngineSystem... systems) {
-		for (EngineSystem system : systems)
+	public final void addSystems(EngineSystem<?, ?>... systems) {
+		for (EngineSystem<?, ?> system : systems)
 			addSystem(system);
 	}
 
 	public final void removeSystems(String... names) {
 		for (String name : names)
-			removeSystem(SystemManager.get(name));
+			removeSystem(EngineSystem.get(name));
 	}
 
 	public final void removeSystems(int... ids) {
 		for (int id : ids)
-			removeSystem(SystemManager.get(id));
+			removeSystem(EngineSystem.get(id));
 	}
 
-	public final void removeSystems(EngineSystem... systems) {
-		for (EngineSystem system : systems)
+	public final void removeSystems(EngineSystem<?, ?>... systems) {
+		for (EngineSystem<?, ?> system : systems)
 			removeSystem(system);
 	}
 
-	public final void addSystems(Collection<EngineSystem> systems) {
-		for (EngineSystem system : systems)
+	public final void addSystems(Collection<EngineSystem<?, ?>> systems) {
+		for (EngineSystem<?, ?> system : systems)
 			addSystem(system);
 	}
 
-	public final void removeSystems(Collection<EngineSystem> systems) {
-		for (EngineSystem system : systems)
+	public final void removeSystems(Collection<EngineSystem<?, ?>> systems) {
+		for (EngineSystem<?, ?> system : systems)
 			removeSystem(system);
 	}
 
-	public final Collection<EngineSystem> getEngineSystems() {
+	public final Collection<EngineSystem<?, ?>> getEngineSystems() {
 		return systemMap.keySet();
 	}
 
@@ -157,37 +156,37 @@ public class Scene {
 		return systemList;
 	}
 
-	public final Set<Entry<EngineSystem, SystemScene<?, ?>>> getSystemEntries() {
+	public final Set<Entry<EngineSystem<?, ?>, SystemScene<?, ?>>> getSystemEntries() {
 		return systemMap.entrySet();
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T getSystem(String name) {
-		return (T) systemMap.get(SystemManager.get(name));
+		return (T) systemMap.get(EngineSystem.get(name));
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
 	public final <T extends SystemScene<?, ?>> T getSystem(int id) {
-		return (T) systemMap.get(SystemManager.get(id));
+		return (T) systemMap.get(EngineSystem.get(id));
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(EngineSystem system) {
+	public final <T extends SystemScene<?, ?>> T getSystem(EngineSystem<?, ?> system) {
 		return (T) systemMap.get(system);
 	}
 
 	public final boolean hasSystem(String name) {
-		return systemMap.containsKey(SystemManager.get(name));
+		return systemMap.containsKey(EngineSystem.get(name));
 	}
 
 	public final boolean hasSystem(int id) {
-		return systemMap.containsKey(SystemManager.get(id));
+		return systemMap.containsKey(EngineSystem.get(id));
 	}
 
-	public final boolean hasSystem(EngineSystem system) {
+	public final boolean hasSystem(EngineSystem<?, ?> system) {
 		return systemMap.containsKey(system);
 	}
 

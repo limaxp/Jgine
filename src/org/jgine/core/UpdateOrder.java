@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 
 /**
@@ -24,7 +23,7 @@ public class UpdateOrder {
 	@SuppressWarnings("unchecked")
 	public UpdateOrder() {
 		start = new IdentityArrayList<EngineSystem<?, ?>>();
-		int size = SystemManager.getSize();
+		int size = EngineSystem.size();
 		before = new List[size];
 		after = new List[size];
 		for (int i = 0; i < size; i++) {
@@ -84,19 +83,19 @@ public class UpdateOrder {
 	public void load(DataInput in) throws IOException {
 		int startSize = in.readInt();
 		for (int i = 0; i < startSize; i++)
-			start.add(SystemManager.get(in.readInt()));
+			start.add(EngineSystem.get(in.readInt()));
 
 		int dataSize = in.readInt();
 		for (int i = 0; i < dataSize; i++) {
 			List<EngineSystem<?, ?>> beforeList = before[i];
 			int beforeSize = in.readInt();
 			for (int j = 0; j < beforeSize; j++)
-				beforeList.add(SystemManager.get(in.readInt()));
+				beforeList.add(EngineSystem.get(in.readInt()));
 
 			List<EngineSystem<?, ?>> afterList = after[i];
 			int afterSize = in.readInt();
 			for (int j = 0; j < afterSize; j++)
-				afterList.add(SystemManager.get(in.readInt()));
+				afterList.add(EngineSystem.get(in.readInt()));
 		}
 		size = in.readInt();
 	}

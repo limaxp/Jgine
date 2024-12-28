@@ -16,7 +16,6 @@ import org.jgine.core.gameLoop.GameLoop;
 import org.jgine.core.input.Input;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.manager.ServiceManager;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.core.sound.SoundManager;
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
@@ -345,7 +344,7 @@ public class Engine {
 			this.scene = scene;
 			this.updateOrder = updateOrder;
 			this.dt = dt;
-			updated = new BitSet(SystemManager.getSize());
+			updated = new BitSet(EngineSystem.size());
 		}
 
 		public void start() {

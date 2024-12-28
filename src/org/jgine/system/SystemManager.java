@@ -1,10 +1,8 @@
-package org.jgine.core.manager;
+package org.jgine.system;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jgine.system.EngineSystem;
 
 import maxLibs.utils.logger.Logger;
 
@@ -14,13 +12,11 @@ import maxLibs.utils.logger.Logger;
  */
 public class SystemManager {
 
-	public static final int MAX_SIZE = 1000;
-
-	private static final Map<String, EngineSystem> NAME_MAP = new HashMap<String, EngineSystem>(MAX_SIZE);
-	private static EngineSystem[] ID_MAP = new EngineSystem[MAX_SIZE];
+	private static final Map<String, EngineSystem<?, ?>> NAME_MAP = new HashMap<String, EngineSystem<?, ?>>(1000);
+	private static final EngineSystem<?, ?>[] ID_MAP = new EngineSystem[1000];
 	private static int size;
 
-	public static <T extends EngineSystem> int register(T system) {
+	static int register(EngineSystem<?, ?> system) {
 		if (NAME_MAP.containsKey(system.name)) {
 			Logger.warn("SystemManager: System '" + system.name + "' does already exist!");
 			return -1;
@@ -32,20 +28,20 @@ public class SystemManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends EngineSystem> T get(String name) {
+	static <T extends EngineSystem<?, ?>> T get(String name) {
 		return (T) NAME_MAP.get(name);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends EngineSystem> T get(int id) {
+	static <T extends EngineSystem<?, ?>> T get(int id) {
 		return (T) ID_MAP[id];
 	}
 
-	public static Collection<EngineSystem> getSystems() {
+	static Collection<EngineSystem<?, ?>> values() {
 		return NAME_MAP.values();
 	}
 
-	public static int getSize() {
+	static int size() {
 		return size;
 	}
 }

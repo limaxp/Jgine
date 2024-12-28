@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.function.IntConsumer;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
@@ -23,7 +22,7 @@ public class SystemMap {
 	private int size;
 
 	public SystemMap() {
-		int systemCount = SystemManager.getSize();
+		int systemCount = EngineSystem.size();
 		data = new int[systemCount][];
 		for (int i = 0; i < systemCount; i++)
 			data[i] = NULL_ARRAY;
@@ -122,7 +121,7 @@ public class SystemMap {
 
 	public <T extends SystemObject> void forEach(IntConsumer func) {
 		synchronized (data) {
-			int size = SystemManager.getSize();
+			int size = EngineSystem.size();
 			for (int id = 0; id < size; id++) {
 				int[] ids = data[id];
 				int systemSize = size(id) + 1;
@@ -134,7 +133,7 @@ public class SystemMap {
 
 	public <T extends SystemObject> void forEach(Scene scene, SystemMapConsumer func) {
 		synchronized (data) {
-			int size = SystemManager.getSize();
+			int size = EngineSystem.size();
 			for (int id = 0; id < size; id++) {
 				int[] ids = data[id];
 				int systemSize = size(id) + 1;

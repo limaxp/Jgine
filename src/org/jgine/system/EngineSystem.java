@@ -1,9 +1,9 @@
 package org.jgine.system;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.SystemManager;
 
 /**
  * The base engine system class. All systems must override this class and will
@@ -29,5 +29,21 @@ public abstract class EngineSystem<S extends EngineSystem<S, O>, O extends Syste
 	@Override
 	public boolean equals(Object obj) {
 		return this == obj;
+	}
+
+	public static <T extends EngineSystem<?, ?>> T get(String name) {
+		return SystemManager.get(name);
+	}
+
+	public static <T extends EngineSystem<?, ?>> T get(int id) {
+		return SystemManager.get(id);
+	}
+
+	public static Collection<EngineSystem<?, ?>> values() {
+		return SystemManager.values();
+	}
+
+	public static int size() {
+		return SystemManager.size();
 	}
 }
