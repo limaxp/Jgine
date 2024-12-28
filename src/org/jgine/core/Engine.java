@@ -1,15 +1,13 @@
 package org.jgine.core;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.core.UpdateOrder.SynchronizedRender;
+import org.jgine.core.UpdateOrder.SynchronizedUpdate;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -39,11 +37,10 @@ import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
 import org.jgine.utils.Service;
 import org.jgine.utils.loader.ResourceManager;
-import org.jgine.utils.logger.Logger;
 import org.jgine.utils.options.OptionFile;
 import org.jgine.utils.options.Options;
 import org.jgine.utils.scheduler.Scheduler;
-import org.jgine.utils.scheduler.TaskExecutor;
+import org.jgine.utils.scheduler.ThreadPool;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -160,7 +157,7 @@ public class Engine {
 	private final void terminate() {
 		for (Scene scene : scenes)
 			scene.free();
-		TaskExecutor.shutdown();
+		ThreadPool.shutdown();
 		ResourceManager.terminate();
 		for (RenderConfiguration renderConfig : renderConfigs)
 			renderConfig.close();
@@ -207,7 +204,7 @@ public class Engine {
 				updateScene(scene, dt);
 		Service.distributeChanges();
 		Scheduler.update();
-		TaskExecutor.execute(Scheduler::updateAsync);
+		ThreadPool.execute(Scheduler::updateAsync);
 		Input.update();
 		SoundManager.update();
 		onUpdate();
@@ -238,8 +235,15 @@ public class Engine {
 		if (!scene.hasUpdateOrder()) {
 			for (SystemScene<?, ?> systemScene : scene.getSystems())
 				systemScene.update(dt);
-		} else
-			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
+
+		} else {
+			if (Options.SYNCHRONIZED)
+				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
+			else {
+//				new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
+				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
+			}
+		}
 	}
 
 	private final void renderScene(Scene scene, float dt) {
@@ -254,10 +258,15 @@ public class Engine {
 					systemScene.render(dt);
 			});
 		} else {
-			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-				Renderer.setCamera_UNSAFE(camera);
-				new SceneRender(scene, scene.getRenderOrder(), dt).start();
-			});
+			if (Options.SYNCHRONIZED)
+				new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+			else {
+				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
+					Renderer.setCamera_UNSAFE(camera);
+//					new SceneRender(scene, scene.getRenderOrder(), dt).start();
+					new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+				});
+			}
 		}
 	}
 
@@ -357,90 +366,6 @@ public class Engine {
 		return renderConfigs.size();
 	}
 
-	private static class SceneUpdate extends SceneRender {
-
-		protected int updatedSize;
-		protected final CompletionService<Object> completionService;
-
-		public SceneUpdate(Scene scene, UpdateOrder updateOrder, float dt) {
-			super(scene, updateOrder, dt);
-			completionService = new ExecutorCompletionService<Object>(TaskExecutor.getExecutor());
-		}
-
-		@Override
-		public void start() {
-			super.start();
-			if (Options.SYNCHRONIZED)
-				return;
-			while (updatedSize != updateOrder.size()) {
-				try {
-					completionService.take().get();
-				} catch (InterruptedException | ExecutionException e) {
-					Logger.err("SceneUpdate: Error on getting future!", e);
-					break;
-				}
-				updatedSize++;
-			}
-		}
-
-		@Override
-		protected void update(EngineSystem<?, ?> system) {
-			if (Options.SYNCHRONIZED) {
-				scene.getSystem(system).update(dt);
-				updated.set(system.id, true);
-				checkUpdates(system);
-				return;
-			}
-			completionService.submit(() -> {
-				scene.getSystem(system).update(dt);
-				synchronized (updated) {
-					updated.set(system.id, true);
-					checkUpdates(system);
-				}
-				return system;
-			});
-		}
-	}
-
-	private static class SceneRender {
-
-		protected final Scene scene;
-		protected final UpdateOrder updateOrder;
-		protected final BitSet updated;
-		protected final float dt;
-
-		public SceneRender(Scene scene, UpdateOrder updateOrder, float dt) {
-			this.scene = scene;
-			this.updateOrder = updateOrder;
-			this.dt = dt;
-			updated = new BitSet(EngineSystem.size());
-		}
-
-		public void start() {
-			List<EngineSystem<?, ?>> start = updateOrder.getStart();
-			for (int i = 0; i < start.size(); i++)
-				update(start.get(i));
-		}
-
-		protected void update(EngineSystem<?, ?> system) {
-			scene.getSystem(system).render(dt);
-			updated.set(system.id, true);
-			checkUpdates(system);
-		}
-
-		protected void checkUpdates(EngineSystem<?, ?> system) {
-			for (EngineSystem<?, ?> currentAfter : updateOrder.getAfter(system))
-				checkUpdate(currentAfter);
-		}
-
-		protected void checkUpdate(EngineSystem<?, ?> system) {
-			for (EngineSystem<?, ?> before : updateOrder.getBefore(system))
-				if (!updated.get(before.id))
-					return;
-			update(system);
-		}
-	}
-
 	public static class Info {
 
 		public static String operatingSystem() {
@@ -459,7 +384,7 @@ public class Engine {
 			return Integer.parseInt(System.getProperty("sun.arch.data.model"));
 		}
 
-		public static int processorsSize() {
+		public static int availableProcessors() {
 			return Runtime.getRuntime().availableProcessors();
 		}
 

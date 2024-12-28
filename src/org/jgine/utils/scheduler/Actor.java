@@ -76,7 +76,7 @@ public interface Actor {
 			if (!mbox.isEmpty() && on.compareAndSet(false, true)) {
 				// Schedule to run on the Executor and back out on failure
 				try {
-					TaskExecutor.execute(this);
+					ThreadPool.execute(this);
 				} catch (Throwable t) {
 					on.set(false);
 					throw t;

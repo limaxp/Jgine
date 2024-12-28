@@ -34,10 +34,10 @@ public class Scheduler {
 	public static void updateAsync() {
 		long time = System.currentTimeMillis();
 		synchronized (TIME_BUFFER_ASYNC) {
-			TIME_BUFFER_ASYNC.update(time, TaskExecutor::execute);
+			TIME_BUFFER_ASYNC.update(time, ThreadPool::execute);
 		}
 		synchronized (TASK_BUFFER_ASYNC) {
-			TASK_BUFFER_ASYNC.update(time, TaskExecutor::execute);
+			TASK_BUFFER_ASYNC.update(time, ThreadPool::execute);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class Scheduler {
 	}
 
 	public static void runTaskAsynchron(Runnable task) {
-		TaskExecutor.execute(task);
+		ThreadPool.execute(task);
 	}
 
 	public static void runTaskLater(int timeInMills, Runnable task) {

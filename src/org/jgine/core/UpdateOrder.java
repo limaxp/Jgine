@@ -3,11 +3,13 @@ package org.jgine.core;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.system.EngineSystem;
+import org.jgine.system.SystemScene;
 
 /**
  * Defines an update or render order for a {@link Scene}. Use add() methods to
@@ -122,5 +124,54 @@ public class UpdateOrder {
 				out.writeInt(afterList.get(j).id);
 		}
 		out.writeInt(size);
+	}
+
+	public static class SynchronizedRender extends SynchronizedUpdate {
+
+		public SynchronizedRender(Scene scene, UpdateOrder order, float dt) {
+			super(scene, order, dt);
+		}
+
+		@Override
+		protected void func(SystemScene<?, ?> system, float dt) {
+			system.render(dt);
+		}
+	}
+
+	public static class SynchronizedUpdate {
+
+		private final Scene scene;
+		private final UpdateOrder order;
+		private final BitSet flags;
+
+		public SynchronizedUpdate(Scene scene, UpdateOrder order, float dt) {
+			this.scene = scene;
+			this.order = order;
+			flags = new BitSet(EngineSystem.size());
+			List<EngineSystem<?, ?>> start = order.getStart();
+			for (int i = 0; i < start.size(); i++)
+				update(start.get(i), dt);
+		}
+
+		protected void func(SystemScene<?, ?> system, float dt) {
+			system.update(dt);
+		}
+
+		private final void update(EngineSystem<?, ?> system, float dt) {
+			flags.set(system.id, true);
+			func(scene.getSystem(system), dt);
+			for (EngineSystem<?, ?> currentAfter : order.getAfter(system))
+				check(currentAfter, dt);
+		}
+
+		private final void check(EngineSystem<?, ?> system, float dt) {
+			if (flags.get(system.id))
+				return;
+
+			for (EngineSystem<?, ?> before : order.getBefore(system))
+				if (!flags.get(before.id))
+					return;
+			update(system, dt);
+		}
 	}
 }

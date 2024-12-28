@@ -12,16 +12,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.jgine.core.Engine;
+
 /**
  * Helper class for parallel task execution. Uses {@link ThreadPoolExecutor}
  * internally.
  */
-public class TaskExecutor {
+public class ThreadPool {
 
 	private static final ThreadPoolExecutor THREAD_POOL;
 
 	static {
-		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1,
+		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(Engine.Info.availableProcessors() - 1,
 				new WorkerThreadFactory());
 		THREAD_POOL.prestartAllCoreThreads();
 	}

@@ -9,10 +9,10 @@ import java.util.function.IntConsumer;
 import org.jgine.collection.function.BiIntConsumer;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.options.Options;
-import org.jgine.utils.scheduler.TaskExecutor;
+import org.jgine.utils.scheduler.ThreadPool;
 
 /**
- * Helper class for parallel task execution. Uses {@link TaskExecutor}
+ * Helper class for parallel task execution. Uses {@link ThreadPool}
  * internally.
  */
 public class TaskHelper {
@@ -23,7 +23,7 @@ public class TaskHelper {
 			return;
 		}
 		List<Future<?>> tasks = new ArrayList<Future<?>>();
-		int threadSize = TaskExecutor.getPoolSize();
+		int threadSize = ThreadPool.getPoolSize();
 		if (size < threadSize) {
 			func.accept(0, size);
 			return;
@@ -33,10 +33,10 @@ public class TaskHelper {
 		int i = 0;
 		for (; i < threadSize - 1; i++) {
 			int index = i * updateSize;
-			tasks.add(TaskExecutor.submit(() -> func.accept(index, updateSize)));
+			tasks.add(ThreadPool.submit(() -> func.accept(index, updateSize)));
 		}
 		int index = i * updateSize;
-		tasks.add(TaskExecutor.submit(() -> func.accept(index, updateSize + rest)));
+		tasks.add(ThreadPool.submit(() -> func.accept(index, updateSize + rest)));
 		waitTasks(tasks);
 	}
 
@@ -47,7 +47,7 @@ public class TaskHelper {
 			return;
 		}
 		List<Future<?>> tasks = new ArrayList<Future<?>>();
-		int threadSize = TaskExecutor.getPoolSize();
+		int threadSize = ThreadPool.getPoolSize();
 		if (size < threadSize) {
 			for (int i = 0; i < size; i++)
 				func.accept(i);
@@ -58,14 +58,14 @@ public class TaskHelper {
 		int i = 0;
 		for (; i < threadSize - 1; i++) {
 			int index = i * updateSize;
-			tasks.add(TaskExecutor.submit(() -> {
+			tasks.add(ThreadPool.submit(() -> {
 				int loopSize = index + updateSize;
 				for (int j = index; j < loopSize; j++)
 					func.accept(j);
 			}));
 		}
 		int index = i * updateSize;
-		tasks.add(TaskExecutor.submit(() -> {
+		tasks.add(ThreadPool.submit(() -> {
 			int loopSize = index + updateSize + rest;
 			for (int j = index; j < loopSize; j++)
 				func.accept(j);
