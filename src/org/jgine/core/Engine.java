@@ -58,6 +58,27 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Engine {
 
+	/*
+	 * NOTE
+	 * 
+	 * Each system must declare a java object! if outside of memory its a pointer!
+	 * 
+	 * Main thread should only render and trigger updates on worker threads!
+	 * 
+	 * 
+	 * TODO
+	 * 
+	 * Transfrom is completely unusable! Does not get correct world coordinates!
+	 * 
+	 * System update code in Engine is horrible!
+	 * 
+	 * RenderQueue needs optimization!
+	 * 
+	 * Adding Systems in update loop might block threads! Remove synchronized block
+	 * from update in system classes!
+	 * 
+	 */
+
 	public static final PhysicSystem PHYSIC_SYSTEM = new PhysicSystem();
 	public static final CameraSystem CAMERA_SYSTEM = new CameraSystem();
 	public static final CollisionSystem COLLISION_SYSTEM = new CollisionSystem();
@@ -79,11 +100,11 @@ public class Engine {
 
 	public final String name;
 	private boolean isRunning;
-	private final Window window;
 	private GameLoop gameLoop;
 	private final Map<String, Scene> sceneMap;
 	private final Map<Integer, Scene> sceneIdMap;
 	private final List<Scene> scenes;
+	private Window window;
 	private final List<RenderConfiguration> renderConfigs;
 
 	public Engine(String name) {
@@ -93,18 +114,21 @@ public class Engine {
 		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
+		SoundManager.init();
+		Script.register(getClass().getPackage());
+		gameLoop = createGameLoop();
+		gameLoop.setUpdateFunction(this::update);
+		gameLoop.setRenderFunction(this::draw);
+	}
+
+	public final void createWindow() {
 		DisplayManager.init();
 		window = new Window(name);
 		window.setWindowPosCallback((id, x, y) -> gameLoop.run());
 		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
-		SoundManager.init();
-		Script.register(getClass().getPackage());
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
-		gameLoop = createGameLoop();
-		gameLoop.setUpdateFunction(this::update);
-		gameLoop.setRenderFunction(this::draw);
 	}
 
 	private final void terminate() {
@@ -142,7 +166,7 @@ public class Engine {
 	}
 
 	private final boolean checkStatus() {
-		if (window.shouldClose())
+		if (window != null && window.shouldClose())
 			shutdown();
 		return isRunning;
 	}
@@ -176,6 +200,8 @@ public class Engine {
 	}
 
 	private final void render(float dt) {
+		if (window == null)
+			return;
 		Renderer.update(dt);
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
@@ -184,6 +210,8 @@ public class Engine {
 	}
 
 	private final void draw() {
+		if (window == null)
+			return;
 		Renderer.draw(renderConfigs);
 		window.swapBuffers();
 	}

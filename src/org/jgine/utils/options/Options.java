@@ -70,7 +70,7 @@ public class Options {
 	/**
 	 * The window mode used.
 	 */
-	public static final Option WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.WINDOWED);
+	public static final Option WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.FULLSCREEN);
 
 	/**
 	 * The anti aliasing factor used.

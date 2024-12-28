@@ -100,6 +100,9 @@ public class SoundManager {
 
 	private static void updateListener() {
 		Camera camera = Engine.CAMERA_SYSTEM.getMainCamera();
+		if (camera == null)
+			return;
+
 		Transform transform = camera.getTransform();
 		listener.setPosition(transform.getPosition());
 		PhysicObject physicObject = transform.getEntity().getSystem(Engine.PHYSIC_SYSTEM);
