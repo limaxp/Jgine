@@ -107,7 +107,7 @@ public class Engine {
 	private Window window;
 	private final List<RenderConfiguration> renderConfigs;
 
-	public Engine(String name) {
+	public Engine(String name, boolean window) {
 		instance = this;
 		this.name = name;
 		sceneMap = new ConcurrentHashMap<String, Scene>();
@@ -119,9 +119,11 @@ public class Engine {
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		gameLoop.setRenderFunction(this::draw);
+		if (window)
+			createWindow();
 	}
 
-	public final void createWindow() {
+	private final void createWindow() {
 		DisplayManager.init();
 		window = new Window(name);
 		window.setWindowPosCallback((id, x, y) -> gameLoop.run());
