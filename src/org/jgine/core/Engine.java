@@ -92,6 +92,30 @@ public class Engine {
 	public static final UISystem UI_SYSTEM = new UISystem();
 	public static final AiSystem AI_SYSTEM = new AiSystem();
 
+	static final UpdateOrder DEFAULT_UPDATE_ORDER = new UpdateOrder();
+	static final UpdateOrder DEFAULT_RENDER_ORDER = new UpdateOrder();
+
+	static {
+		DEFAULT_UPDATE_ORDER.add(INPUT_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(PHYSIC_SYSTEM, INPUT_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(COLLISION_SYSTEM, PHYSIC_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(SCRIPT_SYSTEM, COLLISION_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(AI_SYSTEM, SCRIPT_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(GRAPHIC_SYSTEM, COLLISION_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(GRAPHIC_2D_SYSTEM, COLLISION_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(PARTICLE_SYSTEM, COLLISION_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(TILEMAP_SYSTEM, COLLISION_SYSTEM);
+		DEFAULT_UPDATE_ORDER.add(UI_SYSTEM, COLLISION_SYSTEM);
+
+		DEFAULT_RENDER_ORDER.add(TILEMAP_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(GRAPHIC_SYSTEM, TILEMAP_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(GRAPHIC_2D_SYSTEM, TILEMAP_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(PARTICLE_SYSTEM, GRAPHIC_SYSTEM, GRAPHIC_2D_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(COLLISION_SYSTEM, PARTICLE_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(AI_SYSTEM, PARTICLE_SYSTEM);
+		DEFAULT_RENDER_ORDER.add(UI_SYSTEM, COLLISION_SYSTEM, AI_SYSTEM);
+	}
+
 	private static Engine instance;
 
 	public static Engine getInstance() {
@@ -190,14 +214,6 @@ public class Engine {
 		render(dt);
 	}
 
-	private final void updateScene(Scene scene, float dt) {
-		if (!scene.hasUpdateOrder()) {
-			for (SystemScene<?, ?> systemScene : scene.getSystems())
-				systemScene.update(dt);
-		} else
-			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
-	}
-
 	protected void onRender() {
 	}
 
@@ -216,6 +232,14 @@ public class Engine {
 			return;
 		Renderer.draw(renderConfigs);
 		window.swapBuffers();
+	}
+
+	private final void updateScene(Scene scene, float dt) {
+		if (!scene.hasUpdateOrder()) {
+			for (SystemScene<?, ?> systemScene : scene.getSystems())
+				systemScene.update(dt);
+		} else
+			new SceneUpdate(scene, scene.getUpdateOrder(), dt).start();
 	}
 
 	private final void renderScene(Scene scene, float dt) {
@@ -241,16 +265,31 @@ public class Engine {
 		return window;
 	}
 
+	public final Scene createScene(String name) {
+		Scene scene = initScene(name, DEFAULT_UPDATE_ORDER, DEFAULT_RENDER_ORDER);
+		scene.setSystems(EngineSystem.values());
+		return scene;
+	}
+
 	public final Scene createScene(String name, EngineSystem<?, ?>... systems) {
-		Scene scene = createScene(name);
+		Scene scene = initScene(name, null, null);
 		scene.setSystems(systems);
 		return scene;
 	}
 
-	public final Scene createScene(String name) {
+	public final Scene createScene(String name, UpdateOrder updateOrder, UpdateOrder renderOrder,
+			EngineSystem<?, ?>... systems) {
+		Scene scene = initScene(name, updateOrder, renderOrder);
+		scene.setSystems(systems);
+		return scene;
+	}
+
+	private final Scene initScene(String name, UpdateOrder updateOrder, UpdateOrder renderOrder) {
 		Scene scene = new Scene(this, name);
 		sceneMap.put(name, scene);
 		sceneIdMap.put(scene.id, scene);
+		scene.setUpdateOrder(updateOrder);
+		scene.setRenderOrder(renderOrder);
 		Scheduler.runTaskSynchron(() -> scenes.add(scene));
 		return scene;
 	}
