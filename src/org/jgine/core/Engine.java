@@ -256,7 +256,10 @@ public class Engine {
 			});
 		} else {
 			if (Options.SYNCHRONIZED)
-				new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
+					Renderer.setCamera_UNSAFE(camera);
+					new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+				});
 			else {
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
