@@ -8,9 +8,8 @@ import java.util.Map;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemObject;
 import org.jgine.system.systems.light.LightType;
+import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
-
-import maxLibs.utils.Color;
 
 public abstract class Light implements SystemObject {
 

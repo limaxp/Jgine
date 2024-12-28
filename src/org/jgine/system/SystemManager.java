@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import maxLibs.utils.logger.Logger;
+import org.jgine.utils.logger.Logger;
 
 /**
  * Manager to register {@link EngineSystem}<code>s</code>. Created systems MUST

@@ -11,7 +11,7 @@ import org.jgine.system.systems.ui.objects.UIRadioButton;
 import org.jgine.system.systems.ui.objects.UIScrollBar;
 import org.jgine.system.systems.ui.objects.UISlideBar;
 import org.jgine.system.systems.ui.objects.UITextInput;
-import org.jgine.utils.Registry;
+import org.jgine.utils.registry.Registry;
 
 public class UIObjectTypes {
 

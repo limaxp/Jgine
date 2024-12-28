@@ -28,15 +28,14 @@ import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
 import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
-import org.jgine.utils.Options;
+import org.jgine.utils.Color;
+import org.jgine.utils.options.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-
-import maxLibs.utils.Color;
 
 /**
  * Helper class for openGL.

@@ -10,11 +10,10 @@ import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.particle.Particle;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.Color;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector3f;
-
-import maxLibs.utils.Color;
 
 public class ParticleObject extends Particle implements SystemObject {
 

@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Date;
 
-import maxLibs.utils.logger.Logger;
+import org.jgine.utils.logger.Logger;
 
 public class HttpResponse {
 

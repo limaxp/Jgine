@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import maxLibs.net.http.annotation.Parameter;
-import maxLibs.net.http.annotation.Route;
-import maxLibs.net.http.annotation.Routes;
+import org.jgine.net.http.annotation.Parameter;
+import org.jgine.net.http.annotation.Route;
+import org.jgine.net.http.annotation.Routes;
 
 public abstract class HttpController {
 
@@ -76,8 +76,8 @@ public abstract class HttpController {
 		@SuppressWarnings("unchecked")
 		public RouteEntry(Method method) {
 			this.method = method;
-			if (method.isAnnotationPresent(maxLibs.net.http.annotation.Method.class))
-				this.htmlMethod = method.getAnnotation(maxLibs.net.http.annotation.Method.class).value();
+			if (method.isAnnotationPresent(org.jgine.net.http.annotation.Method.class))
+				this.htmlMethod = method.getAnnotation(org.jgine.net.http.annotation.Method.class).value();
 			else
 				this.htmlMethod = "GET";
 

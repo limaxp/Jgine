@@ -5,9 +5,8 @@ import org.jgine.core.input.Key;
 import org.jgine.core.input.device.Keyboard;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
-
-import maxLibs.utils.scheduler.Scheduler;
-import maxLibs.utils.scheduler.Task;
+import org.jgine.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.Task;
 
 public class UITextInput extends UILabel {
 

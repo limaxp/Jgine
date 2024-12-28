@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jgine.render.mesh.text.Text;
+import org.jgine.utils.Color;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;
-
-import maxLibs.utils.Color;
 
 /**
  * Helper class for reading yaml data.

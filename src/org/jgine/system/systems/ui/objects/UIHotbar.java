@@ -15,8 +15,7 @@ import org.jgine.system.systems.ui.UIWindow;
 import org.jgine.system.systems.ui.UIWindow.DragTask;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
-
-import maxLibs.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.Scheduler;
 
 public class UIHotbar extends UIGrid {
 

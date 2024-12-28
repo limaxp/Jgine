@@ -1,9 +1,8 @@
 package org.jgine.utils.math.vector;
 
+import org.jgine.utils.Color;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
-
-import maxLibs.utils.Color;
 
 /*
  * The MIT License

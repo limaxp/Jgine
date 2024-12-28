@@ -6,10 +6,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.IntConsumer;
 
-import org.jgine.utils.function.BiIntConsumer;
-
-import maxLibs.utils.logger.Logger;
-import maxLibs.utils.scheduler.TaskExecutor;
+import org.jgine.collection.function.BiIntConsumer;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.TaskExecutor;
 
 /**
  * Helper class for parallel task execution. Uses {@link TaskExecutor}

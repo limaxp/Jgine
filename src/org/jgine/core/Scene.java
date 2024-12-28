@@ -19,8 +19,7 @@ import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
-
-import maxLibs.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A scene or world identified with id and name. Use this class to create a

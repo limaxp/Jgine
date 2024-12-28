@@ -37,15 +37,14 @@ import org.jgine.system.systems.script.Script;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
-import org.jgine.utils.Options;
 import org.jgine.utils.Service;
 import org.jgine.utils.loader.ResourceManager;
+import org.jgine.utils.logger.Logger;
+import org.jgine.utils.options.OptionFile;
+import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.TaskExecutor;
 import org.lwjgl.system.MemoryUtil;
-
-import maxLibs.utils.logger.Logger;
-import maxLibs.utils.options.OptionFile;
-import maxLibs.utils.scheduler.Scheduler;
-import maxLibs.utils.scheduler.TaskExecutor;
 
 /**
  * The Base Engine class. You can extend this class to override some methods.

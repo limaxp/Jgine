@@ -27,11 +27,11 @@ import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.collision.collider.CircleCollider;
 import org.jgine.system.systems.light.LightScene;
-import org.jgine.utils.Options;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.math.vector.Vector4f;
+import org.jgine.utils.options.Options;
 
 public class Renderer {
 

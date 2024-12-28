@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
-import maxLibs.net.http.controller.HttpController;
-import maxLibs.utils.logger.Logger;
+import org.jgine.net.http.controller.HttpController;
+import org.jgine.utils.logger.Logger;
 
 public class HttpSession implements Runnable {
 

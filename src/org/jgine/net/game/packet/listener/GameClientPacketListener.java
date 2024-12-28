@@ -10,8 +10,7 @@ import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
-
-import maxLibs.utils.logger.Logger;
+import org.jgine.utils.logger.Logger;
 
 public class GameClientPacketListener implements ClientPacketListener {
 

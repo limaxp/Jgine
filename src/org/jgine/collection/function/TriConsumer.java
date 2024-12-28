@@ -1,4 +1,4 @@
-package org.jgine.utils.function;
+package org.jgine.collection.function;
 
 @FunctionalInterface
 public interface TriConsumer<T1, T2, T3> {

@@ -17,12 +17,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Cursor;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
-
-import maxLibs.utils.logger.Logger;
 
 /**
  * Manager for handling {@link Display}<code>s</code>. Can be used to get

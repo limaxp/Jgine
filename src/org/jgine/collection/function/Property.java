@@ -1,4 +1,4 @@
-package org.jgine.utils.function;
+package org.jgine.collection.function;
 
 /**
  * A basic property.

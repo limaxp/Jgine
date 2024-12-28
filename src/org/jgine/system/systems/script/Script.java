@@ -6,9 +6,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jgine.utils.Reflection;
 import org.reflections.Reflections;
-
-import maxLibs.utils.Reflection;
 
 public interface Script {
 

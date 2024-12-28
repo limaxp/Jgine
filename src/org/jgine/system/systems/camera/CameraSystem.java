@@ -2,10 +2,10 @@ package org.jgine.system.systems.camera;
 
 import java.util.Map;
 
+import org.jgine.collection.function.Property;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 import org.jgine.utils.Service;
-import org.jgine.utils.function.Property;
 
 public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
 

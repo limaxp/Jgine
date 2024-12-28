@@ -9,8 +9,7 @@ import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
-
-import maxLibs.utils.scheduler.Scheduler;
+import org.jgine.utils.scheduler.Scheduler;
 
 public class TransformInputHandler2D extends InputHandler {
 

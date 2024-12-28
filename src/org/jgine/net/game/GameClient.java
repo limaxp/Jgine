@@ -25,10 +25,9 @@ import org.jgine.net.game.packet.packets.ConnectResponsePacket;
 import org.jgine.net.game.packet.packets.DisconnectPacket;
 import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
+import org.jgine.utils.id.IdGenerator;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector3f;
-
-import maxLibs.utils.id.IdGenerator;
-import maxLibs.utils.logger.Logger;
 
 public class GameClient implements Runnable {
 

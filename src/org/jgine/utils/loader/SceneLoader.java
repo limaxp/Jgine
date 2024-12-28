@@ -19,10 +19,9 @@ import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioningTypes;
-
-import maxLibs.utils.logger.Logger;
 
 /**
  * Helper class for loading {@link Scene} files.

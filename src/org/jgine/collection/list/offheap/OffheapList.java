@@ -3,9 +3,8 @@ package org.jgine.collection.list.offheap;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
+import org.jgine.utils.Reflection;
 import org.lwjgl.system.MemoryUtil;
-
-import maxLibs.utils.Reflection;
 
 public class OffheapList<E extends OffheapObject> implements AutoCloseable {
 

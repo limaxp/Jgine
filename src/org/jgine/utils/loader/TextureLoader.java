@@ -7,8 +7,7 @@ import java.io.InputStream;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Image;
 import org.jgine.render.material.Texture;
-
-import maxLibs.utils.logger.Logger;
+import org.jgine.utils.logger.Logger;
 
 /**
  * Helper class for loading {@link Texture} files.

@@ -32,9 +32,8 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.nio.FloatBuffer;
 
+import org.jgine.utils.Color;
 import org.lwjgl.system.MemoryStack;
-
-import maxLibs.utils.Color;
 
 public class Particle implements AutoCloseable {
 

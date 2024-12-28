@@ -31,9 +31,8 @@ import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.FileUtils;
+import org.jgine.utils.logger.Logger;
 import org.jgine.utils.script.ScriptManager;
-
-import maxLibs.utils.logger.Logger;
 
 /**
  * Helper class for loading {@link Model}<code>s</code>,

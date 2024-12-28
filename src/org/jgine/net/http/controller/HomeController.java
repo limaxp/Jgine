@@ -1,8 +1,8 @@
 package org.jgine.net.http.controller;
 
-import maxLibs.net.http.HttpResponse;
-import maxLibs.net.http.annotation.Method;
-import maxLibs.net.http.annotation.Route;
+import org.jgine.net.http.HttpResponse;
+import org.jgine.net.http.annotation.Method;
+import org.jgine.net.http.annotation.Route;
 
 public class HomeController extends HttpController {
 
