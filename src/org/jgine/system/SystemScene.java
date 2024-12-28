@@ -12,17 +12,17 @@ import org.jgine.core.entity.Entity;
 /**
  * The base system scene class.
  * 
- * @param <T1> the {@link EngineSystem} of this {@link SystemScene}
- * @param <T2>
+ * @param <S> the {@link EngineSystem} of this {@link SystemScene}
+ * @param <O>
  */
-public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObject> {
+public abstract class SystemScene<S extends EngineSystem<S, O>, O extends SystemObject> {
 
-	public final T1 system;
+	public final S system;
 	public final String name;
 	public final int id;
 	public final Scene scene;
 
-	public SystemScene(T1 system, Scene scene) {
+	public SystemScene(S system, Scene scene) {
 		this.system = system;
 		this.name = system.name;
 		this.id = system.id;
@@ -31,19 +31,19 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	public abstract void free();
 
-	public abstract void initObject(Entity entity, T2 object);
+	public abstract void initObject(Entity entity, O object);
 
-	public abstract int addObject(Entity entity, T2 object);
+	public abstract int addObject(Entity entity, O object);
 
-	public abstract T2 removeObject(int index);
+	public abstract O removeObject(int index);
 
-	public abstract T2 getObject(int index);
+	public abstract O getObject(int index);
 
 	public abstract Entity getEntity(int index);
 
 	public abstract Transform getTransform(int index);
 
-	public abstract void forEach(Consumer<T2> func);
+	public abstract void forEach(Consumer<O> func);
 
 	public abstract void update(float dt);
 
@@ -59,7 +59,7 @@ public abstract class SystemScene<T1 extends EngineSystem, T2 extends SystemObje
 
 	@SuppressWarnings("unchecked")
 	public final void initObject_(Entity entity, SystemObject object) {
-		initObject(entity, (T2) object);
+		initObject(entity, (O) object);
 	}
 
 	@Override

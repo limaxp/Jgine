@@ -6,7 +6,7 @@ import org.jgine.core.Scene;
 import org.jgine.render.material.Material;
 import org.jgine.system.EngineSystem;
 
-public class Graphic2DSystem extends EngineSystem {
+public class Graphic2DSystem extends EngineSystem<Graphic2DSystem, Material> {
 
 	public Graphic2DSystem() {
 		super("graphic2d");

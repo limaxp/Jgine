@@ -11,17 +11,16 @@ import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
 import org.jgine.utils.function.TriConsumer;
 
-public class ScriptSystem extends EngineSystem {
+public class ScriptSystem extends EngineSystem<ScriptSystem, AbstractScriptObject> {
 
 	public ScriptSystem() {
 		super("script");
 	}
 
 	@Override
-	public SystemScene<?, ?> createScene(Scene scene) {
+	public ScriptScene createScene(Scene scene) {
 		return new ScriptScene(this, scene);
 	}
 

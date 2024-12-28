@@ -6,7 +6,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
 
-public class GraphicSystem extends EngineSystem {
+public class GraphicSystem extends EngineSystem<GraphicSystem, GraphicObject> {
 
 	public GraphicSystem() {
 		super("graphic");

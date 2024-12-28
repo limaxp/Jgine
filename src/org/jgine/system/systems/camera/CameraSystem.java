@@ -5,10 +5,9 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
 import org.jgine.utils.function.Property;
 
-public class CameraSystem extends EngineSystem {
+public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
 
 	private Camera mainCamera;
 
@@ -29,7 +28,7 @@ public class CameraSystem extends EngineSystem {
 	}
 
 	@Override
-	public SystemScene<?, ?> createScene(Scene scene) {
+	public CameraScene createScene(Scene scene) {
 		return new CameraScene(this, scene);
 	}
 

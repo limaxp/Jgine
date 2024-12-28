@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
-public class InputSystem extends EngineSystem {
+public class InputSystem extends EngineSystem<InputSystem, InputHandler> {
 
 	public InputSystem() {
 		super("input");

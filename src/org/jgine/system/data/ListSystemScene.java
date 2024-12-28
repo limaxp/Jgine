@@ -9,23 +9,23 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
-public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends SystemObject> extends SystemScene<T1, T2> {
+public abstract class ListSystemScene<S extends EngineSystem<S, O>, O extends SystemObject> extends SystemScene<S, O> {
 
 	public static final int INITAL_SIZE = 1024;
 
-	protected Class<T2> clazz;
-	protected T2[] objects;
+	protected Class<O> clazz;
+	protected O[] objects;
 	protected int size;
 
 	@SuppressWarnings("unchecked")
-	public ListSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public ListSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene);
 		this.clazz = clazz;
-		objects = (T2[]) Array.newInstance(clazz, INITAL_SIZE);
+		objects = (O[]) Array.newInstance(clazz, INITAL_SIZE);
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
+	public int addObject(Entity entity, O object) {
 		synchronized (objects) {
 			if (size == objects.length)
 				ensureCapacity(size + 1);
@@ -37,11 +37,11 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	}
 
 	@Override
-	public T2 removeObject(int index) {
+	public O removeObject(int index) {
 		synchronized (objects) {
-			T2 element = objects[index];
+			O element = objects[index];
 			if (index != --size) {
-				T2 last = objects[size];
+				O last = objects[size];
 				Entity lastEntity = getEntity(size);
 				objects[index] = last;
 				relink(index, lastEntity);
@@ -56,7 +56,7 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	}
 
 	@Override
-	public void forEach(Consumer<T2> func) {
+	public void forEach(Consumer<O> func) {
 		synchronized (objects) {
 			for (int i = 0; i < size; i++)
 				func.accept(objects[i]);
@@ -64,7 +64,7 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 	}
 
 	@Override
-	public T2 getObject(int index) {
+	public O getObject(int index) {
 		return objects[index];
 	}
 
@@ -85,7 +85,7 @@ public abstract class ListSystemScene<T1 extends EngineSystem, T2 extends System
 
 	@SuppressWarnings("unchecked")
 	protected void resize(int size) {
-		T2[] newArray = (T2[]) Array.newInstance(clazz, size);
+		O[] newArray = (O[]) Array.newInstance(clazz, size);
 		System.arraycopy(objects, 0, newArray, 0, this.size);
 		objects = newArray;
 	}

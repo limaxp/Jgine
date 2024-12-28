@@ -11,15 +11,15 @@ import org.jgine.system.SystemScene;
 import org.jgine.utils.memory.NativeResource;
 import org.lwjgl.system.MemoryUtil;
 
-public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
-		extends SystemScene<T1, T2> implements NativeResource {
+public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
+		extends SystemScene<S, O> implements NativeResource {
 
 	protected int objectSize;
 	protected ByteBuffer buffer;
 	protected int bufferSize;
 	protected int size;
 
-	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public ByteBufferSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene);
 //		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
 		bufferSize = ListSystemScene.INITAL_SIZE;
@@ -32,7 +32,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
+	public int addObject(Entity entity, O object) {
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
 		int index = size++;
@@ -43,7 +43,7 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
-	public T2 removeObject(int index) {
+	public O removeObject(int index) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 		MemoryUtil.memSet(address, 0, objectSize);
 		// TODO rearange list
@@ -51,13 +51,13 @@ public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends 
 	}
 
 	@Override
-	public void forEach(Consumer<T2> func) {
+	public void forEach(Consumer<O> func) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public T2 getObject(int index) {
+	public O getObject(int index) {
 		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 //		return new Pointer<T2>().address(address).data;
 		return null;

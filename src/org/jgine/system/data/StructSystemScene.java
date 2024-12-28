@@ -12,13 +12,13 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.Struct;
 import org.lwjgl.system.StructBuffer;
 
-public abstract class StructSystemScene<T1 extends EngineSystem, T2 extends Struct & SystemObject>
-		extends SystemScene<T1, T2> implements NativeResource {
+public abstract class StructSystemScene<S extends EngineSystem<S, O>, O extends Struct & SystemObject>
+		extends SystemScene<S, O> implements NativeResource {
 
-	protected StructBuffer<T2, ?> buffer;
+	protected StructBuffer<O, ?> buffer;
 	protected int size;
 
-	public StructSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public StructSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene);
 	}
 
@@ -28,21 +28,21 @@ public abstract class StructSystemScene<T1 extends EngineSystem, T2 extends Stru
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
+	public int addObject(Entity entity, O object) {
 		return -1;
 	}
 
 	@Override
-	public T2 removeObject(int index) {
+	public O removeObject(int index) {
 		return null;
 	}
 
 	@Override
-	public void forEach(Consumer<T2> func) {
+	public void forEach(Consumer<O> func) {
 	}
 
 	@Override
-	public T2 getObject(int index) {
+	public O getObject(int index) {
 		return null;
 	}
 }

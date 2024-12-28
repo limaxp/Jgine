@@ -6,12 +6,12 @@ import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
-public abstract class EntityListSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
-		extends ListSystemScene<T1, T2> {
+public abstract class EntityListSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
+		extends ListSystemScene<S, O> {
 
 	protected Entity[] entities;
 
-	public EntityListSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public EntityListSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene, clazz);
 		entities = new Entity[ListSystemScene.INITAL_SIZE];
 	}

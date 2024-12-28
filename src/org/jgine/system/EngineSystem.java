@@ -12,7 +12,7 @@ import org.jgine.core.manager.SystemManager;
  * A system consists of an {@link EngineSystem} and a {@link SystemScene}
  * implementation.
  */
-public abstract class EngineSystem {
+public abstract class EngineSystem<S extends EngineSystem<S, O>, O extends SystemObject> {
 
 	public final String name;
 	public final int id;
@@ -22,9 +22,9 @@ public abstract class EngineSystem {
 		this.id = SystemManager.register(this);
 	}
 
-	public abstract SystemScene<?, ?> createScene(Scene scene);
+	public abstract SystemScene<S, O> createScene(Scene scene);
 
-	public abstract SystemObject load(Map<String, Object> data);
+	public abstract O load(Map<String, Object> data);
 
 	@Override
 	public boolean equals(Object obj) {

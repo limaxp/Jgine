@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
-public class TileMapSystem extends EngineSystem {
+public class TileMapSystem extends EngineSystem<TileMapSystem, TileMapObject> {
 
 	public TileMapSystem() {
 		super("tilemap");

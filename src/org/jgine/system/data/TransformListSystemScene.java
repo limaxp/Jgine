@@ -6,12 +6,12 @@ import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 
-public abstract class TransformListSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
-		extends ListSystemScene<T1, T2> {
+public abstract class TransformListSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
+		extends ListSystemScene<S, O> {
 
 	protected Transform[] transforms;
 
-	public TransformListSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public TransformListSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene, clazz);
 		transforms = new Transform[ListSystemScene.INITAL_SIZE];
 	}

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
-public class ParticleSystem extends EngineSystem {
+public class ParticleSystem extends EngineSystem<ParticleSystem, ParticleObject> {
 
 	public ParticleSystem() {
 		super("particle");

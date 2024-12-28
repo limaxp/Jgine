@@ -7,7 +7,7 @@ import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.utils.function.Property;
 
-public class CollisionSystem extends EngineSystem {
+public class CollisionSystem extends EngineSystem<CollisionSystem, Collider> {
 
 	private boolean showHitBox = false;
 
