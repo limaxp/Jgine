@@ -14,6 +14,7 @@ public class TileMapData implements Cloneable {
 		for (int i = 0; i < layers; i++) {
 			TileMapLayer layer = new TileMapLayer();
 			object.layers[i] = layer;
+			layer.number = i;
 			layer.tiles = new TileMapTile[tileSize];
 			for (int j = 0; j < tileSize; j++)
 				layer.tiles[j] = new TileMapTile();
