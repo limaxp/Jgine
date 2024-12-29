@@ -7,7 +7,7 @@ import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMapMesh;
 import org.jgine.render.mesh.TileMapMesh.TileMapMeshLayer;
-import org.jgine.render.mesh.particle.Particle;
+import org.jgine.render.mesh.particle.ParticleMesh;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.math.Matrix;
 
@@ -46,7 +46,7 @@ public class UIRenderer extends Renderer {
 		}
 	}
 
-	public static void render(Matrix transform, Particle particle, Shader shader, Material material, int depth) {
+	public static void render(Matrix transform, ParticleMesh particle, Shader shader, Material material, int depth) {
 		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, UI_MATRIX,
 				material, renderTarget, shader, calculateDepth(depth));
 	}

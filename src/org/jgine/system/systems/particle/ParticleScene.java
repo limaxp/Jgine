@@ -10,10 +10,10 @@ import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 
-public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObject> {
+public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
-		super(system, scene, ParticleObject.class);
+		super(system, scene, Particle.class);
 	}
 
 	@Override
@@ -25,13 +25,13 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 	}
 
 	@Override
-	public void initObject(Entity entity, ParticleObject object) {
+	public void initObject(Entity entity, Particle object) {
 		object.transform = entity.transform;
 	}
 
 	@Override
-	public ParticleObject removeObject(int index) {
-		ParticleObject object = super.removeObject(index);
+	public Particle removeObject(int index) {
+		Particle object = super.removeObject(index);
 		object.close();
 		return object;
 	}
@@ -50,7 +50,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 		Renderer.PARTICLE_CALC_SHADER.unbind();
 
 		for (int i = 0; i < size; i++) {
-			ParticleObject object = objects[i];
+			Particle object = objects[i];
 			Renderer.render(object.transform.getMatrix(), object, Renderer.PARTICLE_DRAW_SHADER, object.material);
 		}
 	}
@@ -71,7 +71,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			@SuppressWarnings("resource")
-			ParticleObject object = new ParticleObject();
+			Particle object = new Particle();
 			object.load(in);
 			objects[i] = object;
 		}

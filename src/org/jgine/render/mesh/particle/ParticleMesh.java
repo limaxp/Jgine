@@ -35,7 +35,7 @@ import java.nio.FloatBuffer;
 import org.jgine.utils.Color;
 import org.lwjgl.system.MemoryStack;
 
-public class Particle implements AutoCloseable {
+public class ParticleMesh implements AutoCloseable {
 
 	public static final int MAX_SIZE = 10000;
 	public static final int DATA_SIZE = 12; // pos(x,y,z),vel(x,y,z),color(r,g,b),lifeTime,size,type
@@ -46,7 +46,7 @@ public class Particle implements AutoCloseable {
 	protected int query;
 	protected int instanceSize;
 
-	public Particle() {
+	public ParticleMesh() {
 		vao = new int[2];
 		vbo = new int[2];
 		query = glGenQueries();

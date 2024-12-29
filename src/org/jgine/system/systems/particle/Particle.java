@@ -8,14 +8,14 @@ import java.util.Map;
 import org.jgine.core.Transform;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
-import org.jgine.render.mesh.particle.Particle;
+import org.jgine.render.mesh.particle.ParticleMesh;
 import org.jgine.system.SystemObject;
 import org.jgine.utils.Color;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector3f;
 
-public class ParticleObject extends Particle implements SystemObject {
+public class Particle extends ParticleMesh implements SystemObject {
 
 	Transform transform;
 	public Material material = new Material();
@@ -146,9 +146,9 @@ public class ParticleObject extends Particle implements SystemObject {
 	}
 
 	@Override
-	public ParticleObject clone() {
+	public Particle clone() {
 		try {
-			ParticleObject obj = (ParticleObject) super.clone();
+			Particle obj = (Particle) super.clone();
 			obj.material = material.clone();
 			return obj;
 		} catch (CloneNotSupportedException e) {

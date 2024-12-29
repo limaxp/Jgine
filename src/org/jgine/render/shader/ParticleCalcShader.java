@@ -1,7 +1,7 @@
 package org.jgine.render.shader;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.system.systems.particle.ParticleObject;
+import org.jgine.system.systems.particle.Particle;
 import org.jgine.utils.math.FastMath;
 
 public class ParticleCalcShader extends Shader {
@@ -45,7 +45,7 @@ public class ParticleCalcShader extends Shader {
 		uniform_genColorRange = addUniform("genColorRange");
 	}
 
-	public void setParticle(ParticleObject particle, float dt) {
+	public void setParticle(Particle particle, float dt) {
 		setUniformf(uniform_timePassed, dt);
 		if (particle.checkSpawnTime(dt)) {
 			setUniformi(uniform_numToGenerate, particle.amount);

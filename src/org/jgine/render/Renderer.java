@@ -13,7 +13,7 @@ import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.mesh.TileMapMesh;
 import org.jgine.render.mesh.TileMapMesh.TileMapMeshLayer;
-import org.jgine.render.mesh.particle.Particle;
+import org.jgine.render.mesh.particle.ParticleMesh;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.ParticleCalcShader;
 import org.jgine.render.shader.Phong2dShader;
@@ -179,7 +179,7 @@ public class Renderer {
 		}
 	}
 
-	public static void render(Matrix transform, Particle particle, Shader shader, Material material) {
+	public static void render(Matrix transform, ParticleMesh particle, Shader shader, Material material) {
 		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
 				material, renderTarget, shader);
 	}
