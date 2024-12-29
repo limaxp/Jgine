@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.core.UpdateOrder.RenderTask;
 import org.jgine.core.UpdateOrder.SynchronizedRenderTask;
 import org.jgine.core.UpdateOrder.SynchronizedUpdateTask;
 import org.jgine.core.UpdateOrder.UpdateTask;
@@ -56,24 +55,6 @@ import org.lwjgl.system.MemoryUtil;
  * a {@link Entity}.
  */
 public class Engine {
-
-	/*
-	 * NOTE
-	 * 
-	 * Each system must declare a java object! if outside of memory its a pointer!
-	 * 
-	 * 
-	 * TODO
-	 * 
-	 * Adding Systems in update loop might block threads! Remove synchronized block
-	 * from update in system classes!
-	 * 
-	 * RenderQueue needs optimization!
-	 * 
-	 * Fix concurrent update bugs in UpdateOrder! crashes in Afrgrafar, Astriod,
-	 * 3DTest! Update TaskHelper!
-	 * 
-	 */
 
 	public static final PhysicSystem PHYSIC_SYSTEM = new PhysicSystem();
 	public static final CameraSystem CAMERA_SYSTEM = new CameraSystem();
@@ -248,17 +229,10 @@ public class Engine {
 					systemScene.render(dt);
 			});
 		} else {
-			if (Options.SYNCHRONIZED)
-				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-					Renderer.setCamera_UNSAFE(camera);
-					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt).start();
-				});
-			else {
-				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-					Renderer.setCamera_UNSAFE(camera);
-					new RenderTask(scene, scene.getRenderOrder(), dt).start();
-				});
-			}
+			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
+				Renderer.setCamera_UNSAFE(camera);
+				new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt).start();
+			});
 		}
 	}
 

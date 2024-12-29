@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.scheduler.ThreadPool;
 
 /**
  * Defines an update or render order for a {@link Scene}. Use add() methods to
@@ -205,40 +206,13 @@ public class UpdateOrder {
 
 		@Override
 		protected void update(EngineSystem<?, ?> system) {
-			scene.getSystem(system).update(dt);
-			amount.decrementAndGet();
-			check(system);
-
-//			ThreadPool.execute(() -> {
-//				scene.getSystem(system).update(dt);
-//				if (amount.decrementAndGet() <= 0)
-//					thread.interrupt();
-//				else
-//					check(system);
-//			});
-		}
-	}
-
-	public static class RenderTask extends UpdateTask {
-
-		public RenderTask(Scene scene, UpdateOrder order, float dt) {
-			super(scene, order, dt);
-		}
-
-		@Override
-		protected void update(EngineSystem<?, ?> system) {
-			scene.getSystem(system).render(dt);
-			amount.decrementAndGet();
-			check(system);
-
-//			ThreadPool.execute(() -> {
-//				scene.getSystem(system).render(dt);
-//				amount.decrementAndGet();
-//				if (amount.decrementAndGet() <= 0)
-//					thread.interrupt();
-//				else
-//					check(system);
-//			});
+			ThreadPool.execute(() -> {
+				scene.getSystem(system).update(dt);
+				if (amount.decrementAndGet() <= 0)
+					thread.interrupt();
+				else
+					check(system);
+			});
 		}
 	}
 }
