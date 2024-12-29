@@ -126,52 +126,54 @@ public class UpdateOrder {
 		out.writeInt(size);
 	}
 
-	public static class SynchronizedRender extends SynchronizedUpdate {
+	public static class SynchronizedRenderTask extends SynchronizedUpdateTask {
 
-		public SynchronizedRender(Scene scene, UpdateOrder order, float dt) {
+		public SynchronizedRenderTask(Scene scene, UpdateOrder order, float dt) {
 			super(scene, order, dt);
 		}
 
 		@Override
-		protected void func(SystemScene<?, ?> system, float dt) {
+		protected void func(SystemScene<?, ?> system) {
 			system.render(dt);
 		}
 	}
 
-	public static class SynchronizedUpdate {
+	public static class SynchronizedUpdateTask {
 
-		private final Scene scene;
-		private final UpdateOrder order;
-		private final BitSet flags;
+		protected final Scene scene;
+		protected final UpdateOrder order;
+		protected final BitSet flags;
+		protected final float dt;
 
-		public SynchronizedUpdate(Scene scene, UpdateOrder order, float dt) {
+		public SynchronizedUpdateTask(Scene scene, UpdateOrder order, float dt) {
 			this.scene = scene;
 			this.order = order;
 			flags = new BitSet(EngineSystem.size());
+			this.dt = dt;
 			List<EngineSystem<?, ?>> start = order.getStart();
 			for (int i = 0; i < start.size(); i++)
-				update(start.get(i), dt);
+				update(start.get(i));
 		}
 
-		protected void func(SystemScene<?, ?> system, float dt) {
+		protected void func(SystemScene<?, ?> system) {
 			system.update(dt);
 		}
 
-		private final void update(EngineSystem<?, ?> system, float dt) {
+		private final void update(EngineSystem<?, ?> system) {
 			flags.set(system.id, true);
-			func(scene.getSystem(system), dt);
+			func(scene.getSystem(system));
 			for (EngineSystem<?, ?> currentAfter : order.getAfter(system))
-				check(currentAfter, dt);
+				check(currentAfter);
 		}
 
-		private final void check(EngineSystem<?, ?> system, float dt) {
+		private final void check(EngineSystem<?, ?> system) {
 			if (flags.get(system.id))
 				return;
 
 			for (EngineSystem<?, ?> before : order.getBefore(system))
 				if (!flags.get(before.id))
 					return;
-			update(system, dt);
+			update(system);
 		}
 	}
 }

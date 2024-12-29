@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.core.UpdateOrder.SynchronizedRender;
-import org.jgine.core.UpdateOrder.SynchronizedUpdate;
+import org.jgine.core.UpdateOrder.SynchronizedRenderTask;
+import org.jgine.core.UpdateOrder.SynchronizedUpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -230,9 +230,9 @@ public class Engine {
 
 		} else {
 			if (Options.SYNCHRONIZED)
-				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
+				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt);
 			else {
-				new SynchronizedUpdate(scene, scene.getUpdateOrder(), dt);
+				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt);
 			}
 		}
 	}
@@ -252,12 +252,12 @@ public class Engine {
 			if (Options.SYNCHRONIZED)
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
-					new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt);
 				});
 			else {
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
-					new SynchronizedRender(scene, scene.getRenderOrder(), dt);
+					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt);
 				});
 			}
 		}
