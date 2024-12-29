@@ -13,7 +13,6 @@ public class TrueTypeText extends Text {
 
 	public TrueTypeText(TrueTypeFont font, int size, String text, float xOffset, float yOffset) {
 		super(font, size, text, new Material(), xOffset, yOffset);
-		buildMesh();
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class TrueTypeText extends Text {
 		if (!(font instanceof TrueTypeFont) || font == getFont())
 			return;
 		super.setFont(font);
-		buildMesh();
+		rebuildMesh = true;
 	}
 
 	@Override

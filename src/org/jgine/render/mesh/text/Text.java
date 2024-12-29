@@ -17,7 +17,8 @@ public abstract class Text implements AutoCloseable {
 	protected BaseMesh mesh;
 	protected float xOffset;
 	protected float yOffset;
-	
+	protected boolean rebuildMesh;
+
 	public Text(Font font, int size, String text, Material material) {
 		this(font, size, text, material, 0.0f, 0.0f);
 	}
@@ -29,13 +30,14 @@ public abstract class Text implements AutoCloseable {
 		this.material = material;
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
+		this.rebuildMesh = true;
 	}
 
 	@Override
 	public void close() {
 		mesh.close();
 	}
-	
+
 	protected abstract void buildMesh();
 
 	public abstract int getType();
@@ -50,7 +52,7 @@ public abstract class Text implements AutoCloseable {
 
 	public void setSize(int size) {
 		this.size = size;
-		buildMesh();
+		rebuildMesh = true;
 	}
 
 	public int getSize() {
@@ -59,7 +61,7 @@ public abstract class Text implements AutoCloseable {
 
 	public void setText(String text) {
 		this.text = text;
-		buildMesh();
+		rebuildMesh = true;
 	}
 
 	public String getText() {
@@ -75,21 +77,25 @@ public abstract class Text implements AutoCloseable {
 	}
 
 	public BaseMesh getMesh() {
+		if (rebuildMesh) {
+			rebuildMesh = false;
+			buildMesh();
+		}
 		return mesh;
 	}
-	
+
 	public void setxOffset(float xOffset) {
 		this.xOffset = xOffset;
 	}
-	
+
 	public float getxOffset() {
 		return xOffset;
 	}
-	
+
 	public void setyOffset(float yOffset) {
 		this.yOffset = yOffset;
 	}
-	
+
 	public float getyOffset() {
 		return yOffset;
 	}

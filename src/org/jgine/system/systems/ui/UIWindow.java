@@ -61,14 +61,14 @@ public class UIWindow extends UICompound {
 		background = new Material(BACKGROUND_COLOR);
 		border = new Material(BORDER_COLOR);
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
-		renderTarget = createRenderTarget();
-		renderTargetMaterial = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		renderTargetMaterial = new Material();
 		renderTargetMaterial.flipY();
 	}
 
 	@Override
 	protected void free() {
-		renderTarget.close();
+		if (renderTarget != null)
+			renderTarget.close();
 	}
 
 	@Override
@@ -76,9 +76,7 @@ public class UIWindow extends UICompound {
 		UIWindow obj = (UIWindow) super.clone();
 		obj.background = background.clone();
 		obj.border = border.clone();
-		obj.renderTarget = createRenderTarget();
 		obj.renderTargetMaterial = renderTargetMaterial.clone();
-		obj.renderTargetMaterial.setTexture(obj.renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
 		return obj;
 	}
 
@@ -97,12 +95,20 @@ public class UIWindow extends UICompound {
 	@Override
 	protected void renderChilds(int depth) {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
-		UIRenderer.setRenderTarget_UNSAFE(renderTarget);
-		renderTarget.clear();
+		UIRenderer.setRenderTarget_UNSAFE(getRenderTarget());
 		for (UIObject child : getVisibleChilds())
 			child.render(0);
 		UIRenderer.setRenderTarget_UNSAFE(tmp);
 		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, renderTargetMaterial, depth);
+	}
+
+	private RenderTarget getRenderTarget() {
+		if (renderTarget == null) {
+			renderTarget = createRenderTarget();
+			renderTargetMaterial.setTexture(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		} else
+			renderTarget.clear();
+		return renderTarget;
 	}
 
 	@Override
