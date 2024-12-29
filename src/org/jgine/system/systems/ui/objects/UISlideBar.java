@@ -155,7 +155,7 @@ public class UISlideBar extends UICompound {
 
 		protected float calculateX() {
 			Vector2f cursorPos = Input.getCursorPos();
-			Vector2i windowSize = Input.getWindow().getSize();
+			Vector2i windowSize = Input.getWindowSize();
 			float mouseX = cursorPos.x / windowSize.x;
 			float windowX = (mouseX - window.getX()) / window.getWidth();
 			return (windowX - bar.getX()) / bar.getWidth();

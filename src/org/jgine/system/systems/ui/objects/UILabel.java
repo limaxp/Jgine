@@ -108,7 +108,7 @@ public class UILabel extends UIObject {
 	public void buildText(String text, Font font, int size) {
 		Vector3f scale = getTransform().getScaling();
 		Vector3f windowScale = getWindow().getTransform().getScaling();
-		Vector2i windowSize = Input.getWindow().getSize();
+		Vector2i windowSize = Input.getWindowSize();
 		int width = (int) (windowSize.x * scale.x * windowScale.x);
 		int height = (int) (windowSize.y * scale.y * windowScale.y);
 		setText(TextBuilder.createText(text, font, size, width, height));

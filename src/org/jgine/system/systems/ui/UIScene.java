@@ -73,7 +73,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	@Override
 	public void update(float dt) {
 		Vector2f cursorPos = Input.getCursorPos();
-		Vector2i windowSize = Input.getWindow().getSize();
+		Vector2i windowSize = Input.getWindowSize();
 		mouseX = cursorPos.x / windowSize.x;
 		mouseY = 1 - cursorPos.y / windowSize.y;
 

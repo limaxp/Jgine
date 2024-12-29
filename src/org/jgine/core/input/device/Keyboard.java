@@ -27,7 +27,7 @@ public class Keyboard extends InputDevice {
 
 	@Override
 	public boolean isKeyPressed(int key) {
-		return Input.getWindow().getKey(key) == Key.PRESS;
+		return Input.getKey(key) == Key.PRESS;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Keyboard extends InputDevice {
 
 	@Override
 	public boolean isKeyReleased(int key) {
-		return Input.getWindow().getKey(key) == Key.RELEASE;
+		return Input.getKey(key) == Key.RELEASE;
 	}
 
 	@Override

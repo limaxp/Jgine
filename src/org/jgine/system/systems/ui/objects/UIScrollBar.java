@@ -176,7 +176,7 @@ public class UIScrollBar extends UICompound {
 
 		protected float calculateY() {
 			Vector2f cursorPos = Input.getCursorPos();
-			Vector2i windowSize = Input.getWindow().getSize();
+			Vector2i windowSize = Input.getWindowSize();
 			float mouseY = 1 - cursorPos.y / windowSize.y;
 			float windowY = (mouseY - window.getY()) / window.getHeight();
 			return (windowY - label.getParent().getY()) / label.getParent().getHeight();

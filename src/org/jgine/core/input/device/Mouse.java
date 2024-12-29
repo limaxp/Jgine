@@ -28,7 +28,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyPressed(int key) {
-		return Input.getWindow().getMouseButton(key) == Key.PRESS;
+		return Input.getMouseButton(key) == Key.PRESS;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyReleased(int key) {
-		return Input.getWindow().getMouseButton(key) == Key.RELEASE;
+		return Input.getMouseButton(key) == Key.RELEASE;
 	}
 
 	@Override
