@@ -151,7 +151,7 @@ public class Engine {
 		Input.setWindow(window);
 		Renderer.init();
 		renderConfigs.add(new RenderConfiguration());
-		gameLoop.setRenderFunction(this::draw);
+		gameLoop.setRenderFunction(this::render);
 	}
 
 	private final void terminate() {
@@ -194,9 +194,6 @@ public class Engine {
 		return isRunning;
 	}
 
-	protected void onUpdate() {
-	}
-
 	private final void update(float dt) {
 		ConnectionManager.update();
 		for (Scene scene : scenes)
@@ -208,25 +205,22 @@ public class Engine {
 		Input.update();
 		SoundManager.update();
 		onUpdate();
-		render(dt);
 	}
 
-	protected void onRender() {
+	protected void onUpdate() {
 	}
 
 	private final void render(float dt) {
-		if (window == null)
-			return;
 		Renderer.update(dt);
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene, dt);
+		Renderer.draw(renderConfigs);
+		window.swapBuffers();
 		onRender();
 	}
 
-	private final void draw() {
-		Renderer.draw(renderConfigs);
-		window.swapBuffers();
+	protected void onRender() {
 	}
 
 	private final void updateScene(Scene scene, float dt) {

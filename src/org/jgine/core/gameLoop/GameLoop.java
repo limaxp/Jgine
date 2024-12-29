@@ -11,13 +11,6 @@ import it.unimi.dsi.fastutil.floats.FloatConsumer;
  */
 public abstract class GameLoop implements Runnable {
 
-	private static Runnable NULL_RUNNABLE = new Runnable() {
-
-		@Override
-		public void run() {
-		}
-	};
-
 	private static FloatConsumer NULL_FLOAT_CONSUMER = new FloatConsumer() {
 
 		@Override
@@ -26,7 +19,7 @@ public abstract class GameLoop implements Runnable {
 	};
 
 	private FloatConsumer updateFunction = NULL_FLOAT_CONSUMER;
-	private Runnable renderFunction = NULL_RUNNABLE;
+	private FloatConsumer renderFunction = NULL_FLOAT_CONSUMER;
 
 	public abstract int getFps();
 
@@ -34,8 +27,8 @@ public abstract class GameLoop implements Runnable {
 		updateFunction.accept(dt);
 	}
 
-	public final void render() {
-		renderFunction.run();
+	public final void render(float dt) {
+		renderFunction.accept(dt);
 	}
 
 	public final void setUpdateFunction(FloatConsumer updateFunction) {
@@ -46,11 +39,11 @@ public abstract class GameLoop implements Runnable {
 		return updateFunction;
 	}
 
-	public final void setRenderFunction(Runnable renderFunction) {
+	public final void setRenderFunction(FloatConsumer renderFunction) {
 		this.renderFunction = renderFunction;
 	}
 
-	public final Runnable getRenderFunction() {
+	public final FloatConsumer getRenderFunction() {
 		return renderFunction;
 	}
 }

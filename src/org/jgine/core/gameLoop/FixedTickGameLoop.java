@@ -31,7 +31,7 @@ public class FixedTickGameLoop extends GameLoop {
 
 		while (lag >= tickTime) {
 			lag -= tickTime;
-			update(tickTime * 0.001f);
+			update((float) passedtime * 0.001f);
 
 			if (frameTime >= 1000) {
 				fps = frames;
@@ -39,7 +39,7 @@ public class FixedTickGameLoop extends GameLoop {
 				frames = 0;
 			}
 		}
-		render();
+		render((float) passedtime * 0.001f);
 		frames++;
 	}
 
