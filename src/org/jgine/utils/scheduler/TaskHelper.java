@@ -1,4 +1,4 @@
-package org.jgine.utils;
+package org.jgine.utils.scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import java.util.function.IntConsumer;
 import org.jgine.collection.function.BiIntConsumer;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.options.Options;
-import org.jgine.utils.scheduler.ThreadPool;
 
 /**
  * Helper class for parallel task execution. Uses {@link ThreadPool}

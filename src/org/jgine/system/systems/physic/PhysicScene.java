@@ -10,7 +10,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
-import org.jgine.utils.TaskHelper;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 

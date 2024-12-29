@@ -13,8 +13,8 @@ import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
-import org.jgine.utils.TaskHelper;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.scheduler.TaskHelper;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
