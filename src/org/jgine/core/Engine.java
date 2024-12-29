@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.core.UpdateOrder.RenderTask;
 import org.jgine.core.UpdateOrder.SynchronizedRenderTask;
 import org.jgine.core.UpdateOrder.SynchronizedUpdateTask;
+import org.jgine.core.UpdateOrder.UpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -69,10 +71,11 @@ public class Engine {
 	 * 
 	 * RenderQueue needs optimization!
 	 * 
-	 * Implement multi thread system update!
-	 * 
 	 * Adding Systems in update loop might block threads! Remove synchronized block
 	 * from update in system classes!
+	 * 
+	 * Fix concurrent update bugs in UpdateOrder! chaeses in Afrgrafar, Astriod,
+	 * 3DTest!
 	 * 
 	 */
 
@@ -230,9 +233,9 @@ public class Engine {
 
 		} else {
 			if (Options.SYNCHRONIZED)
-				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt);
+				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt).start();
 			else {
-				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt);
+				new UpdateTask(scene, scene.getUpdateOrder(), dt).start();
 			}
 		}
 	}
@@ -252,12 +255,12 @@ public class Engine {
 			if (Options.SYNCHRONIZED)
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
-					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt);
+					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt).start();
 				});
 			else {
 				((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 					Renderer.setCamera_UNSAFE(camera);
-					new SynchronizedRenderTask(scene, scene.getRenderOrder(), dt);
+					new RenderTask(scene, scene.getRenderOrder(), dt).start();
 				});
 			}
 		}

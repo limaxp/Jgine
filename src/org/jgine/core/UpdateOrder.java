@@ -3,13 +3,13 @@ package org.jgine.core;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
 
 /**
  * Defines an update or render order for a {@link Scene}. Use add() methods to
@@ -126,6 +126,48 @@ public class UpdateOrder {
 		out.writeInt(size);
 	}
 
+	public static class SynchronizedUpdateTask {
+
+		protected final Scene scene;
+		protected final UpdateOrder order;
+		protected final AtomicIntegerArray flags;
+		protected final float dt;
+
+		public SynchronizedUpdateTask(Scene scene, UpdateOrder order, float dt) {
+			this.scene = scene;
+			this.order = order;
+			flags = new AtomicIntegerArray(EngineSystem.size());
+			this.dt = dt;
+		}
+
+		public void start() {
+			List<EngineSystem<?, ?>> start = order.getStart();
+			for (int i = 0; i < start.size(); i++)
+				update(start.get(i));
+		}
+
+		protected void update(EngineSystem<?, ?> system) {
+			scene.getSystem(system).update(dt);
+			check(system);
+		}
+
+		protected final void check(EngineSystem<?, ?> system) {
+			flags.set(system.id, 1);
+			for (EngineSystem<?, ?> after : order.getAfter(system))
+				subCheck(after);
+		}
+
+		private final void subCheck(EngineSystem<?, ?> system) {
+			if (flags.get(system.id) == 1)
+				return;
+
+			for (EngineSystem<?, ?> before : order.getBefore(system))
+				if (flags.get(before.id) == 0)
+					return;
+			update(system);
+		}
+	}
+
 	public static class SynchronizedRenderTask extends SynchronizedUpdateTask {
 
 		public SynchronizedRenderTask(Scene scene, UpdateOrder order, float dt) {
@@ -133,47 +175,70 @@ public class UpdateOrder {
 		}
 
 		@Override
-		protected void func(SystemScene<?, ?> system) {
-			system.render(dt);
+		protected void update(EngineSystem<?, ?> system) {
+			scene.getSystem(system).render(dt);
+			check(system);
 		}
 	}
 
-	public static class SynchronizedUpdateTask {
+	public static class UpdateTask extends SynchronizedUpdateTask {
 
-		protected final Scene scene;
-		protected final UpdateOrder order;
-		protected final BitSet flags;
-		protected final float dt;
+		protected AtomicInteger amount;
+		protected Thread thread;
 
-		public SynchronizedUpdateTask(Scene scene, UpdateOrder order, float dt) {
-			this.scene = scene;
-			this.order = order;
-			flags = new BitSet(EngineSystem.size());
-			this.dt = dt;
-			List<EngineSystem<?, ?>> start = order.getStart();
-			for (int i = 0; i < start.size(); i++)
-				update(start.get(i));
+		public UpdateTask(Scene scene, UpdateOrder order, float dt) {
+			super(scene, order, dt);
+			amount = new AtomicInteger(order.size());
+			thread = Thread.currentThread();
 		}
 
-		protected void func(SystemScene<?, ?> system) {
-			system.update(dt);
+		@Override
+		public void start() {
+			super.start();
+			while (amount.get() > 1) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+				}
+			}
 		}
 
-		private final void update(EngineSystem<?, ?> system) {
-			flags.set(system.id, true);
-			func(scene.getSystem(system));
-			for (EngineSystem<?, ?> currentAfter : order.getAfter(system))
-				check(currentAfter);
+		@Override
+		protected void update(EngineSystem<?, ?> system) {
+			scene.getSystem(system).update(dt);
+			amount.decrementAndGet();
+			check(system);
+
+//			ThreadPool.execute(() -> {
+//				scene.getSystem(system).update(dt);
+//				if (amount.decrementAndGet() <= 0)
+//					thread.interrupt();
+//				else
+//					check(system);
+//			});
+		}
+	}
+
+	public static class RenderTask extends UpdateTask {
+
+		public RenderTask(Scene scene, UpdateOrder order, float dt) {
+			super(scene, order, dt);
 		}
 
-		private final void check(EngineSystem<?, ?> system) {
-			if (flags.get(system.id))
-				return;
+		@Override
+		protected void update(EngineSystem<?, ?> system) {
+			scene.getSystem(system).render(dt);
+			amount.decrementAndGet();
+			check(system);
 
-			for (EngineSystem<?, ?> before : order.getBefore(system))
-				if (!flags.get(before.id))
-					return;
-			update(system);
+//			ThreadPool.execute(() -> {
+//				scene.getSystem(system).render(dt);
+//				amount.decrementAndGet();
+//				if (amount.decrementAndGet() <= 0)
+//					thread.interrupt();
+//				else
+//					check(system);
+//			});
 		}
 	}
 }
