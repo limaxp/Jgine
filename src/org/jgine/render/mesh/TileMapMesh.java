@@ -18,35 +18,32 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import java.nio.FloatBuffer;
 
 import org.jgine.render.material.Material;
-import org.jgine.utils.loader.TileMapLoader.TileMapData;
-import org.jgine.utils.loader.TileMapLoader.TileMapDataLayer;
+import org.jgine.system.systems.tileMap.TileMapData;
+import org.jgine.system.systems.tileMap.TileMapData.TileMapLayer;
+import org.jgine.system.systems.tileMap.TileMapData.TileMapTile;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
-public class TileMap implements AutoCloseable {
+public class TileMapMesh implements AutoCloseable {
 
 	protected int tilesheight;
 	protected int tileswidth;
 	protected int tileheight;
 	protected int tilewidth;
-	protected TileMapLayer[] layers;
+	protected TileMapMeshLayer[] layers;
 	protected Material material;
-	protected int colums;
-	protected int rows;
 
-	public TileMap(TileMapData data, Material material, int colums, int rows) {
+	public TileMapMesh(TileMapData data, Material material) {
 		this.tilesheight = data.tilesheight;
 		this.tileswidth = data.tileswidth;
 		this.tileheight = data.tileheight;
 		this.tilewidth = data.tilewidth;
 		this.material = material;
-		this.colums = colums;
-		this.rows = rows;
 		int layerSize = data.layers.length;
-		layers = new TileMapLayer[layerSize];
+		layers = new TileMapMeshLayer[layerSize];
 		for (int i = 0; i < layerSize; i++) {
-			TileMapDataLayer layerData = data.layers[i];
-			layers[layerSize - 1 - layerData.number] = new TileMapLayer(layerData);
+			TileMapLayer layerData = data.layers[i];
+			layers[layerSize - 1 - layerData.number] = new TileMapMeshLayer(layerData);
 		}
 	}
 
@@ -60,7 +57,7 @@ public class TileMap implements AutoCloseable {
 		return layers[0].isClosed();
 	}
 
-	public TileMapLayer getLayer(int index) {
+	public TileMapMeshLayer getLayer(int index) {
 		return layers[index];
 	}
 
@@ -96,21 +93,13 @@ public class TileMap implements AutoCloseable {
 		return material;
 	}
 
-	public int getColums() {
-		return colums;
-	}
-
-	public int getRows() {
-		return rows;
-	}
-
-	public class TileMapLayer extends BaseMesh {
+	public class TileMapMeshLayer extends BaseMesh {
 
 		public static final int DATA_SIZE = 6; // x,y,textX,textY,rot,flipX
 
 		protected int databo;
 
-		public TileMapLayer(TileMapDataLayer layerData) {
+		public TileMapMeshLayer(TileMapLayer layerData) {
 			super(2, false);
 			mode = GL_TRIANGLE_STRIP;
 			int widht = tilewidth / 2;
@@ -146,8 +135,8 @@ public class TileMap implements AutoCloseable {
 			for (TileMapTile tile : tiles) {
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
-				buffer.put(tile.tile % colums);
-				buffer.put(tile.tile / colums);
+				buffer.put(tile.tile % tileswidth);
+				buffer.put(tile.tile / tileswidth);
 				buffer.put(tile.rotation);
 				buffer.put(tile.flipX == true ? 1.0f : 0.0f);
 			}
@@ -161,8 +150,8 @@ public class TileMap implements AutoCloseable {
 				FloatBuffer buffer = stack.mallocFloat(DATA_SIZE);
 				buffer.put(tile.x * tilewidth);
 				buffer.put(tile.y * tileheight);
-				buffer.put(tile.tile % colums);
-				buffer.put(tile.tile / colums);
+				buffer.put(tile.tile % tileswidth);
+				buffer.put(tile.tile / tileswidth);
 				buffer.put(tile.rotation);
 				buffer.put(tile.flipX == true ? 1.0f : 0.0f);
 				buffer.flip();
@@ -180,7 +169,7 @@ public class TileMap implements AutoCloseable {
 				data.y = (int) buffer.get() / tileheight;
 				int colum = (int) buffer.get();
 				int row = (int) buffer.get();
-				data.tile = row * colums + colum;
+				data.tile = row * tileswidth + colum;
 				data.rotation = (int) buffer.get();
 				data.flipX = buffer.get() == 1.0f ? true : false;
 				return data;
@@ -190,14 +179,5 @@ public class TileMap implements AutoCloseable {
 		public Material getMaterial() {
 			return material;
 		}
-	}
-
-	public static class TileMapTile {
-
-		public int tile;
-		public int x;
-		public int y;
-		public int rotation;
-		public boolean flipX;
 	}
 }

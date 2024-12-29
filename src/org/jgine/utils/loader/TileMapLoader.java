@@ -3,13 +3,15 @@ package org.jgine.utils.loader;
 import java.io.File;
 import java.io.InputStream;
 
-import org.jgine.render.mesh.TileMap;
-import org.jgine.render.mesh.TileMap.TileMapTile;
+import org.jgine.render.mesh.TileMapMesh;
+import org.jgine.system.systems.tileMap.TileMapData;
+import org.jgine.system.systems.tileMap.TileMapData.TileMapLayer;
+import org.jgine.system.systems.tileMap.TileMapData.TileMapTile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Helper class for loading {@link TileMap} files.
+ * Helper class for loading {@link TileMapMesh} files.
  */
 public class TileMapLoader {
 
@@ -38,14 +40,14 @@ public class TileMapLoader {
 		if (!layers.isArray())
 			return data;
 		int layerSize = layers.size();
-		data.layers = new TileMapDataLayer[layerSize];
+		data.layers = new TileMapLayer[layerSize];
 		for (int i = 0; i < layerSize; i++)
 			data.layers[i] = loadLayer(layers.get(i));
 		return data;
 	}
 
-	public static TileMapDataLayer loadLayer(JsonNode layer) {
-		TileMapDataLayer layerData = new TileMapDataLayer();
+	public static TileMapLayer loadLayer(JsonNode layer) {
+		TileMapLayer layerData = new TileMapLayer();
 		if (layer.has("name"))
 			layerData.name = layer.get("name").toString();
 		if (layer.has("number"))
@@ -81,21 +83,5 @@ public class TileMapLoader {
 		if (tile.has("x"))
 			tileData.x = tile.get("x").intValue();
 		return tileData;
-	}
-
-	public static class TileMapData {
-
-		public int tilesheight = 1;
-		public int tileswidth = 1;
-		public int tileheight = 1;
-		public int tilewidth = 1;
-		public TileMapDataLayer[] layers;
-	}
-
-	public static class TileMapDataLayer {
-
-		public String name = "";
-		public int number = 0;
-		public TileMapTile[] tiles;
 	}
 }

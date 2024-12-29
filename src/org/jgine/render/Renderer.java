@@ -11,8 +11,8 @@ import org.jgine.render.mesh.BaseMesh;
 import org.jgine.render.mesh.Mesh;
 import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
-import org.jgine.render.mesh.TileMap;
-import org.jgine.render.mesh.TileMap.TileMapLayer;
+import org.jgine.render.mesh.TileMapMesh;
+import org.jgine.render.mesh.TileMapMesh.TileMapMeshLayer;
 import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.BasicShader;
 import org.jgine.render.shader.ParticleCalcShader;
@@ -170,10 +170,10 @@ public class Renderer {
 				renderTarget, shader);
 	}
 
-	public static void render(Matrix transform, TileMap tileMap, Shader shader, Material material) {
+	public static void render(Matrix transform, TileMapMesh tileMap, Shader shader, Material material) {
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = 0; i < tileMap.getLayerSize(); i++) {
-			TileMapLayer layer = tileMap.getLayer(i);
+			TileMapMeshLayer layer = tileMap.getLayer(i);
 			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
 					material, renderTarget, shader, amount);
 		}

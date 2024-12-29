@@ -5,8 +5,8 @@ import org.jgine.render.mesh.BaseMesh;
 import org.jgine.render.mesh.Mesh;
 import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
-import org.jgine.render.mesh.TileMap;
-import org.jgine.render.mesh.TileMap.TileMapLayer;
+import org.jgine.render.mesh.TileMapMesh;
+import org.jgine.render.mesh.TileMapMesh.TileMapMeshLayer;
 import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.math.Matrix;
@@ -37,10 +37,10 @@ public class UIRenderer extends Renderer {
 				shader, calculateDepth(depth));
 	}
 
-	public static void render(Matrix transform, TileMap tileMap, Shader shader, Material material, int depth) {
+	public static void render(Matrix transform, TileMapMesh tileMap, Shader shader, Material material, int depth) {
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = 0; i < tileMap.getLayerSize(); i++) {
-			TileMapLayer layer = tileMap.getLayer(i);
+			TileMapMeshLayer layer = tileMap.getLayer(i);
 			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, UI_MATRIX, material,
 					renderTarget, shader, amount, calculateDepth(depth));
 		}

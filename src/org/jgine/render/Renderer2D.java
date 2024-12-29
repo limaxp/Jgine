@@ -5,8 +5,8 @@ import org.jgine.render.mesh.BaseMesh;
 import org.jgine.render.mesh.Mesh;
 import org.jgine.render.mesh.MeshGenerator;
 import org.jgine.render.mesh.Model;
-import org.jgine.render.mesh.TileMap;
-import org.jgine.render.mesh.TileMap.TileMapLayer;
+import org.jgine.render.mesh.TileMapMesh;
+import org.jgine.render.mesh.TileMapMesh.TileMapMeshLayer;
 import org.jgine.render.mesh.particle.Particle;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.math.Matrix;
@@ -45,14 +45,14 @@ public class Renderer2D extends Renderer {
 				renderTarget, shader, depth);
 	}
 
-	public static void render(Matrix transform, TileMap tileMap, Shader shader, Material material) {
+	public static void render(Matrix transform, TileMapMesh tileMap, Shader shader, Material material) {
 		render(transform, tileMap, shader, material, MAX_DEPTH_VALUE);
 	}
 
-	public static void render(Matrix transform, TileMap tileMap, Shader shader, Material material, float depth) {
+	public static void render(Matrix transform, TileMapMesh tileMap, Shader shader, Material material, float depth) {
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = tileMap.getLayerSize() - 1; i >= 0; i--) {
-			TileMapLayer layer = tileMap.getLayer(i);
+			TileMapMeshLayer layer = tileMap.getLayer(i);
 			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
 					material, renderTarget, shader, amount, depth);
 		}
