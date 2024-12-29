@@ -62,20 +62,16 @@ public class Engine {
 	 * 
 	 * Each system must declare a java object! if outside of memory its a pointer!
 	 * 
-	 * Main thread should only render and trigger updates on worker threads!
-	 * 
 	 * 
 	 * TODO
-	 * 
-	 * Transfrom is completely unusable! Does not get correct world coordinates!
-	 * 
-	 * RenderQueue needs optimization!
 	 * 
 	 * Adding Systems in update loop might block threads! Remove synchronized block
 	 * from update in system classes!
 	 * 
-	 * Fix concurrent update bugs in UpdateOrder! chaeses in Afrgrafar, Astriod,
-	 * 3DTest!
+	 * RenderQueue needs optimization!
+	 * 
+	 * Fix concurrent update bugs in UpdateOrder! crashes in Afrgrafar, Astriod,
+	 * 3DTest! Update TaskHelper!
 	 * 
 	 */
 
