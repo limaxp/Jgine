@@ -1,6 +1,9 @@
 package org.jgine.utils.loader;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.jgine.render.mesh.TileMapMesh;
@@ -14,6 +17,76 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Helper class for loading {@link TileMapMesh} files.
  */
 public class TileMapLoader {
+
+	public static void save(TileMapData data, DataOutput out) throws IOException {
+		out.writeInt(data.tileswidth);
+		out.writeInt(data.tilesheight);
+		out.writeInt(data.tilewidth);
+		out.writeInt(data.tileheight);
+
+		int layerSize = data.layers.length;
+		out.writeInt(layerSize);
+		for (int i = 0; i < layerSize; i++)
+			saveLayer(data.layers[i], out);
+	}
+
+	public static TileMapData load(DataInput in) throws IOException {
+		TileMapData data = new TileMapData();
+		data.tileswidth = in.readInt();
+		data.tilesheight = in.readInt();
+		data.tilewidth = in.readInt();
+		data.tileheight = in.readInt();
+
+		int layerSize = in.readInt();
+		data.layers = new TileMapLayer[layerSize];
+		for (int i = 0; i < layerSize; i++)
+			data.layers[i] = loadLayer(in);
+		return data;
+	}
+
+	public static void saveLayer(TileMapLayer data, DataOutput out) throws IOException {
+		out.writeUTF(data.name);
+		out.writeInt(data.number);
+
+		int tileSize = data.tiles.length;
+		out.writeInt(tileSize);
+		for (int i = 0; i < tileSize; i++)
+			saveTile(data.tiles[i], out);
+	}
+
+	public static TileMapLayer loadLayer(DataInput in) throws IOException {
+		TileMapLayer data = new TileMapLayer();
+		data.name = in.readUTF();
+		data.number = in.readInt();
+
+		int tileSize = in.readInt();
+		data.tiles = new TileMapTile[tileSize];
+		for (int i = 0; i < tileSize; i++)
+			data.tiles[i] = loadTile(in);
+		return data;
+	}
+
+	public static void saveTile(TileMapTile data, DataOutput out) throws IOException {
+		out.writeInt(data.tile);
+		out.writeInt(data.rotation);
+		out.writeInt(data.x);
+		out.writeInt(data.y);
+		out.writeBoolean(data.flipX);
+	}
+
+	public static TileMapTile loadTile(DataInput in) throws IOException {
+		TileMapTile data = new TileMapTile();
+		data.tile = in.readInt();
+		data.rotation = in.readInt();
+		data.x = in.readInt();
+		data.y = in.readInt();
+		data.flipX = in.readBoolean();
+		return data;
+	}
+
+	public static TileMapData load(String s) {
+		return load(JSONLoader.load(s));
+	}
 
 	public static TileMapData load(File file) {
 		return load(JSONLoader.load(file));

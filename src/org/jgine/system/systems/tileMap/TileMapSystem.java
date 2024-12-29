@@ -10,7 +10,7 @@ public class TileMapSystem extends EngineSystem<TileMapSystem, TileMap> {
 	public TileMapSystem() {
 		super("tilemap");
 	}
-	
+
 	@Override
 	public TileMapScene createScene(Scene scene) {
 		return new TileMapScene(this, scene);
@@ -18,7 +18,8 @@ public class TileMapSystem extends EngineSystem<TileMapSystem, TileMap> {
 
 	@Override
 	public TileMap load(Map<String, Object> data) {
-
-		return null;
+		TileMap object = new TileMap();
+		object.load(data);
+		return object;
 	}
 }

@@ -45,13 +45,14 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 		Renderer.PARTICLE_CALC_SHADER.bind();
 		for (int i = 0; i < size; i++) {
 			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);
-			objects[i].update();
+			objects[i].getMesh().update();
 		}
 		Renderer.PARTICLE_CALC_SHADER.unbind();
 
 		for (int i = 0; i < size; i++) {
 			Particle object = objects[i];
-			Renderer.render(object.transform.getMatrix(), object, Renderer.PARTICLE_DRAW_SHADER, object.material);
+			Renderer.render(object.transform.getMatrix(), object.getMesh(), Renderer.PARTICLE_DRAW_SHADER,
+					object.material);
 		}
 	}
 
@@ -70,7 +71,6 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 		size = in.readInt();
 		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
-			@SuppressWarnings("resource")
 			Particle object = new Particle();
 			object.load(in);
 			objects[i] = object;

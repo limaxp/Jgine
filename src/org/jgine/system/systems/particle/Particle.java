@@ -15,7 +15,7 @@ import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector3f;
 
-public class Particle extends ParticleMesh implements SystemObject {
+public class Particle implements SystemObject {
 
 	Transform transform;
 	public Material material = new Material();
@@ -32,6 +32,17 @@ public class Particle extends ParticleMesh implements SystemObject {
 	public int colorRange = Color.BLACK;
 	public float spawnTime = 0.2f;
 	private float elapsedTime;
+	private ParticleMesh mesh;
+
+	public void close() {
+		mesh.close();
+	}
+
+	ParticleMesh getMesh() {
+		if (mesh == null)
+			mesh = new ParticleMesh();
+		return mesh;
+	}
 
 	public boolean checkSpawnTime(float dt) {
 		elapsedTime += dt;

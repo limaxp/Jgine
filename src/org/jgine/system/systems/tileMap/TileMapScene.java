@@ -20,6 +20,10 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 
 	@Override
 	public void free() {
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				objects[i].close();
+		}
 	}
 
 	@Override
@@ -31,6 +35,13 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 					object.createCollider(x, y);
 			}
 		}
+	}
+
+	@Override
+	public TileMap removeObject(int index) {
+		TileMap object = super.removeObject(index);
+		object.close();
+		return object;
 	}
 
 	@Override
@@ -49,10 +60,20 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 
 	@Override
 	public void load(DataInput in) throws IOException {
+		size = in.readInt();
+		ensureCapacity(size);
+		for (int i = 0; i < size; i++) {
+			TileMap object = new TileMap();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			objects[i].save(out);
 	}
 
 	@Override

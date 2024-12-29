@@ -1,16 +1,23 @@
 package org.jgine.system.systems.tileMap;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.BitSet;
+import java.util.Map;
 
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.material.Material;
+import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.TileMapMesh;
 import org.jgine.system.SystemObject;
 import org.jgine.system.systems.collision.collider.AxisAlignedBoundingQuad;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.tileMap.TileMapData.TileMapTile;
+import org.jgine.utils.loader.ResourceManager;
+import org.jgine.utils.loader.TileMapLoader;
 
 public class TileMap implements SystemObject {
 
@@ -18,14 +25,25 @@ public class TileMap implements SystemObject {
 	private TileMapData data;
 	private Material material;
 	private TileMapMesh mesh;
-	private boolean rebuildMesh;
+	private boolean rebuildMesh = true;
 	private BitSet hitboxes;
 
 	public TileMap(TileMapData data, Material material) {
 		this.data = data;
 		this.material = material;
-		rebuildMesh = true;
+		init();
+	}
+
+	public TileMap() {
+		this.material = new Material();
+	}
+
+	private void init() {
 		hitboxes = new BitSet(data.tileswidth * data.tilesheight);
+	}
+
+	public void close() {
+		mesh.close();
 	}
 
 	@Override
@@ -40,6 +58,32 @@ public class TileMap implements SystemObject {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void load(Map<String, Object> data) {
+		Object tileMapData = data.get("tileMap");
+		if (tileMapData instanceof String)
+			TileMapLoader.load((String) tileMapData);
+
+		Object materialData = data.get("material");
+		if (materialData instanceof String) {
+			Texture texture = ResourceManager.getTexture((String) materialData);
+			if (texture != null)
+				material.setTexture(texture);
+		} else if (materialData instanceof Map)
+			material.load((Map<String, Object>) materialData);
+	}
+
+	public void load(DataInput in) throws IOException {
+		data = TileMapLoader.load(in);
+		init();
+		material.load(in);
+	}
+
+	public void save(DataOutput out) throws IOException {
+		TileMapLoader.save(data, out);
+		material.save(out);
 	}
 
 	void setTransform(Transform transform) {
