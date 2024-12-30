@@ -147,8 +147,7 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"),
-				Renderer.BASIC_SHADER);
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"));
 	}
 
 	@Override

@@ -54,6 +54,7 @@ public class Renderer {
 
 	protected static Camera camera;
 	protected static RenderTarget renderTarget;
+	protected static Shader shader;
 
 	static {
 		OpenGL.init();
@@ -133,7 +134,7 @@ public class Renderer {
 		new Material(POST_PROCESS_TARGET.getTexture(RenderTarget.COLOR_ATTACHMENT0)).bind(POST_PROCESS_SHADER);
 		Matrix transform = Transform.calculateMatrix(new Matrix(), 0, 0, 0, 1, 1, 0);
 		POST_PROCESS_SHADER.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0);
+		RenderQueue.draw(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0);
 	}
 
 	public static void setLights(LightScene lightScene) {
@@ -153,24 +154,24 @@ public class Renderer {
 		TILE_MAP_SHADER.setPointLights(pointLights);
 	}
 
-	public static void render(Matrix transform, Model model, Shader shader) {
+	public static void render(Matrix transform, Model model) {
 		Mesh[] meshes = model.getMeshes();
 		Material[] materials = model.getMaterials();
 		for (int i = 0; i < meshes.length; i++)
-			render(transform, meshes[i], shader, materials[i]);
+			render(transform, meshes[i], materials[i]);
 	}
 
-	public static void render(Matrix transform, Mesh mesh, Shader shader, Material material) {
+	public static void render(Matrix transform, Mesh mesh, Material material) {
 		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, camera.getMatrix(), material,
 				renderTarget, shader);
 	}
 
-	public static void render(Matrix transform, BaseMesh mesh, Shader shader, Material material) {
+	public static void render(Matrix transform, BaseMesh mesh, Material material) {
 		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
 				renderTarget, shader);
 	}
 
-	public static void render(Matrix transform, TileMapMesh tileMap, Shader shader, Material material) {
+	public static void render(Matrix transform, TileMapMesh tileMap, Material material) {
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = 0; i < tileMap.getLayerSize(); i++) {
 			TileMapMeshLayer layer = tileMap.getLayer(i);
@@ -179,17 +180,17 @@ public class Renderer {
 		}
 	}
 
-	public static void render(Matrix transform, ParticleMesh particle, Shader shader, Material material) {
+	public static void render(Matrix transform, ParticleMesh particle, Material material) {
 		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
 				material, renderTarget, shader);
 	}
 
-	public static void renderQuad(Matrix transform, Shader shader, Material material) {
+	public static void renderQuad(Matrix transform, Material material) {
 		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, camera.getMatrix(),
 				material, renderTarget, shader);
 	}
 
-	public static void renderCube(Matrix transform, Shader shader, Material material) {
+	public static void renderCube(Matrix transform, Material material) {
 		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, camera.getMatrix(),
 				material, renderTarget, shader);
 	}
@@ -224,12 +225,9 @@ public class Renderer {
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
-	/**
-	 * IMPORTANT: Can only be used synchronously!
-	 */
 	public static void setCamera_UNSAFE(Camera camera) {
 		Renderer.camera = camera;
-		renderTarget = camera.getRenderTarget();
+		setRenderTarget_UNSAFE(camera.getRenderTarget());
 		PHONG_SHADER.setCameraPosition(camera);
 	}
 
@@ -237,15 +235,19 @@ public class Renderer {
 		return camera;
 	}
 
-	/**
-	 * IMPORTANT: Can only be used synchronously!
-	 */
 	public static void setRenderTarget_UNSAFE(RenderTarget renderTarget) {
 		Renderer.renderTarget = renderTarget;
+//		renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
+//		renderTarget.clear();
 	}
 
 	public static RenderTarget getRenderTarget() {
 		return renderTarget;
+	}
+
+	public static void setShader(Shader shader) {
+		Renderer.shader = shader;
+//		shader.bind();
 	}
 
 	public static void enableWireframeMode() {

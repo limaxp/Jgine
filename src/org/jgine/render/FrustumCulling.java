@@ -120,7 +120,7 @@ public class FrustumCulling {
 
 		public void render() {
 			Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, normal, new Vector3f(Float.MAX_VALUE)),
-					UIRenderer.BASIC_SHADER, new Material());
+					new Material());
 		}
 	}
 }

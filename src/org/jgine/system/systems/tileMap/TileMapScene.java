@@ -51,10 +51,11 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 	@Override
 	public void render(float dt) {
 		TileMapShader shader = Renderer.TILE_MAP_SHADER;
+		Renderer.setShader(shader);
 		for (int i = 0; i < size; i++) {
 			TileMap object = objects[i];
 			shader.setTileMapData(object.getTileswidth(), object.getTilesheight());
-			Renderer2D.render(object.getTransform().getMatrix(), object.getMesh(), shader, object.getMaterial());
+			Renderer2D.render(object.getTransform().getMatrix(), object.getMesh(), object.getMaterial());
 		}
 	}
 

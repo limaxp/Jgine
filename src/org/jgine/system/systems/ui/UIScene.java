@@ -11,6 +11,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
+import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
@@ -159,6 +160,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
 	@Override
 	public void render(float dt) {
+		Renderer.setShader(Renderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++)
 			objects[i].render(i * 3);
 	}

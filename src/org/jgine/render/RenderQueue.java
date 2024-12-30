@@ -142,12 +142,12 @@ public class RenderQueue {
 						drawCallAmount += data.commands.size() + data.commandsInstanced.size();
 						for (RenderCommand command : data.commands) {
 							shader.setTransform(command.transform, command.transformProjected);
-							render(command.vao, command.mode, command.numVertices, command.numIndices);
+							draw(command.vao, command.mode, command.numVertices, command.numIndices);
 						}
 
 						for (RenderInstancedCommand command : data.commandsInstanced) {
 							shader.setTransform(command.transform, command.transformProjected);
-							renderInstanced(command.vao, command.mode, command.numVertices, command.numIndices,
+							drawInstanced(command.vao, command.mode, command.numVertices, command.numIndices,
 									command.amount);
 						}
 					}
@@ -162,7 +162,7 @@ public class RenderQueue {
 		}
 	}
 
-	public static void render(int vao, int mode, int numVertices, int numIndices) {
+	public static void draw(int vao, int mode, int numVertices, int numIndices) {
 		glBindVertexArray(vao);
 		if (numIndices == 0)
 			glDrawArrays(mode, 0, numVertices);
@@ -170,7 +170,7 @@ public class RenderQueue {
 			glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
 	}
 
-	public static void renderInstanced(int vao, int mode, int numVertices, int numIndices, int amount) {
+	public static void drawInstanced(int vao, int mode, int numVertices, int numIndices, int amount) {
 		glBindVertexArray(vao);
 		if (numIndices == 0)
 			glDrawArraysInstanced(mode, 0, numVertices, amount);

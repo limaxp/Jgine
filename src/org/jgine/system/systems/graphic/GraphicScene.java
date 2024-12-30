@@ -36,10 +36,11 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	public void render(float dt) {
 		frustumCulling.applyCamera(Renderer.getCamera(), 0);
 
+		Renderer.setShader(Renderer.PHONG_SHADER);
 		for (int i = 0; i < size; i++) {
 			Transform transform = transforms[i];
 //			if (frustumCulling.containsPoint(transform.getPosition()))
-			Renderer.render(transform.getMatrix(), objects[i].model, Renderer.PHONG_SHADER);
+			Renderer.render(transform.getMatrix(), objects[i].model);
 		}
 	}
 

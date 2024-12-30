@@ -45,12 +45,12 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 //				Renderer2D.renderQuad(transform.getMatrix(), Renderer.PHONG_2D_SHADER, objects[i]);
 //		}
 
+		Renderer.setShader(Renderer.PHONG_2D_SHADER);
 		scene.getSpacePartitioning().forNear(frustumCulling.x1, frustumCulling.y1, 0.0f, frustumCulling.x2,
 				frustumCulling.y2, 0.0f, (entity) -> {
 					List<Material> materials = entity.getSystems(Engine.GRAPHIC_2D_SYSTEM);
 					for (SystemObject material : materials)
-						Renderer2D.renderQuad(entity.transform.getMatrix(), Renderer.PHONG_2D_SHADER,
-								(Material) material);
+						Renderer2D.renderQuad(entity.transform.getMatrix(), (Material) material);
 				});
 	}
 

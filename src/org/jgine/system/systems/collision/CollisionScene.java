@@ -8,6 +8,7 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
+import org.jgine.render.Renderer;
 import org.jgine.system.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
@@ -59,6 +60,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	public void render(float dt) {
 		if (!system.showHitBox())
 			return;
+		Renderer.setShader(Renderer.BASIC_SHADER);
 		for (int i = 0; i < size; i++)
 			objects[i].render();
 	}
