@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
@@ -75,10 +76,12 @@ public class SceneLoader {
 			updateOrder.load(in);
 			scene.setUpdateOrder(updateOrder);
 		}
-		boolean hasRenderOrder = in.readBoolean();
-		if (hasRenderOrder) {
-			UpdateOrder renderOrder = new UpdateOrder();
-			renderOrder.load(in);
+
+		int renderOrderSize = in.readInt();
+		if (renderOrderSize > 0) {
+			List<EngineSystem<?, ?>> renderOrder = new IdentityArrayList<EngineSystem<?, ?>>();
+			for (int i = 0; i < renderOrderSize; i++)
+				renderOrder.add(EngineSystem.get(in.readInt()));
 			scene.setRenderOrder(renderOrder);
 		}
 		return scene;
@@ -109,11 +112,14 @@ public class SceneLoader {
 			updateOrder.save(out);
 		} else
 			out.writeBoolean(false);
-		UpdateOrder renderOrder = scene.getRenderOrder();
+
+		List<EngineSystem<?, ?>> renderOrder = scene.getRenderOrder();
 		if (renderOrder != null) {
-			out.writeBoolean(true);
-			renderOrder.save(out);
+			int renderOrderSize = renderOrder.size();
+			out.writeInt(renderOrderSize);
+			for (int i = 0; i < renderOrderSize; i++)
+				out.writeInt(renderOrder.get(i).id);
 		} else
-			out.writeBoolean(false);
+			out.writeInt(0);
 	}
 }

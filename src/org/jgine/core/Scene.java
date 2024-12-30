@@ -38,7 +38,7 @@ public class Scene {
 	private final List<Entity> entities;
 	private final List<Entity> topEntities;
 	private UpdateOrder updateOrder;
-	private UpdateOrder renderOrder;
+	private List<EngineSystem<?, ?>> renderOrder;
 	private SpacePartitioning spacePartitioning;
 	private boolean paused;
 
@@ -362,12 +362,12 @@ public class Scene {
 		return updateOrder != null;
 	}
 
-	public void setRenderOrder(@Nullable UpdateOrder renderOrder) {
+	public void setRenderOrder(@Nullable List<EngineSystem<?, ?>> renderOrder) {
 		this.renderOrder = renderOrder;
 	}
 
 	@Nullable
-	public UpdateOrder getRenderOrder() {
+	public List<EngineSystem<?, ?>> getRenderOrder() {
 		return renderOrder;
 	}
 
