@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
@@ -45,9 +46,12 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 
 	public abstract void forEach(Consumer<O> func);
 
-	public abstract void update(float dt);
+	public void update(UpdateTask update) {
+		update.finish(system);
+	}
 
-	public abstract void render(float dt);
+	public void render(float dt) {
+	}
 
 	public abstract void load(DataInput in) throws IOException;
 

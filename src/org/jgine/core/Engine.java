@@ -19,7 +19,6 @@ import org.jgine.net.game.ConnectionManager;
 import org.jgine.render.RenderConfiguration;
 import org.jgine.render.Renderer;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
 import org.jgine.system.systems.ai.AiSystem;
 import org.jgine.system.systems.camera.CameraScene;
 import org.jgine.system.systems.camera.CameraSystem;
@@ -54,6 +53,14 @@ import org.lwjgl.system.MemoryUtil;
  * a {@link Entity}.
  */
 public class Engine {
+
+	/**
+	 * TODO
+	 * 
+	 * Change SystemMap so SystemScene does not need synchronization!
+	 * 
+	 * Update TaskHelper so first thread goes to sleep!
+	 */
 
 	public static final PhysicSystem PHYSIC_SYSTEM = new PhysicSystem();
 	public static final CameraSystem CAMERA_SYSTEM = new CameraSystem();
@@ -202,38 +209,29 @@ public class Engine {
 	}
 
 	private final void updateScene(Scene scene, float dt) {
-		if (!scene.hasUpdateOrder()) {
-			for (SystemScene<?, ?> systemScene : scene.getSystems())
-				systemScene.update(dt);
+		if (!scene.hasUpdateOrder())
+			return;
 
-		} else {
-			if (Options.SYNCHRONIZED)
-				new SynchronizedUpdateTask(scene, scene.getUpdateOrder(), dt).start();
-			else
-				new UpdateTask(scene, scene.getUpdateOrder(), dt).start();
-		}
+		if (Options.SYNCHRONIZED)
+			new UpdateTask(scene, scene.getUpdateOrder(), dt).start();
+		else
+			new ConcurrentUpdateTask(scene, scene.getUpdateOrder(), dt).start();
 	}
 
 	private final void renderScene(Scene scene, float dt) {
+		if (!scene.hasRenderOrder())
+			return;
+
 		LightScene lightScene = scene.getSystem(LIGHT_SYSTEM);
 		if (lightScene != null)
 			Renderer.setLights(lightScene);
 
-		if (!scene.hasRenderOrder()) {
-			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-				Renderer.setCamera(camera);
-				camera.getRenderTarget().clear();
-				for (SystemScene<?, ?> systemScene : scene.getSystems())
-					systemScene.render(dt);
-			});
-		} else {
-			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-				Renderer.setCamera(camera);
-				camera.getRenderTarget().clear();
-				for (EngineSystem<?, ?> system : scene.getRenderOrder())
-					scene.getSystem(system).render(dt);
-			});
-		}
+		((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
+			Renderer.setCamera(camera);
+			camera.getRenderTarget().clear();
+			for (EngineSystem<?, ?> system : scene.getRenderOrder())
+				scene.getSystem(system).render(dt);
+		});
 		Renderer.setRenderTarget(null);
 	}
 
@@ -378,18 +376,21 @@ public class Engine {
 		}
 	}
 
-	public static class SynchronizedUpdateTask {
+	public static class UpdateTask {
 
-		protected final Scene scene;
+		public final Scene scene;
 		protected final UpdateOrder order;
 		protected final AtomicIntegerArray flags;
-		protected final float dt;
+		public final float dt;
 
-		public SynchronizedUpdateTask(Scene scene, UpdateOrder order, float dt) {
+		public UpdateTask(Scene scene, UpdateOrder order, float dt) {
 			this.scene = scene;
 			this.order = order;
 			flags = new AtomicIntegerArray(EngineSystem.size());
 			this.dt = dt;
+		}
+
+		public void finish(EngineSystem<?, ?> system) {
 		}
 
 		public void start() {
@@ -399,7 +400,7 @@ public class Engine {
 		}
 
 		protected void update(EngineSystem<?, ?> system) {
-			scene.getSystem(system).update(dt);
+			scene.getSystem(system).update(this);
 			check(system);
 		}
 
@@ -418,21 +419,25 @@ public class Engine {
 					return;
 			update(system);
 		}
+
+		public final boolean isDone(EngineSystem<?, ?> system) {
+			return flags.get(system.id) == 1;
+		}
 	}
 
-	public static class UpdateTask extends SynchronizedUpdateTask {
+	public static class ConcurrentUpdateTask extends UpdateTask {
 
 		protected final AtomicInteger amount;
 		protected final Thread thread;
 
-		public UpdateTask(Scene scene, UpdateOrder order, float dt) {
+		public ConcurrentUpdateTask(Scene scene, UpdateOrder order, float dt) {
 			super(scene, order, dt);
 			amount = new AtomicInteger(order.size());
 			thread = Thread.currentThread();
 		}
 
 		@Override
-		public void start() {
+		public final void start() {
 			super.start();
 			while (amount.get() > 1) {
 				try {
@@ -443,13 +448,11 @@ public class Engine {
 		}
 
 		@Override
-		protected void update(EngineSystem<?, ?> system) {
-			ThreadPool.execute(() -> {
-				scene.getSystem(system).update(dt);
-				finish(system);
-			});
+		protected final void update(EngineSystem<?, ?> system) {
+			ThreadPool.execute(() -> scene.getSystem(system).update(this));
 		}
 
+		@Override
 		public final void finish(EngineSystem<?, ?> system) {
 			if (amount.decrementAndGet() <= 0)
 				thread.interrupt();

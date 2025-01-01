@@ -28,14 +28,6 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void update(float dt) {
-	}
-
-	@Override
-	public void render(float dt) {
-	}
-
-	@Override
 	public Entity getEntity(int index) {
 		return getTransform(index).getEntity();
 	}

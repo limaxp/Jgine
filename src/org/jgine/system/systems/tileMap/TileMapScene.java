@@ -45,10 +45,6 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 	}
 
 	@Override
-	public void update(float dt) {
-	}
-
-	@Override
 	public void render(float dt) {
 		TileMapShader shader = Renderer.TILE_MAP_SHADER;
 		Renderer.setShader(shader);

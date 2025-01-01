@@ -52,14 +52,6 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void update(float dt) {
-	}
-
-	@Override
-	public void render(float dt) {
-	}
-
-	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
 		ensureCapacity(size);

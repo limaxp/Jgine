@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.Engine;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
@@ -16,7 +17,6 @@ import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.scheduler.Job;
-import org.jgine.utils.scheduler.TaskHelper;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
 
@@ -50,21 +50,18 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	}
 
 	@Override
-	public void update(float dt) {
+	public void update(UpdateTask update) {
 		synchronized (objects) {
-			for (int i = 0; i < SUB_STEPS; i++)
-				TaskHelper.execute(size, this::solveCollisions);
-
-//			updateStep(0);
+			updateStep(update, 0);
 		}
 	}
 
-	private void updateStep(int subStep) {
+	private void updateStep(UpdateTask update, int subStep) {
 		Job.region(size, this::solveCollision, () -> {
 			if (subStep < SUB_STEPS)
-				updateStep(subStep + 1);
+				updateStep(update, subStep + 1);
 			else
-				; // TODO
+				update.finish(system);
 		});
 	}
 
@@ -99,12 +96,6 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 			out.writeInt(object.getType().getId());
 			object.save(out);
 		}
-	}
-
-	private void solveCollisions(int index, int size) {
-		size = index + size;
-		for (; index < size; index++)
-			solveCollision(index);
 	}
 
 	private void solveCollision(int index) {

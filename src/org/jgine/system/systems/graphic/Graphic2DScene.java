@@ -32,10 +32,6 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	}
 
 	@Override
-	public void update(float dt) {
-	}
-
-	@Override
 	public void render(float dt) {
 		frustumCulling.applyCamera(Renderer.getCamera(), 50);
 

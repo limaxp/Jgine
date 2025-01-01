@@ -8,6 +8,7 @@ import java.util.List;
 import org.jgine.collection.list.arrayList.IdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
@@ -72,7 +73,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public void update(float dt) {
+	public void update(UpdateTask update) {
 		Vector2f cursorPos = Input.getCursorPos();
 		Vector2i windowSize = Input.getWindowSize();
 		mouseX = cursorPos.x / windowSize.x;
@@ -91,6 +92,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 			clickCheck(focusObject);
 			scrollCheck(focusObject);
 		}
+		update.finish(system);
 	}
 
 	private void focus(UIObject object) {

@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
-import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 
 public class AiScene extends ListSystemScene<AiSystem, AiObject> {
@@ -37,18 +37,12 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 	}
 
 	@Override
-	public void update(float dt) {
+	public void update(UpdateTask update) {
 		synchronized (objects) {
 			for (int i = 0; i < size; i++)
-				objects[i].update(dt);
+				objects[i].update(update.dt);
 		}
-	}
-
-	@Override
-	public void render(float dt) {
-		Renderer.enableDepthTest();
-
-		Renderer.disableDepthTest();
+		update.finish(system);
 	}
 
 	@Override

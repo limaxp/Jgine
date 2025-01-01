@@ -8,6 +8,7 @@ import javax.script.ScriptEngine;
 
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.utils.loader.ResourceManager;
@@ -40,15 +41,12 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 	}
 
 	@Override
-	public void update(float dt) {
+	public void update(UpdateTask update) {
 		synchronized (objects) {
 			for (int i = 0; i < size; i++)
 				objects[i].getInterface().update();
 		}
-	}
-
-	@Override
-	public void render(float dt) {
+		update.finish(system);
 	}
 
 	@Override

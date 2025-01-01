@@ -5,13 +5,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.Engine;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
 import org.jgine.utils.scheduler.Job;
-import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
 
@@ -42,18 +42,11 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	}
 
 	@Override
-	public void update(float dt) {
-		this.dt = dt;
+	public void update(UpdateTask update) {
+		this.dt = update.dt;
 		synchronized (objects) {
-			TaskHelper.execute(size, this::updatePositions);
-//			Job.region(size, this::updatePosition, () -> {
-//				// TODO
-//			});
+			Job.region(size, this::updatePosition, () -> update.finish(system));
 		}
-	}
-
-	@Override
-	public void render(float dt) {
 	}
 
 	@Override
@@ -88,12 +81,6 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	public float getAirResistanceFactor() {
 		return airResistanceFactor;
-	}
-
-	private void updatePositions(int index, int size) {
-		size = index + size;
-		for (; index < size; index++)
-			updatePosition(index);
 	}
 
 	private void updatePosition(int index) {
