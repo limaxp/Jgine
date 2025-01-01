@@ -15,6 +15,7 @@ import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.scheduler.Job;
 import org.jgine.utils.scheduler.TaskHelper;
 
 public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
@@ -53,7 +54,18 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 		synchronized (objects) {
 			for (int i = 0; i < SUB_STEPS; i++)
 				TaskHelper.execute(size, this::solveCollisions);
+
+//			updateStep(0);
 		}
+	}
+
+	private void updateStep(int subStep) {
+		Job.region(size, this::solveCollision, () -> {
+			if (subStep < SUB_STEPS)
+				updateStep(subStep + 1);
+			else
+				; // TODO
+		});
 	}
 
 	@Override

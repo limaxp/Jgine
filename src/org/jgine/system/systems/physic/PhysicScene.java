@@ -10,6 +10,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.UpdateManager;
 import org.jgine.system.data.EntityListSystemScene;
+import org.jgine.utils.scheduler.Job;
 import org.jgine.utils.scheduler.TaskHelper;
 
 public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
@@ -45,6 +46,9 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		this.dt = dt;
 		synchronized (objects) {
 			TaskHelper.execute(size, this::updatePositions);
+//			Job.region(size, this::updatePosition, () -> {
+//				// TODO
+//			});
 		}
 	}
 

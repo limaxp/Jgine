@@ -422,8 +422,8 @@ public class Engine {
 
 	public static class UpdateTask extends SynchronizedUpdateTask {
 
-		protected AtomicInteger amount;
-		protected Thread thread;
+		protected final AtomicInteger amount;
+		protected final Thread thread;
 
 		public UpdateTask(Scene scene, UpdateOrder order, float dt) {
 			super(scene, order, dt);
