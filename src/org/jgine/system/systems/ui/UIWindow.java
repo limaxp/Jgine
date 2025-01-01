@@ -95,10 +95,12 @@ public class UIWindow extends UICompound {
 	@Override
 	protected void renderChilds(int depth) {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
-		UIRenderer.setRenderTarget_UNSAFE(getRenderTarget());
+		RenderTarget renderTarget = getRenderTarget();
+		UIRenderer.setRenderTarget(renderTarget);
+		renderTarget.clear();
 		for (UIObject child : getVisibleChilds())
 			child.render(0);
-		UIRenderer.setRenderTarget_UNSAFE(tmp);
+		UIRenderer.setRenderTarget(tmp);
 		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth);
 	}
 
@@ -106,8 +108,7 @@ public class UIWindow extends UICompound {
 		if (renderTarget == null) {
 			renderTarget = createRenderTarget();
 			renderTargetMaterial.setTexture(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
-		} else
-			renderTarget.clear();
+		}
 		return renderTarget;
 	}
 

@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
+import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
 
 public class AiScene extends ListSystemScene<AiSystem, AiObject> {
@@ -45,6 +46,9 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void render(float dt) {
+		Renderer.enableDepthTest();
+
+		Renderer.disableDepthTest();
 	}
 
 	@Override

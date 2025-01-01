@@ -27,66 +27,72 @@ public class UIRenderer extends Renderer {
 	}
 
 	public static void render(Matrix transform, Mesh mesh, Material material, int depth) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		Matrix mvp = new Matrix(transform).mult(UI_MATRIX);
+		mvp.m23 = calculateDepth(depth);
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		drawIndexed(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material, int depth) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		Matrix mvp = new Matrix(transform).mult(UI_MATRIX);
+		mvp.m23 = calculateDepth(depth);
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material, int depth) {
+		Matrix mvp = new Matrix(transform).mult(UI_MATRIX);
+		mvp.m23 = calculateDepth(depth);
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = 0; i < tileMap.getLayerSize(); i++) {
 			TileMapMeshLayer layer = tileMap.getLayer(i);
-			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, UI_MATRIX, material,
-					renderTarget, shader, amount, calculateDepth(depth));
+			drawInstanced(layer.getVao(), layer.mode, layer.getSize(), amount);
 		}
 	}
 
 	public static void render(Matrix transform, ParticleMesh particle, Material material, int depth) {
-		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, UI_MATRIX,
-				material, renderTarget, shader, calculateDepth(depth));
+		Matrix mvp = new Matrix(transform).mult(UI_MATRIX);
+		mvp.m23 = calculateDepth(depth);
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(particle.getVao(), Mesh.POINTS, particle.getInstanceSize());
 	}
 
 	public static void renderQuad(Matrix transform, Material material, int depth) {
-		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, UI_MATRIX, material,
-				renderTarget, shader, calculateDepth(depth));
+		render(transform, QUAD_MESH, material, depth);
 	}
 
 	public static void renderCube(Matrix transform, Material material, int depth) {
-		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, UI_MATRIX, material,
-				renderTarget, shader, calculateDepth(depth));
+		render(transform, CUBE_MESH, material, depth);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2,
 			int depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
 			float z2, int depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points, int depth) {
 		BaseMesh mesh = MeshGenerator.line(3, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points, int depth) {
 		BaseMesh mesh = MeshGenerator.line(2, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, UI_MATRIX, material, renderTarget,
-				shader, calculateDepth(depth));
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 }

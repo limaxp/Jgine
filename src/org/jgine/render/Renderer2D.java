@@ -31,8 +31,11 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, Mesh mesh, Material material, float depth) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		mvp.m23 = depth;
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		drawIndexed(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material) {
@@ -40,8 +43,11 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material, float depth) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		mvp.m23 = depth;
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material) {
@@ -49,11 +55,14 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material, float depth) {
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		mvp.m23 = depth;
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
-		for (int i = tileMap.getLayerSize() - 1; i >= 0; i--) {
+		for (int i = 0; i < tileMap.getLayerSize(); i++) {
 			TileMapMeshLayer layer = tileMap.getLayer(i);
-			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
-					material, renderTarget, shader, amount, depth);
+			drawInstanced(layer.getVao(), layer.mode, layer.getSize(), amount);
 		}
 	}
 
@@ -62,8 +71,11 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, ParticleMesh particle, Material material, float depth) {
-		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader, depth);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		mvp.m23 = depth;
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(particle.getVao(), Mesh.POINTS, particle.getInstanceSize());
 	}
 
 	public static void renderQuad(Matrix transform, Material material) {
@@ -71,8 +83,7 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void renderQuad(Matrix transform, Material material, float depth) {
-		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader, depth);
+		render(transform, QUAD_MESH, material, depth);
 	}
 
 	public static void renderCube(Matrix transform, Material material) {
@@ -80,37 +91,32 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void renderCube(Matrix transform, Material material, float depth) {
-		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader, depth);
+		render(transform, CUBE_MESH, material, depth);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2,
 			float depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
 			float z2, float depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points, float depth) {
 		BaseMesh mesh = MeshGenerator.line(3, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points, float depth) {
 		BaseMesh mesh = MeshGenerator.line(2, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader, depth);
+		render(transform, mesh, material, depth);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 }

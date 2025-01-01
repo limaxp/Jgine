@@ -222,17 +222,20 @@ public class Engine {
 
 		if (!scene.hasRenderOrder()) {
 			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-				Renderer.setCamera_UNSAFE(camera);
+				Renderer.setCamera(camera);
+				camera.getRenderTarget().clear();
 				for (SystemScene<?, ?> systemScene : scene.getSystems())
 					systemScene.render(dt);
 			});
 		} else {
 			((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
-				Renderer.setCamera_UNSAFE(camera);
+				Renderer.setCamera(camera);
+				camera.getRenderTarget().clear();
 				for (EngineSystem<?, ?> system : scene.getRenderOrder())
 					scene.getSystem(system).render(dt);
 			});
 		}
+		Renderer.setRenderTarget(null);
 	}
 
 	public final Window getWindow() {

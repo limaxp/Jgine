@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
@@ -166,8 +165,7 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, 1, 1), Renderer.BASIC_SHADER,
-				new Material(), true, points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, 1, 1), new Material(), true, points);
 	}
 
 	@Override

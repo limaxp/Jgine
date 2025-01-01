@@ -32,6 +32,11 @@ public class PhongShader extends TextureShader {
 	}
 
 	@Override
+	public void setCamera(Camera camera) {
+		setUniform3f(uniform_camPos, camera.getTransform().getPosition());
+	}
+
+	@Override
 	public void setTransform(Matrix matrix, Matrix projectionMatrix) {
 		super.setTransform(matrix, projectionMatrix);
 		setUniformMatrix4f(uniform_transform, matrix);
@@ -74,9 +79,5 @@ public class PhongShader extends TextureShader {
 		setUniform3f(uniform_directionalLight_color, color.x, color.y, color.z);
 		setUniformf(uniform_directionalLight_intensity, directionalLight.getIntensity());
 		setUniform3f(uniform_directionalLight_direction, directionalLight.getDirection());
-	}
-
-	public void setCameraPosition(Camera camera) {
-		setUniform3f(uniform_camPos, camera.getTransform().getPosition());
 	}
 }

@@ -1,6 +1,15 @@
 package org.jgine.render;
 
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
+import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
+
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
@@ -162,83 +171,107 @@ public class Renderer {
 	}
 
 	public static void render(Matrix transform, Mesh mesh, Material material) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, 0, mesh.getSize(), transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		drawIndexed(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material) {
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material) {
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
 		for (int i = 0; i < tileMap.getLayerSize(); i++) {
 			TileMapMeshLayer layer = tileMap.getLayer(i);
-			RenderQueue.renderInstanced(layer.getVao(), layer.mode, layer.getSize(), 0, transform, camera.getMatrix(),
-					material, renderTarget, shader, amount);
+			drawInstanced(layer.getVao(), layer.mode, layer.getSize(), amount);
 		}
 	}
 
 	public static void render(Matrix transform, ParticleMesh particle, Material material) {
-		RenderQueue.render(particle.getVao(), Mesh.POINTS, particle.getInstanceSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
+		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		material.bind(shader);
+		shader.setTransform(transform, mvp);
+		draw(particle.getVao(), Mesh.POINTS, particle.getInstanceSize());
 	}
 
 	public static void renderQuad(Matrix transform, Material material) {
-		RenderQueue.render(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
+		render(transform, QUAD_MESH, material);
 	}
 
 	public static void renderCube(Matrix transform, Material material) {
-		RenderQueue.render(CUBE_MESH.getVao(), CUBE_MESH.mode, CUBE_MESH.getSize(), 0, transform, camera.getMatrix(),
-				material, renderTarget, shader);
+		render(transform, CUBE_MESH, material);
 	}
 
-	public static void renderLine(Matrix transform, Shader shader, Material material, float x1, float y1, float x2,
-			float y2) {
+	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		render(transform, mesh, material);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
-	public static void renderLine(Matrix transform, Shader shader, Material material, float x1, float y1, float z1,
-			float x2, float y2, float z2) {
+	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
+			float z2) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		render(transform, mesh, material);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
-	public static void renderLine3d(Matrix transform, Shader shader, Material material, boolean loop, float[] points) {
+	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
 		BaseMesh mesh = MeshGenerator.line(3, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		render(transform, mesh, material);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
-	public static void renderLine2d(Matrix transform, Shader shader, Material material, boolean loop, float[] points) {
+	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
 		BaseMesh mesh = MeshGenerator.line(2, loop, points);
-		RenderQueue.render(mesh.getVao(), mesh.mode, mesh.getSize(), 0, transform, camera.getMatrix(), material,
-				renderTarget, shader);
+		render(transform, mesh, material);
 		RenderQueue.deleteTempMesh(mesh);
 	}
 
-	public static void setCamera_UNSAFE(Camera camera) {
+	public static void draw(int vao, int mode, int numVertices) {
+		glBindVertexArray(vao);
+		glDrawArrays(mode, 0, numVertices);
+	}
+
+	public static void drawIndexed(int vao, int mode, int numIndices) {
+		glBindVertexArray(vao);
+		glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
+	}
+
+	public static void drawInstanced(int vao, int mode, int numVertices, int amount) {
+		glBindVertexArray(vao);
+		glDrawArraysInstanced(mode, 0, numVertices, amount);
+	}
+
+	public static void drawInstancedIndexed(int vao, int mode, int numIndices, int amount) {
+		glBindVertexArray(vao);
+		glDrawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
+	}
+
+	public static void setCamera(Camera camera) {
 		Renderer.camera = camera;
-		setRenderTarget_UNSAFE(camera.getRenderTarget());
-		PHONG_SHADER.setCameraPosition(camera);
+		setRenderTarget(camera.getRenderTarget());
 	}
 
 	public static Camera getCamera() {
 		return camera;
 	}
 
-	public static void setRenderTarget_UNSAFE(RenderTarget renderTarget) {
-		Renderer.renderTarget = renderTarget;
-//		renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
-//		renderTarget.clear();
+	public static void setRenderTarget(@Nullable RenderTarget renderTarget) {
+		if (Renderer.renderTarget != renderTarget) {
+			if (renderTarget == null)
+				RenderTarget.unbindViewport();
+			else
+				renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
+			Renderer.renderTarget = renderTarget;
+		}
 	}
 
 	public static RenderTarget getRenderTarget() {
@@ -246,8 +279,17 @@ public class Renderer {
 	}
 
 	public static void setShader(Shader shader) {
-		Renderer.shader = shader;
-//		shader.bind();
+		if (Renderer.shader != shader) {
+			if (Renderer.shader != null)
+				Renderer.shader.unbind();
+			Renderer.shader = shader;
+			shader.bind();
+			shader.setCamera(camera);
+		}
+	}
+
+	public static Shader getShader() {
+		return shader;
 	}
 
 	public static void enableWireframeMode() {

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
@@ -144,7 +143,7 @@ public class LineCollider extends Collider {
 	@Override
 	public void render() {
 		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Float.MAX_VALUE, Float.MAX_VALUE),
-				Renderer.BASIC_SHADER, new Material(), yNorm, -xNorm, -yNorm, xNorm);
+				 new Material(), yNorm, -xNorm, -yNorm, xNorm);
 	}
 
 	@Override
