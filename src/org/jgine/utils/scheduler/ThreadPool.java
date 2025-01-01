@@ -23,7 +23,7 @@ public class ThreadPool {
 	private static final ThreadPoolExecutor THREAD_POOL;
 
 	static {
-		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(Engine.Info.availableProcessors() - 1,
+		THREAD_POOL = (ThreadPoolExecutor) Executors.newFixedThreadPool(Engine.Info.availableProcessors(),
 				new WorkerThreadFactory());
 		THREAD_POOL.prestartAllCoreThreads();
 	}

@@ -446,11 +446,15 @@ public class Engine {
 		protected void update(EngineSystem<?, ?> system) {
 			ThreadPool.execute(() -> {
 				scene.getSystem(system).update(dt);
-				if (amount.decrementAndGet() <= 0)
-					thread.interrupt();
-				else
-					check(system);
+				finish(system);
 			});
+		}
+
+		public final void finish(EngineSystem<?, ?> system) {
+			if (amount.decrementAndGet() <= 0)
+				thread.interrupt();
+			else
+				check(system);
 		}
 	}
 }

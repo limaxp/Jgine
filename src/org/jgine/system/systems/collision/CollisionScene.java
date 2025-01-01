@@ -91,22 +91,25 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	private void solveCollisions(int index, int size) {
 		size = index + size;
-		for (; index < size; index++) {
-			Collider object = objects[index];
-//			for (int i = index + 1; i < this.size; ++i)
-//				resolveCollision(entities[index], object, entities[i], objects[i]);
+		for (; index < size; index++)
+			solveCollision(index);
+	}
 
-			Entity entity = entities[index];
-			scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
-					object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
-					object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {
-						if (targetEntity == entity)
-							return;
-						Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
-						if (targetObject != null)
-							resolveCollision(entity, object, targetEntity, targetObject);
-					});
-		}
+	private void solveCollision(int index) {
+		Collider object = objects[index];
+//		for (int i = index + 1; i < this.size; ++i)
+//			resolveCollision(entities[index], object, entities[i], objects[i]);
+
+		Entity entity = entities[index];
+		scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
+				object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
+				object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {
+					if (targetEntity == entity)
+						return;
+					Collider targetObject = targetEntity.getSystem(Engine.COLLISION_SYSTEM);
+					if (targetObject != null)
+						resolveCollision(entity, object, targetEntity, targetObject);
+				});
 	}
 
 	private void resolveCollision(Entity entity1, Collider collider1, Entity entity2, Collider collider2) {

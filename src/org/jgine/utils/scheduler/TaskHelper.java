@@ -11,8 +11,7 @@ import org.jgine.utils.logger.Logger;
 import org.jgine.utils.options.Options;
 
 /**
- * Helper class for parallel task execution. Uses {@link ThreadPool}
- * internally.
+ * Helper class for parallel task execution. Uses {@link ThreadPool} internally.
  */
 public class TaskHelper {
 
@@ -21,6 +20,7 @@ public class TaskHelper {
 			func.accept(0, size);
 			return;
 		}
+
 		List<Future<?>> tasks = new ArrayList<Future<?>>();
 		int threadSize = ThreadPool.getPoolSize();
 		if (size < threadSize) {

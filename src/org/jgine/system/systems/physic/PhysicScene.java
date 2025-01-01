@@ -88,15 +88,18 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 
 	private void updatePositions(int index, int size) {
 		size = index + size;
-		for (; index < size; index++) {
-			PhysicObject object = objects[index];
-			if (object.updatePosition(dt, gravity, airResistanceFactor)) {
-				Entity entity = entities[index];
-				Transform transform = entity.transform;
-				transform.setPositionIntern(object.x, object.y, object.z);
-				UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),
-						transform.getY() - object.getOldY(), transform.getZ() - object.getOldZ());
-			}
+		for (; index < size; index++)
+			updatePosition(index);
+	}
+
+	private void updatePosition(int index) {
+		PhysicObject object = objects[index];
+		if (object.updatePosition(dt, gravity, airResistanceFactor)) {
+			Entity entity = entities[index];
+			Transform transform = entity.transform;
+			transform.setPositionIntern(object.x, object.y, object.z);
+			UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),
+					transform.getY() - object.getOldY(), transform.getZ() - object.getOldZ());
 		}
 	}
 }
