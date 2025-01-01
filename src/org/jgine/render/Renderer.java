@@ -7,10 +7,12 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
@@ -64,6 +66,8 @@ public class Renderer {
 	protected static Camera camera;
 	protected static RenderTarget renderTarget;
 	protected static Shader shader;
+	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
+	private static int drawCallSize;
 
 	static {
 		OpenGL.init();
@@ -114,6 +118,10 @@ public class Renderer {
 
 	public static void update(float dt) {
 		RenderQueue.clear();
+		for (Mesh mesh : TEMP_MESHES)
+			mesh.close();
+		TEMP_MESHES.clear();
+		drawCallSize = 0;
 		POST_PROCESS_SHADER.update(dt);
 	}
 
@@ -143,7 +151,7 @@ public class Renderer {
 		new Material(POST_PROCESS_TARGET.getTexture(RenderTarget.COLOR_ATTACHMENT0)).bind(POST_PROCESS_SHADER);
 		Matrix transform = Transform.calculateMatrix(new Matrix(), 0, 0, 0, 1, 1, 0);
 		POST_PROCESS_SHADER.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		RenderQueue.draw(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize(), 0);
+		draw(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize());
 	}
 
 	public static void setLights(LightScene lightScene) {
@@ -213,46 +221,58 @@ public class Renderer {
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float x2, float y2) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
 		render(transform, mesh, material);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
 			float z2) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
 		render(transform, mesh, material);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points) {
 		BaseMesh mesh = MeshGenerator.line(3, loop, points);
 		render(transform, mesh, material);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points) {
 		BaseMesh mesh = MeshGenerator.line(2, loop, points);
 		render(transform, mesh, material);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void draw(int vao, int mode, int numVertices) {
 		glBindVertexArray(vao);
 		glDrawArrays(mode, 0, numVertices);
+		drawCallSize++;
 	}
 
 	public static void drawIndexed(int vao, int mode, int numIndices) {
 		glBindVertexArray(vao);
 		glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
+		drawCallSize++;
 	}
 
 	public static void drawInstanced(int vao, int mode, int numVertices, int amount) {
 		glBindVertexArray(vao);
 		glDrawArraysInstanced(mode, 0, numVertices, amount);
+		drawCallSize++;
 	}
 
 	public static void drawInstancedIndexed(int vao, int mode, int numIndices, int amount) {
 		glBindVertexArray(vao);
 		glDrawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
+		drawCallSize++;
+	}
+
+	protected static void deleteTempMesh(Mesh mesh) {
+		TEMP_MESHES.add(mesh);
+	}
+
+	public static int getDrawCallSize() {
+		return drawCallSize;
 	}
 
 	public static void setCamera(Camera camera) {

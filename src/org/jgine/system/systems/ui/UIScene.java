@@ -160,11 +160,9 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
 	@Override
 	public void render(float dt) {
-		Renderer.enableDepthTest();
 		Renderer.setShader(Renderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++)
 			objects[i].render(i * 3);
-		Renderer.disableDepthTest();
 	}
 
 	@Override

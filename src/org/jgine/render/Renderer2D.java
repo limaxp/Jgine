@@ -98,25 +98,25 @@ public class Renderer2D extends Renderer {
 			float depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, x2, y2);
 		render(transform, mesh, material, depth);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine(Matrix transform, Material material, float x1, float y1, float z1, float x2, float y2,
 			float z2, float depth) {
 		BaseMesh mesh = MeshGenerator.line(x1, y1, z1, x2, y2, z2);
 		render(transform, mesh, material, depth);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine3d(Matrix transform, Material material, boolean loop, float[] points, float depth) {
 		BaseMesh mesh = MeshGenerator.line(3, loop, points);
 		render(transform, mesh, material, depth);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 
 	public static void renderLine2d(Matrix transform, Material material, boolean loop, float[] points, float depth) {
 		BaseMesh mesh = MeshGenerator.line(2, loop, points);
 		render(transform, mesh, material, depth);
-		RenderQueue.deleteTempMesh(mesh);
+		deleteTempMesh(mesh);
 	}
 }
