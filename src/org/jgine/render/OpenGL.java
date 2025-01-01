@@ -17,12 +17,17 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glCullFace;
 import static org.lwjgl.opengl.GL11.glDepthMask;
 import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glFrontFace;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL11.glGetFloatv;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
+import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
 
 import java.nio.FloatBuffer;
@@ -119,6 +124,26 @@ public class OpenGL {
 			glGetFloatv(GL_COLOR_CLEAR_VALUE, buffer);
 			return Color.rgba(buffer.get(), buffer.get(), buffer.get(), buffer.get());
 		}
+	}
+
+	public static void bindVertexArray(int vao) {
+		glBindVertexArray(vao);
+	}
+
+	public static void drawArrays(int mode, int first, int count) {
+		glDrawArrays(mode, first, count);
+	}
+
+	public static void drawElements(int mode, int count, int type, long indices) {
+		glDrawElements(mode, count, type, indices);
+	}
+
+	public static void drawArraysInstanced(int mode, int first, int count, int primcount) {
+		glDrawArraysInstanced(mode, first, count, primcount);
+	}
+
+	public static void drawElementsInstanced(int mode, int count, int type, long indices, int primcount) {
+		glDrawElementsInstanced(mode, count, type, indices, primcount);
 	}
 
 	public static GLCapabilities getCapabilities() {

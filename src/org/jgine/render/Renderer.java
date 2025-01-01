@@ -1,11 +1,6 @@
 package org.jgine.render;
 
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
-import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 import java.util.Collections;
 import java.util.List;
@@ -244,26 +239,26 @@ public class Renderer {
 	}
 
 	public static void draw(int vao, int mode, int numVertices) {
-		glBindVertexArray(vao);
-		glDrawArrays(mode, 0, numVertices);
+		OpenGL.bindVertexArray(vao);
+		OpenGL.drawArrays(mode, 0, numVertices);
 		drawCallSize++;
 	}
 
 	public static void drawIndexed(int vao, int mode, int numIndices) {
-		glBindVertexArray(vao);
-		glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
+		OpenGL.bindVertexArray(vao);
+		OpenGL.drawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
 		drawCallSize++;
 	}
 
 	public static void drawInstanced(int vao, int mode, int numVertices, int amount) {
-		glBindVertexArray(vao);
-		glDrawArraysInstanced(mode, 0, numVertices, amount);
+		OpenGL.bindVertexArray(vao);
+		OpenGL.drawArraysInstanced(mode, 0, numVertices, amount);
 		drawCallSize++;
 	}
 
 	public static void drawInstancedIndexed(int vao, int mode, int numIndices, int amount) {
-		glBindVertexArray(vao);
-		glDrawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
+		OpenGL.bindVertexArray(vao);
+		OpenGL.drawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
 		drawCallSize++;
 	}
 
