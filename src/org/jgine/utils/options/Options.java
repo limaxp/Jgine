@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import org.jgine.core.window.DisplayManager;
 import org.jgine.core.window.Window;
@@ -48,45 +49,50 @@ public class Options {
 	/**
 	 * The maximal amount of sounds that can be played simultaneously.
 	 */
-	public static final Option MAX_SOUNDS = a("jgine.sound.maxSounds", 512);
+	public static final Option<Integer> MAX_SOUNDS = a("jgine.sound.maxSounds", 512);
 
 	/**
 	 * The x resolution used.
 	 */
-	public static final Option RESOLUTION_X = a("jgine.graphic.resolution.x",
+	public static final Option<Integer> RESOLUTION_X = a("jgine.graphic.resolution.x",
 			DisplayManager.getPrimaryDisplay().getWidth());
 
 	/**
 	 * The y resolution used.
 	 */
-	public static final Option RESOLUTION_Y = a("jgine.graphic.resolution.y",
+	public static final Option<Integer> RESOLUTION_Y = a("jgine.graphic.resolution.y",
 			DisplayManager.getPrimaryDisplay().getHeight());
 
 	/**
 	 * The monitor used.
 	 */
-	public static final Option MONITOR = a("jgine.graphic.monitor", 0);
+	public static final Option<Integer> MONITOR = a("jgine.graphic.monitor", 0);
 
 	/**
 	 * The window mode used.
 	 */
-	public static final Option WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.FULLSCREEN);
+	public static final Option<Integer> WINDOW_MODE = a("jgine.graphic.mode", Window.Mode.FULLSCREEN);
+
+	/**
+	 * If v-sync should be applied.
+	 */
+	public static final Option<Boolean> V_SYNC = a("jgine.graphic.v-sync", true, Window::v_sync);
 
 	/**
 	 * The anti aliasing factor used.
 	 */
-	public static final Option ANTI_ALIASING = a("jgine.graphic.antialiasing", 4);
+	public static final Option<Integer> ANTI_ALIASING = a("jgine.graphic.antialiasing", 4);
 
 	/**
 	 * Whether to use a {@link NumberFormat} producing scientific notation output
 	 * when formatting matrix, vector and quaternion components to strings.
 	 */
-	public static final Option USE_NUMER_FORMAT = a("jgine.format.active", true);
+	public static final Option<Boolean> USE_NUMER_FORMAT = a("jgine.format.active", true);
 
 	/**
 	 * Determines the number of decimal digits produced in the formatted numbers.
 	 */
-	public static final Option NUMBER_FORMAT_DECIMALS = a("jgine.format.decimals", 3);
+	public static final Option<Integer> NUMBER_FORMAT_DECIMALS = a("jgine.format.decimals", 3);
 
 	/**
 	 * The {@link NumberFormat} used to format all numbers throughout all JOML
@@ -94,44 +100,84 @@ public class Options {
 	 */
 	public static final NumberFormat NUMBER_FORMAT = decimalFormat();
 
-	public static Option a(String property, boolean defaultValue) {
-		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, hasOption(System.getProperty(property, value.toString())));
+	public static Option<Boolean> a(String property, boolean defaultValue) {
+		return a(property, defaultValue, (v) -> {
+		});
 	}
 
-	public static Option a(String property, short defaultValue) {
+	public static Option<Boolean> a(String property, boolean defaultValue, Consumer<Boolean> func) {
 		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, Short.parseShort(System.getProperty(property, value.toString())));
+		return new Option<Boolean>(property, hasOption(System.getProperty(property, value.toString())), func);
 	}
 
-	public static Option a(String property, int defaultValue) {
-		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, Integer.parseInt(System.getProperty(property, value.toString())));
+	public static Option<Short> a(String property, short defaultValue) {
+		return a(property, defaultValue, (Consumer<Short>) (v) -> {
+		});
 	}
 
-	public static Option a(String property, long defaultValue) {
+	public static Option<Short> a(String property, short defaultValue, Consumer<Short> func) {
 		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, Long.parseLong(System.getProperty(property, value.toString())));
+		return new Option<Short>(property, Short.parseShort(System.getProperty(property, value.toString())), func);
 	}
 
-	public static Option a(String property, float defaultValue) {
-		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, Float.parseFloat(System.getProperty(property, value.toString())));
+	public static Option<Integer> a(String property, int defaultValue) {
+		return a(property, defaultValue, (Consumer<Integer>) (v) -> {
+		});
 	}
 
-	public static Option a(String property, double defaultValue) {
+	public static Option<Integer> a(String property, int defaultValue, Consumer<Integer> func) {
 		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, Double.parseDouble(System.getProperty(property, value.toString())));
+		return new Option<Integer>(property, Integer.parseInt(System.getProperty(property, value.toString())), func);
 	}
 
-	public static Option a(String property, char defaultValue) {
-		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, System.getProperty(property, value.toString()).charAt(0));
+	public static Option<Long> a(String property, long defaultValue) {
+		return a(property, defaultValue, (Consumer<Long>) (v) -> {
+		});
 	}
 
-	public static Option a(String property, String defaultValue) {
+	public static Option<Long> a(String property, long defaultValue, Consumer<Long> func) {
 		Object value = OptionFile.getData(property, defaultValue);
-		return new Option(property, System.getProperty(property, value.toString()));
+		return new Option<Long>(property, Long.parseLong(System.getProperty(property, value.toString())), func);
+	}
+
+	public static Option<Float> a(String property, float defaultValue) {
+		return a(property, defaultValue, (Consumer<Float>) (v) -> {
+		});
+	}
+
+	public static Option<Float> a(String property, float defaultValue, Consumer<Float> func) {
+		Object value = OptionFile.getData(property, defaultValue);
+		return new Option<Float>(property, Float.parseFloat(System.getProperty(property, value.toString())), func);
+	}
+
+	public static Option<Double> a(String property, double defaultValue) {
+		return a(property, defaultValue, (Consumer<Double>) (v) -> {
+		});
+	}
+
+	public static Option<Double> a(String property, double defaultValue, Consumer<Double> func) {
+		Object value = OptionFile.getData(property, defaultValue);
+		return new Option<Double>(property, Double.parseDouble(System.getProperty(property, value.toString())), func);
+	}
+
+	public static Option<Character> a(String property, char defaultValue) {
+		return a(property, defaultValue, (Consumer<Character>) (v) -> {
+		});
+	}
+
+	public static Option<Character> a(String property, char defaultValue, Consumer<Character> func) {
+		Object value = OptionFile.getData(property, defaultValue);
+		return new Option<Character>(property, System.getProperty(property, value.toString()).charAt(0), func);
+	}
+
+	public static Option<String> a(String property, String defaultValue) {
+		return a(property, defaultValue, (v) -> {
+		});
+	}
+
+	public static Option<String> a(String property, String defaultValue, Consumer<String> func) {
+		Object value = OptionFile.getData(property, defaultValue);
+		return new Option<String>(property, System.getProperty(property, value.toString()), func);
 	}
 
 	public static boolean hasOption(String v) {

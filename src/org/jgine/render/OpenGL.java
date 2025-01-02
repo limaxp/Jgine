@@ -62,7 +62,6 @@ public class OpenGL {
 		if (!capabilities.GL_ARB_fragment_shader)
 			throw new AssertionError("ARB_fragment_shader extension required.");
 
-		// glfwSwapInterval(1); // Enable v-sync
 		glFrontFace(GL_CW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);

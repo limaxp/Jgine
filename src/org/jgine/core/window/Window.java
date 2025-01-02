@@ -91,6 +91,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowUserPointer;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
@@ -200,6 +201,7 @@ public class Window {
 			throw new RuntimeException("Failed to create the GLFW window");
 
 		glfwMakeContextCurrent(id); // Make the OpenGL context current
+		v_sync(Options.V_SYNC.getBoolean());
 		show();
 	}
 
@@ -652,5 +654,9 @@ public class Window {
 
 	public void setWindowRefreshCallback(@Nullable GLFWWindowRefreshCallbackI callback) {
 		glfwSetWindowRefreshCallback(id, callback);
+	}
+
+	public static void v_sync(boolean v_sync) {
+		glfwSwapInterval(v_sync ? 1 : 0);
 	}
 }
