@@ -96,17 +96,21 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	private void focus(UIObject object) {
-		if (object == focusObjects.get(0))
-			return;
+		if (focusObjects != FOCUS_OBJECTS_EMPTY) {
+			if (object == focusObjects.get(0))
+				return;
 
-		if (object == null && focusObjects != FOCUS_OBJECTS_EMPTY) {
-			for (UIObject obj : focusObjects) {
-				obj.isFocused = false;
-				obj.onDefocus();
+			if (object == null) {
+				for (UIObject obj : focusObjects) {
+					obj.isFocused = false;
+					obj.onDefocus();
+				}
+				focusObjects = FOCUS_OBJECTS_EMPTY;
+				return;
 			}
-			focusObjects = FOCUS_OBJECTS_EMPTY;
-			return;
 		}
+		if (object == null)
+			return;
 
 		List<UIObject> focusObjectsNew = new IdentityArrayList<UIObject>();
 		focusObjectsNew.add(object);

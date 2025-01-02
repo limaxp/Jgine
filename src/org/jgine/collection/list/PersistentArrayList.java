@@ -3,19 +3,22 @@ package org.jgine.collection.list;
 import java.util.Collection;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 /**
  * An ArrayList implementation that does ensure that element indexes do NOT
  * change! This list can contain null values. So traversing it will require null
  * checks! Does NOT allow adding and setting! Use insert() method instead! Also
  * does NOT do range checks!
  */
-public class PersistentArrayList<E> extends FastArrayList<E> implements List<E> {
+public class PersistentArrayList<E> extends ObjectArrayList<E> implements List<E> {
 
+	private static final long serialVersionUID = 2433574644487531608L;
 	protected int[] freeIndexes;
 	protected int freeIndexSize;
 
 	public PersistentArrayList() {
-		this(DEFAULT_CAPACITY);
+		this(8);
 	}
 
 	public PersistentArrayList(int capacity) {
@@ -41,11 +44,11 @@ public class PersistentArrayList<E> extends FastArrayList<E> implements List<E> 
 			id = freeIndexes[--freeIndexSize];
 		else {
 			id = size;
-			if (id == array.length)
+			if (id == a.length)
 				ensureCapacity(id + 1);
 			size++;
 		}
-		array[id] = element;
+		a[id] = element;
 		return id;
 	}
 
@@ -66,12 +69,12 @@ public class PersistentArrayList<E> extends FastArrayList<E> implements List<E> 
 
 	@Override
 	public E remove(int index) {
-		E element = array[index];
+		E element = a[index];
 		if (element != null) {
 			if (freeIndexSize++ == freeIndexes.length)
 				ensureFreeIndexCapacity(freeIndexSize);
 			freeIndexes[freeIndexSize] = index;
-			array[index] = null;
+			a[index] = null;
 		}
 		return element;
 	}
@@ -120,11 +123,11 @@ public class PersistentArrayList<E> extends FastArrayList<E> implements List<E> 
 	}
 
 	public void trimToSize() {
-		if (size != array.length) {
+		if (size != a.length) {
 			@SuppressWarnings("unchecked")
 			E[] newArray = (E[]) new Object[size];
-			System.arraycopy(array, 0, newArray, 0, size);
-			array = newArray;
+			System.arraycopy(a, 0, newArray, 0, size);
+			a = newArray;
 		}
 		if (freeIndexSize != freeIndexes.length) {
 			int[] newFreeIndexes = new int[freeIndexSize];

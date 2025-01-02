@@ -4,14 +4,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 /**
- * An ArrayList implementation that does NOT do range checks. Insert order is
- * NOT persistent.
+ * An ArrayList implementation. Insert order is NOT persistent.
  */
-public class UnorderedArrayList<E> extends FastArrayList<E> implements List<E> {
+public class UnorderedArrayList<E> extends ObjectArrayList<E> implements List<E> {
+
+	private static final long serialVersionUID = -7215362169841723497L;
 
 	public UnorderedArrayList() {
-		super();
+		super(8);
 	}
 
 	public UnorderedArrayList(int capacity) {
@@ -26,17 +29,13 @@ public class UnorderedArrayList<E> extends FastArrayList<E> implements List<E> {
 		super(array);
 	}
 
-	public UnorderedArrayList(E[] array, int size) {
-		super(array, size);
-	}
-
 	@Override
 	public void add(int index, E element) {
-		if (size == array.length)
+		if (size == a.length)
 			ensureCapacity(size + 1);
 		if (index != size)
-			array[size] = array[index];
-		array[index] = element;
+			a[size] = a[index];
+		a[index] = element;
 		size++;
 	}
 
@@ -45,23 +44,23 @@ public class UnorderedArrayList<E> extends FastArrayList<E> implements List<E> {
 		Iterator<? extends E> itr = c.iterator();
 		int addSize = c.size();
 
-		if (addSize + size > array.length)
+		if (addSize + size > a.length)
 			ensureCapacity(size + addSize);
 		int lastIndex = index + addSize;
 		if (size > 0 && index != size)
-			System.arraycopy(array, index, array, size, addSize);
+			System.arraycopy(a, index, a, size, addSize);
 		for (; index < lastIndex; index++)
-			array[index] = itr.next();
+			a[index] = itr.next();
 		size += addSize;
 		return addSize > 0;
 	}
 
 	@Override
 	public E remove(int index) {
-		E element = array[index];
+		E element = a[index];
 		if (index != --size)
-			array[index] = array[size];
-		array[size] = null;
+			a[index] = a[size];
+		a[size] = null;
 		return element;
 	}
 }

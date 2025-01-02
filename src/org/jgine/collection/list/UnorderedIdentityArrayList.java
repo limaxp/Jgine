@@ -5,12 +5,14 @@ import java.util.List;
 
 /**
  * An ArrayList implementation that does instance checks instead of equals()
- * calls. Does NOT do range checks. Insert order is NOT persistent.
+ * calls. Insert order is NOT persistent.
  */
 public class UnorderedIdentityArrayList<E> extends UnorderedArrayList<E> implements List<E> {
 
+	private static final long serialVersionUID = 7583659128432771258L;
+
 	public UnorderedIdentityArrayList() {
-		super();
+		super(8);
 	}
 
 	public UnorderedIdentityArrayList(int capacity) {
@@ -25,15 +27,11 @@ public class UnorderedIdentityArrayList<E> extends UnorderedArrayList<E> impleme
 		super(array);
 	}
 
-	public UnorderedIdentityArrayList(E[] array, int size) {
-		super(array, size);
-	}
-
 	@Override
 	public int indexOf(Object o) {
 		int size = this.size;
 		for (int i = 0; i < size; i++)
-			if (array[i] == o)
+			if (a[i] == o)
 				return i;
 		return -1;
 	}
@@ -41,7 +39,7 @@ public class UnorderedIdentityArrayList<E> extends UnorderedArrayList<E> impleme
 	@Override
 	public int lastIndexOf(Object o) {
 		for (int i = size; i >= 0; i--)
-			if (array[i] == o)
+			if (a[i] == o)
 				return i;
 		return -1;
 	}

@@ -4,15 +4,16 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class IndexList<E> extends FastArrayList<E> {
+public class IndexList<E> extends ObjectArrayList<E> {
 
-	protected static final int DEFAULT_CAPACITY = 10;
+	private static final long serialVersionUID = 7390756637205529901L;
 
 	protected int[] indexes;
 
 	public IndexList() {
-		this(DEFAULT_CAPACITY);
+		this(8);
 	}
 
 	public IndexList(int capacity) {
@@ -22,11 +23,6 @@ public class IndexList<E> extends FastArrayList<E> {
 
 	public IndexList(int[] indexes, E[] values) {
 		super(values);
-		this.indexes = indexes;
-	}
-
-	public IndexList(int[] indexes, E[] values, int size) {
-		super(values, size);
 		this.indexes = indexes;
 	}
 
@@ -50,16 +46,16 @@ public class IndexList<E> extends FastArrayList<E> {
 	public E set(int index, E element) {
 		if (size == 0) {
 			indexes[0] = index;
-			array[0] = element;
+			a[0] = element;
 			size++;
 			return null;
 		}
 		for (int i = 0; i < size; i++) {
 			int savedIndex = indexes[i];
 			if (savedIndex == index) {
-				E oldValue = array[i];
+				E oldValue = a[i];
 				indexes[i] = index;
-				array[i] = element;
+				a[i] = element;
 				return oldValue;
 			}
 			if (index < savedIndex) {
@@ -76,11 +72,11 @@ public class IndexList<E> extends FastArrayList<E> {
 		if (index != size - 1) {
 			for (int i = size - 2; i > index; i--) {
 				indexes[i] = indexes[i - 1];
-				array[i] = array[i - 1];
+				a[i] = a[i - 1];
 			}
 		}
 		indexes[pos] = index;
-		array[pos] = element;
+		a[pos] = element;
 		size++;
 	}
 
@@ -88,7 +84,7 @@ public class IndexList<E> extends FastArrayList<E> {
 	public E remove(int index) {
 		int i = indexOf(index);
 		if (i != -1) {
-			E element = array[i];
+			E element = a[i];
 			removeIntern(i);
 			return element;
 		}
@@ -108,19 +104,19 @@ public class IndexList<E> extends FastArrayList<E> {
 	public void removeIntern(int i) {
 		if (i != --size) {
 			System.arraycopy(indexes, i + 1, indexes, i, size - i);
-			System.arraycopy(array, i + 1, array, i, size - i);
+			System.arraycopy(a, i + 1, a, i, size - i);
 		}
 		indexes[size] = 0;
-		array[size] = null;
+		a[size] = null;
 	}
 
 	@Override
 	public E get(int index) {
-		return array[indexOf(index)];
+		return a[indexOf(index)];
 	}
 
 	public E getIntern(int i) {
-		return array[i];
+		return a[i];
 	}
 
 	public int indexOf(int index) {
@@ -163,21 +159,23 @@ public class IndexList<E> extends FastArrayList<E> {
 		return clone;
 	}
 
-	@Override
 	protected void resize(int size) {
-		super.resize(size);
-		int[] newArray = new int[size];
-		System.arraycopy(indexes, 0, newArray, 0, indexes.length);
-		indexes = newArray;
+		@SuppressWarnings("unchecked")
+		E[] newArray = (E[]) new Object[size];
+		System.arraycopy(a, 0, newArray, 0, this.size);
+		a = newArray;
+
+		int[] newArray2 = new int[size];
+		System.arraycopy(indexes, 0, newArray2, 0, indexes.length);
+		indexes = newArray2;
 	}
 
-	@Override
 	public void trimToSize() {
-		if (size != array.length) {
+		if (size != a.length) {
 			@SuppressWarnings("unchecked")
 			E[] newArray = (E[]) new Object[size];
-			System.arraycopy(array, 0, newArray, 0, size);
-			array = newArray;
+			System.arraycopy(a, 0, newArray, 0, size);
+			a = newArray;
 			int[] newArray2 = new int[size];
 			System.arraycopy(indexes, 0, newArray2, 0, size);
 			indexes = newArray2;

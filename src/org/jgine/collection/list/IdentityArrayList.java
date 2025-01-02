@@ -3,14 +3,18 @@ package org.jgine.collection.list;
 import java.util.Collection;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 /**
  * An ArrayList implementation that does instance checks instead of equals()
- * calls. Does NOT do range checks.
+ * calls.
  */
-public class IdentityArrayList<E> extends FastArrayList<E> implements List<E> {
+public class IdentityArrayList<E> extends ObjectArrayList<E> implements List<E> {
+
+	private static final long serialVersionUID = 7816190118094609361L;
 
 	public IdentityArrayList() {
-		super();
+		super(8);
 	}
 
 	public IdentityArrayList(int capacity) {
@@ -25,15 +29,11 @@ public class IdentityArrayList<E> extends FastArrayList<E> implements List<E> {
 		super(array);
 	}
 
-	public IdentityArrayList(E[] array, int size) {
-		super(array, size);
-	}
-
 	@Override
 	public int indexOf(Object o) {
 		int size = this.size;
 		for (int i = 0; i < size; i++)
-			if (array[i] == o)
+			if (a[i] == o)
 				return i;
 		return -1;
 	}
@@ -41,7 +41,7 @@ public class IdentityArrayList<E> extends FastArrayList<E> implements List<E> {
 	@Override
 	public int lastIndexOf(Object o) {
 		for (int i = size; i >= 0; i--)
-			if (array[i] == o)
+			if (a[i] == o)
 				return i;
 		return -1;
 	}
