@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 
 /**
  * Manager to register and free {@link Prefab}<code>s</code>. Allows

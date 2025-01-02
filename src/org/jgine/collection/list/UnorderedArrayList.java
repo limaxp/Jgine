@@ -1,10 +1,8 @@
-package org.jgine.collection.list.arrayList.unordered;
+package org.jgine.collection.list;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jgine.collection.list.arrayList.FastArrayList;
 
 /**
  * An ArrayList implementation that does NOT do range checks. Insert order is

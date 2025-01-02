@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.utils.loader.YamlHelper;
 

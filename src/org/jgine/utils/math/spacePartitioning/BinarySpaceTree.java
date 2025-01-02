@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 
 /**

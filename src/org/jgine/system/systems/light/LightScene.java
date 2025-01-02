@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedArrayList;
+import org.jgine.collection.list.UnorderedArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.light.DirectionalLight;

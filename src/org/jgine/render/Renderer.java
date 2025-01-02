@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;

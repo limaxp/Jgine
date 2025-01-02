@@ -1,4 +1,4 @@
-package org.jgine.collection.list.arrayList.unordered;
+package org.jgine.collection.list;
 
 import java.util.Collection;
 import java.util.List;

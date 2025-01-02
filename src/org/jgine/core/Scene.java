@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;

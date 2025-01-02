@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.net.game.packet.ClientPacketListener;
 import org.jgine.net.game.packet.Packet;

@@ -18,8 +18,8 @@ import java.util.Map.Entry;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.IdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
 import org.jgine.core.sound.SoundBuffer;

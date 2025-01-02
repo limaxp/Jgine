@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.sound.SoundBuffer;
 import org.jgine.core.sound.SoundStream;

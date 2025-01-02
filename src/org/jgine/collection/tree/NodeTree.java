@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 
 public class NodeTree<E> implements Tree<E> {
 

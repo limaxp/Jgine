@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;

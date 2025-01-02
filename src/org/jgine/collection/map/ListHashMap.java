@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.FastArrayList;
+import org.jgine.collection.list.FastArrayList;
 
 public class ListHashMap<K, V> extends HashMap<K, List<V>> {
 

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.bitSet.LongBitSet;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;

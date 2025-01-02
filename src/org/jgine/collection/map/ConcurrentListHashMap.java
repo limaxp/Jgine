@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.FastArrayList;
+import org.jgine.collection.list.FastArrayList;
 
 public class ConcurrentListHashMap<K, V> extends ConcurrentHashMap<K, List<V>> {
 

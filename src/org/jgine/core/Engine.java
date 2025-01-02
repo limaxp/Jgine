@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.jgine.collection.list.arrayList.IdentityArrayList;
+import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;

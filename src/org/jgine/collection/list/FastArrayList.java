@@ -1,12 +1,11 @@
-package org.jgine.collection.list.arrayList;
+package org.jgine.collection.list;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.jgine.collection.list.List;
+import java.util.List;
 
 /**
  * An ArrayList implementation that does NOT do range checks.
@@ -63,15 +62,6 @@ public class FastArrayList<E> extends AbstractList<E> implements List<E> {
 			ensureCapacity(size + 1);
 		array[size++] = element;
 		return true;
-	}
-
-	@Override
-	public int insert(E element) {
-		if (size == array.length)
-			ensureCapacity(size + 1);
-		int index = size++;
-		array[index] = element;
-		return index;
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import java.util.function.IntConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.collection.bitSet.IntBitSet;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;

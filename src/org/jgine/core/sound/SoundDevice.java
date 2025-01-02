@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 
-import org.jgine.collection.list.arrayList.FastArrayList;
+import org.jgine.collection.list.FastArrayList;
 import org.jgine.utils.logger.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;

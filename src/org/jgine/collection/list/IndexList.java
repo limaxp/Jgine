@@ -1,9 +1,7 @@
-package org.jgine.collection.list.indexList;
+package org.jgine.collection.list;
 
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.jgine.collection.list.arrayList.FastArrayList;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -36,11 +34,6 @@ public class IndexList<E> extends FastArrayList<E> {
 	public boolean add(E element) {
 		set(indexes[size - 1] + 1, element);
 		return true;
-	}
-
-	@Override
-	public int insert(E element) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
