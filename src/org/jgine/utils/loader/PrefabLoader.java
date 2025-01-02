@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 
 /**
  * Helper class for loading {@link Prefab} files.

@@ -48,9 +48,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.PersistentArrayList;
 import org.jgine.core.sound.effect.SoundEffect;
 import org.jgine.core.sound.effect.SoundFilter;
+import org.jgine.utils.collection.list.PersistentArrayList;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.options.Options;
 import org.lwjgl.BufferUtils;

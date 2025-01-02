@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
 import org.jgine.core.sound.effect.EFXUtil;
@@ -54,6 +53,7 @@ import org.jgine.core.sound.effect.SoundEffect;
 import org.jgine.core.sound.effect.SoundFilter;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;

@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioningTypes;

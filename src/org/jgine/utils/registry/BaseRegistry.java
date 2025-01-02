@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.jgine.collection.ArrayIterator;
+import org.jgine.utils.collection.ArrayIterator;
 import org.jgine.utils.logger.Logger;
 
 /**

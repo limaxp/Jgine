@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
-import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.Engine.UpdateTask;
@@ -14,6 +13,7 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.render.Renderer;
 import org.jgine.system.data.ListSystemScene;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
 

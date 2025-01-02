@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.vector.Vector2f;

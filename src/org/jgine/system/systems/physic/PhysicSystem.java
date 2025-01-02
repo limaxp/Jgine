@@ -2,10 +2,10 @@ package org.jgine.system.systems.physic;
 
 import java.util.Map;
 
-import org.jgine.collection.function.Property;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 import org.jgine.utils.Service;
+import org.jgine.utils.collection.function.Property;
 
 public class PhysicSystem extends EngineSystem<PhysicSystem, PhysicObject> {
 

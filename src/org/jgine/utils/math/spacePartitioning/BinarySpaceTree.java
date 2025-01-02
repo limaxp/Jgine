@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 
 /**
  * Basic binary space tree implementation. Binary space trees divide space into

@@ -12,8 +12,6 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.IntBitSet;
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
@@ -23,6 +21,8 @@ import org.jgine.net.game.GameServer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.bitSet.IntBitSet;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.id.IdGenerator;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;

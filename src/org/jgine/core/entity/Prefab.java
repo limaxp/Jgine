@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.LongBitSet;
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.collection.bitSet.LongBitSet;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;

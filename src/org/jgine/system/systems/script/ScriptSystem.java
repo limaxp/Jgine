@@ -6,11 +6,11 @@ import java.util.function.BiConsumer;
 
 import javax.script.ScriptEngine;
 
-import org.jgine.collection.function.TriConsumer;
 import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.collection.function.TriConsumer;
 import org.jgine.utils.loader.ResourceManager;
 
 public class ScriptSystem extends EngineSystem<ScriptSystem, AbstractScriptObject> {

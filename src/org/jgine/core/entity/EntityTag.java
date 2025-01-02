@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.LongBitSet;
+import org.jgine.utils.collection.bitSet.LongBitSet;
 
 /**
  * Tags that can be attached to an {@link Prefab} to mark it with identifiers.

@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.jgine.collection.list.IdentityArrayList;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.gameLoop.FixedTickGameLoop;
 import org.jgine.core.gameLoop.GameLoop;
@@ -36,6 +35,7 @@ import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
 import org.jgine.utils.Benchmark;
 import org.jgine.utils.Service;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.options.OptionFile;
 import org.jgine.utils.options.Options;

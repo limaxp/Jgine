@@ -18,8 +18,6 @@ import java.util.Map.Entry;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.IdentityArrayList;
-import org.jgine.collection.list.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
 import org.jgine.core.sound.SoundBuffer;
@@ -27,6 +25,8 @@ import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
+import org.jgine.utils.collection.list.IdentityArrayList;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.logger.Logger;
 
 import com.google.common.collect.BiMap;

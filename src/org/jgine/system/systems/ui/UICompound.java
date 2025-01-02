@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jgine.collection.list.UnorderedIdentityArrayList;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.math.Matrix;
 
 public class UICompound extends UIObject {

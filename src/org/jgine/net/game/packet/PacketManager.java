@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import org.jgine.collection.function.TriConsumer;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.packets.ConnectPacket;
 import org.jgine.net.game.packet.packets.ConnectResponsePacket;
@@ -17,6 +16,7 @@ import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
+import org.jgine.utils.collection.function.TriConsumer;
 
 public class PacketManager {
 
