@@ -1,5 +1,6 @@
 package org.jgine.collection.map;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.FastArrayList;
 
 public class ListHashMap<K, V> extends HashMap<K, List<V>> {
 
@@ -78,7 +78,7 @@ public class ListHashMap<K, V> extends HashMap<K, List<V>> {
 	public List<V> get(Object key) {
 		List<V> list = super.get(key);
 		if (list == null)
-			put((K) key, list = new FastArrayList<V>());
+			put((K) key, list = new ArrayList<V>());
 		return list;
 	}
 

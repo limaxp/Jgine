@@ -1,9 +1,9 @@
 package org.jgine.net.game.packet.packets;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.jgine.collection.list.FastArrayList;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.PlayerConnection;
 import org.jgine.net.game.packet.Packet;
@@ -30,7 +30,7 @@ public class PlayerListPacket extends Packet {
 	public void read(ByteBuffer buffer) {
 		action = PlayerListAction.values()[buffer.getInt()];
 		int size = buffer.getInt();
-		players = new FastArrayList<PlayerConnection>(size);
+		players = new ArrayList<PlayerConnection>(size);
 		for (int i = 0; i < size; i++) {
 			int id = buffer.getInt();
 			byte[] nameBytes = new byte[buffer.getInt()];

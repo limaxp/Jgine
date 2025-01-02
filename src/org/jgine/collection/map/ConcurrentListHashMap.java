@@ -1,5 +1,6 @@
 package org.jgine.collection.map;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.FastArrayList;
 
 public class ConcurrentListHashMap<K, V> extends ConcurrentHashMap<K, List<V>> {
 
@@ -85,7 +85,7 @@ public class ConcurrentListHashMap<K, V> extends ConcurrentHashMap<K, List<V>> {
 		synchronized (this) {
 			list = super.get(key);
 			if (list == null)
-				put((K) key, list = Collections.synchronizedList(new FastArrayList<V>()));
+				put((K) key, list = Collections.synchronizedList(new ArrayList<V>()));
 		}
 		return list;
 	}
