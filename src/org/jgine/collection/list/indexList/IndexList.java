@@ -3,8 +3,9 @@ package org.jgine.collection.list.indexList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.jgine.collection.IntCollection;
 import org.jgine.collection.list.arrayList.FastArrayList;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public class IndexList<E> extends FastArrayList<E> {
 

@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.jgine.collection.list.IntList;
-import org.jgine.collection.list.arrayList.IntArrayList;
 import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.system.systems.ai.AiObject;
 import org.jgine.utils.loader.YamlHelper;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class GoalSelector implements Cloneable {
 

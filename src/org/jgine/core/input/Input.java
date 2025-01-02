@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.IntList;
 import org.jgine.core.input.device.Gamepad;
 import org.jgine.core.input.device.Joystick;
 import org.jgine.core.input.device.Keyboard;
@@ -26,6 +25,8 @@ import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.scheduler.Scheduler;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Manager that handles input and stores {@link InputDevice}<code>s</code>. Has
@@ -99,11 +100,9 @@ public class Input {
 	public static void update() {
 		for (InputDevice device : INPUT_DEVICES) {
 			IntList pressedKeys = device.getPressedKeys();
-			for (int i = pressedKeys.size() - 1; i >= 0; i--) {
-				int pressedKey = pressedKeys.getInt(i);
-				if (!device.isPressedIntern(pressedKey))
-					pressedKeys.remove(pressedKeys.indexOf(pressedKey));
-			}
+			for (int i = pressedKeys.size() - 1; i >= 0; i--)
+				if (!device.isPressedIntern(pressedKeys.getInt(i)))
+					pressedKeys.removeInt(i);
 		}
 		MOUSE.setScroll(0);
 	}
