@@ -48,7 +48,7 @@ public class Benchmark {
 		benchmark.startTimer();
 		func.run();
 		benchmark.stopTimer();
-		return benchmark.getAverage();
+		return benchmark.getCurrent();
 	}
 
 	/**
@@ -60,6 +60,7 @@ public class Benchmark {
 		private long startTime;
 		private int count;
 		private long time;
+		private long current;
 		private long best = Long.MAX_VALUE;
 		private long worst;
 
@@ -71,16 +72,16 @@ public class Benchmark {
 		protected void stopTimer() {
 			if (!isTiming())
 				return;
-			long deltaTime = System.nanoTime() - startTime;
-			if (deltaTime == 0) {
+			current = System.nanoTime() - startTime;
+			if (current == 0) {
 				startTime = 0;
 				return;
 			}
-			if (deltaTime < best)
-				best = deltaTime;
-			if (deltaTime > worst)
-				worst = deltaTime;
-			time += deltaTime;
+			if (current < best)
+				best = current;
+			if (current > worst)
+				worst = current;
+			time += current;
 			count++;
 			startTime = 0;
 		}
@@ -90,6 +91,10 @@ public class Benchmark {
 			time = 0;
 			best = Long.MAX_VALUE;
 			worst = 0;
+		}
+
+		public long getCurrent() {
+			return current;
 		}
 
 		public long getAverage() {
