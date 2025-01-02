@@ -34,6 +34,7 @@ import org.jgine.system.systems.script.Script;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
+import org.jgine.utils.Benchmark;
 import org.jgine.utils.Service;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.options.OptionFile;
@@ -53,14 +54,6 @@ import org.lwjgl.system.MemoryUtil;
  * a {@link Entity}.
  */
 public class Engine {
-
-	/**
-	 * TODO
-	 * 
-	 * Change SystemMap so SystemScene does not need synchronization!
-	 * 
-	 * Update TaskHelper so first thread goes to sleep!
-	 */
 
 	public static final PhysicSystem PHYSIC_SYSTEM = new PhysicSystem();
 	public static final CameraSystem CAMERA_SYSTEM = new CameraSystem();
@@ -181,9 +174,11 @@ public class Engine {
 
 	private final void update(float dt) {
 		ConnectionManager.update();
+		Benchmark.start("update");
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				updateScene(scene, dt);
+		Benchmark.stop("update");
 		Service.distributeChanges();
 		Scheduler.update();
 		ThreadPool.execute(Scheduler::updateAsync);
@@ -197,10 +192,12 @@ public class Engine {
 
 	private final void render(float dt) {
 		Renderer.update(dt);
+		Benchmark.start("render");
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene, dt);
 		Renderer.draw(renderConfigs);
+		Benchmark.stop("render");
 		window.swapBuffers();
 		onRender();
 	}
@@ -400,7 +397,11 @@ public class Engine {
 		}
 
 		protected void update(EngineSystem<?, ?> system) {
+			if (Options.DEBUG)
+				Benchmark.start(scene.getSystem(system));
 			scene.getSystem(system).update(this);
+			if (Options.DEBUG)
+				Benchmark.stop(scene.getSystem(system));
 			check(system);
 		}
 
@@ -449,11 +450,15 @@ public class Engine {
 
 		@Override
 		protected final void update(EngineSystem<?, ?> system) {
+			if (Options.DEBUG)
+				Benchmark.start(scene.getSystem(system));
 			ThreadPool.execute(() -> scene.getSystem(system).update(this));
 		}
 
 		@Override
 		public final void finish(EngineSystem<?, ?> system) {
+			if (Options.DEBUG)
+				Benchmark.stop(scene.getSystem(system));
 			if (amount.decrementAndGet() <= 0)
 				thread.interrupt();
 			else
