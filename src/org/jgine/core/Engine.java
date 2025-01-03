@@ -237,21 +237,20 @@ public class Engine {
 	}
 
 	public final Scene createScene(String name) {
-		Scene scene = initScene(name);
-		scene.setSystems(EngineSystem.values());
-		scene.setUpdateOrder(DEFAULT_UPDATE_ORDER);
-		scene.setRenderOrder(DEFAULT_RENDER_ORDER);
-		return scene;
-	}
-
-	public final Scene createScene(String name, EngineSystem<?, ?>... systems) {
-		Scene scene = initScene(name);
-		scene.setSystems(systems);
-		return scene;
+		return createScene(name, DEFAULT_UPDATE_ORDER, DEFAULT_RENDER_ORDER, EngineSystem.values());
 	}
 
 	public final Scene createScene(String name, UpdateOrder updateOrder, List<EngineSystem<?, ?>> renderOrder,
 			EngineSystem<?, ?>... systems) {
+		Scene scene = initScene(name);
+		scene.setSystems(systems);
+		scene.setUpdateOrder(updateOrder);
+		scene.setRenderOrder(renderOrder);
+		return scene;
+	}
+
+	public final Scene createScene(String name, UpdateOrder updateOrder, List<EngineSystem<?, ?>> renderOrder,
+			Collection<EngineSystem<?, ?>> systems) {
 		Scene scene = initScene(name);
 		scene.setSystems(systems);
 		scene.setUpdateOrder(updateOrder);
