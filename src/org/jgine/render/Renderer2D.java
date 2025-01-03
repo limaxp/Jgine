@@ -31,7 +31,7 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, Mesh mesh, Material material, float depth) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		mvp.m23 = depth;
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
@@ -43,7 +43,7 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material, float depth) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		mvp.m23 = depth;
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
@@ -55,7 +55,7 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material, float depth) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		mvp.m23 = depth;
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
@@ -71,7 +71,7 @@ public class Renderer2D extends Renderer {
 	}
 
 	public static void render(Matrix transform, ParticleMesh particle, Material material, float depth) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		mvp.m23 = depth;
 		material.bind(shader);
 		shader.setTransform(transform, mvp);

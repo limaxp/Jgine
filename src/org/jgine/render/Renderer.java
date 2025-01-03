@@ -60,6 +60,7 @@ public class Renderer {
 
 	protected static Camera camera;
 	protected static RenderTarget renderTarget;
+	protected static Matrix projectionMatrix;
 	protected static Shader shader;
 	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
 	private static int drawCallSize;
@@ -174,21 +175,21 @@ public class Renderer {
 	}
 
 	public static void render(Matrix transform, Mesh mesh, Material material) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
 		drawIndexed(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, BaseMesh mesh, Material material) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
 		draw(mesh.getVao(), mesh.mode, mesh.getSize());
 	}
 
 	public static void render(Matrix transform, TileMapMesh tileMap, Material material) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
 		int amount = tileMap.getTileswidth() * tileMap.getTilesheight();
@@ -199,7 +200,7 @@ public class Renderer {
 	}
 
 	public static void render(Matrix transform, ParticleMesh particle, Material material) {
-		Matrix mvp = new Matrix(transform).mult(camera.getMatrix());
+		Matrix mvp = new Matrix(transform).mult(projectionMatrix);
 		material.bind(shader);
 		shader.setTransform(transform, mvp);
 		draw(particle.getVao(), Mesh.POINTS, particle.getInstanceSize());
@@ -273,6 +274,7 @@ public class Renderer {
 	public static void setCamera(Camera camera) {
 		Renderer.camera = camera;
 		setRenderTarget(camera.getRenderTarget());
+		projectionMatrix = camera.getMatrix();
 	}
 
 	public static Camera getCamera() {
