@@ -223,6 +223,9 @@ public class Engine {
 		if (lightScene != null)
 			Renderer.setLights(lightScene);
 
+		for (EngineSystem<?, ?> system : scene.getRenderOrder())
+			scene.getSystem(system).preRender(dt);
+
 		((CameraScene) scene.getSystem(CAMERA_SYSTEM)).forEach((camera) -> {
 			Renderer.setCamera(camera);
 			camera.getRenderTarget().clear();

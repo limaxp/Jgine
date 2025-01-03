@@ -53,6 +53,9 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 	public void render(float dt) {
 	}
 
+	public void preRender(float dt) {
+	}
+
 	public abstract void load(DataInput in) throws IOException;
 
 	public abstract void save(DataOutput out) throws IOException;

@@ -37,15 +37,17 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 	}
 
 	@Override
-	public void render(float dt) {
-		// TODO gets calculated for every camera!
+	public void preRender(float dt) {
 		Renderer.PARTICLE_CALC_SHADER.bind();
 		for (int i = 0; i < size; i++) {
 			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);
 			objects[i].getMesh().update();
 		}
 		Renderer.PARTICLE_CALC_SHADER.unbind();
+	}
 
+	@Override
+	public void render(float dt) {
 		Renderer.enableDepthTest();
 		Renderer.setShader(Renderer.PARTICLE_DRAW_SHADER);
 		for (int i = 0; i < size; i++) {
