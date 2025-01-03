@@ -4,7 +4,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -257,18 +256,12 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(int id) {
-		SystemScene<?, T> systemScene = scene.getSystem(id);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, 0);
+		return getSystem(scene.getSystem(id), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system) {
-		SystemScene<?, T> systemScene = scene.getSystem(system);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, 0);
+		return getSystem(scene.getSystem(system), 0);
 	}
 
 	@Nullable
@@ -278,18 +271,12 @@ public class Entity {
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(int id, int index) {
-		SystemScene<?, T> systemScene = scene.getSystem(id);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, index);
+		return getSystem(scene.getSystem(id), index);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system, int index) {
-		SystemScene<?, T> systemScene = scene.getSystem(system);
-		if (systemScene == null)
-			return null;
-		return getSystem(systemScene, index);
+		return getSystem(scene.getSystem(system), index);
 	}
 
 	@Nullable
@@ -309,8 +296,6 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> List<T> getSystems(SystemScene<?, T> systemScene) {
-		if (systemScene == null)
-			return Arrays.asList();
 		List<T> result = new ArrayList<T>(systems.size(systemScene.id));
 		systems.forEach(systemScene.id, (index) -> result.add(systemScene.getObject(index)));
 		return result;

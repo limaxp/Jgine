@@ -38,6 +38,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 
 	@Override
 	public void render(float dt) {
+		// TODO gets calculated for every camera!
 		Renderer.PARTICLE_CALC_SHADER.bind();
 		for (int i = 0; i < size; i++) {
 			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);

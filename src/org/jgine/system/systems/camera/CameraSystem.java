@@ -2,6 +2,8 @@ package org.jgine.system.systems.camera;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 import org.jgine.utils.Service;
@@ -39,11 +41,17 @@ public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
 		return camera;
 	}
 
-	protected void registerCamera(Camera camera) {
+	void registerCamera(Camera camera) {
 		if (mainCamera == null)
 			mainCamera = camera;
 	}
 
+	void unregisterCamera(Camera camera) {
+		if (mainCamera == camera)
+			mainCamera = null;
+	}
+
+	@Nullable
 	public Camera getMainCamera() {
 		return mainCamera;
 	}

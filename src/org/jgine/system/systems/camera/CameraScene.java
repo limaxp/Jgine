@@ -17,6 +17,10 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public void free() {
+		synchronized (objects) {
+			for (int i = 0; i < size; i++)
+				system.unregisterCamera(objects[i]);
+		}
 	}
 
 	@Override
@@ -25,6 +29,13 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 		if (object.getRenderTarget() == null)
 			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
 		system.registerCamera(object);
+	}
+
+	@Override
+	public Camera removeObject(int index) {
+		Camera object = super.removeObject(index);
+		system.unregisterCamera(object);
+		return object;
 	}
 
 	@Override
