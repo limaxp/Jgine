@@ -169,7 +169,7 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		// TODO gets rendered for every camera!
 		Renderer.setShader(Renderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++)
-			objects[i].render(i * 3);
+			objects[i].render();
 	}
 
 	@Override

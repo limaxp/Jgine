@@ -83,27 +83,26 @@ public class UIWindow extends UICompound {
 	}
 
 	@Override
-	public void render(int depth) {
+	public void render() {
 		if (this.scriptEngine instanceof UIScript)
 			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
 
-		renderChilds(depth);
-		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth);
+		renderChilds();
+		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
 	}
 
 	@Override
-	protected void renderChilds(int depth) {
+	protected void renderChilds() {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
 		RenderTarget renderTarget = getRenderTarget();
 		UIRenderer.setRenderTarget(renderTarget);
 		renderTarget.clear();
-		UIRenderer.renderQuad(new Matrix(), border, 0);
-		UIRenderer.renderQuad(new Matrix().scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize), background,
-				0);
+		UIRenderer.renderQuad(new Matrix(), border);
+		UIRenderer.renderQuad(new Matrix().scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize), background);
 		for (UIObject child : getVisibleChilds())
-			child.render(0);
+			child.render();
 		UIRenderer.setRenderTarget(tmp);
 	}
 

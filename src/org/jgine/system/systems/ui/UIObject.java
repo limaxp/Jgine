@@ -80,7 +80,7 @@ public abstract class UIObject implements SystemObject {
 
 	protected abstract void free();
 
-	public abstract void render(int depth);
+	public abstract void render();
 
 	public abstract UIObjectType<?> getType();
 

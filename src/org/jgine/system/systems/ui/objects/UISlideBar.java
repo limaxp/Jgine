@@ -57,9 +57,9 @@ public class UISlideBar extends UICompound {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), background, depth);
-		super.render(depth);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), background);
+		super.render();
 	}
 
 	@Override

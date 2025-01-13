@@ -48,9 +48,9 @@ public class UIBar extends UIObject {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), background, depth);
-		UIRenderer.renderQuad(barTransform, bar, depth + 1);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), background);
+		UIRenderer.renderQuad(barTransform, bar);
 	}
 
 	@Override
