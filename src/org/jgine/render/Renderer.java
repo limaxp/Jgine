@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.jgine.core.Transform;
 import org.jgine.render.RenderTarget.Attachment;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
@@ -143,11 +142,8 @@ public class Renderer {
 		}
 
 		RenderTarget.unbind();
-		POST_PROCESS_SHADER.bind();
-		new Material(POST_PROCESS_TARGET.getTexture(RenderTarget.COLOR_ATTACHMENT0)).bind(POST_PROCESS_SHADER);
-		Matrix transform = Transform.calculateMatrix(new Matrix(), 0, 0, 0, 1, 1, 0);
-		POST_PROCESS_SHADER.setTransform(transform, new Matrix(transform).mult(UI_MATRIX));
-		draw(QUAD_MESH.getVao(), QUAD_MESH.mode, QUAD_MESH.getSize());
+		setShader(POST_PROCESS_SHADER);
+		UIRenderer.renderQuad(UI_MATRIX, new Material(POST_PROCESS_TARGET.getTexture(RenderTarget.COLOR_ATTACHMENT0)));
 	}
 
 	public static void setLights(LightScene lightScene) {
