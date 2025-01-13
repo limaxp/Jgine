@@ -33,6 +33,7 @@ public class UIWindow extends UICompound {
 	private boolean floating;
 	private Material background;
 	private Material border;
+	private float borderSize;
 	private Object scriptEngine;
 	private RenderTarget renderTarget;
 	private Material renderTargetMaterial;
@@ -60,6 +61,7 @@ public class UIWindow extends UICompound {
 		setScale(width, height);
 		background = new Material(BACKGROUND_COLOR);
 		border = new Material(BORDER_COLOR);
+		borderSize = 0.005f;
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
 		renderTargetMaterial = new Material();
 		renderTargetMaterial.flipY();
@@ -86,10 +88,9 @@ public class UIWindow extends UICompound {
 			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
-		UIRenderer.renderQuad(getTransform(), background, depth);
-		renderChilds(depth + 1);
-		UIRenderer.renderLine2d(getTransform(), border, true,
-				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f }, depth + 2);
+
+		renderChilds(depth);
+		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth);
 	}
 
 	@Override
@@ -98,10 +99,12 @@ public class UIWindow extends UICompound {
 		RenderTarget renderTarget = getRenderTarget();
 		UIRenderer.setRenderTarget(renderTarget);
 		renderTarget.clear();
+		UIRenderer.renderQuad(new Matrix(), border, 0);
+		UIRenderer.renderQuad(new Matrix().scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize), background,
+				0);
 		for (UIObject child : getVisibleChilds())
 			child.render(0);
 		UIRenderer.setRenderTarget(tmp);
-		UIRenderer.renderQuad(getTransform(), renderTargetMaterial, depth);
 	}
 
 	private RenderTarget getRenderTarget() {
@@ -119,6 +122,7 @@ public class UIWindow extends UICompound {
 
 	@Override
 	public void updateTransform(Matrix matrix) {
+		matrix.scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize);
 	}
 
 	@Override
@@ -256,6 +260,10 @@ public class UIWindow extends UICompound {
 		} else if (borderData instanceof Map)
 			border.load((Map<String, Object>) borderData);
 
+		Object borderSizeData = data.get("borderSize");
+		if (borderSizeData != null)
+			borderSize = YamlHelper.toFloat(borderSizeData);
+
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
 			Script script = Script.get((String) scriptName);
@@ -274,6 +282,7 @@ public class UIWindow extends UICompound {
 		floating = in.readBoolean();
 		background.load(in);
 		border.load(in);
+		borderSize = in.readFloat();
 		String scriptName = in.readUTF();
 		Script script = Script.get(scriptName);
 		if (script != null)
@@ -290,6 +299,7 @@ public class UIWindow extends UICompound {
 		out.writeBoolean(floating);
 		background.save(out);
 		border.save(out);
+		out.writeFloat(borderSize);
 		if (scriptEngine != null) {
 			if (scriptEngine instanceof Script)
 				out.writeUTF(scriptEngine.getClass().getSimpleName());
@@ -364,6 +374,14 @@ public class UIWindow extends UICompound {
 
 	public Material getBorder() {
 		return border;
+	}
+
+	public void setBorderSize(float borderSize) {
+		this.borderSize = borderSize;
+	}
+
+	public float getBorderSize() {
+		return borderSize;
 	}
 
 	public Entity getEntity() {
