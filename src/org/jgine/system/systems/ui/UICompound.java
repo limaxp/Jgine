@@ -27,10 +27,6 @@ public class UICompound extends UIObject {
 
 	@Override
 	public void render() {
-		renderChilds();
-	}
-
-	protected void renderChilds() {
 		for (UIObject child : getVisibleChilds())
 			child.render();
 	}

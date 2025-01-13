@@ -93,8 +93,7 @@ public class UIWindow extends UICompound {
 		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
 	}
 
-	@Override
-	protected void renderChilds() {
+	private void renderChilds() {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
 		RenderTarget renderTarget = getRenderTarget();
 		UIRenderer.setRenderTarget(renderTarget);

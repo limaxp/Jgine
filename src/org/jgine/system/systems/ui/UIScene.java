@@ -230,6 +230,13 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 		float windowY = (mouseY - window.getY()) / window.getHeight();
 		if (window instanceof UIWindow) {
 			UIWindow w = (UIWindow) window;
+			float borderWidth = window.getWidth() * (1.0f - w.getBorderSize());
+			float borderHeight = window.getHeight() * (1.0f - w.getBorderSize());
+			float borderX = window.getX() + (window.getWidth() * w.getBorderSize() * 0.5f);
+			float borderY = window.getY() + (window.getHeight() * w.getBorderSize() * 0.5f);
+			windowX = (mouseX - borderX) / borderWidth;
+			windowY = (mouseY - borderY) / borderHeight;
+
 			float width = Math.abs(w.getViewWidth());
 			float height = Math.abs(w.getViewHeight());
 			windowX = windowX * width + w.getScrollX() + (1.0f - width);
