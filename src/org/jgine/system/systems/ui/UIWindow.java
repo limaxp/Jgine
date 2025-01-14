@@ -21,6 +21,7 @@ import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.Scheduler;
 import org.jgine.utils.scheduler.Task;
 import org.jgine.utils.script.ScriptManager;
 
@@ -69,8 +70,9 @@ public class UIWindow extends UICompound {
 
 	@Override
 	protected void free() {
+		super.free();
 		if (renderTarget != null)
-			renderTarget.close();
+			Scheduler.runTaskSynchron(renderTarget::close);
 	}
 
 	@Override

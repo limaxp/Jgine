@@ -23,6 +23,8 @@ public class UICompound extends UIObject {
 
 	@Override
 	protected void free() {
+		for (UIObject child : childs)
+			child.free();
 	}
 
 	@Override
@@ -128,9 +130,7 @@ public class UICompound extends UIObject {
 
 	public int removeChild(UIObject child) {
 		int index = childs.indexOf(child);
-		childs.remove(index);
-		child.onDisable();
-		child.free();
+		removeChild(index);
 		return index;
 	}
 

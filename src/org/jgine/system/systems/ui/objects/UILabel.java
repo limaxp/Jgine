@@ -65,7 +65,7 @@ public class UILabel extends UIObject {
 	@Override
 	protected void free() {
 		if (text != null)
-			text.close();
+			Scheduler.runTaskSynchron(text::close);
 	}
 
 	@Override
