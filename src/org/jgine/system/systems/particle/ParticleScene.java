@@ -37,7 +37,7 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 	}
 
 	@Override
-	public void preRender(float dt) {
+	public void onRender(float dt) {
 		Renderer.PARTICLE_CALC_SHADER.bind();
 		for (int i = 0; i < size; i++) {
 			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);

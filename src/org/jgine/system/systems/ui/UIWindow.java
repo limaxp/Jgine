@@ -36,7 +36,7 @@ public class UIWindow extends UICompound {
 	private float borderSize;
 	private Object scriptEngine;
 	private RenderTarget renderTarget;
-	private Material renderTargetMaterial;
+	Material renderTargetMaterial;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -82,14 +82,17 @@ public class UIWindow extends UICompound {
 		return obj;
 	}
 
-	@Override
-	public void render() {
+	void preRender() {
 		if (this.scriptEngine instanceof UIScript)
 			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
-
 		renderChilds();
+	}
+
+	@Override
+	public void render() {
+		preRender();
 		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
 	}
 

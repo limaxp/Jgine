@@ -5,13 +5,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
-import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.render.Renderer;
+import org.jgine.render.UIRenderer;
 import org.jgine.system.data.ListSystemScene;
 import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.math.vector.Vector2f;
@@ -165,11 +166,15 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public void render(float dt) {
-		// TODO gets rendered for every camera!
+	public void onRender(float dt) {
 		Renderer.setShader(Renderer.TEXTURE_SHADER);
 		for (int i = 0; i < size; i++)
-			objects[i].render();
+			objects[i].preRender();
+
+		for (int i = 0; i < size; i++) {
+			UIWindow window = objects[i];
+			UIRenderer.renderQuad(window.getTransform(), window.renderTargetMaterial);
+		}
 	}
 
 	@Override
