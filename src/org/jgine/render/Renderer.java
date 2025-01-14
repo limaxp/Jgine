@@ -287,6 +287,7 @@ public class Renderer {
 		}
 	}
 
+	@Nullable
 	public static RenderTarget getRenderTarget() {
 		return renderTarget;
 	}

@@ -8,22 +8,24 @@ import org.jgine.utils.options.Options;
 
 public class RenderConfiguration implements AutoCloseable {
 
+	public static RenderConfiguration create(float x, float y, float width, float height) {
+		RenderTarget renderTarget;
+		int intAliasing = Options.ANTI_ALIASING.getInt();
+		if (intAliasing <= 0)
+			renderTarget = RenderTarget.createDefaultRenderBuffer(Options.RESOLUTION_X.getInt(),
+					Options.RESOLUTION_Y.getInt());
+		else
+			renderTarget = RenderTarget.createDefaultRenderBufferMultisample(Options.RESOLUTION_X.getInt(),
+					Options.RESOLUTION_Y.getInt(), intAliasing);
+		return new RenderConfiguration(renderTarget, x, y, width, height);
+	}
+
 	private RenderTarget renderTarget;
 	private RenderTarget intermediateTarget;
 	private float x;
 	private float y;
 	private float width;
 	private float height;
-
-	public RenderConfiguration() {
-		this(RenderTarget.createDefaultRenderBufferMultisample(Options.RESOLUTION_X.getInt(),
-				Options.RESOLUTION_Y.getInt(), Options.ANTI_ALIASING.getInt()), 0, 0, 1, 1);
-	}
-
-	public RenderConfiguration(float x, float y, float width, float height) {
-		this(RenderTarget.createDefaultRenderBufferMultisample(Options.RESOLUTION_X.getInt(),
-				Options.RESOLUTION_Y.getInt(), Options.ANTI_ALIASING.getInt()), x, y, width, height);
-	}
 
 	public RenderConfiguration(RenderTarget renderTarget, float x, float y, float width, float height) {
 		this.x = x;

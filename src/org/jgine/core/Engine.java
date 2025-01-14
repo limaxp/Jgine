@@ -128,7 +128,7 @@ public class Engine {
 		window.setWindowSizeCallback((id, width, height) -> gameLoop.run());
 		Input.setWindow(window);
 		Renderer.init();
-		renderConfigs.add(new RenderConfiguration());
+		renderConfigs.add(RenderConfiguration.create(0, 0, 1, 1));
 		gameLoop.setRenderFunction(this::render);
 	}
 
@@ -230,9 +230,9 @@ public class Engine {
 				scene.getSystem(system).render(dt);
 		});
 
+		Renderer.setRenderTarget(getRenderConfig().getRenderTarget());
 		for (EngineSystem<?, ?> system : scene.getRenderOrder())
 			scene.getSystem(system).onRender(dt);
-
 		Renderer.setRenderTarget(null);
 	}
 
