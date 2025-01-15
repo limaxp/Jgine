@@ -22,23 +22,19 @@ public class UIInputHandler extends InputHandler {
 	public static final Key KEY_ENTER = new Key(Key.KEY_ENTER, Key.KEY_UNKNOWN, Key.MOUSE_BUTTON_LEFT,
 			Key.GAMEPAD_BUTTON_X);
 
-	private UIWindow window;
-
 	private static final List<UIObject> FOCUS_OBJECTS_EMPTY = new IdentityArrayList<UIObject>();
 
+	private UIWindow window;
 	private List<UIObject> focusObjects = FOCUS_OBJECTS_EMPTY;
+	private UIObject focusObject;
 	private UIObject clickedObject;
 	private int clickedKey;
 
 	@Override
 	protected void init(Entity entity) {
 		window = entity.getSystem(Engine.UI_SYSTEM);
-
 		setMouseMove(this::onMouseMove);
-
-		setMouseScroll((scroll) -> {
-
-		});
+		setMouseScroll(this::onScroll);
 
 		setKey(KEY_UP, () -> {
 
@@ -53,21 +49,26 @@ public class UIInputHandler extends InputHandler {
 		});
 	}
 
-	public void onMouseMove(Vector2f cursorPos) {
+	private void onMouseMove(Vector2f cursorPos) {
 		Vector2i windowSize = Input.getWindowSize();
 		float mouseX = cursorPos.x / windowSize.x;
 		float mouseY = 1 - cursorPos.y / windowSize.y;
 
-		UIObject focusObject = null;
 		if (insideCheck(window, mouseX, mouseY))
 			focusObject = focusCheck(window, mouseX, mouseY);
+		else
+			focusObject = null;
 
-		focus(focusObject);
-		clickCheck(focusObject);
-		scrollCheck(focusObject);
+		focus();
+		clickCheck();
 	}
 
-	private void clickCheck(UIObject focusObject) {
+	private void onScroll(float scroll) {
+		if (scroll != 0 && focusObject != null)
+			focusObject.onScroll(scroll);
+	}
+
+	private void clickCheck() {
 		if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_LEFT))
 			click(focusObject, Key.MOUSE_BUTTON_LEFT);
 		else if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_RIGHT))
@@ -88,18 +89,12 @@ public class UIInputHandler extends InputHandler {
 		window.getScene().setTopWindow(focusObject);
 	}
 
-	private void scrollCheck(UIObject focusObject) {
-		float scroll = Input.getMouse().getScroll();
-		if (scroll != 0 && focusObject != null)
-			focusObject.onScroll(scroll);
-	}
-
-	private void focus(UIObject object) {
+	private void focus() {
 		if (focusObjects != FOCUS_OBJECTS_EMPTY) {
-			if (object == focusObjects.get(0))
+			if (focusObject == focusObjects.get(0))
 				return;
 
-			if (object == null) {
+			if (focusObject == null) {
 				for (UIObject obj : focusObjects) {
 					obj.isFocused = false;
 					obj.onDefocus();
@@ -108,12 +103,12 @@ public class UIInputHandler extends InputHandler {
 				return;
 			}
 		}
-		if (object == null)
+		if (focusObject == null)
 			return;
 
 		List<UIObject> focusObjectsNew = new IdentityArrayList<UIObject>();
-		focusObjectsNew.add(object);
-		UIScene.addTopWindows(focusObjectsNew, object);
+		focusObjectsNew.add(focusObject);
+		UIScene.addTopWindows(focusObjectsNew, focusObject);
 		for (UIObject uiObject : focusObjectsNew) {
 			if (!focusObjects.contains(uiObject)) {
 				uiObject.isFocused = true;
