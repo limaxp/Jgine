@@ -24,7 +24,6 @@ public class UIInputHandler extends InputHandler {
 
 	private static final List<UIObject> FOCUS_OBJECTS_EMPTY = new IdentityArrayList<UIObject>();
 
-	private UIWindow window;
 	private List<UIObject> focusObjects = FOCUS_OBJECTS_EMPTY;
 	private UIObject focusObject;
 	private UIObject clickedObject;
@@ -32,7 +31,6 @@ public class UIInputHandler extends InputHandler {
 
 	@Override
 	protected void init(Entity entity) {
-		window = entity.getSystem(Engine.UI_SYSTEM);
 		setMouseMove(this::onMouseMove);
 		setMouseScroll(this::onScroll);
 
@@ -54,10 +52,11 @@ public class UIInputHandler extends InputHandler {
 		float mouseX = cursorPos.x / windowSize.x;
 		float mouseY = 1 - cursorPos.y / windowSize.y;
 
-		if (insideCheck(window, mouseX, mouseY))
-			focusObject = focusCheck(window, mouseX, mouseY);
-		else
-			focusObject = null;
+		focusObject = null;
+		getEntity().forSystems(Engine.UI_SYSTEM, (UIWindow window) -> {
+			if (insideCheck(window, mouseX, mouseY))
+				focusObject = focusCheck(window, mouseX, mouseY);
+		});
 
 		focus();
 		clickCheck();
@@ -86,7 +85,7 @@ public class UIInputHandler extends InputHandler {
 		focusObject.onClick(key);
 		clickedObject = focusObject;
 		clickedKey = key;
-		window.getScene().setTopWindow(focusObject);
+		focusObject.getWindow().getScene().setTopWindow(focusObject);
 	}
 
 	private void focus() {
