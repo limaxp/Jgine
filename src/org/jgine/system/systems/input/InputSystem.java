@@ -18,16 +18,10 @@ public class InputSystem extends EngineSystem<InputSystem, InputHandler> {
 
 	@Override
 	public InputHandler load(Map<String, Object> data) {
-		InputHandler inputHandler;
-		InputHandlerType<?> inputHandlerType;
 		Object type = data.get("type");
-		if (type != null && type instanceof String) {
-			inputHandlerType = InputHandlerTypes.get((String) type);
-			if (inputHandlerType == null)
-				inputHandlerType = InputHandlerTypes.TRANSFORM;
-		} else
-			inputHandlerType = InputHandlerTypes.TRANSFORM;
-		inputHandler = inputHandlerType.get();
+		if (!(type instanceof String))
+			return null;
+		InputHandler inputHandler = InputHandler.get((String) type);
 		inputHandler.load(data);
 		return inputHandler;
 	}

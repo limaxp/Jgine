@@ -17,6 +17,7 @@ import org.jgine.system.SystemObject;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.registry.ClassPathRegistry;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -108,10 +109,6 @@ public class InputHandler implements SystemObject {
 		out.writeBoolean(mouse);
 		out.writeBoolean(keyboard);
 		out.writeInt(gamepad);
-	}
-
-	public InputHandlerType<? extends InputHandler> getType() {
-		return InputHandlerTypes.UNKNOWN;
 	}
 
 	final void setEntity(Entity entity) {
@@ -256,5 +253,10 @@ public class InputHandler implements SystemObject {
 			Logger.err("InputHandler: Error on clone!", e);
 			return null;
 		}
+	}
+
+	@Nullable
+	public static InputHandler get(String name) {
+		return ClassPathRegistry.getInput(name);
 	}
 }

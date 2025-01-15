@@ -49,7 +49,7 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 		size = in.readInt();
 		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
-			InputHandler object = InputHandlerTypes.get(in.readInt()).get();
+			InputHandler object = InputHandler.get(in.readUTF());
 			object.load(in);
 			objects[i] = object;
 		}
@@ -60,7 +60,7 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 		out.writeInt(size);
 		for (int i = 0; i < size; i++) {
 			InputHandler object = objects[i];
-			out.writeInt(object.getType().getId());
+			out.writeUTF(object.getClass().getSimpleName());
 			object.save(out);
 		}
 	}

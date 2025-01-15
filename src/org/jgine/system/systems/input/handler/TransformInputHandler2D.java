@@ -4,8 +4,6 @@ import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Key;
 import org.jgine.system.systems.input.InputHandler;
-import org.jgine.system.systems.input.InputHandlerType;
-import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
@@ -58,10 +56,5 @@ public class TransformInputHandler2D extends InputHandler {
 		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector2f.mult(Vector2f.DOWN, MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector2f.mult(Vector2f.LEFT, MOVEMENT_SPEED)));
 		setKey(KEY_MOVE_RIGHT, () -> physicObject.accelerate(Vector2f.mult(Vector2f.RIGHT, MOVEMENT_SPEED)));
-	}
-
-	@Override
-	public InputHandlerType<TransformInputHandler2D> getType() {
-		return InputHandlerTypes.TRANSFORM_2D;
 	}
 }

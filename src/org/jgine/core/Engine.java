@@ -29,7 +29,6 @@ import org.jgine.system.systems.light.LightScene;
 import org.jgine.system.systems.light.LightSystem;
 import org.jgine.system.systems.particle.ParticleSystem;
 import org.jgine.system.systems.physic.PhysicSystem;
-import org.jgine.system.systems.script.Script;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.system.systems.tileMap.TileMapSystem;
 import org.jgine.system.systems.ui.UISystem;
@@ -39,6 +38,7 @@ import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.options.OptionFile;
 import org.jgine.utils.options.Options;
+import org.jgine.utils.registry.ClassPathRegistry;
 import org.jgine.utils.scheduler.Scheduler;
 import org.jgine.utils.scheduler.ThreadPool;
 import org.lwjgl.system.MemoryUtil;
@@ -114,7 +114,7 @@ public class Engine {
 		scenes = new IdentityArrayList<Scene>();
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
 		SoundManager.init();
-		Script.init();
+		ClassPathRegistry.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		if (window)

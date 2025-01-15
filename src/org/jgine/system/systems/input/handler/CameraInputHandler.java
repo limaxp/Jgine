@@ -6,8 +6,6 @@ import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.input.InputHandler;
-import org.jgine.system.systems.input.InputHandlerType;
-import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
@@ -83,10 +81,5 @@ public class CameraInputHandler extends InputHandler {
 				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);
 			}
 		});
-	}
-
-	@Override
-	public InputHandlerType<CameraInputHandler> getType() {
-		return InputHandlerTypes.CAMERA;
 	}
 }
