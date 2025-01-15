@@ -1,24 +1,38 @@
 package org.jgine.system.systems.script;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.utils.Reflection;
 import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 public interface Script {
 
 	public static final Map<String, Supplier<Script>> MAP = new HashMap<String, Supplier<Script>>();
 
-	public static void register(Package pkg) {
-		String name = pkg.getName();
-		Reflections reflections = new Reflections(name.substring(0, name.indexOf('.')));
-		for (Class<?> c : reflections.getSubTypesOf(Script.class)) {
+	public static void init() {
+		Collection<URL> allPackagePrefixes = Arrays.stream(Package.getPackages()).map(p -> p.getName())
+				.map(s -> s.split("\\.")[0]).distinct().map(s -> ClasspathHelper.forPackage(s)).reduce((c1, c2) -> {
+					Collection<URL> c3 = new HashSet<>();
+					c3.addAll(c1);
+					c3.addAll(c2);
+					return c3;
+				}).get();
+		Reflections reflections = new Reflections(
+				new ConfigurationBuilder().addUrls(allPackagePrefixes).addScanners(Scanners.SubTypes));
+
+		for (Class<?> c : reflections.getSubTypesOf(Script.class))
 			MAP.put(c.getSimpleName(), () -> (Script) Reflection.newInstance(c));
-		}
 	}
 
 	public default Object invokeFunction(String name, Class<?> type, Object arg) {

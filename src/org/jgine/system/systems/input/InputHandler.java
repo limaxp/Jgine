@@ -80,7 +80,7 @@ public class InputHandler implements SystemObject {
 		}
 	}
 
-	protected void checkKeys(InputDevice inputDevice, Map<Integer, Runnable> map) {
+	protected void checkKeys(InputDevice inputDevice, Int2ObjectMap<Runnable> map) {
 		for (int pressedKey : inputDevice.getPressedKeys())
 			map.getOrDefault(pressedKey, () -> {
 			}).run();

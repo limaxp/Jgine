@@ -114,7 +114,7 @@ public class Engine {
 		scenes = new IdentityArrayList<Scene>();
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
 		SoundManager.init();
-		Script.register(getClass().getPackage());
+		Script.init();
 		gameLoop = createGameLoop();
 		gameLoop.setUpdateFunction(this::update);
 		if (window)
