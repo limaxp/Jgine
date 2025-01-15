@@ -26,7 +26,7 @@ public class ScriptSystem extends EngineSystem<ScriptSystem, AbstractScriptObjec
 
 	@Override
 	public AbstractScriptObject load(Map<String, Object> data) {
-		Object scriptName = data.get("script");
+		Object scriptName = data.get("type");
 		if (!(scriptName instanceof String))
 			return null;
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
