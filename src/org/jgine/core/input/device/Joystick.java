@@ -77,6 +77,7 @@ public class Joystick extends InputDevice {
 		public static final byte GAMEPAD_15 = GLFW_JOYSTICK_15;
 		public static final byte GAMEPAD_16 = GLFW_JOYSTICK_16;
 		public static final byte GAMEPAD_LAST = GLFW_JOYSTICK_LAST;
+		public static final byte GAMEPAD_SIZE = GAMEPAD_LAST + 1;
 	}
 
 	public final int slot;

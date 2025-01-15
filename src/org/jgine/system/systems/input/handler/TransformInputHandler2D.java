@@ -32,8 +32,7 @@ public class TransformInputHandler2D extends InputHandler {
 	private long cooldown;
 
 	@Override
-	protected void setEntity(Entity entity) {
-		super.setEntity(entity);
+	protected void init(Entity entity) {
 		physicObject = entity.getSystem(Engine.PHYSIC_SYSTEM);
 
 		setGamepadLeftStickMove((pos) -> {

@@ -28,6 +28,7 @@ public class InputSystem extends EngineSystem<InputSystem, InputHandler> {
 		} else
 			inputHandlerType = InputHandlerTypes.TRANSFORM;
 		inputHandler = inputHandlerType.get();
+		inputHandler.load(data);
 		return inputHandler;
 	}
 }

@@ -1,7 +1,8 @@
 package org.jgine.system.systems.input;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -13,16 +14,22 @@ import org.jgine.core.input.Key;
 import org.jgine.core.input.device.Gamepad;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class InputHandler implements SystemObject {
 
 	private Entity entity;
-	protected InputDevice[] inputDevices;
-	private Map<Integer, Runnable> keyboardMap;
-	private Map<Integer, Runnable> mouseMap;
-	private Map<Integer, Runnable> gamepadMap;
+	private boolean mouse;
+	private boolean keyboard;
+	private int gamepad;
+	private Int2ObjectMap<Runnable> keyboardMap;
+	private Int2ObjectMap<Runnable> mouseMap;
+	private Int2ObjectMap<Runnable> gamepadMap;
 
 	private Consumer<Vector2f> mouseMove = (pos) -> {
 	};
@@ -38,66 +45,106 @@ public class InputHandler implements SystemObject {
 	};
 
 	public InputHandler() {
-		Gamepad gamepad = Input.getGamepad(Gamepad.Slot.GAMEPAD_1);
-		if (gamepad != null)
-			setInputDevice(new InputDevice[] { Input.getMouse(), Input.getKeyboard(), gamepad });
-		else
-			setInputDevice(new InputDevice[] { Input.getMouse(), Input.getKeyboard() });
-
-		keyboardMap = new HashMap<Integer, Runnable>();
-		mouseMap = new HashMap<Integer, Runnable>();
-		gamepadMap = new HashMap<Integer, Runnable>();
+		mouse = true;
+		keyboard = true;
+		gamepad = 0;
+		keyboardMap = new Int2ObjectOpenHashMap<Runnable>();
+		mouseMap = new Int2ObjectOpenHashMap<Runnable>();
+		gamepadMap = new Int2ObjectOpenHashMap<Runnable>();
 	}
 
-	public final void checkInput() {
-		for (InputDevice inputDevice : inputDevices)
-			checkInput(inputDevice);
+	protected void init(Entity entity) {
 	}
 
-	public void checkInput(InputDevice inputDevice) {
-		if (inputDevice.isMouse()) {
-			Mouse mouse = (Mouse) inputDevice;
+	protected void checkInput() {
+		if (mouse) {
+			Mouse mouse = Input.getMouse();
 			mouseMove.accept(Input.getCursorPos());
 			mouseScroll.accept(mouse.getScroll());
-			checkKeys(inputDevice, mouseMap);
+			checkKeys(mouse, mouseMap);
+		}
 
-		} else if (inputDevice.isGamepad()) {
-			Gamepad gamepad = (Gamepad) inputDevice;
-			gamepadLeftStickMove.accept(gamepad.getAxisLeft());
-			gamepadRightStickMove.accept(gamepad.getAxisRight());
-			gamepadLeftTriggerMove.accept(gamepad.getTriggerLeft());
-			gamepadRightTriggerMove.accept(gamepad.getTriggerRight());
-			checkKeys(inputDevice, gamepadMap);
+		if (keyboard) {
+			checkKeys(Input.getKeyboard(), keyboardMap);
+		}
 
-		} else if (inputDevice.isKeyboard()) {
-			checkKeys(inputDevice, keyboardMap);
+		if (gamepad != -1) {
+			Gamepad gamepad = Input.getGamepad(this.gamepad);
+			if (gamepad != null) {
+				gamepadLeftStickMove.accept(gamepad.getAxisLeft());
+				gamepadRightStickMove.accept(gamepad.getAxisRight());
+				gamepadLeftTriggerMove.accept(gamepad.getTriggerLeft());
+				gamepadRightTriggerMove.accept(gamepad.getTriggerRight());
+				checkKeys(gamepad, gamepadMap);
+			}
 		}
 	}
 
-	protected final void checkKeys(InputDevice inputDevice, Map<Integer, Runnable> map) {
+	protected void checkKeys(InputDevice inputDevice, Map<Integer, Runnable> map) {
 		for (int pressedKey : inputDevice.getPressedKeys())
 			map.getOrDefault(pressedKey, () -> {
 			}).run();
+	}
+
+	public void load(Map<String, Object> data) {
+		Object mouseData = data.get("mouse");
+		if (mouseData != null)
+			mouse = YamlHelper.toBoolean(mouseData);
+		Object keyboardData = data.get("keyboard");
+		if (keyboardData != null)
+			keyboard = YamlHelper.toBoolean(keyboardData);
+		Object gamepadData = data.get("gamepad");
+		if (gamepadData != null)
+			gamepad = YamlHelper.toInt(gamepadData) - 1;
+	}
+
+	public void load(DataInput in) throws IOException {
+		mouse = in.readBoolean();
+		keyboard = in.readBoolean();
+		gamepad = in.readInt();
+	}
+
+	public void save(DataOutput out) throws IOException {
+		out.writeBoolean(mouse);
+		out.writeBoolean(keyboard);
+		out.writeInt(gamepad);
 	}
 
 	public InputHandlerType<? extends InputHandler> getType() {
 		return InputHandlerTypes.UNKNOWN;
 	}
 
-	protected void setEntity(Entity entity) {
+	final void setEntity(Entity entity) {
 		this.entity = entity;
+		init(entity);
 	}
 
 	public final Entity getEntity() {
 		return entity;
 	}
 
-	public final void setInputDevice(InputDevice[] inputDevices) {
-		this.inputDevices = inputDevices;
+	public final void setMouse(boolean mouse) {
+		this.mouse = mouse;
 	}
 
-	public final InputDevice[] getInputDevices() {
-		return inputDevices;
+	public final boolean getMouse() {
+		return mouse;
+	}
+
+	public final void setKeyboard(boolean keyboard) {
+		this.keyboard = keyboard;
+	}
+
+	public final boolean getKeyboard() {
+		return keyboard;
+	}
+
+	public final void setGamepad(int gamepad) {
+		this.gamepad = gamepad;
+	}
+
+	public final int getGamepad() {
+		return gamepad;
 	}
 
 	public final void setKey(Key key, Runnable func) {
@@ -173,11 +220,11 @@ public class InputHandler implements SystemObject {
 		return mouseMove;
 	}
 
-	public void setMouseScroll(Consumer<Float> mouseScroll) {
+	public final void setMouseScroll(Consumer<Float> mouseScroll) {
 		this.mouseScroll = mouseScroll;
 	}
 
-	public Consumer<Float> getMouseScroll() {
+	public final Consumer<Float> getMouseScroll() {
 		return mouseScroll;
 	}
 
@@ -201,10 +248,9 @@ public class InputHandler implements SystemObject {
 	public InputHandler clone() {
 		try {
 			InputHandler object = (InputHandler) super.clone();
-			object.inputDevices = Arrays.copyOf(inputDevices, inputDevices.length);
-			object.keyboardMap = new HashMap<Integer, Runnable>(keyboardMap);
-			object.mouseMap = new HashMap<Integer, Runnable>(mouseMap);
-			object.gamepadMap = new HashMap<Integer, Runnable>(gamepadMap);
+			object.keyboardMap = new Int2ObjectOpenHashMap<Runnable>(keyboardMap);
+			object.mouseMap = new Int2ObjectOpenHashMap<Runnable>(mouseMap);
+			object.gamepadMap = new Int2ObjectOpenHashMap<Runnable>(gamepadMap);
 			return object;
 		} catch (CloneNotSupportedException e) {
 			Logger.err("InputHandler: Error on clone!", e);

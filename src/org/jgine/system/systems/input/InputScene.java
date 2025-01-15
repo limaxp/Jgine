@@ -48,14 +48,20 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
 		ensureCapacity(size);
-		for (int i = 0; i < size; i++)
-			objects[i] = InputHandlerTypes.get(in.readInt()).get();
+		for (int i = 0; i < size; i++) {
+			InputHandler object = InputHandlerTypes.get(in.readInt()).get();
+			object.load(in);
+			objects[i] = object;
+		}
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
 		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			out.writeInt(objects[i].getType().getId());
+		for (int i = 0; i < size; i++) {
+			InputHandler object = objects[i];
+			out.writeInt(object.getType().getId());
+			object.save(out);
+		}
 	}
 }

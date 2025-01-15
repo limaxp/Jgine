@@ -46,8 +46,8 @@ public class Input {
 		INPUT_DEVICES.add(MOUSE = new Mouse());
 		INPUT_DEVICES.add(KEYBOARD = new Keyboard());
 
-		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_LAST];
-		for (int i = 0; i < Gamepad.Slot.GAMEPAD_LAST; i++)
+		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_SIZE];
+		for (int i = 0; i < Joystick.Slot.GAMEPAD_SIZE; i++)
 			if (hasJoystick(i))
 				registerJoystick(i);
 
