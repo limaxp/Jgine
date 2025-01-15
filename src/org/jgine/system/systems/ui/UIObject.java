@@ -44,7 +44,7 @@ public abstract class UIObject implements SystemObject {
 	private float width;
 	private float height;
 	private Matrix transform;
-	boolean isFocused;
+	public boolean isFocused;
 	public Consumer<UIObject> enableFunction;
 	public Consumer<UIObject> disableFunction;
 	public Consumer<UIObject> focusFunction;

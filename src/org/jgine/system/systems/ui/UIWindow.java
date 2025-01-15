@@ -11,6 +11,7 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
+import org.jgine.core.input.Input;
 import org.jgine.render.RenderTarget;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
@@ -20,6 +21,7 @@ import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.options.Options;
 import org.jgine.utils.scheduler.Scheduler;
 import org.jgine.utils.scheduler.Task;
@@ -427,14 +429,19 @@ public class UIWindow extends UICompound {
 
 		public DragTask(UIWindow window) {
 			this.window = window;
-			this.dragX = window.scene.mouseX;
-			this.dragY = window.scene.mouseY;
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindowSize();
+			dragX = cursorPos.x / windowSize.x;
+			dragY = 1 - cursorPos.y / windowSize.y;
 		}
 
 		@Override
 		public void run() {
-			float mouseX = window.scene.mouseX;
-			float mouseY = window.scene.mouseY;
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindowSize();
+			float mouseX = cursorPos.x / windowSize.x;
+			float mouseY = 1 - cursorPos.y / windowSize.y;
+
 			float distance = Vector2f.distance(mouseX, mouseY, dragX, dragY);
 			if (distance > 0.01f) {
 				float newX = window.getX() + (mouseX - dragX);
