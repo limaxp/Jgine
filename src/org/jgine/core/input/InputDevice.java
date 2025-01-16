@@ -12,11 +12,21 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public abstract class InputDevice {
 
+	public static class Type {
+
+		public static final int MOUSE = 0;
+		public static final int KEYBOARD = 1;
+		public static final int JOYSTICK = 2;
+
+	}
+
 	private IntList pressedKeys;
+	private IntList releasedKeys;
 	private int[] keytimes;
 
 	public InputDevice(int maxKeys) {
 		pressedKeys = new IntArrayList(maxKeys);
+		releasedKeys = new IntArrayList(maxKeys);
 		keytimes = new int[maxKeys];
 	}
 
@@ -31,6 +41,8 @@ public abstract class InputDevice {
 	public abstract boolean isKeyReleased(int key);
 
 	public abstract String getName();
+
+	public abstract int getType();
 
 	protected final void press(int key) {
 		pressedKeys.add(key);
@@ -49,20 +61,16 @@ public abstract class InputDevice {
 		return pressedKeys;
 	}
 
+	public final IntList getReleasedKeys() {
+		return releasedKeys;
+	}
+
 	public final boolean isPressedIntern(int key) {
 		return keytimes[key] > 0;
 	}
 
 	public final int getTimePressed(int key) {
 		return FastMath.abs(keytimes[key]);
-	}
-
-	public boolean isKeyboard() {
-		return false;
-	}
-
-	public boolean isMouse() {
-		return false;
 	}
 
 	public boolean isJoystick() {

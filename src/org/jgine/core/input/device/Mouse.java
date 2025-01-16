@@ -47,8 +47,8 @@ public class Mouse extends InputDevice {
 	}
 
 	@Override
-	public boolean isMouse() {
-		return true;
+	public int getType() {
+		return Type.MOUSE;
 	}
 
 	public void scroll(double scroll) {

@@ -34,15 +34,15 @@ public class UIInputHandler extends InputHandler {
 		setMouseMove(this::onMouseMove);
 		setMouseScroll(this::onScroll);
 
-		setKey(KEY_UP, () -> {
+		press(KEY_UP, () -> {
 
 		});
 
-		setKey(KEY_DOWN, () -> {
+		press(KEY_DOWN, () -> {
 
 		});
 
-		setKey(KEY_ENTER, () -> {
+		press(KEY_ENTER, () -> {
 
 		});
 	}

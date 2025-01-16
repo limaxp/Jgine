@@ -121,6 +121,11 @@ public class Joystick extends InputDevice {
 	}
 
 	@Override
+	public int getType() {
+		return Type.JOYSTICK;
+	}
+
+	@Override
 	public boolean isJoystick() {
 		return true;
 	}

@@ -49,12 +49,12 @@ public class CameraInputHandler extends InputHandler {
 			lastCursorPosition = cursorPosition;
 		});
 
-		setGamepadRightStickMove((pos) -> {
+		setRightStickMove((pos) -> {
 			camera.rotateY(pos.x * ROTATION_SPEED * 10);
 			camera.rotateX(pos.y * ROTATION_SPEED * 10);
 		});
 
-		setGamepadLeftStickMove((pos) -> {
+		setLeftStickMove((pos) -> {
 			if (pos.x < -GAMEPAD_LEWAY)
 				physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED));
 			else if (pos.x > GAMEPAD_LEWAY)
@@ -65,17 +65,17 @@ public class CameraInputHandler extends InputHandler {
 				physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED));
 		});
 
-		setKey(KEY_MOVE_FORWARD,
+		press(KEY_MOVE_FORWARD,
 				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_BACK,
+		press(KEY_MOVE_BACK,
 				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_RIGHT,
+		press(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED)));
+		press(KEY_MOVE_RIGHT,
 				() -> physicObject.accelerate(Vector3f.mult(camera.getRightDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
-		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		setKey(KEY_FULLSCREEN, () -> {
+		press(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
+		press(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
+		press(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
+		press(KEY_FULLSCREEN, () -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
 				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);

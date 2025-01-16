@@ -45,9 +45,9 @@ public class Keyboard extends InputDevice {
 	public String getName() {
 		return "keyboard";
 	}
-
+	
 	@Override
-	public boolean isKeyboard() {
-		return true;
+	public int getType() {
+		return Type.KEYBOARD;
 	}
 }

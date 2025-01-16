@@ -28,62 +28,70 @@ public class InputHandler implements SystemObject {
 	private boolean mouse;
 	private boolean keyboard;
 	private int gamepad;
-	private Int2ObjectMap<Runnable> keyboardMap;
-	private Int2ObjectMap<Runnable> mouseMap;
-	private Int2ObjectMap<Runnable> gamepadMap;
+	private boolean active;
+	private Int2ObjectMap<Runnable> pressMap;
+	private Int2ObjectMap<Runnable> releaseMap;
 
 	private Consumer<Vector2f> mouseMove = (pos) -> {
 	};
 	private Consumer<Float> mouseScroll = (scroll) -> {
 	};
-	private Consumer<Vector2f> gamepadLeftStickMove = (pos) -> {
+	private Consumer<Vector2f> leftStickMove = (pos) -> {
 	};
-	private Consumer<Vector2f> gamepadRightStickMove = (pos) -> {
+	private Consumer<Vector2f> rightStickMove = (pos) -> {
 	};
-	private Consumer<Float> gamepadLeftTriggerMove = (value) -> {
+	private Consumer<Float> leftTriggerMove = (value) -> {
 	};
-	private Consumer<Float> gamepadRightTriggerMove = (value) -> {
+	private Consumer<Float> rightTriggerMove = (value) -> {
 	};
 
 	public InputHandler() {
 		mouse = true;
 		keyboard = true;
 		gamepad = 0;
-		keyboardMap = new Int2ObjectOpenHashMap<Runnable>();
-		mouseMap = new Int2ObjectOpenHashMap<Runnable>();
-		gamepadMap = new Int2ObjectOpenHashMap<Runnable>();
+		active = true;
+		pressMap = new Int2ObjectOpenHashMap<Runnable>();
+		releaseMap = new Int2ObjectOpenHashMap<Runnable>();
 	}
 
 	protected void init(Entity entity) {
 	}
 
 	protected void checkInput() {
+		if (!active)
+			return;
+
 		if (mouse) {
 			Mouse mouse = Input.getMouse();
 			mouseMove.accept(Input.getCursorPos());
 			mouseScroll.accept(mouse.getScroll());
-			checkKeys(mouse, mouseMap);
+			checkKeys(mouse);
 		}
 
 		if (keyboard) {
-			checkKeys(Input.getKeyboard(), keyboardMap);
+			checkKeys(Input.getKeyboard());
 		}
 
 		if (gamepad != -1) {
 			Gamepad gamepad = Input.getGamepad(this.gamepad);
 			if (gamepad != null) {
-				gamepadLeftStickMove.accept(gamepad.getAxisLeft());
-				gamepadRightStickMove.accept(gamepad.getAxisRight());
-				gamepadLeftTriggerMove.accept(gamepad.getTriggerLeft());
-				gamepadRightTriggerMove.accept(gamepad.getTriggerRight());
-				checkKeys(gamepad, gamepadMap);
+				leftStickMove.accept(gamepad.getAxisLeft());
+				rightStickMove.accept(gamepad.getAxisRight());
+				leftTriggerMove.accept(gamepad.getTriggerLeft());
+				rightTriggerMove.accept(gamepad.getTriggerRight());
+				checkKeys(gamepad);
 			}
 		}
 	}
 
-	protected void checkKeys(InputDevice inputDevice, Int2ObjectMap<Runnable> map) {
-		for (int pressedKey : inputDevice.getPressedKeys())
-			map.getOrDefault(pressedKey, () -> {
+	protected void checkKeys(InputDevice inputDevice) {
+		int deviceType = inputDevice.getType();
+		for (int key : inputDevice.getPressedKeys())
+			pressMap.getOrDefault(getId(deviceType, key), () -> {
+			}).run();
+
+		for (int key : inputDevice.getReleasedKeys())
+			releaseMap.getOrDefault(getId(deviceType, key), () -> {
 			}).run();
 	}
 
@@ -97,18 +105,23 @@ public class InputHandler implements SystemObject {
 		Object gamepadData = data.get("gamepad");
 		if (gamepadData != null)
 			gamepad = YamlHelper.toInt(gamepadData) - 1;
+		Object activeData = data.get("active");
+		if (activeData != null)
+			active = YamlHelper.toBoolean(activeData);
 	}
 
 	public void load(DataInput in) throws IOException {
 		mouse = in.readBoolean();
 		keyboard = in.readBoolean();
 		gamepad = in.readInt();
+		active = in.readBoolean();
 	}
 
 	public void save(DataOutput out) throws IOException {
 		out.writeBoolean(mouse);
 		out.writeBoolean(keyboard);
 		out.writeInt(gamepad);
+		out.writeBoolean(active);
 	}
 
 	final void setEntity(Entity entity) {
@@ -144,110 +157,89 @@ public class InputHandler implements SystemObject {
 		return gamepad;
 	}
 
-	public final void setKey(Key key, Runnable func) {
-		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN)
-			keyboardMap.put(keyboardKey, func);
-
-		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN)
-			keyboardMap.put(keyboardAltKey, func);
-
-		int mouseKey = key.getMouseKey();
-		if (mouseKey != Key.KEY_UNKNOWN)
-			mouseMap.put(mouseKey, func);
-
-		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN)
-			gamepadMap.put(gamepadKey, func);
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
-	@Nullable
-	public final Runnable removeKey(Key key) {
-		Runnable result = null;
-		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN)
-			result = keyboardMap.remove(keyboardKey);
-
-		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN)
-			result = keyboardMap.remove(keyboardAltKey);
-
-		int mouseKey = key.getMouseKey();
-		if (mouseKey != Key.KEY_UNKNOWN)
-			result = mouseMap.remove(mouseKey);
-
-		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN)
-			result = gamepadMap.remove(gamepadKey);
-		return result;
+	public boolean isActive() {
+		return active;
 	}
 
-	@Nullable
-	public final Runnable getKey(InputDevice inputDevice, Key key) {
-		int keyboardKey = key.getKeyboardKey();
-		if (keyboardKey != Key.KEY_UNKNOWN)
-			return keyboardMap.get(keyboardKey);
+	public final void press(Key key, Runnable func) {
+		setKey(pressMap, key, func);
+	}
 
-		int keyboardAltKey = key.getKeyboardAltKey();
-		if (keyboardAltKey != Key.KEY_UNKNOWN)
-			return keyboardMap.get(keyboardAltKey);
+	public final void removePress(Key key) {
+		removeKey(pressMap, key);
+	}
 
-		int mouseKey = key.getMouseKey();
-		if (mouseKey != Key.KEY_UNKNOWN)
-			return mouseMap.get(mouseKey);
+	public final void release(Key key, Runnable func) {
+		setKey(releaseMap, key, func);
+	}
 
-		int gamepadKey = key.getGamepadKey();
-		if (gamepadKey != Key.KEY_UNKNOWN)
-			return gamepadMap.get(gamepadKey);
-		return null;
+	public final void removeRelease(Key key) {
+		removeKey(releaseMap, key);
 	}
 
 	public final void clearKeys() {
-		keyboardMap.clear();
-		mouseMap.clear();
-		gamepadMap.clear();
+		pressMap.clear();
+		releaseMap.clear();
 	}
 
-	public final void setMouseMove(Consumer<Vector2f> mouseMove) {
-		this.mouseMove = mouseMove;
+	public final void setMouseMove(Consumer<Vector2f> func) {
+		this.mouseMove = func;
 	}
 
 	public final Consumer<Vector2f> getMouseMove() {
 		return mouseMove;
 	}
 
-	public final void setMouseScroll(Consumer<Float> mouseScroll) {
-		this.mouseScroll = mouseScroll;
+	public final void setMouseScroll(Consumer<Float> func) {
+		this.mouseScroll = func;
 	}
 
 	public final Consumer<Float> getMouseScroll() {
 		return mouseScroll;
 	}
 
-	public final void setGamepadLeftStickMove(Consumer<Vector2f> gamepadLeftStickMove) {
-		this.gamepadLeftStickMove = gamepadLeftStickMove;
+	public final void setLeftStickMove(Consumer<Vector2f> func) {
+		this.leftStickMove = func;
 	}
 
-	public final Consumer<Vector2f> getGamepadLeftStickMove() {
-		return gamepadLeftStickMove;
+	public final Consumer<Vector2f> getLeftStickMove() {
+		return leftStickMove;
 	}
 
-	public final void setGamepadRightStickMove(Consumer<Vector2f> gamepadRightStickMove) {
-		this.gamepadRightStickMove = gamepadRightStickMove;
+	public final void setRightStickMove(Consumer<Vector2f> func) {
+		this.rightStickMove = func;
 	}
 
-	public final Consumer<Vector2f> getGamepadRightStickMove() {
-		return gamepadRightStickMove;
+	public final Consumer<Vector2f> getRightStickMove() {
+		return rightStickMove;
+	}
+
+	public final void setLeftTriggerMove(Consumer<Float> leftTriggerMove) {
+		this.leftTriggerMove = leftTriggerMove;
+	}
+
+	public final Consumer<Float> getLeftTriggerMove() {
+		return leftTriggerMove;
+	}
+
+	public final void setRightTriggerMove(Consumer<Float> rightTriggerMove) {
+		this.rightTriggerMove = rightTriggerMove;
+	}
+
+	public final Consumer<Float> getRightTriggerMove() {
+		return rightTriggerMove;
 	}
 
 	@Override
 	public InputHandler clone() {
 		try {
 			InputHandler object = (InputHandler) super.clone();
-			object.keyboardMap = new Int2ObjectOpenHashMap<Runnable>(keyboardMap);
-			object.mouseMap = new Int2ObjectOpenHashMap<Runnable>(mouseMap);
-			object.gamepadMap = new Int2ObjectOpenHashMap<Runnable>(gamepadMap);
+			object.pressMap = new Int2ObjectOpenHashMap<Runnable>(pressMap);
+			object.releaseMap = new Int2ObjectOpenHashMap<Runnable>(releaseMap);
 			return object;
 		} catch (CloneNotSupportedException e) {
 			Logger.err("InputHandler: Error on clone!", e);
@@ -258,5 +250,45 @@ public class InputHandler implements SystemObject {
 	@Nullable
 	public static InputHandler get(String name) {
 		return ClassPathRegistry.getInput(name);
+	}
+
+	public static void setKey(Int2ObjectMap<Runnable> map, Key key, Runnable func) {
+		int k = key.getKeyboardKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.put(getId(InputDevice.Type.KEYBOARD, k), func);
+
+		k = key.getKeyboardAltKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.put(getId(InputDevice.Type.KEYBOARD, k), func);
+
+		k = key.getMouseKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.put(getId(InputDevice.Type.MOUSE, k), func);
+
+		k = key.getGamepadKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.put(getId(InputDevice.Type.JOYSTICK, k), func);
+	}
+
+	public static void removeKey(Int2ObjectMap<Runnable> map, Key key) {
+		int k = key.getKeyboardKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.remove(getId(InputDevice.Type.KEYBOARD, k));
+
+		k = key.getKeyboardAltKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.remove(getId(InputDevice.Type.KEYBOARD, k));
+
+		k = key.getMouseKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.remove(getId(InputDevice.Type.MOUSE, k));
+
+		k = key.getGamepadKey();
+		if (k != Key.KEY_UNKNOWN)
+			map.remove(getId(InputDevice.Type.JOYSTICK, k));
+	}
+
+	private static int getId(int deviceType, int key) {
+		return 0x00000000 | deviceType << 24 | key;
 	}
 }

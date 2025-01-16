@@ -100,9 +100,15 @@ public class Input {
 	public static void update() {
 		for (InputDevice device : INPUT_DEVICES) {
 			IntList pressedKeys = device.getPressedKeys();
-			for (int i = pressedKeys.size() - 1; i >= 0; i--)
-				if (!device.isPressedIntern(pressedKeys.getInt(i)))
+			IntList releasedKeys = device.getReleasedKeys();
+			releasedKeys.clear();
+
+			for (int i = pressedKeys.size() - 1; i >= 0; i--) {
+				if (!device.isPressedIntern(pressedKeys.getInt(i))) {
 					pressedKeys.removeInt(i);
+					releasedKeys.add(i);
+				}
+			}
 		}
 		MOUSE.setScroll(0);
 	}
