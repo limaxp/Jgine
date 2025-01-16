@@ -20,46 +20,41 @@ public class UIInputHandler extends InputHandler {
 	public static final Key KEY_UP = new Key(Key.KEY_W, Key.KEY_UP, Key.KEY_UNKNOWN, Key.GAMEPAD_BUTTON_DPAD_UP);
 	public static final Key KEY_DOWN = new Key(Key.KEY_S, Key.KEY_DOWN, Key.KEY_UNKNOWN, Key.GAMEPAD_BUTTON_DPAD_DOWN);
 	public static final Key KEY_ENTER = new Key(Key.KEY_ENTER, Key.KEY_UNKNOWN, Key.MOUSE_BUTTON_LEFT,
-			Key.GAMEPAD_BUTTON_X);
+			Key.GAMEPAD_BUTTON_A);
 
 	private static final List<UIObject> FOCUS_OBJECTS_EMPTY = new IdentityArrayList<UIObject>();
 
 	private List<UIObject> focusObjects = FOCUS_OBJECTS_EMPTY;
 	private UIObject focusObject;
 	private UIObject clickedObject;
-	private int clickedKey;
+	private Vector2f lastMousePos = Vector2f.NULL;
 
 	@Override
 	protected void init(Entity entity) {
 		setMouseMove(this::onMouseMove);
 		setMouseScroll(this::onScroll);
-
-		press(KEY_UP, () -> {
-
-		});
-
-		press(KEY_DOWN, () -> {
-
-		});
-
-		press(KEY_ENTER, () -> {
-
-		});
+		press(KEY_ENTER, this::onClickEnter);
+		release(KEY_ENTER, this::onReleaseEnter);
+		release(KEY_UP, this::onClickUp);
+		release(KEY_DOWN, this::onClickDown);
 	}
 
 	private void onMouseMove(Vector2f cursorPos) {
+		if (lastMousePos.equals(cursorPos))
+			return;
+		lastMousePos = cursorPos;
 		Vector2i windowSize = Input.getWindowSize();
 		float mouseX = cursorPos.x / windowSize.x;
 		float mouseY = 1 - cursorPos.y / windowSize.y;
 
 		focusObject = null;
-		getEntity().forSystems(Engine.UI_SYSTEM, (UIWindow window) -> {
-			if (insideCheck(window, mouseX, mouseY))
+		for (UIWindow window : getEntity().<UIWindow>getSystems(Engine.UI_SYSTEM)) {
+			if (insideCheck(window, mouseX, mouseY)) {
 				focusObject = focusCheck(window, mouseX, mouseY);
-		});
-
+				break;
+			}
+		}
 		focus();
-		clickCheck();
 	}
 
 	private void onScroll(float scroll) {
@@ -67,25 +62,48 @@ public class UIInputHandler extends InputHandler {
 			focusObject.onScroll(scroll);
 	}
 
-	private void clickCheck() {
-		if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_LEFT))
-			click(focusObject, Key.MOUSE_BUTTON_LEFT);
-		else if (Input.getMouse().isKeyPressed(Key.MOUSE_BUTTON_RIGHT))
-			click(focusObject, Key.MOUSE_BUTTON_RIGHT);
-		else if (clickedObject != null) {
-			clickedObject.onRelease(clickedKey);
-			clickedObject = null;
-		}
+	private void onClickEnter() {
+		if (focusObject == null)
+			return;
+		focusObject.onClick(Key.KEY_ENTER); // TODO
+		clickedObject = focusObject;
+		UIWindow window = focusObject instanceof UIWindow ? (UIWindow) focusObject : focusObject.getWindow();
+		window.getScene().setTopWindow(focusObject);
 	}
 
-	private void click(UIObject focusObject, int key) {
-		if (clickedObject != null || focusObject == null)
+	private void onReleaseEnter() {
+		if (focusObject == null)
 			return;
+		clickedObject.onRelease(Key.KEY_ENTER); // TODO
+		clickedObject = null;
+	}
 
-		focusObject.onClick(key);
-		clickedObject = focusObject;
-		clickedKey = key;
-		focusObject.getWindow().getScene().setTopWindow(focusObject);
+	private void onClickUp() {
+		if (focusObject == null)
+			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
+		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;
+		int index = parent.getChilds().indexOf(focusObject);
+		if (index <= 0)
+			index = parent.getChilds().size() - 1;
+		else
+			index--;
+
+		focusObject = parent.getChilds().get(index);
+		focus();
+	}
+
+	private void onClickDown() {
+		if (focusObject == null)
+			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
+		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;
+		int index = parent.getChilds().indexOf(focusObject);
+		if (index < 0 || index == parent.getChilds().size() - 1)
+			index = 0;
+		else
+			index++;
+
+		focusObject = parent.getChilds().get(index);
+		focus();
 	}
 
 	private void focus() {
@@ -109,16 +127,16 @@ public class UIInputHandler extends InputHandler {
 		focusObjectsNew.add(focusObject);
 		UIScene.addTopWindows(focusObjectsNew, focusObject);
 		for (UIObject uiObject : focusObjectsNew) {
-			if (!focusObjects.contains(uiObject)) {
-				uiObject.isFocused = true;
-				uiObject.onFocus();
-			}
+			if (focusObjects.contains(uiObject))
+				continue;
+			uiObject.isFocused = true;
+			uiObject.onFocus();
 		}
 		for (UIObject uiObject : focusObjects) {
-			if (!focusObjectsNew.contains(uiObject)) {
-				uiObject.isFocused = false;
-				uiObject.onDefocus();
-			}
+			if (focusObjectsNew.contains(uiObject))
+				continue;
+			uiObject.isFocused = false;
+			uiObject.onDefocus();
 		}
 		focusObjects = focusObjectsNew;
 	}
