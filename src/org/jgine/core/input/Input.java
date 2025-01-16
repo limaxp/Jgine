@@ -104,9 +104,10 @@ public class Input {
 			releasedKeys.clear();
 
 			for (int i = pressedKeys.size() - 1; i >= 0; i--) {
-				if (!device.isPressedIntern(pressedKeys.getInt(i))) {
+				int key = pressedKeys.getInt(i);
+				if (!device.isPressedIntern(key)) {
 					pressedKeys.removeInt(i);
-					releasedKeys.add(i);
+					releasedKeys.add(key);
 				}
 			}
 		}
