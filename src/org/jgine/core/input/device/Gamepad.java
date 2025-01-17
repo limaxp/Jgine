@@ -44,12 +44,10 @@ public class Gamepad extends Joystick {
 
 	private void check(int key) {
 		boolean isPressed = isPressedIntern(key);
-		if (gamepadState.buttons(key) == 1)
-			if (isPressed)
-				repeat(key);
-			else
+		if (gamepadState.buttons(key) == 1) {
+			if (!isPressed)
 				press(key);
-		else if (isPressed)
+		} else if (isPressed)
 			release(key);
 	}
 

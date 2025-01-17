@@ -15,8 +15,6 @@ public class Keyboard extends InputDevice {
 
 	@Override
 	public void poll() {
-		for (int pressedKey : getPressedKeys())
-			repeat(pressedKey);
 	}
 
 	@Override
@@ -45,7 +43,7 @@ public class Keyboard extends InputDevice {
 	public String getName() {
 		return "keyboard";
 	}
-	
+
 	@Override
 	public int getType() {
 		return Type.KEYBOARD;

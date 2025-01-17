@@ -35,8 +35,8 @@ public class UIInputHandler extends InputHandler {
 		setMouseScroll(this::onScroll);
 		press(KEY_ENTER, this::onClickEnter);
 		release(KEY_ENTER, this::onReleaseEnter);
-		release(KEY_UP, this::onClickUp);
-		release(KEY_DOWN, this::onClickDown);
+		press(KEY_UP, this::onClickUp);
+		press(KEY_DOWN, this::onClickDown);
 	}
 
 	private void onMouseMove(Vector2f cursorPos) {
@@ -79,6 +79,9 @@ public class UIInputHandler extends InputHandler {
 	}
 
 	private void onClickUp(int time) {
+		if (time != 1 && time % 10 != 0)
+			return;
+
 		if (focusObject == null)
 			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
 		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;
@@ -93,6 +96,9 @@ public class UIInputHandler extends InputHandler {
 	}
 
 	private void onClickDown(int time) {
+		if (time != 1 && time % 10 != 0)
+			return;
+
 		if (focusObject == null)
 			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
 		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;

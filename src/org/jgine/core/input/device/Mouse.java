@@ -17,8 +17,6 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public void poll() {
-		for (int pressedKey : getPressedKeys())
-			repeat(pressedKey);
 	}
 
 	@Override

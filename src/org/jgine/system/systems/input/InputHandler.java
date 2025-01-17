@@ -157,11 +157,11 @@ public class InputHandler implements SystemObject {
 		return gamepad;
 	}
 
-	public void setActive(boolean active) {
+	public final void setActive(boolean active) {
 		this.active = active;
 	}
 
-	public boolean isActive() {
+	public final boolean isActive() {
 		return active;
 	}
 

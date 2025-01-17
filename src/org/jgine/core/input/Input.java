@@ -108,7 +108,8 @@ public class Input {
 				if (!device.isPressedIntern(key)) {
 					pressedKeys.removeInt(i);
 					releasedKeys.add(key);
-				}
+				} else
+					device.tick(key);
 			}
 		}
 		MOUSE.setScroll(0);
