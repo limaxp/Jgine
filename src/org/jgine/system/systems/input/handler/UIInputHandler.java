@@ -33,10 +33,10 @@ public class UIInputHandler extends InputHandler {
 	protected void init(Entity entity) {
 		setMouseMove(this::onMouseMove);
 		setMouseScroll(this::onScroll);
-		press(KEY_ENTER, this::onClickEnter);
-		release(KEY_ENTER, this::onReleaseEnter);
 		press(KEY_UP, this::onClickUp);
 		press(KEY_DOWN, this::onClickDown);
+		press(KEY_ENTER, (time) -> onClickKey(time, Key.KEY_ENTER)); // TODO pass real key!
+		release(KEY_ENTER, (time) -> onReleaseKey(time, Key.KEY_ENTER)); // TODO pass real key!
 	}
 
 	private void onMouseMove(Vector2f cursorPos) {
@@ -62,19 +62,19 @@ public class UIInputHandler extends InputHandler {
 			focusObject.onScroll(scroll);
 	}
 
-	private void onClickEnter(int time) {
-		if (focusObject == null)
+	private void onClickKey(int time, int key) {
+		if (time != 1 || focusObject == null)
 			return;
-		focusObject.onClick(Key.KEY_ENTER); // TODO
+		focusObject.onClick(key);
 		clickedObject = focusObject;
 		UIWindow window = focusObject instanceof UIWindow ? (UIWindow) focusObject : focusObject.getWindow();
 		window.getScene().setTopWindow(focusObject);
 	}
 
-	private void onReleaseEnter(int time) {
+	private void onReleaseKey(int time, int key) {
 		if (focusObject == null)
 			return;
-		clickedObject.onRelease(Key.KEY_ENTER); // TODO
+		clickedObject.onRelease(key);
 		clickedObject = null;
 	}
 
