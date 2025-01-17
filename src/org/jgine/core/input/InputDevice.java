@@ -50,7 +50,7 @@ public abstract class InputDevice {
 	}
 
 	protected final void release(int key) {
-		keytimes[key] = -keytimes[key];
+		keytimes[key] = -keytimes[key] - 1;
 	}
 
 	protected final void repeat(int key) {
@@ -70,7 +70,7 @@ public abstract class InputDevice {
 	}
 
 	public final int getTimePressed(int key) {
-		return FastMath.abs(keytimes[key]);
+		return FastMath.abs(keytimes[key]) - 1;
 	}
 
 	public boolean isJoystick() {
