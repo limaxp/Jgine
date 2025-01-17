@@ -62,7 +62,7 @@ public class UIInputHandler extends InputHandler {
 			focusObject.onScroll(scroll);
 	}
 
-	private void onClickEnter() {
+	private void onClickEnter(int time) {
 		if (focusObject == null)
 			return;
 		focusObject.onClick(Key.KEY_ENTER); // TODO
@@ -71,14 +71,14 @@ public class UIInputHandler extends InputHandler {
 		window.getScene().setTopWindow(focusObject);
 	}
 
-	private void onReleaseEnter() {
+	private void onReleaseEnter(int time) {
 		if (focusObject == null)
 			return;
 		clickedObject.onRelease(Key.KEY_ENTER); // TODO
 		clickedObject = null;
 	}
 
-	private void onClickUp() {
+	private void onClickUp(int time) {
 		if (focusObject == null)
 			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
 		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;
@@ -92,7 +92,7 @@ public class UIInputHandler extends InputHandler {
 		focus();
 	}
 
-	private void onClickDown() {
+	private void onClickDown(int time) {
 		if (focusObject == null)
 			focusObject = getEntity().getSystem(Engine.UI_SYSTEM);
 		UICompound parent = focusObject.hasParent() ? focusObject.getParent() : (UICompound) focusObject;

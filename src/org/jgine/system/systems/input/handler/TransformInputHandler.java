@@ -66,17 +66,17 @@ public class TransformInputHandler extends InputHandler {
 		});
 
 		press(KEY_MOVE_FORWARD,
-				() -> physicObject.accelerate(Vector3f.mult(transform.getLocalRotation(), MOVEMENT_SPEED)));
+				(time) -> physicObject.accelerate(Vector3f.mult(transform.getLocalRotation(), MOVEMENT_SPEED)));
 		press(KEY_MOVE_BACK,
-				() -> physicObject.accelerate(Vector3f.mult(transform.getLocalRotation(), -MOVEMENT_SPEED)));
-		press(KEY_MOVE_LEFT, () -> physicObject
+				(time) -> physicObject.accelerate(Vector3f.mult(transform.getLocalRotation(), -MOVEMENT_SPEED)));
+		press(KEY_MOVE_LEFT, (time) -> physicObject
 				.accelerate(Vector3f.mult(Vector3f.getLeft(transform.getLocalRotation()), MOVEMENT_SPEED)));
-		press(KEY_MOVE_RIGHT, () -> physicObject
+		press(KEY_MOVE_RIGHT, (time) -> physicObject
 				.accelerate(Vector3f.mult(Vector3f.getRight(transform.getLocalRotation()), MOVEMENT_SPEED)));
-		press(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
-		press(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
-		press(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		press(KEY_FULLSCREEN, () -> {
+		press(KEY_MOVE_UP, (time) -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
+		press(KEY_MOVE_DOWN, (time) -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
+		press(KEY_CLOSE_GAME, (time) -> Engine.getInstance().shutdown());
+		press(KEY_FULLSCREEN, (time) -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
 				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);

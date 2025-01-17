@@ -44,17 +44,17 @@ public class TransformInputHandler2D extends InputHandler {
 				physicObject.accelerate(Vector3f.mult(Vector2f.UP, MOVEMENT_SPEED));
 		});
 
-		press(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		press(KEY_FULLSCREEN, () -> {
+		press(KEY_CLOSE_GAME, (time) -> Engine.getInstance().shutdown());
+		press(KEY_FULLSCREEN, (time) -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
 				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);
 			}
 		});
 
-		press(KEY_MOVE_UP, () -> physicObject.accelerate(Vector2f.mult(Vector2f.UP, MOVEMENT_SPEED)));
-		press(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector2f.mult(Vector2f.DOWN, MOVEMENT_SPEED)));
-		press(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector2f.mult(Vector2f.LEFT, MOVEMENT_SPEED)));
-		press(KEY_MOVE_RIGHT, () -> physicObject.accelerate(Vector2f.mult(Vector2f.RIGHT, MOVEMENT_SPEED)));
+		press(KEY_MOVE_UP, (time) -> physicObject.accelerate(Vector2f.mult(Vector2f.UP, MOVEMENT_SPEED)));
+		press(KEY_MOVE_DOWN, (time) -> physicObject.accelerate(Vector2f.mult(Vector2f.DOWN, MOVEMENT_SPEED)));
+		press(KEY_MOVE_LEFT, (time) -> physicObject.accelerate(Vector2f.mult(Vector2f.LEFT, MOVEMENT_SPEED)));
+		press(KEY_MOVE_RIGHT, (time) -> physicObject.accelerate(Vector2f.mult(Vector2f.RIGHT, MOVEMENT_SPEED)));
 	}
 }

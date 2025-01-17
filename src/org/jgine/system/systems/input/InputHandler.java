@@ -29,8 +29,8 @@ public class InputHandler implements SystemObject {
 	private boolean keyboard;
 	private int gamepad;
 	private boolean active;
-	private Int2ObjectMap<Runnable> pressMap;
-	private Int2ObjectMap<Runnable> releaseMap;
+	private Int2ObjectMap<Consumer<Integer>> pressMap;
+	private Int2ObjectMap<Consumer<Integer>> releaseMap;
 
 	private Consumer<Vector2f> mouseMove = (pos) -> {
 	};
@@ -50,8 +50,8 @@ public class InputHandler implements SystemObject {
 		keyboard = true;
 		gamepad = 0;
 		active = true;
-		pressMap = new Int2ObjectOpenHashMap<Runnable>();
-		releaseMap = new Int2ObjectOpenHashMap<Runnable>();
+		pressMap = new Int2ObjectOpenHashMap<Consumer<Integer>>();
+		releaseMap = new Int2ObjectOpenHashMap<Consumer<Integer>>();
 	}
 
 	protected void init(Entity entity) {
@@ -87,12 +87,12 @@ public class InputHandler implements SystemObject {
 	protected void checkKeys(InputDevice inputDevice) {
 		int deviceType = inputDevice.getType();
 		for (int key : inputDevice.getPressedKeys())
-			pressMap.getOrDefault(getId(deviceType, key), () -> {
-			}).run();
+			pressMap.getOrDefault(getId(deviceType, key), (time) -> {
+			}).accept(inputDevice.getTimePressed(key));
 
 		for (int key : inputDevice.getReleasedKeys())
-			releaseMap.getOrDefault(getId(deviceType, key), () -> {
-			}).run();
+			releaseMap.getOrDefault(getId(deviceType, key), (time) -> {
+			}).accept(inputDevice.getTimePressed(key));
 	}
 
 	public void load(Map<String, Object> data) {
@@ -165,7 +165,7 @@ public class InputHandler implements SystemObject {
 		return active;
 	}
 
-	public final void press(Key key, Runnable func) {
+	public final void press(Key key, Consumer<Integer> func) {
 		setKey(pressMap, key, func);
 	}
 
@@ -173,7 +173,7 @@ public class InputHandler implements SystemObject {
 		removeKey(pressMap, key);
 	}
 
-	public final void release(Key key, Runnable func) {
+	public final void release(Key key, Consumer<Integer> func) {
 		setKey(releaseMap, key, func);
 	}
 
@@ -238,8 +238,8 @@ public class InputHandler implements SystemObject {
 	public InputHandler clone() {
 		try {
 			InputHandler object = (InputHandler) super.clone();
-			object.pressMap = new Int2ObjectOpenHashMap<Runnable>(pressMap);
-			object.releaseMap = new Int2ObjectOpenHashMap<Runnable>(releaseMap);
+			object.pressMap = new Int2ObjectOpenHashMap<Consumer<Integer>>(pressMap);
+			object.releaseMap = new Int2ObjectOpenHashMap<Consumer<Integer>>(releaseMap);
 			return object;
 		} catch (CloneNotSupportedException e) {
 			Logger.err("InputHandler: Error on clone!", e);
@@ -252,7 +252,7 @@ public class InputHandler implements SystemObject {
 		return ClassPathRegistry.getInput(name);
 	}
 
-	public static void setKey(Int2ObjectMap<Runnable> map, Key key, Runnable func) {
+	public static void setKey(Int2ObjectMap<Consumer<Integer>> map, Key key, Consumer<Integer> func) {
 		int k = key.getKeyboardKey();
 		if (k != Key.KEY_UNKNOWN)
 			map.put(getId(InputDevice.Type.KEYBOARD, k), func);
@@ -270,7 +270,7 @@ public class InputHandler implements SystemObject {
 			map.put(getId(InputDevice.Type.JOYSTICK, k), func);
 	}
 
-	public static void removeKey(Int2ObjectMap<Runnable> map, Key key) {
+	public static void removeKey(Int2ObjectMap<Consumer<Integer>> map, Key key) {
 		int k = key.getKeyboardKey();
 		if (k != Key.KEY_UNKNOWN)
 			map.remove(getId(InputDevice.Type.KEYBOARD, k));
