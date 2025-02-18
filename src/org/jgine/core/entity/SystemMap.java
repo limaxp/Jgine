@@ -70,11 +70,7 @@ public class SystemMap {
 			int systemSize = size(id) + 1;
 			for (int i = 1; i < systemSize; i++) {
 				if (ids[i] == objectId) {
-					if (i != systemSize)
-						ids[i] = ids[systemSize];
-					ids[systemSize] = -1;
-					setSize(id, systemSize - 2);
-					size--;
+					remove(ids, i);
 					return true;
 				}
 			}
@@ -90,12 +86,21 @@ public class SystemMap {
 			for (int i = 1; i < systemSize; i++) {
 				if (systemScene.getObject(ids[i]) == object) {
 					int result = ids[i];
-					ids[i] = -1;
+					remove(ids, i);
 					return result;
 				}
 			}
 			return -1;
 		}
+	}
+
+	private void remove(int[] ids, int index) {
+		int systemSize = ids[0];
+		if (index != systemSize)
+			ids[index] = ids[systemSize];
+		ids[systemSize] = -1;
+		ids[0] = systemSize - 1;
+		size--;
 	}
 
 	public void remove(int id) {
