@@ -5,13 +5,11 @@ import static org.lwjgl.system.MemoryUtil.memCopy;
 
 import java.nio.ByteBuffer;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.utils.memory.ByteLayout;
 import org.jgine.utils.memory.NativeResource;
 import org.jgine.utils.memory.Struct;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.NativeType;
-import org.lwjgl.system.StructBuffer;
 
 /**
  * Represents a physic object with position.

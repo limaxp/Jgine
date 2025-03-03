@@ -15,10 +15,10 @@ public class OptionKey extends Key {
 	private static final List<OptionKey> OPTION_KEY_LIST = new ArrayList<OptionKey>();
 
 	public final String name;
-	private Option keyboardOption;
-	private Option keyboardAltOption;
-	private Option mouseOption;
-	private Option gamepadOption;
+	private Option<Integer> keyboardOption;
+	private Option<Integer> keyboardAltOption;
+	private Option<Integer> mouseOption;
+	private Option<Integer> gamepadOption;
 
 	public OptionKey(String name, int keyboardKey, int keyboardAltKey, int mouseKey, int gamepadKey) {
 		this.name = name;
@@ -30,7 +30,6 @@ public class OptionKey extends Key {
 		this.keyboardAltKey = keyboardAltOption.getInt();
 		this.mouseKey = mouseOption.getInt();
 		this.gamepadKey = gamepadOption.getInt();
-		OPTION_KEY_LIST.add(this);
 	}
 
 	@Override
@@ -57,7 +56,7 @@ public class OptionKey extends Key {
 		gamepadOption.setValue(key);
 	}
 
-	public static List<OptionKey> getList() {
+	public static List<OptionKey> values() {
 		return Collections.unmodifiableList(OPTION_KEY_LIST);
 	}
 }

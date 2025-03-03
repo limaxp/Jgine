@@ -21,10 +21,9 @@ import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * A blueprint for a {@link Entity}. Stores info about name, id,
- * {@link Transform}, {@link EntityTag}, used
- * {@link EngineSystems}<code>s</code> and child prefabs. Also contains a
- * Map<Object, Object> to store any extra data. Use create() methods to build a
- * {@link Entity}.
+ * {@link Transform}, {@link EntityTag}, used {@link EngineSystem}<code>s</code>
+ * and child prefabs. Also contains a Map<Object, Object> to store any extra
+ * data. Use create() methods to build a {@link Entity}.
  * <p>
  * Prefabs are usually written as YAML files with the .prefab extension and
  * loaded with the {@link ResourceManager}. The prefab name becomes the file
@@ -50,24 +49,9 @@ data:
   dataName2: data
   ...:
 transform:
-  position: xyzValue
   position: [x, y, z]
-  position:
-    x: xValue
-    y: yValue
-    z: zValue
-  rotation: xyzValue
   rotation: [x, y, z]
-  rotation:
-    x: xValue
-    y: yValue
-    z: zValue
-  scale: xyzValue
-  scale: [x, y, z]
-  scale:
-    x: xValue
-    y: yValue
-    z: zValue
+  scale: [x, y, z] OR xyzValue
 systems:
   systemName1:
     systemData

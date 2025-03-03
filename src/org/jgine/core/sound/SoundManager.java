@@ -80,7 +80,7 @@ import org.lwjgl.system.MemoryUtil;
 public class SoundManager {
 
 	private static SoundDevice device;
-	static final List<SoundSource> SOURCES = new UnorderedIdentityArrayList<SoundSource>();
+	static final List<SoundSource> SOURCES = new UnorderedIdentityArrayList<SoundSource>(1024);
 	private static final SoundListener listener = new SoundListener();
 
 	public static void init() {

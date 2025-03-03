@@ -15,9 +15,8 @@ import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 public class PrefabManager {
 
 	private static final List<Prefab> LIST = new UnorderedIdentityArrayList<Prefab>();
-	private static final List<Prefab> LIST_VIEW = Collections.unmodifiableList(LIST);
-	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>();
-	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>();
+	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>(10000);
+	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>(10000);
 
 	public static void register(Prefab prefab) {
 		LIST.add(prefab);
@@ -47,7 +46,7 @@ public class PrefabManager {
 	}
 
 	public static List<Prefab> values() {
-		return LIST_VIEW;
+		return Collections.unmodifiableList(LIST);
 	}
 
 	public static void clear() {

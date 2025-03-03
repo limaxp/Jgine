@@ -8,9 +8,6 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 import org.jgine.utils.memory.NativeResource;
-import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.system.Struct;
-import org.lwjgl.system.StructBuffer;
 
 public abstract class StructSystemScene<S extends EngineSystem<S, O>, O extends /** Struct & **/
 SystemObject> extends SystemScene<S, O> implements NativeResource {

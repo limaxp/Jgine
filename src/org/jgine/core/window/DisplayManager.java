@@ -30,7 +30,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 public class DisplayManager {
 
 	private static final List<Display> DISPLAYS = new ArrayList<Display>();
-	private static final List<Display> VIEW_LIST = Collections.unmodifiableList(DISPLAYS);
 
 	public static void init() {
 		initGLFW();
@@ -81,7 +80,7 @@ public class DisplayManager {
 	}
 
 	public static List<Display> getDisplays() {
-		return VIEW_LIST;
+		return Collections.unmodifiableList(DISPLAYS);
 	}
 
 	@Nullable

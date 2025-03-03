@@ -10,7 +10,6 @@ import static org.lwjgl.glfw.GLFW.glfwUpdateGamepadMappings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import org.jgine.core.input.device.Keyboard;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.core.window.Window;
 import org.jgine.utils.FileUtils;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
@@ -42,7 +42,7 @@ public class Input {
 	private static final Joystick[] JOYSTICKS;
 
 	static {
-		INPUT_DEVICES = new ArrayList<InputDevice>();
+		INPUT_DEVICES = new IdentityArrayList<InputDevice>(Joystick.Slot.GAMEPAD_SIZE + 2);
 		INPUT_DEVICES.add(MOUSE = new Mouse());
 		INPUT_DEVICES.add(KEYBOARD = new Keyboard());
 

@@ -36,7 +36,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 		if (size == bufferSize)
 			ensureCapacity(size + 1);
 		int index = size++;
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
+//		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 //		MemoryHelper.copyArray(object, address, objectSize);
 //		entity.system = new SystemObjectPointer<T2>(object);
 		return index;
@@ -58,7 +58,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 
 	@Override
 	public O getObject(int index) {
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
+//		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
 //		return new Pointer<T2>().address(address).data;
 		return null;
 	}

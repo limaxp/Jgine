@@ -188,7 +188,7 @@ public class MeshGenerator {
 			IntBuffer pCodePoint = stack.mallocInt(1);
 			FloatBuffer x = stack.floats(0.0f);
 			FloatBuffer y = stack.floats(0.0f);
-			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
+			STBTTAlignedQuad q = STBTTAlignedQuad.malloc(stack);
 
 			Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
 			float factorX = 1.0f / contentScale.x;

@@ -84,7 +84,7 @@ public class PrefabLoader {
 		if (systemData instanceof Map) {
 			for (Entry<String, Object> entry : ((Map<String, Object>) systemData).entrySet()) {
 				String name = entry.getKey();
-				EngineSystem system = EngineSystem.get(name);
+				EngineSystem<?, ?> system = EngineSystem.get(name);
 				Object entryData = entry.getValue();
 				if (entryData instanceof Map) {
 					Map<String, Object> entryMap = (Map<String, Object>) entryData;
