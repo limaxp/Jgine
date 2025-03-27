@@ -11,22 +11,14 @@ public abstract class TransformListSystemScene<S extends EngineSystem<S, O>, O e
 
 	protected Transform[] transforms;
 
-	public TransformListSystemScene(S system, Scene scene, Class<O> clazz) {
-		super(system, scene, clazz);
-		transforms = new Transform[ListSystemScene.INITAL_SIZE];
+	public TransformListSystemScene(S system, Scene scene, Class<O> clazz, int size) {
+		super(system, scene, clazz, size);
+		transforms = new Transform[size];
 	}
 
 	@Override
 	public void relink(int index, Entity entity) {
 		transforms[index] = entity.transform;
-	}
-
-	@Override
-	protected final void resize(int size) {
-		super.resize(size);
-		Transform[] newArray2 = new Transform[size];
-		System.arraycopy(transforms, 0, newArray2, 0, getSize());
-		transforms = newArray2;
 	}
 
 	@Override

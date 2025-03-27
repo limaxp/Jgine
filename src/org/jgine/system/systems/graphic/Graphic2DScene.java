@@ -20,7 +20,7 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	private final FrustumCulling2D frustumCulling = new FrustumCulling2D();
 
 	public Graphic2DScene(Graphic2DSystem system, Scene scene) {
-		super(system, scene, Material.class);
+		super(system, scene, Material.class, 100000);
 	}
 
 	@Override
@@ -55,7 +55,6 @@ public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Ma
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			Material object = new Material();
 			object.load(in);

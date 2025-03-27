@@ -35,7 +35,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	}
 
 	public CollisionScene(CollisionSystem system, Scene scene) {
-		super(system, scene, Collider.class);
+		super(system, scene, Collider.class, 100000);
 	}
 
 	@Override
@@ -51,9 +51,7 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 
 	@Override
 	public void update(UpdateTask update) {
-		synchronized (objects) {
-			updateStep(update, 0);
-		}
+		updateStep(update, 0);
 	}
 
 	private void updateStep(UpdateTask update, int subStep) {
@@ -80,7 +78,6 @@ public class CollisionScene extends EntityListSystemScene<CollisionSystem, Colli
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			Collider object = ColliderTypes.get(in.readInt()).get();
 			object.load(in);

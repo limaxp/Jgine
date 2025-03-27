@@ -26,7 +26,7 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	private float dt;
 
 	public PhysicScene(PhysicSystem system, Scene scene) {
-		super(system, scene, PhysicObject.class);
+		super(system, scene, PhysicObject.class, 100000);
 		this.gravity = system.getGravity();
 		this.airResistanceFactor = system.getAirResistanceFactor();
 	}
@@ -44,15 +44,12 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	@Override
 	public void update(UpdateTask update) {
 		this.dt = update.dt;
-		synchronized (objects) {
-			Job.region(size, this::updatePosition, () -> update.finish(system));
-		}
+		Job.region(size, this::updatePosition, () -> update.finish(system));
 	}
 
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			PhysicObject object = new PhysicObject();
 			object.load(in);

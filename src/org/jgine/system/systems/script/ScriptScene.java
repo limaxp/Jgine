@@ -16,15 +16,13 @@ import org.jgine.utils.loader.ResourceManager;
 public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObject> {
 
 	public ScriptScene(ScriptSystem system, Scene scene) {
-		super(system, scene, AbstractScriptObject.class);
+		super(system, scene, AbstractScriptObject.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].getInterface().onDisable();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].getInterface().onDisable();
 	}
 
 	@Override
@@ -42,10 +40,8 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 
 	@Override
 	public void update(UpdateTask update) {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].getInterface().update();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].getInterface().update();
 		update.finish(system);
 	}
 
@@ -62,7 +58,6 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			String scriptName = in.readUTF();
 			ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);

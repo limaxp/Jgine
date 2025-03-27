@@ -11,22 +11,14 @@ public abstract class EntityListSystemScene<S extends EngineSystem<S, O>, O exte
 
 	protected Entity[] entities;
 
-	public EntityListSystemScene(S system, Scene scene, Class<O> clazz) {
-		super(system, scene, clazz);
-		entities = new Entity[ListSystemScene.INITAL_SIZE];
+	public EntityListSystemScene(S system, Scene scene, Class<O> clazz, int size) {
+		super(system, scene, clazz, size);
+		entities = new Entity[size];
 	}
 
 	@Override
 	public void relink(int index, Entity entity) {
 		entities[index] = entity;
-	}
-
-	@Override
-	protected void resize(int size) {
-		super.resize(size);
-		Entity[] newArray2 = new Entity[size];
-		System.arraycopy(entities, 0, newArray2, 0, getSize());
-		entities = newArray2;
 	}
 
 	@Override

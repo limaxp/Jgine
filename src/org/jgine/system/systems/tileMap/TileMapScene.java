@@ -15,15 +15,13 @@ import org.jgine.system.data.ListSystemScene;
 public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 
 	public TileMapScene(TileMapSystem system, Scene scene) {
-		super(system, scene, TileMap.class);
+		super(system, scene, TileMap.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].close();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].close();
 	}
 
 	@Override
@@ -58,7 +56,6 @@ public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			TileMap object = new TileMap();
 			object.load(in);

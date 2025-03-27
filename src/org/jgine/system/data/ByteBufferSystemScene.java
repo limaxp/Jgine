@@ -22,7 +22,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	public ByteBufferSystemScene(S system, Scene scene, Class<O> clazz) {
 		super(system, scene);
 //		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
-		bufferSize = ListSystemScene.INITAL_SIZE;
+//		bufferSize = ListSystemScene.INITAL_SIZE;
 		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
 	}
 

@@ -12,15 +12,13 @@ import org.jgine.system.data.ListSystemScene;
 public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	public CameraScene(CameraSystem system, Scene scene) {
-		super(system, scene, Camera.class);
+		super(system, scene, Camera.class, 32);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				system.unregisterCamera(objects[i]);
-		}
+		for (int i = 0; i < size; i++)
+			system.unregisterCamera(objects[i]);
 	}
 
 	@Override
@@ -51,7 +49,6 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			Camera object = new Camera();
 			object.load(in);

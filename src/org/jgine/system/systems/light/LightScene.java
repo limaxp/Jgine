@@ -22,7 +22,7 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	private DirectionalLight directionalLight;
 
 	public LightScene(LightSystem system, Scene scene) {
-		super(system, scene, Light.class);
+		super(system, scene, Light.class, 10000);
 		ambientLight = Color.BLACK;
 		pointLights = new UnorderedArrayList<PointLight>(PhongShader.MAX_POINT_LIGHTS);
 		directionalLight = new DirectionalLight();
@@ -54,7 +54,6 @@ public class LightScene extends EntityListSystemScene<LightSystem, Light> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			Light object = LightTypes.get(in.readInt()).get();
 			object.load(in);

@@ -15,15 +15,13 @@ import org.jgine.system.data.ListSystemScene;
 public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 
 	public UIScene(UISystem system, Scene scene) {
-		super(system, scene, UIWindow.class);
+		super(system, scene, UIWindow.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].free();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].free();
 	}
 
 	@Override
@@ -84,7 +82,6 @@ public class UIScene extends ListSystemScene<UISystem, UIWindow> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			UIWindow object = new UIWindow();
 			object.load(in);

@@ -13,15 +13,13 @@ import org.jgine.system.data.ListSystemScene;
 public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	public AiScene(AiSystem system, Scene scene) {
-		super(system, scene, AiObject.class);
+		super(system, scene, AiObject.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].free();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].free();
 	}
 
 	@Override
@@ -38,10 +36,8 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void update(UpdateTask update) {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].update(update.dt);
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].update(update.dt);
 		update.finish(system);
 	}
 
@@ -58,7 +54,6 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			AiObject object = new AiObject();
 			object.load(in);

@@ -17,7 +17,7 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	private final FrustumCulling frustumCulling = new FrustumCulling();
 
 	public GraphicScene(GraphicSystem system, Scene scene) {
-		super(system, scene, GraphicObject.class);
+		super(system, scene, GraphicObject.class, 100000);
 	}
 
 	@Override
@@ -45,7 +45,6 @@ public class GraphicScene extends TransformListSystemScene<GraphicSystem, Graphi
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			GraphicObject object = new GraphicObject();
 			object.model = ResourceManager.getModel(in.readUTF());

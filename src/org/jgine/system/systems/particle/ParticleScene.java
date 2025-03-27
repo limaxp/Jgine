@@ -13,15 +13,13 @@ import org.jgine.system.data.ListSystemScene;
 public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
-		super(system, scene, Particle.class);
+		super(system, scene, Particle.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].close();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].close();
 	}
 
 	@Override
@@ -70,7 +68,6 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			Particle object = new Particle();
 			object.load(in);

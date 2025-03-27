@@ -11,53 +11,43 @@ import org.jgine.system.SystemScene;
 
 public abstract class ListSystemScene<S extends EngineSystem<S, O>, O extends SystemObject> extends SystemScene<S, O> {
 
-	public static final int INITAL_SIZE = 1024;
-
-	protected Class<O> clazz;
 	protected O[] objects;
 	protected int size;
 
 	@SuppressWarnings("unchecked")
-	public ListSystemScene(S system, Scene scene, Class<O> clazz) {
+	public ListSystemScene(S system, Scene scene, Class<O> clazz, int size) {
 		super(system, scene);
-		this.clazz = clazz;
-		objects = (O[]) Array.newInstance(clazz, INITAL_SIZE);
+		objects = (O[]) Array.newInstance(clazz, size);
 	}
 
 	@Override
 	public int addObject(Entity entity, O object) {
-		synchronized (objects) {
-			if (size == objects.length)
-				ensureCapacity(size + 1);
-			int index = size++;
-			objects[index] = object;
-			relink(index, entity);
-			return index;
-		}
+		if (size == objects.length)
+			return -1;
+		int index = size++;
+		objects[index] = object;
+		relink(index, entity);
+		return index;
 	}
 
 	@Override
 	public O removeObject(int index) {
-		synchronized (objects) {
-			O element = objects[index];
-			if (index != --size) {
-				O last = objects[size];
-				Entity lastEntity = getEntity(size);
-				objects[index] = last;
-				relink(index, lastEntity);
-				lastEntity.setSystemId(this, size, index);
-			}
-			objects[size] = null;
-			return element;
+		O element = objects[index];
+		if (index != --size) {
+			O last = objects[size];
+			Entity lastEntity = getEntity(size);
+			objects[index] = last;
+			relink(index, lastEntity);
+			lastEntity.setSystemId(this, size, index);
 		}
+		objects[size] = null;
+		return element;
 	}
 
 	@Override
 	public void forEach(Consumer<O> func) {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				func.accept(objects[i]);
-		}
+		for (int i = 0; i < size; i++)
+			func.accept(objects[i]);
 	}
 
 	@Override
@@ -72,18 +62,5 @@ public abstract class ListSystemScene<S extends EngineSystem<S, O>, O extends Sy
 	@Override
 	public int getSize() {
 		return size;
-	}
-
-	protected void ensureCapacity(int minCapacity) {
-		int length = objects.length;
-		if (minCapacity > length)
-			resize(minCapacity * 2);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected void resize(int size) {
-		O[] newArray = (O[]) Array.newInstance(clazz, size);
-		System.arraycopy(objects, 0, newArray, 0, this.size);
-		objects = newArray;
 	}
 }

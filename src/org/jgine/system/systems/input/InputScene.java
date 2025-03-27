@@ -13,7 +13,7 @@ import org.jgine.system.data.ListSystemScene;
 public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 
 	public InputScene(InputSystem system, Scene scene) {
-		super(system, scene, InputHandler.class);
+		super(system, scene, InputHandler.class, 10000);
 	}
 
 	@Override
@@ -27,10 +27,8 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 
 	@Override
 	public void update(UpdateTask update) {
-		synchronized (objects) {
-			for (int i = 0; i < size; i++)
-				objects[i].checkInput();
-		}
+		for (int i = 0; i < size; i++)
+			objects[i].checkInput();
 		update.finish(system);
 	}
 
@@ -47,7 +45,6 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	@Override
 	public void load(DataInput in) throws IOException {
 		size = in.readInt();
-		ensureCapacity(size);
 		for (int i = 0; i < size; i++) {
 			InputHandler object = InputHandler.get(in.readUTF());
 			object.load(in);
