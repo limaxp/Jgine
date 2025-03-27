@@ -13,9 +13,9 @@ import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.SystemObject;
-import org.jgine.system.data.TransformListSystemScene;
+import org.jgine.system.data.TransformSystemScene;
 
-public class Graphic2DScene extends TransformListSystemScene<Graphic2DSystem, Material> {
+public class Graphic2DScene extends TransformSystemScene<Graphic2DSystem, Material> {
 
 	private final FrustumCulling2D frustumCulling = new FrustumCulling2D();
 

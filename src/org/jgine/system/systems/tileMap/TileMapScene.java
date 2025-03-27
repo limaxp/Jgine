@@ -10,9 +10,9 @@ import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.shader.TileMapShader;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class TileMapScene extends ListSystemScene<TileMapSystem, TileMap> {
+public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 
 	public TileMapScene(TileMapSystem system, Scene scene) {
 		super(system, scene, TileMap.class, 10000);

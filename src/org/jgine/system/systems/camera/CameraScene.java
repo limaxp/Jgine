@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
+public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 
 	public CameraScene(CameraSystem system, Scene scene) {
 		super(system, scene, Camera.class, 32);

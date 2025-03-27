@@ -9,10 +9,10 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.FrustumCulling;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.TransformListSystemScene;
+import org.jgine.system.data.TransformSystemScene;
 import org.jgine.utils.loader.ResourceManager;
 
-public class GraphicScene extends TransformListSystemScene<GraphicSystem, GraphicObject> {
+public class GraphicScene extends TransformSystemScene<GraphicSystem, GraphicObject> {
 
 	private final FrustumCulling frustumCulling = new FrustumCulling();
 

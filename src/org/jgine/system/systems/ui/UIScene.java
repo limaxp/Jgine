@@ -10,9 +10,9 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class UIScene extends ListSystemScene<UISystem, UIWindow> {
+public class UIScene extends ObjectSystemScene<UISystem, UIWindow> {
 
 	public UIScene(UISystem system, Scene scene) {
 		super(system, scene, UIWindow.class, 10000);

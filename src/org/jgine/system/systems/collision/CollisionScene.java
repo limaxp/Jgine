@@ -11,14 +11,14 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.system.UpdateManager;
-import org.jgine.system.data.EntityListSystemScene;
+import org.jgine.system.data.EntitySystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.scheduler.Job;
 
-public class CollisionScene extends EntityListSystemScene<CollisionSystem, Collider> {
+public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider> {
 
 	public static final int SUB_STEPS = 4;
 

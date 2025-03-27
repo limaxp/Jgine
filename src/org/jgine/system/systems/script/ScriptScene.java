@@ -10,10 +10,10 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 import org.jgine.utils.loader.ResourceManager;
 
-public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObject> {
+public class ScriptScene extends ObjectSystemScene<ScriptSystem, AbstractScriptObject> {
 
 	public ScriptScene(ScriptSystem system, Scene scene) {
 		super(system, scene, AbstractScriptObject.class, 10000);

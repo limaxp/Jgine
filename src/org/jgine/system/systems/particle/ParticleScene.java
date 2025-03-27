@@ -8,9 +8,9 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class ParticleScene extends ListSystemScene<ParticleSystem, Particle> {
+public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
 		super(system, scene, Particle.class, 10000);

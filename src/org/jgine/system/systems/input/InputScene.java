@@ -8,9 +8,9 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
+public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
 
 	public InputScene(InputSystem system, Scene scene) {
 		super(system, scene, InputHandler.class, 10000);

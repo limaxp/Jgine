@@ -10,10 +10,10 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.UpdateManager;
-import org.jgine.system.data.EntityListSystemScene;
+import org.jgine.system.data.EntitySystemScene;
 import org.jgine.utils.scheduler.Job;
 
-public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
+public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 
 	static {
 		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {

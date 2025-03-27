@@ -11,11 +11,11 @@ import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.shader.PhongShader;
-import org.jgine.system.data.EntityListSystemScene;
+import org.jgine.system.data.EntitySystemScene;
 import org.jgine.utils.Color;
 import org.jgine.utils.collection.list.UnorderedArrayList;
 
-public class LightScene extends EntityListSystemScene<LightSystem, Light> {
+public class LightScene extends EntitySystemScene<LightSystem, Light> {
 
 	private int ambientLight;
 	private List<PointLight> pointLights;

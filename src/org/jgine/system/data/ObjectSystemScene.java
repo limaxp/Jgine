@@ -9,13 +9,13 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
-public abstract class ListSystemScene<S extends EngineSystem<S, O>, O extends SystemObject> extends SystemScene<S, O> {
+public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends SystemObject> extends SystemScene<S, O> {
 
 	protected O[] objects;
 	protected int size;
 
 	@SuppressWarnings("unchecked")
-	public ListSystemScene(S system, Scene scene, Class<O> clazz, int size) {
+	public ObjectSystemScene(S system, Scene scene, Class<O> clazz, int size) {
 		super(system, scene);
 		objects = (O[]) Array.newInstance(clazz, size);
 	}

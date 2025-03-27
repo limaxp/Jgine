@@ -8,9 +8,9 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class AiScene extends ListSystemScene<AiSystem, AiObject> {
+public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 
 	public AiScene(AiSystem system, Scene scene) {
 		super(system, scene, AiObject.class, 10000);
