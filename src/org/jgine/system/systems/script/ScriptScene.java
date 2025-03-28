@@ -26,16 +26,15 @@ public class ScriptScene extends ObjectSystemScene<ScriptSystem, AbstractScriptO
 	}
 
 	@Override
-	public void initObject(Entity entity, AbstractScriptObject object) {
+	public void init(Entity entity, AbstractScriptObject object) {
 		object.setEntity(entity);
 		object.getInterface().onEnable();
 	}
 
 	@Override
-	public AbstractScriptObject removeObject(int index) {
-		AbstractScriptObject object = super.removeObject(index);
-		object.getInterface().onDisable();
-		return object;
+	public void remove(int index) {
+		get(index).getInterface().onDisable();
+		super.remove(index);
 	}
 
 	@Override

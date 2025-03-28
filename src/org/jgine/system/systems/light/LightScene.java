@@ -33,7 +33,7 @@ public class LightScene extends EntitySystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void initObject(Entity entity, Light object) {
+	public void init(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			pointLights.add((PointLight) object);
 		if (object instanceof DirectionalLight)
@@ -42,13 +42,14 @@ public class LightScene extends EntitySystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public Light removeObject(int index) {
-		Light object = super.removeObject(index);
+	public void remove(int index) {
+		Light object = get(index);
 		if (object instanceof PointLight)
 			pointLights.remove((PointLight) object);
 		if (object instanceof DirectionalLight)
 			directionalLight = new DirectionalLight();
-		return object;
+
+		super.remove(index);
 	}
 
 	@Override

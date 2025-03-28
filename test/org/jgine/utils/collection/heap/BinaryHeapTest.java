@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
 
-import org.jgine.utils.collection.heap.BinaryHeap;
-import org.jgine.utils.collection.heap.IHeapItem;
 import org.junit.jupiter.api.Test;
 
 class BinaryHeapTest {

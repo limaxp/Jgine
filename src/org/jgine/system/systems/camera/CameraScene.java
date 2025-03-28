@@ -22,7 +22,7 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void initObject(Entity entity, Camera object) {
+	public void init(Entity entity, Camera object) {
 		object.transform = entity.transform;
 		if (object.getRenderTarget() == null)
 			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
@@ -30,10 +30,9 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public Camera removeObject(int index) {
-		Camera object = super.removeObject(index);
-		system.unregisterCamera(object);
-		return object;
+	public void remove(int index) {
+		system.unregisterCamera(get(index));
+		super.remove(index);
 	}
 
 	@Override

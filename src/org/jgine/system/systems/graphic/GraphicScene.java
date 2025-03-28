@@ -25,7 +25,7 @@ public class GraphicScene extends TransformSystemScene<GraphicSystem, GraphicObj
 	}
 
 	@Override
-	public void initObject(Entity entity, GraphicObject object) {
+	public void init(Entity entity, GraphicObject object) {
 	}
 
 	@Override

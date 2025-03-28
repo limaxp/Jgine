@@ -84,7 +84,7 @@ public class SystemMap {
 			int[] ids = data[id];
 			int systemSize = size(id) + 1;
 			for (int i = 1; i < systemSize; i++) {
-				if (systemScene.getObject(ids[i]) == object) {
+				if (systemScene.get(ids[i]) == object) {
 					int result = ids[i];
 					remove(ids, i);
 					return result;
@@ -176,7 +176,7 @@ public class SystemMap {
 				int objectId = in.readInt();
 				ids[i] = objectId;
 				systemScene.relink(objectId, entity);
-				systemScene.initObject_(entity, systemScene.getObject(objectId));
+				systemScene.initObject_(entity, systemScene.get(objectId));
 			}
 			setSize(id, systemSize - 1);
 		}

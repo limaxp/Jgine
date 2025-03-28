@@ -23,15 +23,14 @@ public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 	}
 
 	@Override
-	public void initObject(Entity entity, AiObject object) {
+	public void init(Entity entity, AiObject object) {
 		object.init(entity);
 	}
 
 	@Override
-	public AiObject removeObject(int index) {
-		AiObject object = super.removeObject(index);
-		object.free();
-		return object;
+	public void remove(int index) {
+		get(index).free();
+		super.remove(index);
 	}
 
 	@Override

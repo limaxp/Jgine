@@ -3,7 +3,6 @@ package org.jgine.utils.collection.tree;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.jgine.utils.collection.tree.BinaryTree;
 import org.junit.jupiter.api.Test;
 
 class BinaryTreeTest {

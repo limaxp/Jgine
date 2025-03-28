@@ -1,35 +1,34 @@
 package org.jgine.utils.memory;
 
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memGetAddress;
-import static org.lwjgl.system.MemoryUtil.memSet;
-import static org.lwjgl.system.MemoryUtil.nmemFree;
+import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
+public abstract class Struct extends Pointer implements NativeResource {
 
-import javax.annotation.Nullable;
-
-public abstract class Struct extends Pointer {
-
-	@SuppressWarnings({ "unused" })
-	private ByteBuffer container; // so Java Object does not get freed!
-
-	protected Struct(long address, @Nullable ByteBuffer container) {
-		super(address);
-		this.container = container;
+	protected Struct(int size) {
+		super(MemoryUtil.nmemAlloc(size));
 	}
 
+	protected Struct(long address) {
+		super(address);
+	}
+
+	@Override
 	public void free() {
-		nmemFree(address);
+		MemoryUtil.nmemFree(address);
 	}
 
 	public abstract int sizeof();
 
+	public Struct set(Struct src) {
+		MemoryUtil.memCopy(src.address, address, sizeof());
+		return this;
+	}
+
 	public void clear() {
-		memSet(address, 0, sizeof());
+		MemoryUtil.memSet(address, 0, sizeof());
 	}
 
 	public boolean isNull(int memberOffset) {
-		return memGetAddress(address + memberOffset) == NULL;
+		return MemoryUtil.memGetAddress(address + memberOffset) == 0L;
 	}
 }

@@ -9,7 +9,8 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
-public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends SystemObject> extends SystemScene<S, O> {
+public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
+		extends SystemScene<S, O> {
 
 	protected O[] objects;
 	protected int size;
@@ -21,7 +22,7 @@ public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends 
 	}
 
 	@Override
-	public int addObject(Entity entity, O object) {
+	public int add(Entity entity, O object) {
 		if (size == objects.length)
 			return -1;
 		int index = size++;
@@ -31,17 +32,14 @@ public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends 
 	}
 
 	@Override
-	public O removeObject(int index) {
-		O element = objects[index];
+	public void remove(int index) {
 		if (index != --size) {
-			O last = objects[size];
+			objects[index] = objects[size];
 			Entity lastEntity = getEntity(size);
-			objects[index] = last;
 			relink(index, lastEntity);
 			lastEntity.setSystemId(this, size, index);
 		}
 		objects[size] = null;
-		return element;
 	}
 
 	@Override
@@ -51,7 +49,7 @@ public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends 
 	}
 
 	@Override
-	public O getObject(int index) {
+	public O get(int index) {
 		return objects[index];
 	}
 

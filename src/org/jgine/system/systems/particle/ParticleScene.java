@@ -23,15 +23,14 @@ public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 	}
 
 	@Override
-	public void initObject(Entity entity, Particle object) {
+	public void init(Entity entity, Particle object) {
 		object.transform = entity.transform;
 	}
 
 	@Override
-	public Particle removeObject(int index) {
-		Particle object = super.removeObject(index);
-		object.close();
-		return object;
+	public void remove(int index) {
+		get(index).close();
+		super.remove(index);
 	}
 
 	@Override

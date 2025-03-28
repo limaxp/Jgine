@@ -32,13 +32,13 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 
 	public abstract void free();
 
-	public abstract void initObject(Entity entity, O object);
+	public abstract void init(Entity entity, O object);
 
-	public abstract int addObject(Entity entity, O object);
+	public abstract int add(Entity entity, O object);
 
-	public abstract O removeObject(int index);
+	public abstract void remove(int index);
 
-	public abstract O getObject(int index);
+	public abstract O get(int index);
 
 	public abstract Entity getEntity(int index);
 
@@ -66,7 +66,7 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 
 	@SuppressWarnings("unchecked")
 	public final void initObject_(Entity entity, SystemObject object) {
-		initObject(entity, (O) object);
+		init(entity, (O) object);
 	}
 
 	@Override

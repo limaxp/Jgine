@@ -184,7 +184,7 @@ public class Scene {
 
 	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
-		entity.forSystems(SystemScene::removeObject);
+		entity.forSystems(SystemScene::remove);
 
 		for (Entity child : entity.getChilds()) {
 			removeChildIntern(child);

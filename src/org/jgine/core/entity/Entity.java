@@ -187,8 +187,8 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
-		systemScene.initObject(this, object);
-		systems.add(systemScene.id, systemScene.addObject(this, object));
+		systemScene.init(this, object);
+		systems.add(systemScene.id, systemScene.add(this, object));
 		return object;
 	}
 
@@ -205,10 +205,10 @@ public class Entity {
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(SystemScene<?, T> systemScene, T... objects) {
 		for (int i = 0; i < objects.length; i++)
-			systemScene.initObject(this, objects[i]);
+			systemScene.init(this, objects[i]);
 		for (int i = 0; i < objects.length; i++) {
 			T object = objects[i];
-			systems.add(systemScene.id, systemScene.addObject(this, object));
+			systems.add(systemScene.id, systemScene.add(this, object));
 		}
 	}
 
@@ -221,7 +221,7 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene) {
-		systems.forEach(systemScene.id, (i) -> systemScene.removeObject(i));
+		systems.forEach(systemScene.id, (i) -> systemScene.remove(i));
 		systems.remove(systemScene.id);
 	}
 
@@ -234,7 +234,7 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, T object) {
-		systemScene.removeObject(systems.remove(systemScene, object));
+		systemScene.remove(systems.remove(systemScene, object));
 	}
 
 	public final <T extends SystemObject> void removeSystem(int id, int objectId) {
@@ -247,7 +247,7 @@ public class Entity {
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, int objectId) {
 		systems.remove(systemScene.id, objectId);
-		systemScene.removeObject(objectId);
+		systemScene.remove(objectId);
 	}
 
 	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, int oldId, int newId) {
@@ -284,7 +284,7 @@ public class Entity {
 		int id = systems.get(systemScene.id, index);
 		if (id < 0)
 			return null;
-		return systemScene.getObject(id);
+		return systemScene.get(id);
 	}
 
 	public final <T extends SystemObject> List<T> getSystems(int id) {
@@ -297,7 +297,7 @@ public class Entity {
 
 	public final <T extends SystemObject> List<T> getSystems(SystemScene<?, T> systemScene) {
 		List<T> result = new ArrayList<T>(systems.size(systemScene.id));
-		systems.forEach(systemScene.id, (index) -> result.add(systemScene.getObject(index)));
+		systems.forEach(systemScene.id, (index) -> result.add(systemScene.get(index)));
 		return result;
 	}
 
@@ -310,7 +310,7 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void forSystems(SystemScene<?, T> systemScene, Consumer<T> func) {
-		systems.forEach(systemScene.id, (index) -> func.accept(systemScene.getObject(index)));
+		systems.forEach(systemScene.id, (index) -> func.accept(systemScene.get(index)));
 	}
 
 	public final void forSystems(String name, IntConsumer func) {

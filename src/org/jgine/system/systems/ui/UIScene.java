@@ -25,23 +25,22 @@ public class UIScene extends ObjectSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public void initObject(Entity entity, UIWindow object) {
+	public void init(Entity entity, UIWindow object) {
 		object.entity = entity;
 		object.scene = this;
 		object.onEnable();
 		for (UIObject child : object.childs) {
 			if (child instanceof UIWindow)
-				initObject(entity, (UIWindow) child);
+				init(entity, (UIWindow) child);
 			else
 				child.onEnable();
 		}
 	}
 
 	@Override
-	public UIWindow removeObject(int index) {
-		UIWindow object = super.removeObject(index);
-		disableObject(object);
-		return object;
+	public void remove(int index) {
+		disableObject(get(index));
+		super.remove(index);
 	}
 
 	private void disableObject(UIWindow object) {

@@ -43,7 +43,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	}
 
 	@Override
-	public void initObject(Entity entity, Collider object) {
+	public void init(Entity entity, Collider object) {
 		Transform transform = entity.transform;
 		object.move(transform.getX(), transform.getY(), transform.getZ());
 		object.scale(transform.getScaleX(), transform.getScaleY(), transform.getScaleZ());

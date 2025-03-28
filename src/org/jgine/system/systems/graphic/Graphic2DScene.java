@@ -28,7 +28,7 @@ public class Graphic2DScene extends TransformSystemScene<Graphic2DSystem, Materi
 	}
 
 	@Override
-	public void initObject(Entity entity, Material object) {
+	public void init(Entity entity, Material object) {
 	}
 
 	@Override
