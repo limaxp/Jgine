@@ -6,14 +6,7 @@ import java.util.BitSet;
 /**
  * A {@link BitSet} backed by a int. Can only hold up to 32 bits.
  * <p>
- * <strong>Note that this implementation is not synchronized.</strong> If
- * multiple threads access an {@code ArrayList} instance concurrently, and at
- * least one of the threads modifies the list structurally, it <i>must</i> be
- * synchronized externally. (A structural modification is any operation that
- * adds or deletes one or more elements, or explicitly resizes the backing
- * array; merely setting the value of an element is not a structural
- * modification.) This is typically accomplished by synchronizing on some object
- * that naturally encapsulates the list.
+ * <strong>Note that this implementation is not synchronized.</strong>
  */
 public class IntBitSet implements Cloneable, Serializable {
 
@@ -39,26 +32,23 @@ public class IntBitSet implements Cloneable, Serializable {
 	}
 
 	public void set(int index, boolean bit) {
-		if (bit)
-			set(index);
-		else
-			clear(index);
+		bits = set(bits, index, bit);
 	}
 
 	public void set(int index) {
-		bits |= 1L << index;
+		bits = set(bits, index);
 	}
 
 	public void clear(int index) {
-		bits &= ~(1L << index);
+		bits = clear(bits, index);
 	}
 
 	public void flip(int index) {
-		bits ^= 1L << index;
+		bits = flip(bits, index);
 	}
 
 	public boolean get(int index) {
-		return (bits & (1L << index)) != 0;
+		return get(bits, index);
 	}
 
 	public void clear() {
