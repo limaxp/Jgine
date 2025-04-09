@@ -55,7 +55,6 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 			return -1;
 		int index = size++;
 		MemoryUtil.memCopy(address, address(index), objectSize);
-		MemoryUtil.nmemFree(address);
 		relink(index, entity);
 		return index;
 	}
