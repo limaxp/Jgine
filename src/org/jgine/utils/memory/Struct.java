@@ -1,8 +1,13 @@
 package org.jgine.utils.memory;
 
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 public abstract class Struct extends Pointer implements NativeResource {
+
+	protected Struct(MemoryStack stack, int size) {
+		super(stack.nmalloc(size));
+	}
 
 	protected Struct(int size) {
 		super(MemoryUtil.nmemAlloc(size));

@@ -2,6 +2,7 @@ package org.jgine.system.systems.physic;
 
 import org.jgine.utils.memory.ByteLayout;
 import org.jgine.utils.memory.Struct;
+import org.lwjgl.system.MemoryStack;
 
 /**
  * Represents a physic object with position.
@@ -23,6 +24,10 @@ public class PhysicObjectStruct extends Struct {
 		X = layout.offsetof(0);
 		Y = layout.offsetof(1);
 		Z = layout.offsetof(2);
+	}
+
+	public PhysicObjectStruct(MemoryStack stack) {
+		super(stack, SIZEOF);
 	}
 
 	public PhysicObjectStruct() {
