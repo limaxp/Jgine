@@ -65,7 +65,7 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 	public abstract int getSize();
 
 	@SuppressWarnings("unchecked")
-	public final void initObject_(Entity entity, SystemObject object) {
+	public final void init_(Entity entity, SystemObject object) {
 		init(entity, (O) object);
 	}
 

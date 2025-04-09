@@ -10,67 +10,56 @@ import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+
 /**
  * Data structure used internally by {@link Entity} class to store their
  * {@link EngineSystem}<code>s</code>.
  */
 public class SystemMap {
 
-	private static final int[] NULL_ARRAY = new int[] { 0, -1 };
-
-	private int[][] data;
+	private final Int2IntMap data;
 	private int size;
 
 	public SystemMap() {
-		int systemCount = EngineSystem.size();
-		data = new int[systemCount][];
-		for (int i = 0; i < systemCount; i++)
-			data[i] = NULL_ARRAY;
+		data = new Int2IntOpenHashMap(EngineSystem.size() + 16);
 	}
 
-	public void add(int id, int objectId) {
+	public int add(int system, int value) {
 		synchronized (data) {
-			int systemSize = size(id) + 1;
-			ensureCapacity(id, systemSize + 1);
-			data[id][systemSize] = objectId;
-			setSize(id, systemSize);
+			int systemSize = size(system);
+			setIntern(system, systemSize, value);
+			setSize(system, systemSize + 1);
 			size++;
+			return systemSize;
 		}
 	}
 
-	public void add(int id, int... objectIds) {
+	public void add(int system, int... values) {
 		synchronized (data) {
-			int systemSize = size(id) + 1;
-			int addSize = objectIds.length;
-			ensureCapacity(id, systemSize + addSize);
-			int[] ids = data[id];
+			int systemSize = size(system);
+			int addSize = values.length;
 			for (int i = 0; i < addSize; i++)
-				ids[systemSize + i] = objectIds[i];
-			setSize(id, systemSize - 1 + addSize);
+				setIntern(system, systemSize + i, values[i]);
+			setSize(system, systemSize + addSize);
 			size += addSize;
 		}
 	}
 
-	public boolean set(int id, int oldId, int newId) {
+	public void set_(int system, int index, int value) {
 		synchronized (data) {
-			int[] ids = data[id];
-			int systemSize = size(id) + 1;
-			for (int i = 1; i < systemSize; i++)
-				if (ids[i] == oldId) {
-					ids[i] = newId;
-					return true;
-				}
-			return false;
+			setIntern(system, index, value);
 		}
 	}
 
-	public boolean remove(int id, int objectId) {
+	public boolean set(int system, int oldValue, int newValue) {
+		// TODO Inefficient
 		synchronized (data) {
-			int[] ids = data[id];
-			int systemSize = size(id) + 1;
-			for (int i = 1; i < systemSize; i++) {
-				if (ids[i] == objectId) {
-					remove(ids, i);
+			int systemSize = size(system);
+			for (int i = 0; i < systemSize; i++) {
+				if (getIntern(system, i) == oldValue) {
+					setIntern(system, i, newValue);
 					return true;
 				}
 			}
@@ -78,88 +67,89 @@ public class SystemMap {
 		}
 	}
 
-	public <T extends SystemObject> int remove(SystemScene<?, T> systemScene, T object) {
+	public boolean remove(int system, int value) {
+		// TODO Inefficient
 		synchronized (data) {
-			int id = systemScene.id;
-			int[] ids = data[id];
-			int systemSize = size(id) + 1;
-			for (int i = 1; i < systemSize; i++) {
-				if (systemScene.get(ids[i]) == object) {
-					int result = ids[i];
-					remove(ids, i);
-					return result;
+			int systemSize = size(system);
+			for (int i = 0; i < systemSize; i++) {
+				if (getIntern(system, i) == value) {
+					removeIntern(system, i);
+					return true;
 				}
+			}
+			return false;
+		}
+	}
+
+	public <T extends SystemObject> int remove(SystemScene<?, T> system, T value) {
+		// TODO Inefficient
+		synchronized (data) {
+			int systemId = system.id;
+			int systemSize = size(systemId);
+			for (int i = 0; i < systemSize; i++) {
+				if (system.get(getIntern(systemId, i)) == value)
+					return removeIntern(systemId, i);
 			}
 			return -1;
 		}
 	}
 
-	private void remove(int[] ids, int index) {
-		int systemSize = ids[0];
-		if (index != systemSize)
-			ids[index] = ids[systemSize];
-		ids[systemSize] = -1;
-		ids[0] = systemSize - 1;
-		size--;
-	}
-
-	public void remove(int id) {
+	public void remove(int system) {
 		synchronized (data) {
-			int systemSize = size(id);
-			data[id] = NULL_ARRAY;
+			int systemSize = size(system);
+			for (int i = 0; i < systemSize; i++)
+				data.remove(id(system, i + 1));
+			setSize(system, 0);
 			size -= systemSize;
 		}
 	}
 
-	public int get(int id, int index) {
-		return data[id][index + 1];
-	}
-
-	public <T extends SystemObject> void forEach(int id, IntConsumer func) {
+	public int get(int system, int index) {
 		synchronized (data) {
-			int[] ids = data[id];
-			int systemSize = size(id) + 1;
-			for (int i = 1; i < systemSize; i++)
-				func.accept(ids[i]);
+			return getIntern(system, index);
 		}
 	}
 
-	public <T extends SystemObject> void forEach(IntConsumer func) {
+	public void forEach(int system, IntConsumer func) {
+		synchronized (data) {
+			int systemSize = size(system);
+			for (int i = 0; i < systemSize; i++)
+				func.accept(getIntern(system, i));
+		}
+	}
+
+	public void forEach(IntConsumer func) {
 		synchronized (data) {
 			int size = EngineSystem.size();
-			for (int id = 0; id < size; id++) {
-				int[] ids = data[id];
-				int systemSize = size(id) + 1;
-				for (int i = 1; i < systemSize; i++)
-					func.accept(ids[i]);
+			for (int system = 0; system < size; system++) {
+				int systemSize = size(system);
+				for (int i = 0; i < systemSize; i++)
+					func.accept(getIntern(system, i));
 			}
 		}
 	}
 
-	public <T extends SystemObject> void forEach(Scene scene, SystemMapConsumer func) {
+	public void forEach(Scene scene, SystemMapConsumer func) {
 		synchronized (data) {
 			int size = EngineSystem.size();
-			for (int id = 0; id < size; id++) {
-				int[] ids = data[id];
-				int systemSize = size(id) + 1;
-				SystemScene<?, ?> systemScene = scene.getSystem(id);
-				for (int i = 1; i < systemSize; i++)
-					func.accept(systemScene, ids[i]);
+			for (int system = 0; system < size; system++) {
+				int systemSize = size(system);
+				SystemScene<?, ?> systemScene = scene.getSystem(system);
+				for (int i = 0; i < systemSize; i++)
+					func.accept(systemScene, getIntern(system, i));
 			}
 		}
 	}
 
 	public void save(DataOutput out) throws IOException {
 		out.writeInt(size);
-		int systemCount = data.length;
+		int systemCount = EngineSystem.size();
 		out.writeInt(systemCount);
-		for (int id = 0; id < systemCount; id++) {
-			int[] ids = data[id];
-			int systemSize = size(id);
+		for (int system = 0; system < systemCount; system++) {
+			int systemSize = size(system);
 			out.writeInt(systemSize);
-			systemSize++;
-			for (int i = 1; i < systemSize; i++)
-				out.writeInt(ids[i]);
+			for (int i = 0; i < systemSize; i++)
+				out.writeInt(getIntern(system, i));
 		}
 	}
 
@@ -167,44 +157,49 @@ public class SystemMap {
 		Scene scene = entity.scene;
 		this.size = in.readInt();
 		int systemCount = in.readInt();
-		for (int id = 0; id < systemCount; id++) {
-			SystemScene<?, ?> systemScene = scene.getSystem(id);
-			int[] ids = data[id];
-			int systemSize = in.readInt() + 1;
-			ensureCapacity(id, systemSize);
-			for (int i = 1; i < systemSize; i++) {
+		for (int system = 0; system < systemCount; system++) {
+			SystemScene<?, ?> systemScene = scene.getSystem(system);
+			int systemSize = in.readInt();
+			setSize(system, systemSize);
+			for (int i = 0; i < systemSize; i++) {
 				int objectId = in.readInt();
-				ids[i] = objectId;
+				setIntern(system, i, objectId);
 				systemScene.relink(objectId, entity);
-				systemScene.initObject_(entity, systemScene.get(objectId));
+				systemScene.init_(entity, systemScene.get(objectId));
 			}
-			setSize(id, systemSize - 1);
 		}
+	}
+
+	private void setIntern(int system, int index, int value) {
+		data.put(id(system, index + 1), value);
+	}
+
+	private int removeIntern(int system, int index) {
+		int result = id(system, index + 1);
+		data.remove(result);
+		setSize(system, size(system) - 1);
+		size--;
+		return result;
+	}
+
+	private int getIntern(int system, int index) {
+		return data.getOrDefault(id(system, index + 1), -1);
+	}
+
+	private void setSize(int system, int size) {
+		data.put(id(system, 0), size);
+	}
+
+	public int size(int system) {
+		return (int) data.getOrDefault(id(system, 0), 0);
 	}
 
 	public int size() {
 		return size;
 	}
 
-	public int size(int id) {
-		return data[id][0];
-	}
-
-	private void setSize(int id, int size) {
-		data[id][0] = size;
-	}
-
-	private void ensureCapacity(int id, int minCapacity) {
-		int[] ids = data[id];
-		int length = ids.length;
-		if (minCapacity > length | ids == NULL_ARRAY) {
-			int newLength = Math.max(length * 2, minCapacity);
-			int[] newIds = new int[newLength];
-			System.arraycopy(ids, 0, newIds, 0, length);
-			for (int i = length; i < newLength; i++)
-				newIds[i] = -1;
-			data[id] = newIds;
-		}
+	private static int id(int system, int index) {
+		return 0x00000000 | system << 16 | index;
 	}
 
 	@FunctionalInterface
@@ -212,5 +207,4 @@ public class SystemMap {
 
 		public void accept(SystemScene<?, ?> scene, int id);
 	}
-
 }
