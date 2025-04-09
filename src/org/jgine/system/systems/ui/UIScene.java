@@ -20,8 +20,7 @@ public class UIScene extends ObjectSystemScene<UISystem, UIWindow> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].free();
+		forEach(UIWindow::free);
 	}
 
 	@Override
@@ -59,18 +58,18 @@ public class UIScene extends ObjectSystemScene<UISystem, UIWindow> {
 	@Override
 	public void onRender(float dt) {
 		Renderer.setShader(Renderer.TEXTURE_SHADER);
-		for (int i = 0; i < size; i++)
-			objects[i].preRender();
+		for (int i = 0; i < size(); i++)
+			get(i).preRender();
 
-		for (int i = 0; i < size; i++) {
-			UIWindow window = objects[i];
+		for (int i = 0; i < size(); i++) {
+			UIWindow window = get(i);
 			UIRenderer.renderQuad(window.getTransform(), window.renderTargetMaterial);
 		}
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].entity;
+		return get(index).entity;
 	}
 
 	@Override
@@ -79,36 +78,30 @@ public class UIScene extends ObjectSystemScene<UISystem, UIWindow> {
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			UIWindow object = new UIWindow();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(UIWindow object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected UIWindow loadData(DataInput in) throws IOException {
+		UIWindow object = new UIWindow();
+		object.load(in);
+		return object;
 	}
 
 	public void setTopWindow(UIObject object) {
-		UIWindow topWindow = objects[size - 1];
+		int size = size();
+		UIWindow topWindow = get(size - 1);
 		if (topWindow.isFloating())
 			return;
 		UIWindow newTopWindow = getTopWindow(object);
-		if (newTopWindow != objects[size - 1]) {
-			objects[getTopWindowIndex(newTopWindow)] = objects[size - 1];
-			objects[size - 1] = newTopWindow;
-		}
+		if (newTopWindow != get(size - 1))
+			swap(getTopWindowIndex(newTopWindow), size - 1);
 	}
 
 	private int getTopWindowIndex(UIWindow object) {
-		for (int i = 0; i < size; i++)
-			if (objects[i] == object)
+		for (int i = 0; i < size(); i++)
+			if (get(i) == object)
 				return i;
 		return 0;
 	}

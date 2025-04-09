@@ -20,8 +20,7 @@ public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].close();
+		forEach(TileMap::close);
 	}
 
 	@Override
@@ -45,28 +44,23 @@ public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 	public void render(float dt) {
 		TileMapShader shader = Renderer.TILE_MAP_SHADER;
 		Renderer.setShader(shader);
-		for (int i = 0; i < size; i++) {
-			TileMap object = objects[i];
+		for (int i = 0; i < size(); i++) {
+			TileMap object = get(i);
 			shader.setTileMapData(object.getTileswidth(), object.getTilesheight());
 			Renderer2D.render(object.getTransform().getMatrix(), object.getMesh(), object.getMaterial());
 		}
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			TileMap object = new TileMap();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(TileMap object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected TileMap loadData(DataInput in) throws IOException {
+		TileMap object = new TileMap();
+		object.load(in);
+		return object;
 	}
 
 	@Override
@@ -76,6 +70,6 @@ public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 
 	@Override
 	public Transform getTransform(int index) {
-		return objects[index].getTransform();
+		return get(index).getTransform();
 	}
 }

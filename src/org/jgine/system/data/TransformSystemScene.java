@@ -9,7 +9,7 @@ import org.jgine.system.SystemObject;
 public abstract class TransformSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
 		extends ObjectSystemScene<S, O> {
 
-	protected Transform[] transforms;
+	private final Transform[] transforms;
 
 	public TransformSystemScene(S system, Scene scene, Class<O> clazz, int size) {
 		super(system, scene, clazz, size);

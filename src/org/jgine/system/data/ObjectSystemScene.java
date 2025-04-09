@@ -1,5 +1,8 @@
 package org.jgine.system.data;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.function.Consumer;
 
@@ -12,8 +15,8 @@ import org.jgine.system.SystemScene;
 public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends SystemObject>
 		extends SystemScene<S, O> {
 
-	protected O[] objects;
-	protected int size;
+	private final O[] objects;
+	private int size;
 
 	@SuppressWarnings("unchecked")
 	public ObjectSystemScene(S system, Scene scene, Class<O> clazz, int size) {
@@ -58,7 +61,37 @@ public abstract class ObjectSystemScene<S extends EngineSystem<S, O>, O extends 
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return size;
 	}
+
+	protected void swap(int index1, int index2) {
+		O tmp = objects[index1];
+		objects[index1] = objects[index2];
+		objects[index2] = tmp;
+		Entity first = getEntity(index1);
+		Entity second = getEntity(index2);
+		relink(index1, second);
+		relink(index2, first);
+		first.setSystemId(this, index1, index2);
+		second.setSystemId(this, index2, index1);
+	}
+
+	@Override
+	public final void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			saveData(objects[i], out);
+	}
+
+	@Override
+	public final void load(DataInput in) throws IOException {
+		size = in.readInt();
+		for (int i = 0; i < size; i++)
+			objects[i] = loadData(in);
+	}
+
+	protected abstract void saveData(O object, DataOutput out) throws IOException;
+
+	protected abstract O loadData(DataInput in) throws IOException;
 }

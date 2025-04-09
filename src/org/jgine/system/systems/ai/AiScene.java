@@ -18,8 +18,7 @@ public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].free();
+		forEach(AiObject::free);
 	}
 
 	@Override
@@ -35,14 +34,13 @@ public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 
 	@Override
 	public void update(UpdateTask update) {
-		for (int i = 0; i < size; i++)
-			objects[i].update(update.dt);
+		forEach((o) -> o.update(update.dt));
 		update.finish(system);
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].entity;
+		return get(index).entity;
 	}
 
 	@Override
@@ -51,19 +49,14 @@ public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			AiObject object = new AiObject();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(AiObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected AiObject loadData(DataInput in) throws IOException {
+		AiObject object = new AiObject();
+		object.load(in);
+		return object;
 	}
 }

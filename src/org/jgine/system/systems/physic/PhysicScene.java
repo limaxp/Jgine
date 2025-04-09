@@ -44,24 +44,19 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 	@Override
 	public void update(UpdateTask update) {
 		this.dt = update.dt;
-		Job.region(size, this::updatePosition, () -> update.finish(system));
+		Job.region(size(), this::updatePosition, () -> update.finish(system));
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			PhysicObject object = new PhysicObject();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(PhysicObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected PhysicObject loadData(DataInput in) throws IOException {
+		PhysicObject object = new PhysicObject();
+		object.load(in);
+		return object;
 	}
 
 	public void setGravity(float gravity) {
@@ -81,9 +76,9 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 	}
 
 	private void updatePosition(int index) {
-		PhysicObject object = objects[index];
+		PhysicObject object = get(index);
 		if (object.updatePosition(dt, gravity, airResistanceFactor)) {
-			Entity entity = entities[index];
+			Entity entity = getEntity(index);
 			Transform transform = entity.transform;
 			transform.setPositionIntern(object.x, object.y, object.z);
 			UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),

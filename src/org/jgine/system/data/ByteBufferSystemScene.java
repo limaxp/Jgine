@@ -1,5 +1,8 @@
 package org.jgine.system.data;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
@@ -13,18 +16,19 @@ import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
 import org.jgine.utils.memory.NativeResource;
 import org.jgine.utils.memory.Struct;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O extends Struct & SystemObject>
 		extends SystemScene<S, O> implements NativeResource {
 
-	protected int objectSize; // in bytes
-	protected int maxSize;
-	protected int size;
-	protected ByteBuffer buffer;
-	protected long bufferAddress;
-	protected Entity[] entities;
-	protected LongFunction<O> factory;
+	private int objectSize; // in bytes
+	private int maxSize;
+	private int size;
+	private final ByteBuffer buffer;
+	private long bufferAddress;
+	private final Entity[] entities;
+	private LongFunction<O> factory;
 
 	public ByteBufferSystemScene(S system, Scene scene, LongFunction<O> factory, int bytes, int size) {
 		super(system, scene);
@@ -122,7 +126,43 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return size;
 	}
+
+	protected void swap(int index1, int index2) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			long tmp = stack.nmalloc(objectSize);
+			long address1 = address(index1);
+			long address2 = address(index2);
+			MemoryUtil.memCopy(address1, tmp, objectSize);
+			MemoryUtil.memCopy(address2, address1, objectSize);
+			MemoryUtil.memCopy(tmp, address2, objectSize);
+		}
+
+		Entity first = getEntity(index1);
+		Entity second = getEntity(index2);
+		relink(index1, second);
+		relink(index2, first);
+		first.setSystemId(this, index1, index2);
+		second.setSystemId(this, index2, index1);
+	}
+
+	@Override
+	public final void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			saveData(address(i), out);
+	}
+
+	@Override
+	public final void load(DataInput in) throws IOException {
+		size = in.readInt();
+		for (int i = 0; i < size; i++)
+			loadData(address(i), in);
+	}
+
+	protected abstract void saveData(long address, DataOutput out) throws IOException;
+
+	protected abstract void loadData(long address, DataInput in) throws IOException;
 }

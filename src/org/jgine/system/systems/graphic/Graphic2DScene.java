@@ -53,19 +53,14 @@ public class Graphic2DScene extends TransformSystemScene<Graphic2DSystem, Materi
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			Material object = new Material();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(Material object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected Material loadData(DataInput in) throws IOException {
+		Material object = new Material();
+		object.load(in);
+		return object;
 	}
 }

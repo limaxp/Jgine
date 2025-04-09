@@ -34,28 +34,23 @@ public class GraphicScene extends TransformSystemScene<GraphicSystem, GraphicObj
 
 		Renderer.enableDepthTest();
 		Renderer.setShader(Renderer.PHONG_SHADER);
-		for (int i = 0; i < size; i++) {
-			Transform transform = transforms[i];
+		for (int i = 0; i < size(); i++) {
+			Transform transform = getTransform(i);
 //			if (frustumCulling.containsPoint(transform.getPosition()))
-			Renderer.render(transform.getMatrix(), objects[i].model);
+			Renderer.render(transform.getMatrix(), get(i).model);
 		}
 		Renderer.disableDepthTest();
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			GraphicObject object = new GraphicObject();
-			object.model = ResourceManager.getModel(in.readUTF());
-			objects[i] = object;
-		}
+	protected void saveData(GraphicObject object, DataOutput out) throws IOException {
+		out.writeUTF(object.model.name);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			out.writeUTF(objects[i].model.name);
+	protected GraphicObject loadData(DataInput in) throws IOException {
+		GraphicObject object = new GraphicObject();
+		object.model = ResourceManager.getModel(in.readUTF());
+		return object;
 	}
 }

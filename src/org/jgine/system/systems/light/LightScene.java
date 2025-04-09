@@ -53,23 +53,16 @@ public class LightScene extends EntitySystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			Light object = LightTypes.get(in.readInt()).get();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(Light object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++) {
-			Light object = objects[i];
-			out.writeInt(object.getType().getId());
-			object.save(out);
-		}
+	protected Light loadData(DataInput in) throws IOException {
+		Light object = LightTypes.get(in.readInt()).get();
+		object.load(in);
+		return object;
 	}
 
 	public void setAmbientLight(int ambientLight) {

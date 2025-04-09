@@ -62,7 +62,7 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 
 	public abstract void relink(int index, Entity entity);
 
-	public abstract int getSize();
+	public abstract int size();
 
 	@SuppressWarnings("unchecked")
 	public final void init_(Entity entity, SystemObject object) {

@@ -4,9 +4,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
-import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.data.ObjectSystemScene;
 
@@ -27,14 +27,13 @@ public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
 
 	@Override
 	public void update(UpdateTask update) {
-		for (int i = 0; i < size; i++)
-			objects[i].checkInput();
+		forEach(InputHandler::checkInput);
 		update.finish(system);
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].getEntity();
+		return get(index).getEntity();
 	}
 
 	@Override
@@ -43,22 +42,15 @@ public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			InputHandler object = InputHandler.get(in.readUTF());
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(InputHandler object, DataOutput out) throws IOException {
+		out.writeUTF(object.getClass().getSimpleName());
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++) {
-			InputHandler object = objects[i];
-			out.writeUTF(object.getClass().getSimpleName());
-			object.save(out);
-		}
+	protected InputHandler loadData(DataInput in) throws IOException {
+		InputHandler object = InputHandler.get(in.readUTF());
+		object.load(in);
+		return object;
 	}
 }

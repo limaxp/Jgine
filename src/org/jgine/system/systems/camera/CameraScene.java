@@ -17,8 +17,7 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			system.unregisterCamera(objects[i]);
+		forEach(system::unregisterCamera);
 	}
 
 	@Override
@@ -42,23 +41,18 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public Transform getTransform(int index) {
-		return objects[index].transform;
+		return get(index).transform;
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			Camera object = new Camera();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(Camera object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected Camera loadData(DataInput in) throws IOException {
+		Camera object = new Camera();
+		object.load(in);
+		return object;
 	}
 }

@@ -55,7 +55,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	}
 
 	private void updateStep(UpdateTask update, int subStep) {
-		Job.region(size, this::solveCollision, () -> {
+		Job.region(size(), this::solveCollision, () -> {
 			if (subStep < SUB_STEPS)
 				updateStep(update, subStep + 1);
 			else
@@ -70,37 +70,30 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 
 		Renderer.enableDepthTest();
 		Renderer.setShader(Renderer.BASIC_SHADER);
-		for (int i = 0; i < size; i++)
-			objects[i].render();
+		for (int i = 0; i < size(); i++)
+			get(i).render();
 		Renderer.disableDepthTest();
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			Collider object = ColliderTypes.get(in.readInt()).get();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(Collider object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().getId());
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++) {
-			Collider object = objects[i];
-			out.writeInt(object.getType().getId());
-			object.save(out);
-		}
+	protected Collider loadData(DataInput in) throws IOException {
+		Collider object = ColliderTypes.get(in.readInt()).get();
+		object.load(in);
+		return object;
 	}
 
 	private void solveCollision(int index) {
-		Collider object = objects[index];
+		Collider object = get(index);
 //		for (int i = index + 1; i < this.size; ++i)
 //			resolveCollision(entities[index], object, entities[i], objects[i]);
 
-		Entity entity = entities[index];
+		Entity entity = getEntity(index);
 		scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
 				object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
 				object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {

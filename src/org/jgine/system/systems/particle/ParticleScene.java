@@ -18,8 +18,7 @@ public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].close();
+		forEach(Particle::close);
 	}
 
 	@Override
@@ -36,9 +35,10 @@ public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 	@Override
 	public void onRender(float dt) {
 		Renderer.PARTICLE_CALC_SHADER.bind();
-		for (int i = 0; i < size; i++) {
-			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);
-			objects[i].getMesh().update();
+		for (int i = 0; i < size(); i++) {
+			Particle object = get(i);
+			Renderer.PARTICLE_CALC_SHADER.setParticle(object, dt);
+			object.getMesh().update();
 		}
 		Renderer.PARTICLE_CALC_SHADER.unbind();
 	}
@@ -47,8 +47,8 @@ public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 	public void render(float dt) {
 		Renderer.enableDepthTest();
 		Renderer.setShader(Renderer.PARTICLE_DRAW_SHADER);
-		for (int i = 0; i < size; i++) {
-			Particle object = objects[i];
+		for (int i = 0; i < size(); i++) {
+			Particle object = get(i);
 			Renderer.render(object.transform.getMatrix(), object.getMesh(), object.material);
 		}
 		Renderer.disableDepthTest();
@@ -61,23 +61,18 @@ public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 
 	@Override
 	public Transform getTransform(int index) {
-		return objects[index].transform;
+		return get(index).transform;
 	}
 
 	@Override
-	public void load(DataInput in) throws IOException {
-		size = in.readInt();
-		for (int i = 0; i < size; i++) {
-			Particle object = new Particle();
-			object.load(in);
-			objects[i] = object;
-		}
+	protected void saveData(Particle object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(DataOutput out) throws IOException {
-		out.writeInt(size);
-		for (int i = 0; i < size; i++)
-			objects[i].save(out);
+	protected Particle loadData(DataInput in) throws IOException {
+		Particle object = new Particle();
+		object.load(in);
+		return object;
 	}
 }
