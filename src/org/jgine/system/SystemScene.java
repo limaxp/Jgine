@@ -69,6 +69,11 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 		init(entity, (O) object);
 	}
 
+	@SuppressWarnings("unchecked")
+	public final int add_(Entity entity, SystemObject object) {
+		return add(entity, (O) object);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return this == obj;

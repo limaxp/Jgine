@@ -25,6 +25,7 @@ import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.id.IdGenerator;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
+import org.jgine.utils.scheduler.Scheduler;
 
 /**
  * A container for game entity data. Stores info about id, {@link Scene},
@@ -46,6 +47,7 @@ public class Entity {
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
 
 	public static final byte DEATH_FLAG = 0;
+	public static final byte UPDATE_FLAG = 1;
 
 	private static int generateId() {
 		int id;
@@ -170,8 +172,16 @@ public class Entity {
 		setFlag(DEATH_FLAG, true);
 	}
 
+	public final boolean doesUpdate() {
+		return getFlag(UPDATE_FLAG);
+	}
+
+	public final void markUpdate(boolean value) {
+		setFlag(UPDATE_FLAG, value);
+	}
+
 	public final void setFlag(int index, boolean bit) {
-		IntBitSet.set(flag, index, bit);
+		flag = IntBitSet.set(flag, index, bit);
 	}
 
 	public final boolean getFlag(int index) {
@@ -188,7 +198,15 @@ public class Entity {
 
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
 		systemScene.init(this, object);
-		systems.add(systemScene.id, systemScene.add(this, object));
+//		systems.add(systemScene.id, systemScene.add(this, object));
+		systems.cache(systemScene.id, object);
+		if (!doesUpdate()) {
+			markUpdate(true);
+			Scheduler.runTaskSynchron(() -> {
+				markUpdate(false);
+				systems.insertCache(this);
+			});
+		}
 		return object;
 	}
 
@@ -205,11 +223,7 @@ public class Entity {
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(SystemScene<?, T> systemScene, T... objects) {
 		for (int i = 0; i < objects.length; i++)
-			systemScene.init(this, objects[i]);
-		for (int i = 0; i < objects.length; i++) {
-			T object = objects[i];
-			systems.add(systemScene.id, systemScene.add(this, object));
-		}
+			addSystem(systemScene, objects[i]);
 	}
 
 	public final <T extends SystemObject> void removeSystem(int id) {
@@ -221,8 +235,10 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene) {
-		systems.forEach(systemScene.id, (i) -> systemScene.remove(i));
-		systems.remove(systemScene.id);
+		Scheduler.runTaskSynchron(() -> {
+			systems.forEach(systemScene.id, (i) -> systemScene.remove(i));
+			systems.remove(systemScene.id);
+		});
 	}
 
 	public final <T extends SystemObject> void removeSystem(int id, T object) {
@@ -234,7 +250,9 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, T object) {
-		systemScene.remove(systems.remove(systemScene, object));
+		Scheduler.runTaskSynchron(() -> {
+			systemScene.remove(systems.remove(systemScene, object));
+		});
 	}
 
 	public final <T extends SystemObject> void removeSystem(int id, int objectId) {
@@ -246,8 +264,10 @@ public class Entity {
 	}
 
 	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, int objectId) {
-		systems.remove(systemScene.id, objectId);
-		systemScene.remove(objectId);
+		Scheduler.runTaskSynchron(() -> {
+			systems.remove(systemScene.id, objectId);
+			systemScene.remove(objectId);
+		});
 	}
 
 	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, int oldId, int newId) {
@@ -279,11 +299,12 @@ public class Entity {
 		return getSystem(scene.getSystem(system), index);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
 		int id = systems.get(systemScene.id, index);
 		if (id < 0)
-			return null;
+			return (T) systems.getCache(systemScene.id, index);
 		return systemScene.get(id);
 	}
 
@@ -528,7 +549,6 @@ public class Entity {
 			sb.append(',');
 			sb.append(' ');
 		});
-		sb.deleteCharAt(sb.length() - 1);
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append(']');
 		return sb.toString();
