@@ -37,7 +37,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	}
 
 	@Override
-	public final void close() {
+	public final void free() {
 		MemoryUtil.memFree(buffer);
 	}
 
