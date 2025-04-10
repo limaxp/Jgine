@@ -10,7 +10,7 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.UpdateManager;
-import org.jgine.system.data.EntitySystemScene;
+import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
 import org.jgine.utils.scheduler.Job;
 
 public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
@@ -36,9 +36,14 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 	}
 
 	@Override
-	public void init(Entity entity, PhysicObject object) {
+	public void onInit(Entity entity, PhysicObject object) {
 		Transform transform = entity.transform;
 		object.initPosition(transform.getX(), transform.getY(), transform.getZ());
+	}
+
+	@Override
+	public void onAdd(Entity entity, PhysicObject object) {
+		onInit(entity, object);
 	}
 
 	@Override

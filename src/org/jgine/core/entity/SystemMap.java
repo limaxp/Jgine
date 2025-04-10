@@ -168,7 +168,7 @@ public class SystemMap {
 				int objectId = in.readInt();
 				setIntern(system, i, objectId);
 				systemScene.relink(objectId, entity);
-				systemScene.init_(entity, systemScene.get(objectId));
+				systemScene.onInit_(entity, systemScene.get(objectId));
 			}
 		}
 	}

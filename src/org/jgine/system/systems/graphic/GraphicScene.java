@@ -9,7 +9,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.FrustumCulling;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.TransformSystemScene;
+import org.jgine.system.data.ObjectSystemScene.TransformSystemScene;
 import org.jgine.utils.loader.ResourceManager;
 
 public class GraphicScene extends TransformSystemScene<GraphicSystem, GraphicObject> {

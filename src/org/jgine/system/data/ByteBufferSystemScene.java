@@ -29,6 +29,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	private long bufferAddress;
 	private final Entity[] entities;
 	private LongFunction<O> factory;
+	private final O pointer;
 
 	public ByteBufferSystemScene(S system, Scene scene, LongFunction<O> factory, int bytes, int size) {
 		super(system, scene);
@@ -38,6 +39,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 		bufferAddress = MemoryUtil.memAddress0(buffer);
 		entities = new Entity[size];
 		this.factory = factory;
+		pointer = factory.apply(0);
 	}
 
 	@Override
@@ -46,11 +48,13 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	}
 
 	@Override
-	public int add(Entity entity, O object) {
-		return add(entity, object.address);
+	public final int add(Entity entity, O object) {
+		int id = add(entity, object.address);
+		onAdd(entity, object);
+		return id;
 	}
 
-	public int add(Entity entity, long address) {
+	private final int add(Entity entity, long address) {
 		if (size == maxSize)
 			return -1;
 		int index = size++;
@@ -59,18 +63,21 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 		return index;
 	}
 
-	public void remove(O object) {
+	public final void remove(O object) {
 		remove(object.address);
 	}
 
-	public void remove(long address) {
+	private final void remove(long address) {
 		remove(index(address));
 	}
 
 	@Override
-	public void remove(int index) {
+	public final void remove(int index) {
+		long address = address(index);
+		pointer.address = address;
+		onRemove(getEntity(index), pointer);
 		if (index != --size) {
-			MemoryUtil.memCopy(address(size), address(index), objectSize);
+			MemoryUtil.memCopy(address(size), address, objectSize);
 			Entity lastEntity = getEntity(size);
 			relink(index, lastEntity);
 			lastEntity.setSystemId(this, size, index);
@@ -78,7 +85,7 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 	}
 
 	@Override
-	public void forEach(Consumer<O> func) {
+	public final void forEach(Consumer<O> func) {
 		O o = factory.apply(0);
 		for (int i = 0; i < size; i++) {
 			o.address = address(i);
@@ -86,50 +93,50 @@ public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O exte
 		}
 	}
 
-	public void forEach(LongConsumer func) {
+	public final void forEach(LongConsumer func) {
 		for (int i = 0; i < size; i++)
 			func.accept(address(i));
 	}
 
 	@Override
-	public O get(int index) {
+	public final O get(int index) {
 		return factory.apply(address(index));
 	}
 
-	public O get(int index, O target) {
+	public final O get(int index, O target) {
 		target.address = address(index);
 		return target;
 	}
 
-	public long address(int index) {
+	public final long address(int index) {
 		return bufferAddress + (index * objectSize);
 	}
 
-	public int index(long address) {
+	public final int index(long address) {
 		return (int) ((address - bufferAddress) / objectSize);
 	}
 
 	@Override
-	public Entity getEntity(int index) {
+	public final Entity getEntity(int index) {
 		return entities[index];
 	}
 
 	@Override
-	public Transform getTransform(int index) {
+	public final Transform getTransform(int index) {
 		return entities[index].transform;
 	}
 
 	@Override
-	public void relink(int index, Entity entity) {
+	public final void relink(int index, Entity entity) {
 		entities[index] = entity;
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
 		return size;
 	}
 
-	protected void swap(int index1, int index2) {
+	protected final void swap(int index1, int index2) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			long tmp = stack.nmalloc(objectSize);
 			long address1 = address(index1);

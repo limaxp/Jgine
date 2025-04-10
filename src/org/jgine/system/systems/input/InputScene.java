@@ -21,7 +21,7 @@ public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
-	public void init(Entity entity, InputHandler object) {
+	public void onInit(Entity entity, InputHandler object) {
 		object.setEntity(entity);
 	}
 

@@ -32,8 +32,6 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 
 	public abstract void free();
 
-	public abstract void init(Entity entity, O object);
-
 	public abstract int add(Entity entity, O object);
 
 	public abstract void remove(int index);
@@ -56,6 +54,15 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 	public void onRender(float dt) {
 	}
 
+	public void onInit(Entity entity, O object) {
+	}
+
+	public void onAdd(Entity entity, O object) {
+	}
+
+	public void onRemove(Entity entity, O object) {
+	}
+
 	public abstract void load(DataInput in) throws IOException;
 
 	public abstract void save(DataOutput out) throws IOException;
@@ -65,8 +72,8 @@ public abstract class SystemScene<S extends EngineSystem<S, O>, O extends System
 	public abstract int size();
 
 	@SuppressWarnings("unchecked")
-	public final void init_(Entity entity, SystemObject object) {
-		init(entity, (O) object);
+	public final void onInit_(Entity entity, SystemObject object) {
+		onInit(entity, (O) object);
 	}
 
 	@SuppressWarnings("unchecked")

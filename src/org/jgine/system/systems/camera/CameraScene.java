@@ -21,7 +21,7 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void init(Entity entity, Camera object) {
+	public void onInit(Entity entity, Camera object) {
 		object.transform = entity.transform;
 		if (object.getRenderTarget() == null)
 			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
@@ -29,9 +29,8 @@ public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 	}
 
 	@Override
-	public void remove(int index) {
-		system.unregisterCamera(get(index));
-		super.remove(index);
+	public void onRemove(Entity entity, Camera object) {
+		system.unregisterCamera(object);
 	}
 
 	@Override

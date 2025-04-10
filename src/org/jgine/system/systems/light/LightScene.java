@@ -11,7 +11,7 @@ import org.jgine.render.light.DirectionalLight;
 import org.jgine.render.light.Light;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.shader.PhongShader;
-import org.jgine.system.data.EntitySystemScene;
+import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
 import org.jgine.utils.Color;
 import org.jgine.utils.collection.list.UnorderedArrayList;
 
@@ -33,7 +33,7 @@ public class LightScene extends EntitySystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void init(Entity entity, Light object) {
+	public void onInit(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			pointLights.add((PointLight) object);
 		if (object instanceof DirectionalLight)
@@ -42,14 +42,11 @@ public class LightScene extends EntitySystemScene<LightSystem, Light> {
 	}
 
 	@Override
-	public void remove(int index) {
-		Light object = get(index);
+	public void onRemove(Entity entity, Light object) {
 		if (object instanceof PointLight)
 			pointLights.remove((PointLight) object);
 		if (object instanceof DirectionalLight)
 			directionalLight = new DirectionalLight();
-
-		super.remove(index);
 	}
 
 	@Override

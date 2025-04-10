@@ -11,7 +11,7 @@ import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
 import org.jgine.system.UpdateManager;
-import org.jgine.system.data.EntitySystemScene;
+import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
@@ -43,7 +43,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	}
 
 	@Override
-	public void init(Entity entity, Collider object) {
+	public void onInit(Entity entity, Collider object) {
 		Transform transform = entity.transform;
 		object.move(transform.getX(), transform.getY(), transform.getZ());
 		object.scale(transform.getScaleX(), transform.getScaleY(), transform.getScaleZ());

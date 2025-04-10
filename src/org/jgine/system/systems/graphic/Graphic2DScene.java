@@ -13,7 +13,7 @@ import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.SystemObject;
-import org.jgine.system.data.TransformSystemScene;
+import org.jgine.system.data.ObjectSystemScene.TransformSystemScene;
 
 public class Graphic2DScene extends TransformSystemScene<Graphic2DSystem, Material> {
 
@@ -28,7 +28,7 @@ public class Graphic2DScene extends TransformSystemScene<Graphic2DSystem, Materi
 	}
 
 	@Override
-	public void init(Entity entity, Material object) {
+	public void onInit(Entity entity, Material object) {
 	}
 
 	@Override

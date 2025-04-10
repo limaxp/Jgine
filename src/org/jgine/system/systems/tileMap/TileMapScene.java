@@ -24,7 +24,7 @@ public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 	}
 
 	@Override
-	public void init(Entity entity, TileMap object) {
+	public void onInit(Entity entity, TileMap object) {
 		object.setTransform(entity.transform);
 		for (int x = 0; x < object.getTileswidth(); x++) {
 			for (int y = 0; y < object.getTilesheight(); y++) {
@@ -35,9 +35,8 @@ public class TileMapScene extends ObjectSystemScene<TileMapSystem, TileMap> {
 	}
 
 	@Override
-	public void remove(int index) {
-		get(index).close();
-		super.remove(index);
+	public void onRemove(Entity entity, TileMap object) {
+		object.close();
 	}
 
 	@Override
