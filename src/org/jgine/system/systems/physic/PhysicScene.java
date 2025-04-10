@@ -42,11 +42,6 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 	}
 
 	@Override
-	public void onAdd(Entity entity, PhysicObject object) {
-		onInit(entity, object);
-	}
-
-	@Override
 	public void update(UpdateTask update) {
 		this.dt = update.dt;
 		Job.region(size(), this::updatePosition, () -> update.finish(system));
