@@ -231,8 +231,8 @@ public class TileMap implements SystemObject {
 		Entity child = new Entity(entity.scene, x * data.tilewidth, -y * data.tileheight);
 		child.setParent(entity);
 		PhysicObject physic = new PhysicObject();
-		physic.hasGravity = false;
-		physic.stiffness = 0.0f;
+		physic.setGravity(false);
+		physic.setMoveable(false);
 		child.addSystem(Engine.PHYSIC_SYSTEM, physic);
 		AxisAlignedBoundingQuad collider = new AxisAlignedBoundingQuad(data.tilewidth * 0.5f, data.tileheight * 0.5f);
 		child.addSystem(Engine.COLLISION_SYSTEM, collider);

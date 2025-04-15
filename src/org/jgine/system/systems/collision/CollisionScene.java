@@ -124,15 +124,15 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 			Collider collider2, CollisionData collision) {
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
 		if (physic1 != null) {
-			float dx = physic1.stiffness * collision.overlapX * axisNormal.x;
-			float dy = physic1.stiffness * collision.overlapY * axisNormal.y;
+			float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x;
+			float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y;
 			physic1.x += dx;
 			physic1.y += dy;
 			collider1.move(dx, dy, 0.0f);
 		}
 		if (physic2 != null) {
-			float dx = -physic2.stiffness * collision.overlapX * axisNormal.x;
-			float dy = -physic2.stiffness * collision.overlapY * axisNormal.y;
+			float dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x;
+			float dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y;
 			physic2.x += dx;
 			physic2.y += dy;
 			collider2.move(dx, dy, 0.0f);
@@ -144,23 +144,23 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
 		if (collision.overlapX < collision.overlapY) {
 			if (physic1 != null) {
-				float dx = physic1.stiffness * collision.overlapX * axisNormal.x;
+				float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x;
 				physic1.x += dx;
 				collider1.move(dx, 0.0f, 0.0f);
 			}
 			if (physic2 != null) {
-				float dx = -physic2.stiffness * collision.overlapX * axisNormal.x;
+				float dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x;
 				physic2.x += dx;
 				collider2.move(dx, 0.0f, 0.0f);
 			}
 		} else {
 			if (physic1 != null) {
-				float dy = physic1.stiffness * collision.overlapY * axisNormal.y;
+				float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y;
 				physic1.y += dy;
 				collider1.move(0.0f, dy, 0.0f);
 			}
 			if (physic2 != null) {
-				float dy = -physic2.stiffness * collision.overlapY * axisNormal.y;
+				float dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y;
 				physic2.y += dy;
 				collider2.move(0.0f, dy, 0.0f);
 			}

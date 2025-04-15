@@ -38,7 +38,7 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 	@Override
 	public void onInit(Entity entity, PhysicObject object) {
 		Transform transform = entity.transform;
-		object.initPosition(transform.getX(), transform.getY(), transform.getZ());
+		object.setPosition(transform.getX(), transform.getY(), transform.getZ());
 	}
 
 	@Override
