@@ -142,8 +142,8 @@ public class LineCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Float.MAX_VALUE, Float.MAX_VALUE),
-				 new Material(), yNorm, -xNorm, -yNorm, xNorm);
+		Renderer2D.renderLine(Transform.calculateMatrix2d(new Matrix(), x, y, Integer.MAX_VALUE, Integer.MAX_VALUE),
+				new Material(), yNorm, -xNorm, -yNorm, xNorm);
 	}
 
 	@Override
