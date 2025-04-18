@@ -46,6 +46,13 @@ public class CylinderCollider extends Collider {
 	}
 
 	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
+	@Override
 	public void move(float x, float y, float z) {
 		this.x += x;
 		this.y += y;

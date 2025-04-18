@@ -4,22 +4,13 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.jgine.core.Engine;
 import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
-import org.jgine.core.Transform;
-import org.jgine.core.entity.Entity;
-import org.jgine.system.UpdateManager;
 import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
+import org.jgine.utils.math.FastMath;
 import org.jgine.utils.scheduler.Job;
 
 public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
-
-	static {
-		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			entity.forSystems(Engine.PHYSIC_SYSTEM, (PhysicObject physic) -> physic.movePosition(dx, dy, dz));
-		});
-	}
 
 	private float gravity;
 	private float airResistanceFactor;
@@ -33,12 +24,6 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 
 	@Override
 	public void free() {
-	}
-
-	@Override
-	public void onInit(Entity entity, PhysicObject object) {
-		Transform transform = entity.transform;
-		object.setPosition(transform.getX(), transform.getY(), transform.getZ());
 	}
 
 	@Override
@@ -77,12 +62,22 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 
 	private void updatePosition(int index) {
 		PhysicObject object = get(index);
-		if (object.updatePosition(dt, gravity, airResistanceFactor)) {
-			Entity entity = getEntity(index);
-			Transform transform = entity.transform;
-			transform.setPositionIntern(object.x, object.y, object.z);
-			UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),
-					transform.getY() - object.getOldY(), transform.getZ() - object.getOldZ());
-		}
+		object.velX = object.velX + object.motX * dt * dt;
+		object.velY = object.velY + (object.motY + object.getGravity() * gravity) * dt * dt;
+		object.velZ = object.velZ + object.motZ * dt * dt;
+
+		object.velX *= airResistanceFactor;
+		object.velY *= airResistanceFactor;
+		object.velZ *= airResistanceFactor;
+
+		object.motX = 0;
+		object.motY = 0;
+		object.motZ = 0;
+
+		getEntity(index).transform.movePosition(object.velX, object.velY, object.velZ);
+		if (FastMath.abs(object.velX) + FastMath.abs(object.velY) + FastMath.abs(object.velZ) > 3.0f)
+			object.setMoving(true);
+		else
+			object.setMoving(false);
 	}
 }

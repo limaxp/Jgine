@@ -43,6 +43,12 @@ public class LineCollider extends Collider {
 		this.xNorm = xNorm;
 		this.yNorm = yNorm;
 	}
+	
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+	}
 
 	@Override
 	public void move(float x, float y, float z) {

@@ -48,6 +48,13 @@ public class PlaneCollider extends Collider {
 		this.yNorm = yNorm;
 		this.zNorm = zNorm;
 	}
+	
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
 	@Override
 	public void move(float x, float y, float z) {

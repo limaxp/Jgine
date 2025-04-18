@@ -198,7 +198,6 @@ public class Entity {
 
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
 		systemScene.onInit(this, object);
-//		systems.add(systemScene.id, systemScene.add(this, object));
 		systems.cache(systemScene.id, object);
 		if (!doesUpdate()) {
 			markUpdate(true);

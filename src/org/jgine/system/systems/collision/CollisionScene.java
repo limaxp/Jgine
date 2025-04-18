@@ -24,13 +24,10 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 
 	static {
 		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.move(dx, dy, dz));
+			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.set(dx, dy, dz));
 		});
 		UpdateManager.addTransformScale((entity, x, y, z) -> {
 			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.scale(x, y, z));
-		});
-		UpdateManager.addPhysicPosition((entity, dx, dy, dz) -> {
-			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.move(dx, dy, dz));
 		});
 	}
 
@@ -45,7 +42,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	@Override
 	public void onInit(Entity entity, Collider object) {
 		Transform transform = entity.transform;
-		object.move(transform.getX(), transform.getY(), transform.getZ());
+		object.set(transform.getX(), transform.getY(), transform.getZ());
 		object.scale(transform.getScaleX(), transform.getScaleY(), transform.getScaleZ());
 	}
 
@@ -90,9 +87,6 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 
 	private void solveCollision(int index) {
 		Collider object = get(index);
-//		for (int i = index + 1; i < this.size; ++i)
-//			resolveCollision(entities[index], object, entities[i], objects[i]);
-
 		Entity entity = getEntity(index);
 		scene.getSpacePartitioning().forNear(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
 				object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
@@ -110,60 +104,58 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 		if (collision == null)
 			return;
 		if (!collider1.noResolve && !collider2.noResolve) {
-			PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
-			PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
 			if (collision.strictResolve)
-				resolveStrict(physic1, collider1, physic2, collider2, collision);
+				resolveStrict(entity1, collider1, entity2, collider2, collision);
 			else
-				resolveDefault(physic1, collider1, physic2, collider2, collision);
+				resolveDefault(entity1, collider1, entity2, collider2, collision);
 		}
 		callCollisionEvent(entity1, entity2, collider1, collider2, collision);
 	}
 
-	private static void resolveDefault(PhysicObject physic1, Collider collider1, PhysicObject physic2,
-			Collider collider2, CollisionData collision) {
+	private static void resolveDefault(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
+			CollisionData collision) {
+		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
+		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
+
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
-		if (physic1 != null) {
-			float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x;
-			float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y;
-			physic1.x += dx;
-			physic1.y += dy;
-			collider1.move(dx, dy, 0.0f);
-		}
-		if (physic2 != null) {
-			float dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x;
-			float dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y;
-			physic2.x += dx;
-			physic2.y += dy;
-			collider2.move(dx, dy, 0.0f);
-		}
+		float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x * 1.1f;
+		float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y * 1.1f;
+		physic1.velX += dx;
+		physic1.velY += dy;
+		collider1.move(dx, dy, 0.0f);
+
+		dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x * 1.1f;
+		dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y * 1.1f;
+		physic2.velX += dx;
+		physic2.velY += dy;
+		collider2.move(dx, dy, 0.0f);
 	}
 
-	private static void resolveStrict(PhysicObject physic1, Collider collider1, PhysicObject physic2,
-			Collider collider2, CollisionData collision) {
+	public static float calculateVelocity(float v1, float m1, float v2, float m2) {
+		return (v1 * (m1 - m2) + (2 * m2 * v2)) / (m1 + m2);
+	}
+
+	private static void resolveStrict(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
+			CollisionData collision) {
+		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
+		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
 		if (collision.overlapX < collision.overlapY) {
-			if (physic1 != null) {
-				float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x;
-				physic1.x += dx;
-				collider1.move(dx, 0.0f, 0.0f);
-			}
-			if (physic2 != null) {
-				float dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x;
-				physic2.x += dx;
-				collider2.move(dx, 0.0f, 0.0f);
-			}
+			float dx = physic1.getStiffness() * collision.overlapX * axisNormal.x * 1.1f;
+			physic1.velX += dx;
+			collider1.move(dx, 0.0f, 0.0f);
+
+			dx = -physic2.getStiffness() * collision.overlapX * axisNormal.x * 1.1f;
+			physic2.velX += dx;
+			collider2.move(dx, 0.0f, 0.0f);
 		} else {
-			if (physic1 != null) {
-				float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y;
-				physic1.y += dy;
-				collider1.move(0.0f, dy, 0.0f);
-			}
-			if (physic2 != null) {
-				float dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y;
-				physic2.y += dy;
-				collider2.move(0.0f, dy, 0.0f);
-			}
+			float dy = physic1.getStiffness() * collision.overlapY * axisNormal.y * 1.1f;
+			physic1.velY += dy;
+			collider1.move(0.0f, dy, 0.0f);
+
+			dy = -physic2.getStiffness() * collision.overlapY * axisNormal.y * 1.1f;
+			physic2.velY += dy;
+			collider2.move(0.0f, dy, 0.0f);
 		}
 	}
 

@@ -48,6 +48,13 @@ public class AxisAlignedBoundingBox extends Collider {
 		this.h = h;
 		this.d = d;
 	}
+	
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
 	@Override
 	public void move(float x, float y, float z) {

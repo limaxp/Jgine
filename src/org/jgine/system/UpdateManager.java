@@ -27,7 +27,6 @@ public class UpdateManager {
 
 	private static UpdateFunction transformPosition = NULL_UPDATE_FUNCTION;
 	private static UpdateFunction transformScale = NULL_UPDATE_FUNCTION;
-	private static UpdateFunction physicPosition = NULL_UPDATE_FUNCTION;
 
 	public static void addTransformPosition(UpdateFunction func) {
 		transformPosition = addUpdate(transformPosition, func);
@@ -43,14 +42,6 @@ public class UpdateManager {
 
 	public static UpdateFunction getTransformScale() {
 		return transformScale;
-	}
-
-	public static void addPhysicPosition(UpdateFunction func) {
-		physicPosition = addUpdate(physicPosition, func);
-	}
-
-	public static UpdateFunction getPhysicPosition() {
-		return physicPosition;
 	}
 
 	public static <T> BiConsumer<Entity, T> addUpdate(BiConsumer<Entity, T> old, BiConsumer<Entity, T> func) {

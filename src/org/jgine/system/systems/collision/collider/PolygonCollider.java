@@ -71,6 +71,12 @@ public class PolygonCollider extends Collider {
 	}
 
 	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+	}
+
+	@Override
 	public void move(float x, float y, float z) {
 		this.x += x;
 		this.y += y;

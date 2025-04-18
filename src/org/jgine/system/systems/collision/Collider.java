@@ -14,6 +14,8 @@ import org.jgine.system.SystemObject;
 public abstract class Collider implements SystemObject {
 
 	public boolean noResolve = false;
+	
+	public abstract void set(float x, float y, float z);
 
 	public abstract void move(float x, float y, float z);
 

@@ -78,19 +78,24 @@ public class Transform implements Cloneable {
 		float oldX = getX();
 		float oldY = getY();
 		float oldZ = getZ();
-		setPositionIntern(x, y, z);
-		UpdateManager.getTransformPosition().accept(entity, getX() - oldX, getY() - oldY, getZ() - oldZ);
-	}
-
-	public final void setPositionIntern(float x, float y, float z) {
-		float oldX = getX();
-		float oldY = getY();
-		float oldZ = getZ();
 		posX = x;
 		posY = y;
 		posZ = z;
 		calculateMatrix();
 		spacePartitioning.move(entity, oldX, oldY, oldZ, getX(), getY(), getZ());
+		UpdateManager.getTransformPosition().accept(entity, getX(), getY(), getZ());
+	}
+
+	public final void movePosition(float dx, float dy, float dz) {
+		float oldX = getX();
+		float oldY = getY();
+		float oldZ = getZ();
+		posX = oldX + dx;
+		posY = oldY + dy;
+		posZ = oldZ + dz;
+		calculateMatrix();
+		spacePartitioning.move(entity, oldX, oldY, oldZ, getX(), getY(), getZ());
+		UpdateManager.getTransformPosition().accept(entity, getX(), getY(), getZ());
 	}
 
 	public final Vector3f getPosition() {
@@ -145,16 +150,12 @@ public class Transform implements Cloneable {
 		float oldX = getScaleX();
 		float oldY = getScaleY();
 		float oldZ = getScaleZ();
-		setScaleIntern(x, y, z);
-		UpdateManager.getTransformScale().accept(entity, 1.0f + getScaleX() - oldX, 1.0f + getScaleY() - oldY,
-				1.0f + getScaleZ() - oldZ);
-	}
-
-	public final void setScaleIntern(float x, float y, float z) {
 		scaleX = x;
 		scaleY = y;
 		scaleZ = z;
 		calculateMatrix();
+		UpdateManager.getTransformScale().accept(entity, 1.0f + getScaleX() - oldX, 1.0f + getScaleY() - oldY,
+				1.0f + getScaleZ() - oldZ);
 	}
 
 	public final Vector3f getScale() {

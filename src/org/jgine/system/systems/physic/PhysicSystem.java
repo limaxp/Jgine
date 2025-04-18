@@ -9,8 +9,8 @@ import org.jgine.utils.collection.function.Property;
 
 public class PhysicSystem extends EngineSystem<PhysicSystem, PhysicObject> {
 
-	private float gravity = -1000.0f;
-	private float airResistanceFactor = 0.99f;
+	private float gravity = -3000.0f;
+	private float airResistanceFactor = 0.95f;
 
 	public PhysicSystem() {
 		super("physic");
