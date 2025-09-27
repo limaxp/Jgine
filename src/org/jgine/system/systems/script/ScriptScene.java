@@ -65,7 +65,7 @@ public class ScriptScene extends ObjectSystemScene<ScriptSystem, AbstractScriptO
 		if (scriptEngine != null)
 			object = new ScriptObject((String) scriptName, scriptEngine);
 		else
-			object = (EntityScript) Script.get(scriptName);
+			object = (Script) ScriptBase.get(scriptName);
 		object.load(in);
 		return object;
 	}

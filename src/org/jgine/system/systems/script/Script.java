@@ -1,42 +1,43 @@
 package org.jgine.system.systems.script;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.utils.Reflection;
-import org.jgine.utils.registry.ClassPathRegistry;
+import org.jgine.core.entity.Entity;
 
-public interface Script {
+public abstract class Script extends AbstractScriptObject implements IScript, ScriptBase {
 
-	public default Object invokeFunction(String name, Class<?> type, Object arg) {
-		try {
-			return Reflection.getDeclaredMethod_(getClass(), name, type).invoke(this, arg);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-			return null;
-		}
+	protected Entity entity;
+
+	public Script() {
 	}
 
-	public default Object invokeFunction(String name, Class<?> type1, Class<?> type2, Object arg1, Object arg2) {
-		try {
-			return Reflection.getDeclaredMethod_(getClass(), name, type1, type2).invoke(this, arg1, arg2);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-			return null;
-		}
+	@Override
+	protected void setEntity(Entity entity) {
+		this.entity = entity;
 	}
 
-	public default Object invokeFunction(String name, Class<?>[] types, Object... args) {
-		try {
-			return Reflection.getDeclaredMethod_(getClass(), name, types).invoke(this, args);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-			return null;
-		}
+	@Override
+	public Entity getEntity() {
+		return entity;
 	}
 
-	@Nullable
-	public static Script get(String name) {
-		return ClassPathRegistry.getScript(name);
+	@Override
+	public String getName() {
+		return getClass().getSimpleName();
+	}
+
+	@Override
+	public IScript getInterface() {
+		return this;
+	}
+
+	@Override
+	public void load(DataInput in) throws IOException {
+	}
+
+	@Override
+	public void save(DataOutput out) throws IOException {
 	}
 }

@@ -11,7 +11,7 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.script.Script;
+import org.jgine.system.systems.script.ScriptBase;
 import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
@@ -463,8 +463,8 @@ public abstract class UIObject implements SystemObject {
 		@Override
 		public void accept(UIObject object) {
 			Object scriptEngine = object.getScriptEngine();
-			if (scriptEngine instanceof Script)
-				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, object);
+			if (scriptEngine instanceof ScriptBase)
+				((ScriptBase) scriptEngine).invokeFunction(functionName, UIObject.class, object);
 			else
 				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object);
 		}
@@ -482,8 +482,8 @@ public abstract class UIObject implements SystemObject {
 		@Override
 		public void accept(UIObject object, E value) {
 			Object scriptEngine = object.getScriptEngine();
-			if (scriptEngine instanceof Script)
-				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, clazz, object, value);
+			if (scriptEngine instanceof ScriptBase)
+				((ScriptBase) scriptEngine).invokeFunction(functionName, UIObject.class, clazz, object, value);
 			else
 				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object, value);
 		}

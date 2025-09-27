@@ -16,7 +16,7 @@ import org.jgine.render.RenderTarget;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
-import org.jgine.system.systems.script.Script;
+import org.jgine.system.systems.script.ScriptBase;
 import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
@@ -271,7 +271,7 @@ public class UIWindow extends UICompound {
 
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
-			Script script = Script.get((String) scriptName);
+			ScriptBase script = ScriptBase.get((String) scriptName);
 			if (script != null)
 				this.scriptEngine = script;
 			else
@@ -289,7 +289,7 @@ public class UIWindow extends UICompound {
 		border.load(in);
 		borderSize = in.readFloat();
 		String scriptName = in.readUTF();
-		Script script = Script.get(scriptName);
+		ScriptBase script = ScriptBase.get(scriptName);
 		if (script != null)
 			scriptEngine = script;
 		else
@@ -306,7 +306,7 @@ public class UIWindow extends UICompound {
 		border.save(out);
 		out.writeFloat(borderSize);
 		if (scriptEngine != null) {
-			if (scriptEngine instanceof Script)
+			if (scriptEngine instanceof ScriptBase)
 				out.writeUTF(scriptEngine.getClass().getSimpleName());
 			else
 				out.writeUTF(ResourceManager.getScriptName((ScriptEngine) scriptEngine));
@@ -401,7 +401,7 @@ public class UIWindow extends UICompound {
 		this.scriptEngine = script;
 	}
 
-	public void setScript(Script script) {
+	public void setScript(ScriptBase script) {
 		this.scriptEngine = script;
 	}
 

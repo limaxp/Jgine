@@ -32,7 +32,7 @@ public class ScriptSystem extends EngineSystem<ScriptSystem, AbstractScriptObjec
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
 		if (scriptEngine != null)
 			return new ScriptObject((String) scriptName, scriptEngine);
-		return (EntityScript) Script.get((String) scriptName);
+		return (Script) ScriptBase.get((String) scriptName);
 	}
 
 	public static <T> void callEvent(Entity entity, T t, BiConsumer<IScript, T> func) {

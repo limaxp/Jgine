@@ -1,8 +1,8 @@
 package org.jgine.system.systems.ui;
 
-import org.jgine.system.systems.script.Script;
+import org.jgine.system.systems.script.ScriptBase;
 
-public interface UIScript extends Script {
+public interface UIScript extends ScriptBase {
 
 	public void onEnable(UIWindow window);
 
