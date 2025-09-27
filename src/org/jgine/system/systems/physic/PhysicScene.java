@@ -74,10 +74,10 @@ public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 		object.motY = 0;
 		object.motZ = 0;
 
-		getEntity(index).transform.movePosition(object.velX, object.velY, object.velZ);
-		if (FastMath.abs(object.velX) + FastMath.abs(object.velY) + FastMath.abs(object.velZ) > 3.0f)
+		if (FastMath.abs(object.velX) + FastMath.abs(object.velY) + FastMath.abs(object.velZ) > 0.001f) {
+			getEntity(index).transform.movePosition(object.velX, object.velY, object.velZ);
 			object.setMoving(true);
-		else
+		} else
 			object.setMoving(false);
 	}
 }
