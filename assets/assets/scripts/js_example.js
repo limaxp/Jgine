@@ -23,7 +23,7 @@ class JavaScriptBehavour {
 		print(entity);
 	}
 
-	onCollision(collision) {
+	onCollision(data, other, collider, otherColider) {
 	}
 }
 

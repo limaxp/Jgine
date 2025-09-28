@@ -26,7 +26,7 @@ public abstract class Collider implements SystemObject {
 	public abstract boolean checkCollision(Collider other);
 
 	@Nullable
-	public abstract CollisionData resolveCollision(Collider other);
+	public abstract Collision resolveCollision(Collider other);
 
 	public abstract void load(Map<String, Object> data);
 

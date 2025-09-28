@@ -13,7 +13,7 @@ import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
@@ -98,7 +98,7 @@ public class PlaneCollider extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof PlaneCollider) {
 			PlaneCollider o = (PlaneCollider) other;
 			return CollisionChecks.resolvePlanevsPlane(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.xNorm, o.yNorm,

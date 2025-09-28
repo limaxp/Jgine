@@ -1,6 +1,7 @@
 package org.jgine.system.systems.script;
 
 import org.jgine.core.entity.Entity;
+import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.Collision;
 
 public interface IScript {
@@ -13,5 +14,5 @@ public interface IScript {
 
 	public abstract void update();
 
-	public abstract void onCollision(Collision collision);
+	public abstract void onCollision(Collision data, Entity other, Collider collider, Collider otherColider);
 }

@@ -75,6 +75,7 @@ public class MeshGenerator {
 
 	public static void addCircle(FloatBuffer vertices, float x, float y, float radius, int steps) {
 		float angle = (float) FastMath.PI2 / steps;
+		addCirclePoint(vertices, radius, 0);
 		for (float phi = angle; phi < FastMath.PI2; phi += angle)
 			addCirclePoint(vertices, x, y, radius, phi);
 	}
@@ -89,7 +90,7 @@ public class MeshGenerator {
 	}
 
 	public static void addCirclePoint(FloatBuffer vertices, float radius, float angle) {
-		addVertice(vertices, 0.0f, 0.0f, radius, angle);
+		addCirclePoint(vertices, 0.0f, 0.0f, radius, angle);
 	}
 
 	public static void addCirclePoint(FloatBuffer vertices, float x, float y, float radius, float angle) {
@@ -154,15 +155,7 @@ public class MeshGenerator {
 	}
 
 	public static BaseMesh circleHollow(float radius, int steps) {
-		FloatBuffer vertices = BufferUtils.createFloatBuffer(steps * 4);
-		addCirclePoint(vertices, radius, 0);
-		float angle = (float) FastMath.PI2 / steps;
-		for (float phi = angle; phi < FastMath.PI2; phi += angle)
-			addCirclePoint(vertices, radius, phi);
-
-		vertices.flip();
-		BaseMesh mesh = new BaseMesh(2, false);
-		mesh.loadVertices(vertices);
+		BaseMesh mesh = circle(radius, steps);
 		mesh.mode = Mesh.LINE_LOOP;
 		return mesh;
 	}

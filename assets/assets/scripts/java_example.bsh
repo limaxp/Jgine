@@ -1,5 +1,6 @@
 import org.jgine.core.entity.Entity;
 import org.jgine.system.systems.collision.Collision;
+import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.script.IScript;
 
 class JavaBehavour implements IScript {
@@ -24,7 +25,7 @@ class JavaBehavour implements IScript {
 		//print(entity);
 	}
 	
-	public void onCollision(Collision collision) { 
+	public void onCollision(Collision data, Entity other, Collider collider, Collider otherColider) { 
 	}
 }
 

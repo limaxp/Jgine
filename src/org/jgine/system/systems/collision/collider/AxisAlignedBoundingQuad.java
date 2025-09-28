@@ -15,7 +15,7 @@ import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -92,7 +92,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof AxisAlignedBoundingQuad) {
 			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
 			return CollisionChecks.resolveQuadvsQuad(x, y, w, h, o.x, o.y, o.w, o.h);

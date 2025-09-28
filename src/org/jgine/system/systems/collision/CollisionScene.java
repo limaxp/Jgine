@@ -23,8 +23,8 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	public static final int SUB_STEPS = 4;
 
 	static {
-		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.set(dx, dy, dz));
+		UpdateManager.addTransformPosition((entity, x, y, z) -> {
+			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.set(x, y, z));
 		});
 		UpdateManager.addTransformScale((entity, x, y, z) -> {
 			entity.forSystems(Engine.COLLISION_SYSTEM, (Collider collider) -> collider.scale(x, y, z));
@@ -100,7 +100,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	}
 
 	private void resolveCollision(Entity entity1, Collider collider1, Entity entity2, Collider collider2) {
-		CollisionData collision = collider1.resolveCollision(collider2);
+		Collision collision = collider1.resolveCollision(collider2);
 		if (collision == null)
 			return;
 		if (!collider1.noResolve && !collider2.noResolve) {
@@ -112,8 +112,14 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 		callCollisionEvent(entity1, entity2, collider1, collider2, collision);
 	}
 
+	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
+			Collider targetCollider, Collision collision) {
+		ScriptSystem.callEvent(object, collision, target, objectCollider, targetCollider, IScript::onCollision);
+		ScriptSystem.callEvent(target, collision, object, targetCollider, objectCollider, IScript::onCollision);
+	}
+
 	private static void resolveDefault(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
-			CollisionData collision) {
+			Collision collision) {
 		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
@@ -138,7 +144,7 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 	}
 
 	private static void resolveStrict(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
-			CollisionData collision) {
+			Collision collision) {
 		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
 		Vector2f axisNormal = Vector2f.normalize(collision.getAxisX(), collision.getAxisY());
@@ -162,13 +168,5 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 			physic2.velY += dy2;
 			collider2.move(0.0f, dy2, 0.0f);
 		}
-	}
-
-	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
-			Collider targetCollider, CollisionData collision) {
-		ScriptSystem.callEvent(object, new Collision(collision, target, objectCollider, targetCollider),
-				IScript::onCollision);
-		ScriptSystem.callEvent(target, new Collision(collision, object, targetCollider, objectCollider),
-				IScript::onCollision);
 	}
 }
