@@ -3,6 +3,7 @@ package org.jgine.core.entity;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,16 @@ public class SystemMap {
 	public @Nullable SystemObject getCache(int system, int index) {
 		synchronized (cache) {
 			return cache.getOrDefault(id(system, index), null);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends SystemObject> void forCache(int system, Consumer<T> func) {
+		synchronized (cache) {
+			int systemSize = size(system);
+			int cacheSize = cacheSizes[system];
+			for (int i = 0; i < cacheSize; i++)
+				func.accept((T) cache.get(id(system, systemSize + i)));
 		}
 	}
 

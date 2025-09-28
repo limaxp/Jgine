@@ -331,6 +331,7 @@ public class Entity {
 
 	public final <T extends SystemObject> void forSystems(SystemScene<?, T> systemScene, Consumer<T> func) {
 		systems.forEach(systemScene.id, (index) -> func.accept(systemScene.get(index)));
+		systems.<T>forCache(systemScene.id, func::accept);
 	}
 
 	public final void forSystems(String name, IntConsumer func) {
