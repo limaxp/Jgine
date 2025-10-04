@@ -19,7 +19,7 @@ function LuaBehavour:update()
 	print(self.entity);
 end
   	
-function LuaBehavour:onCollision(collision) 	
+function LuaBehavour:onCollision(data, other, collider, otherColider) 	
 end
 
 

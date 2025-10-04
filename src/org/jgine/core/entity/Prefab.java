@@ -1,6 +1,5 @@
 package org.jgine.core.entity;
 
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,24 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.LongBitSet;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
-import org.jgine.utils.Reflection;
+import org.jgine.utils.collection.bitSet.LongBitSet;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 
 /**
  * A blueprint for a {@link Entity}. Stores info about name, id,
- * {@link Transform}, {@link EntityTag}, used
- * {@link EngineSystems}<code>s</code> and child prefabs. Also contains a
- * Map<Object, Object> to store any extra data. Use create() methods to build a
- * {@link Entity}.
+ * {@link Transform}, {@link EntityTag}, used {@link EngineSystem}<code>s</code>
+ * and child prefabs. Also contains a Map<Object, Object> to store any extra
+ * data. Use create() methods to build a {@link Entity}.
  * <p>
  * Prefabs are usually written as YAML files with the .prefab extension and
  * loaded with the {@link ResourceManager}. The prefab name becomes the file
@@ -52,24 +49,9 @@ data:
   dataName2: data
   ...:
 transform:
-  position: xyzValue
   position: [x, y, z]
-  position:
-    x: xValue
-    y: yValue
-    z: zValue
-  rotation: xyzValue
   rotation: [x, y, z]
-  rotation:
-    x: xValue
-    y: yValue
-    z: zValue
-  scale: xyzValue
-  scale: [x, y, z]
-  scale:
-    x: xValue
-    y: yValue
-    z: zValue
+  scale: [x, y, z] OR xyzValue
 systems:
   systemName1:
     systemData
@@ -87,7 +69,7 @@ public class Prefab {
 	public final String name;
 	public final int id;
 	public final TransformData transform;
-	private EngineSystem[] systems;
+	private EngineSystem<?, ?>[] systems;
 	private SystemObject[][] objects;
 	private String[][] names;
 	int size;
@@ -107,7 +89,7 @@ public class Prefab {
 		tag = new LongBitSet();
 	}
 
-	public final void set(EngineSystem system, String name, SystemObject object) {
+	public final void set(EngineSystem<?, ?> system, String name, SystemObject object) {
 		int index = indexOf(system);
 		if (index >= 0) {
 			String[] subNames = names[index];
@@ -134,7 +116,7 @@ public class Prefab {
 	}
 
 	@Nullable
-	public final SystemObject remove(EngineSystem system, String name) {
+	public final SystemObject remove(EngineSystem<?, ?> system, String name) {
 		int index = indexOf(system);
 		if (index >= 0) {
 			String[] subNames = names[index];
@@ -170,7 +152,7 @@ public class Prefab {
 		return null;
 	}
 
-	public final SystemObject[] remove(EngineSystem system) {
+	public final SystemObject[] remove(EngineSystem<?, ?> system) {
 		int index = indexOf(system);
 		if (index >= 0) {
 			SystemObject[] result = objects[index];
@@ -188,7 +170,7 @@ public class Prefab {
 	}
 
 	@Nullable
-	public final SystemObject get(EngineSystem system, String name) {
+	public final SystemObject get(EngineSystem<?, ?> system, String name) {
 		int index = indexOf(system);
 		if (index >= 0) {
 			String[] subNames = names[index];
@@ -200,25 +182,25 @@ public class Prefab {
 	}
 
 	@Nullable
-	public final SystemObject get(EngineSystem system, int index) {
+	public final SystemObject get(EngineSystem<?, ?> system, int index) {
 		SystemObject[] subObjects = get(system);
 		if (subObjects != EMPTY_OBJECTS)
 			return subObjects[index];
 		return null;
 	}
 
-	public final SystemObject[] get(EngineSystem system) {
+	public final SystemObject[] get(EngineSystem<?, ?> system) {
 		int index = indexOf(system);
 		if (index >= 0)
 			return objects[index];
 		return EMPTY_OBJECTS;
 	}
 
-	public final boolean has(EngineSystem system) {
+	public final boolean has(EngineSystem<?, ?> system) {
 		return indexOf(system) != -1;
 	}
 
-	public final Iterator<EngineSystem> systemIterator() {
+	public final Iterator<EngineSystem<?, ?>> systemIterator() {
 		return new SystemIterator();
 	}
 
@@ -231,15 +213,15 @@ public class Prefab {
 	}
 
 	public final void addParent(Prefab parent) {
-		EngineSystem[] parentSystems = parent.systems;
+		EngineSystem<?, ?>[] parentSystems = parent.systems;
 		String[][] parentNames = parent.names;
 		SystemObject[][] parentObjects = parent.objects;
 		for (int i = 0; i < parent.size; i++) {
-			EngineSystem parentSystem = parentSystems[i];
+			EngineSystem<?, ?> parentSystem = parentSystems[i];
 			String[] subNames = parentNames[i];
 			SystemObject[] subObjects = parentObjects[i];
 			for (int j = 0; j < subNames.length; j++) {
-				set(parentSystem, subNames[j], subObjects[j].copy());
+				set(parentSystem, subNames[j], (SystemObject) subObjects[j].clone());
 			}
 		}
 		setData(parent.data);
@@ -247,10 +229,10 @@ public class Prefab {
 	}
 
 	public final void removeParent(Prefab parent) {
-		EngineSystem[] parentSystems = parent.systems;
+		EngineSystem<?, ?>[] parentSystems = parent.systems;
 		String[][] parentNames = parent.names;
 		for (int i = 0; i < parent.size; i++) {
-			EngineSystem parentSystem = parentSystems[i];
+			EngineSystem<?, ?> parentSystem = parentSystems[i];
 			String[] subNames = parentNames[i];
 			for (int j = 0; j < subNames.length; j++)
 				remove(parentSystem, subNames[j]);
@@ -259,7 +241,7 @@ public class Prefab {
 		tag.andNot(parent.tag.getBits());
 	}
 
-	private final int indexOf(EngineSystem system) {
+	private final int indexOf(EngineSystem<?, ?> system) {
 		for (int i = 0; i < size; i++) {
 			if (system == systems[i])
 				return i;
@@ -274,7 +256,7 @@ public class Prefab {
 	}
 
 	private final void resize(int size) {
-		EngineSystem[] newSystems = new EngineSystem[size];
+		EngineSystem<?, ?>[] newSystems = new EngineSystem[size];
 		System.arraycopy(systems, 0, newSystems, 0, this.size);
 		systems = newSystems;
 
@@ -440,30 +422,13 @@ public class Prefab {
 	private final Entity create_(Scene scene, Entity entity) {
 		entity.setPrefab(this);
 		for (int i = 0; i < size; i++) {
-			EngineSystem system = systems[i];
+			EngineSystem<?, ?> system = systems[i];
 			SystemObject[] subObjects = objects[i];
 			for (int j = 0; j < subObjects.length; j++)
-				entity.addSystem(system, subObjects[j].copy());
+				entity.addSystem(system, (SystemObject) subObjects[j].clone());
 		}
 		for (Prefab child : childs)
 			child.create(scene).setParent(entity);
-		return entity;
-	}
-
-	public final <T extends Entity> T create(Scene scene, T entity) {
-		entity.setPrefab(this);
-		for (int i = 0; i < size; i++) {
-			EngineSystem system = systems[i];
-			SystemObject[] subObjects = objects[i];
-			for (int j = 0; j < subObjects.length; j++)
-				entity.addSystem(system, subObjects[j].copy());
-		}
-		if (!childs.isEmpty()) {
-			Constructor<? extends Entity> constructor = Reflection.getDeclaredConstructor(entity.getClass(),
-					new Class[] { Scene.class });
-			for (Prefab child : childs)
-				child.create(scene, Reflection.newInstance(constructor, scene)).setParent(entity);
-		}
 		return entity;
 	}
 
@@ -513,7 +478,7 @@ public class Prefab {
 		}
 	}
 
-	private class SystemIterator implements Iterator<EngineSystem> {
+	private class SystemIterator implements Iterator<EngineSystem<?, ?>> {
 
 		protected int index;
 
@@ -523,7 +488,7 @@ public class Prefab {
 		}
 
 		@Override
-		public EngineSystem next() {
+		public EngineSystem<?, ?> next() {
 			return systems[index++];
 		}
 	}

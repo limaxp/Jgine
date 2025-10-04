@@ -6,44 +6,40 @@ import java.io.IOException;
 
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class AiScene extends ListSystemScene<AiSystem, AiObject> {
+public class AiScene extends ObjectSystemScene<AiSystem, AiObject> {
 
 	public AiScene(AiSystem system, Scene scene) {
-		super(system, scene, AiObject.class);
+		super(system, scene, AiObject.class, 10000);
 	}
 
 	@Override
 	public void free() {
+		forEach(AiObject::free);
 	}
 
 	@Override
-	public void initObject(Entity entity, AiObject object) {
+	public void onInit(Entity entity, AiObject object) {
 		object.init(entity);
 	}
 
 	@Override
-	public AiObject removeObject(int index) {
-		AiObject object = super.removeObject(index);
+	public void onRemove(Entity entity, AiObject object) {
 		object.free();
-		return object;
 	}
 
 	@Override
-	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].update(dt);
-	}
-
-	@Override
-	public void render(float dt) {
+	public void update(UpdateTask update) {
+		forEach((o) -> o.update(update.dt));
+		update.finish(system);
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].entity;
+		return get(index).entity;
 	}
 
 	@Override
@@ -52,14 +48,14 @@ public class AiScene extends ListSystemScene<AiSystem, AiObject> {
 	}
 
 	@Override
-	public AiObject load(DataInput in) throws IOException {
-		AiObject object = new AiObject();
-		object.load(in);
-		return object;
+	protected void saveData(AiObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void save(AiObject object, DataOutput out) throws IOException {
-		object.save(out);
+	protected AiObject loadData(DataInput in) throws IOException {
+		AiObject object = new AiObject();
+		object.load(in);
+		return object;
 	}
 }

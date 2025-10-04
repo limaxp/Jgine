@@ -12,7 +12,7 @@ import org.jgine.system.systems.ai.goal.AiGoal;
 import org.jgine.system.systems.ai.goal.GoalSelector;
 import org.jgine.system.systems.ai.navigation.Navigation;
 
-public class AiObject implements SystemObject, Cloneable {
+public class AiObject implements SystemObject {
 
 	public static final float TARGET_UPDATE_TIME = 0.5f;
 
@@ -96,12 +96,6 @@ public class AiObject implements SystemObject, Cloneable {
 	public void save(DataOutput out) throws IOException {
 		goalSelector.save(out);
 		targetSelector.save(out);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
 	}
 
 	@Override

@@ -6,48 +6,44 @@ import java.io.IOException;
 
 import javax.script.ScriptEngine;
 
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.ResourceManager;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
+import org.jgine.utils.loader.ResourceManager;
 
-public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObject> {
+public class ScriptScene extends ObjectSystemScene<ScriptSystem, AbstractScriptObject> {
 
 	public ScriptScene(ScriptSystem system, Scene scene) {
-		super(system, scene, AbstractScriptObject.class);
+		super(system, scene, AbstractScriptObject.class, 10000);
 	}
 
 	@Override
 	public void free() {
+		forEach((o) -> o.getInterface().onDisable());
 	}
 
 	@Override
-	public void initObject(Entity entity, AbstractScriptObject object) {
+	public void onInit(Entity entity, AbstractScriptObject object) {
 		object.setEntity(entity);
 		object.getInterface().onEnable();
 	}
 
 	@Override
-	public AbstractScriptObject removeObject(int index) {
-		AbstractScriptObject object = super.removeObject(index);
+	public void onRemove(Entity entity, AbstractScriptObject object) {
 		object.getInterface().onDisable();
-		return object;
 	}
 
 	@Override
-	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].getInterface().update();
-	}
-
-	@Override
-	public void render(float dt) {
+	public void update(UpdateTask update) {
+		forEach((o) -> o.getInterface().update());
+		update.finish(system);
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].getEntity();
+		return get(index).getEntity();
 	}
 
 	@Override
@@ -56,22 +52,21 @@ public class ScriptScene extends ListSystemScene<ScriptSystem, AbstractScriptObj
 	}
 
 	@Override
-	public AbstractScriptObject load(DataInput in) throws IOException {
+	protected void saveData(AbstractScriptObject object, DataOutput out) throws IOException {
+		out.writeUTF(object.getName());
+		object.save(out);
+	}
+
+	@Override
+	protected AbstractScriptObject loadData(DataInput in) throws IOException {
 		String scriptName = in.readUTF();
 		ScriptEngine scriptEngine = ResourceManager.getScript((String) scriptName);
 		AbstractScriptObject object;
 		if (scriptEngine != null)
 			object = new ScriptObject((String) scriptName, scriptEngine);
 		else
-			object = (EntityScript) Script.get(scriptName);
-		if (object != null)
-			object.load(in);
+			object = (Script) ScriptBase.get(scriptName);
+		object.load(in);
 		return object;
-	}
-
-	@Override
-	public void save(AbstractScriptObject object, DataOutput out) throws IOException {
-		out.writeUTF(object.getName());
-		object.save(out);
 	}
 }

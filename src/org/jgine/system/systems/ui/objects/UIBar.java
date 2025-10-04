@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -48,9 +48,9 @@ public class UIBar extends UIObject {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
-		UIRenderer.renderQuad(barTransform, UIRenderer.TEXTURE_SHADER, bar, depth + 1);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), background);
+		UIRenderer.renderQuad(barTransform, bar);
 	}
 
 	@Override

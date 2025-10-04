@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.render.mesh.BaseMesh;
@@ -16,7 +15,7 @@ import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -47,6 +46,12 @@ public class AxisAlignedBoundingQuad extends Collider {
 		this.y = y;
 		this.w = w;
 		this.h = h;
+	}
+
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
@@ -87,7 +92,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof AxisAlignedBoundingQuad) {
 			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
 			return CollisionChecks.resolveQuadvsQuad(x, y, w, h, o.x, o.y, o.w, o.h);
@@ -149,8 +154,7 @@ public class AxisAlignedBoundingQuad extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), COLLIDER_MESH, Renderer.BASIC_SHADER,
-				new Material());
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, w, h), COLLIDER_MESH, new Material());
 	}
 
 	@Override

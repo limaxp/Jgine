@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jgine.render.material.Material;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.logger.Logger;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIMesh;
@@ -85,5 +86,22 @@ public class Model implements SystemObject, AutoCloseable {
 
 	public Material[] getMaterials() {
 		return materials;
+	}
+
+	@Override
+	public Model clone() {
+		try {
+			Model model = (Model) super.clone();
+			model.meshes = new Mesh[meshes.length];
+			for (int i = 0; i < meshes.length; i++)
+				model.meshes[i] = meshes[i];
+			model.materials = new Material[materials.length];
+			for (int i = 0; i < materials.length; i++)
+				model.materials[i] = materials[i].clone();
+			return model;
+		} catch (CloneNotSupportedException e) {
+			Logger.err("Model: Error on clone!", e);
+			return null;
+		}
 	}
 }

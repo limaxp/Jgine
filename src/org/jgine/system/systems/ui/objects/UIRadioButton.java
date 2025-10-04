@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -42,10 +42,10 @@ public class UIRadioButton extends UIObject {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), background);
 		if (activated)
-			UIRenderer.renderQuad(buttonTransform, UIRenderer.TEXTURE_SHADER, button, depth + 1);
+			UIRenderer.renderQuad(buttonTransform, button);
 	}
 
 	@Override

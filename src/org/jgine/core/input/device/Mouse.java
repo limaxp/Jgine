@@ -17,8 +17,6 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public void poll() {
-		for (int pressedKey : getPressedKeys())
-			repeat(pressedKey);
 	}
 
 	@Override
@@ -28,7 +26,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyPressed(int key) {
-		return Input.getWindow().getMouseButton(key) == Key.PRESS;
+		return Input.getMouseButton(key) == Key.PRESS;
 	}
 
 	@Override
@@ -38,7 +36,7 @@ public class Mouse extends InputDevice {
 
 	@Override
 	public boolean isKeyReleased(int key) {
-		return Input.getWindow().getMouseButton(key) == Key.RELEASE;
+		return Input.getMouseButton(key) == Key.RELEASE;
 	}
 
 	@Override
@@ -47,8 +45,8 @@ public class Mouse extends InputDevice {
 	}
 
 	@Override
-	public boolean isMouse() {
-		return true;
+	public int getType() {
+		return Type.MOUSE;
 	}
 
 	public void scroll(double scroll) {

@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -14,6 +13,7 @@ import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
 import org.jgine.system.systems.ui.UIWindow.DragTask;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.scheduler.Scheduler;
 
@@ -45,11 +45,9 @@ public class UIHotbar extends UIGrid {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
-		super.render(depth);
-		UIRenderer.renderLine(getTransform(), UIRenderer.TEXTURE_SHADER, ((UIWindow) getParent()).getBorder(), -1.0f,
-				-1.0f, 1.0f, -1.0f, depth + 1);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), ((UIWindow) getParent()).getBorder());
+		super.render();
 	}
 
 	@Override

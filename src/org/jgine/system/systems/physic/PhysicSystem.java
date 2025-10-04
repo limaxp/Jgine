@@ -3,18 +3,18 @@ package org.jgine.system.systems.physic;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
-import org.jgine.utils.Property;
+import org.jgine.utils.Service;
+import org.jgine.utils.collection.function.Property;
 
-public class PhysicSystem extends EngineSystem {
+public class PhysicSystem extends EngineSystem<PhysicSystem, PhysicObject> {
 
-	private float gravity = -1000.0f;
-	private float airResistanceFactor = 0.99f;
+	private float gravity = -3000.0f;
+	private float airResistanceFactor = 0.95f;
 
 	public PhysicSystem() {
 		super("physic");
-		ServiceManager.register("gravity", new Property<Float>() {
+		Service.register("gravity", new Property<Float>() {
 
 			@Override
 			public void setValue(Float obj) {
@@ -26,7 +26,7 @@ public class PhysicSystem extends EngineSystem {
 				return gravity;
 			}
 		});
-		ServiceManager.register("airResistanceFactor", new Property<Float>() {
+		Service.register("airResistanceFactor", new Property<Float>() {
 
 			@Override
 			public void setValue(Float obj) {

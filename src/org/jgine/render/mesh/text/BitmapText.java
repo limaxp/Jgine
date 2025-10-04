@@ -11,7 +11,6 @@ public class BitmapText extends Text {
 
 	public BitmapText(BitmapFont font, int size, String text, float xOffset, float yOffset) {
 		super(font, size, text, new Material(font.texture), xOffset, yOffset);
-		buildMesh();
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class BitmapText extends Text {
 		BitmapFont currentFont = getFont();
 		this.material.setTexture(bitmapFont.texture);
 		if (currentFont.colums != bitmapFont.colums || currentFont.rows != bitmapFont.rows)
-			buildMesh();
+			rebuildMesh = true;
 	}
 
 	@Override

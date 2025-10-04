@@ -6,14 +6,14 @@ import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
 
-public class AiSystem extends EngineSystem {
+public class AiSystem extends EngineSystem<AiSystem, AiObject> {
 
 	public AiSystem() {
 		super("ai");
 	}
 
 	@Override
-	public SystemScene<?, ?> createScene(Scene scene) {
+	public SystemScene<AiSystem, AiObject> createScene(Scene scene) {
 		return new AiScene(this, scene);
 	}
 

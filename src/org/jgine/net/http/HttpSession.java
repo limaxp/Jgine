@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import org.jgine.net.http.controller.HttpController;
-import org.jgine.utils.StringUtils;
 import org.jgine.utils.logger.Logger;
 
 public class HttpSession implements Runnable {
@@ -24,15 +23,15 @@ public class HttpSession implements Runnable {
 	}
 
 	public static HttpServer server() {
-		return SESSION.get().getServer();
+		return SESSION.get().server;
 	}
 
 	public static Socket socket() {
 		return SESSION.get().socket;
 	}
 
-	private final HttpServer server;
-	private final Socket socket;
+	public final HttpServer server;
+	public final Socket socket;
 
 	public HttpSession(HttpServer server, Socket socket) {
 		this.server = server;
@@ -42,81 +41,65 @@ public class HttpSession implements Runnable {
 	@Override
 	public void run() {
 		SESSION.set(this);
-		BufferedReader in = null;
-		String url = null;
-		String[] urlSplit = null;
-		Object[] args = null;
+		parseMessage();
+	}
 
+	private void parseMessage() {
+		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String input = in.readLine();
-			StringTokenizer parse = new StringTokenizer(input);
-			String method = parse.nextToken().toUpperCase();
-			url = parse.nextToken().toLowerCase();
-			url = url.replaceFirst("/", "");
-			int urlLength = url.length() - 1;
-			if (urlLength > -1 && url.charAt(urlLength) == '/')
-				url = url.substring(0, urlLength);
-			urlSplit = url.split("/");
-
-			if (url.contains("?")) {
-				String[] urlSplit2 = url.split("\\?");
-				url = urlSplit2[0];
-				String argumentString = urlSplit2[1];
-				if (argumentString.contains("&")) {
-					String[] argumentSplit = argumentString.split("&");
-					args = new Object[argumentSplit.length];
-					int i = 0;
-					for (String argument : argumentSplit) {
-						args[i++] = castObjectType(argument);
-					}
-				} else {
-					args = new Object[1];
-					args[0] = argumentString;
-				}
+			int postDataIndex = 0;
+			String headerLine = null;
+			while ((headerLine = in.readLine()).length() != 0) {
+				if (headerLine.startsWith("Content-Length:"))
+					postDataIndex = Integer.parseInt(headerLine, headerLine.indexOf("Content-Length:") + 16,
+							headerLine.length(), 10);
 			}
 
-			HttpController controller;
-			if (urlSplit.length > 1)
-				controller = server.getController(urlSplit[0]);
-			else
-				controller = server.getController("home");
-			if (controller == null)
-				controller = server.getController("home");
-			controller.invoke(method, url, args);
+			StringTokenizer parse = new StringTokenizer(input);
+			String method = parse.nextToken().toUpperCase();
+			String url = parse.nextToken();
+			int urlLength = url.length();
+			if (urlLength > 1 && url.charAt(urlLength - 1) == '/')
+				urlLength--;
+			url = url.substring(1, urlLength).toLowerCase();
 
+			if (postDataIndex > 0) {
+				char[] charArray = new char[postDataIndex];
+				in.read(charArray, 0, postDataIndex);
+				getController(url).invoke(method, url, new String(charArray));
+			}
+
+			else {
+				int argSeperatorIndex = url.lastIndexOf('?');
+				if (argSeperatorIndex != -1)
+					getController(url).invoke(method, url.substring(0, argSeperatorIndex),
+							url.substring(argSeperatorIndex + 1));
+				else
+					getController(url).invoke(method, url);
+			}
 		} catch (IOException e) {
-			Logger.err("Session: Error!", e);
+			Logger.err("HttpSession: Error!", e);
 		} finally {
 			try {
 				in.close();
 				socket.close();
 			} catch (Exception e) {
-				Logger.err("Session: Error closing socket!", e);
+				Logger.err("HttpSession: Error closing socket!", e);
 			}
 		}
 	}
 
-	public HttpServer getServer() {
-		return server;
+	public HttpController getController(String url) {
+		int seperatorIndex = url.indexOf('/');
+		HttpController controller;
+		if (seperatorIndex != -1) {
+			controller = server.getController(url.substring(0, seperatorIndex));
+			if (controller == null)
+				controller = server.getController("home");
+		} else
+			controller = server.getController("home");
+		return controller;
 	}
-
-	public Socket getSocket() {
-		return socket;
-	}
-
-	private static Object castObjectType(String str) {
-		if (StringUtils.isDouble(str))
-			return Double.parseDouble(str);
-		else if (StringUtils.isFloat(str))
-			return Float.parseFloat(str);
-		else if (StringUtils.isInteger(str))
-			return Integer.parseInt(str);
-		else if (StringUtils.isShort(str))
-			return Short.parseShort(str);
-		else if (StringUtils.isByte(str))
-			return Byte.parseByte(str);
-		return str;
-	}
-
 }

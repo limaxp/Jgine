@@ -1,8 +1,9 @@
 package org.jgine.core.input;
 
-import org.jgine.collection.list.IntList;
-import org.jgine.collection.list.arrayList.IntArrayList;
 import org.jgine.utils.math.FastMath;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Base input device class. Has methods to check for {@link Key} press and
@@ -11,11 +12,21 @@ import org.jgine.utils.math.FastMath;
  */
 public abstract class InputDevice {
 
+	public static class Type {
+
+		public static final int MOUSE = 0;
+		public static final int KEYBOARD = 1;
+		public static final int JOYSTICK = 2;
+
+	}
+
 	private IntList pressedKeys;
+	private IntList releasedKeys;
 	private int[] keytimes;
 
 	public InputDevice(int maxKeys) {
 		pressedKeys = new IntArrayList(maxKeys);
+		releasedKeys = new IntArrayList(maxKeys);
 		keytimes = new int[maxKeys];
 	}
 
@@ -31,6 +42,8 @@ public abstract class InputDevice {
 
 	public abstract String getName();
 
+	public abstract int getType();
+
 	protected final void press(int key) {
 		pressedKeys.add(key);
 		keytimes[key] = 1;
@@ -40,12 +53,16 @@ public abstract class InputDevice {
 		keytimes[key] = -keytimes[key];
 	}
 
-	protected final void repeat(int key) {
+	final void tick(int key) {
 		keytimes[key]++;
 	}
 
 	public final IntList getPressedKeys() {
 		return pressedKeys;
+	}
+
+	public final IntList getReleasedKeys() {
+		return releasedKeys;
 	}
 
 	public final boolean isPressedIntern(int key) {
@@ -54,14 +71,6 @@ public abstract class InputDevice {
 
 	public final int getTimePressed(int key) {
 		return FastMath.abs(keytimes[key]);
-	}
-
-	public boolean isKeyboard() {
-		return false;
-	}
-
-	public boolean isMouse() {
-		return false;
 	}
 
 	public boolean isJoystick() {

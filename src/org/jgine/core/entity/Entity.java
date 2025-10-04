@@ -3,24 +3,25 @@ package org.jgine.core.entity;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.IntBitSet;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.TransformData;
-import org.jgine.core.manager.SystemManager;
+import org.jgine.core.entity.SystemMap.SystemMapConsumer;
 import org.jgine.net.game.ConnectionManager;
 import org.jgine.net.game.GameServer;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.bitSet.IntBitSet;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.id.IdGenerator;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
@@ -41,12 +42,12 @@ Currently used flags:
 public class Entity {
 
 	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
-	public static final int MAX_OBJECTS_PER_SYSTEMS = 8;
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
 
 	public static final byte DEATH_FLAG = 0;
+	public static final byte UPDATE_FLAG = 1;
 
 	private static int generateId() {
 		int id;
@@ -171,47 +172,41 @@ public class Entity {
 		setFlag(DEATH_FLAG, true);
 	}
 
+	public final boolean doesUpdate() {
+		return getFlag(UPDATE_FLAG);
+	}
+
+	public final void markUpdate(boolean value) {
+		setFlag(UPDATE_FLAG, value);
+	}
+
 	public final void setFlag(int index, boolean bit) {
-		IntBitSet.set(flag, index, bit);
+		flag = IntBitSet.set(flag, index, bit);
 	}
 
 	public final boolean getFlag(int index) {
 		return IntBitSet.get(flag, index);
 	}
 
-	public final <T extends SystemObject> T addSystem(String name, T object) {
-		return addSystem(scene.getSystem(name), object);
-	}
-
-	public final <T extends SystemObject> T addSystem(Class<? extends EngineSystem> clazz, T object) {
-		return addSystem(scene.getSystem(clazz), object);
-	}
-
 	public final <T extends SystemObject> T addSystem(int id, T object) {
 		return addSystem(scene.getSystem(id), object);
 	}
 
-	public final <T extends SystemObject> T addSystem(EngineSystem system, T object) {
+	public final <T extends SystemObject> T addSystem(EngineSystem<?, ?> system, T object) {
 		return addSystem(scene.getSystem(system), object);
 	}
 
 	public final <T extends SystemObject> T addSystem(SystemScene<?, T> systemScene, T object) {
-		synchronized (systems) {
-			systems.add(systemScene, object);
+		systemScene.onInit(this, object);
+		systems.cache(systemScene.id, object);
+		if (!doesUpdate()) {
+			markUpdate(true);
+			Scheduler.runTaskSynchron(() -> {
+				markUpdate(false);
+				systems.insertCache(this);
+			});
 		}
-		systemScene.initObject(this, object);
-		Scheduler.runTaskSynchron(() -> systems.setId(systemScene, object, systemScene.addObject(this, object)));
 		return object;
-	}
-
-	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(String name, T... objects) {
-		addSystem(scene.getSystem(name), objects);
-	}
-
-	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(Class<? extends EngineSystem> clazz, T... objects) {
-		addSystem(scene.getSystem(clazz), objects);
 	}
 
 	@SafeVarargs
@@ -220,196 +215,147 @@ public class Entity {
 	}
 
 	@SafeVarargs
-	public final <T extends SystemObject> void addSystem(EngineSystem system, T... objects) {
+	public final <T extends SystemObject> void addSystem(EngineSystem<?, ?> system, T... objects) {
 		addSystem(scene.getSystem(system), objects);
 	}
 
 	@SafeVarargs
 	public final <T extends SystemObject> void addSystem(SystemScene<?, T> systemScene, T... objects) {
-		synchronized (systems) {
-			systems.add(systemScene, objects);
-		}
 		for (int i = 0; i < objects.length; i++)
-			systemScene.initObject(this, objects[i]);
+			addSystem(systemScene, objects[i]);
+	}
+
+	public final <T extends SystemObject> void removeSystem(int id) {
+		removeSystem(scene.getSystem(id));
+	}
+
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system) {
+		removeSystem(scene.getSystem(system));
+	}
+
+	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene) {
 		Scheduler.runTaskSynchron(() -> {
-			for (int i = 0; i < objects.length; i++) {
-				T object = objects[i];
-				systems.setId(systemScene, object, systemScene.addObject(this, object));
-			}
+			systems.forEach(systemScene.id, (i) -> systemScene.remove(i));
+			systems.remove(systemScene.id);
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(String name) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(name));
+	public final <T extends SystemObject> void removeSystem(int id, T object) {
+		removeSystem(scene.getSystem(id), object);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(Class<? extends EngineSystem> clazz) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz));
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system, T object) {
+		removeSystem(scene.getSystem(system), object);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(int id) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(id));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(EngineSystem system) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(system));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T[] removeSystem(SystemScene<?, T> systemScene) {
-		T[] objects;
-		int[] indexes;
-		synchronized (systems) {
-			objects = (T[]) systems.get(systemScene);
-			indexes = systems.remove(systemScene);
-		}
+	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, T object) {
 		Scheduler.runTaskSynchron(() -> {
-			for (int i = 0; i < indexes.length; i++)
-				systemScene.removeObject(indexes[i]);
+			systemScene.remove(systems.remove(systemScene, object));
 		});
-		return objects;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T removeSystem(String name, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(name), object);
+	public final <T extends SystemObject> void removeSystem(int id, int objectId) {
+		removeSystem(scene.getSystem(id), objectId);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T removeSystem(Class<? extends EngineSystem> clazz, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(clazz), object);
+	public final <T extends SystemObject> void removeSystem(EngineSystem<?, ?> system, int objectId) {
+		removeSystem(scene.getSystem(system), objectId);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T removeSystem(int id, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(id), object);
+	public final <T extends SystemObject> void removeSystem(SystemScene<?, T> systemScene, int objectId) {
+		Scheduler.runTaskSynchron(() -> {
+			systems.remove(systemScene.id, objectId);
+			systemScene.remove(objectId);
+		});
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public final <T extends SystemObject> T removeSystem(EngineSystem system, T object) {
-		return removeSystem((SystemScene<?, T>) scene.getSystem(system), object);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T removeSystem(SystemScene<?, T> systemScene, T object) {
-		int index;
-		synchronized (systems) {
-			index = systems.remove(systemScene, object);
-		}
-		Scheduler.runTaskSynchron(() -> systemScene.removeObject(index));
-		return object;
-	}
-
-	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, T object, int objectId) {
-		systems.setId(systemScene, object, objectId);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(String name) {
-		return getSystem(SystemManager.get(name).getId(), 0);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz) {
-		return getSystem(SystemManager.get(clazz).getId(), 0);
+	public final <T extends SystemObject> void setSystemId(SystemScene<?, T> systemScene, int oldId, int newId) {
+		systems.set(systemScene.id, oldId, newId);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(int id) {
-		return getSystem(id, 0);
+		return getSystem(scene.getSystem(id), 0);
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(EngineSystem system) {
-		return getSystem(system.getId(), 0);
+	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system) {
+		return getSystem(scene.getSystem(system), 0);
 	}
 
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene) {
-		return getSystem(systemScene.system.getId(), 0);
+		return getSystem(systemScene, 0);
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(String name, int index) {
-		return getSystem(SystemManager.get(name).getId(), index);
-	}
-
-	@Nullable
-	public final <T extends SystemObject> T getSystem(Class<? extends EngineSystem> clazz, int index) {
-		return getSystem(SystemManager.get(clazz).getId(), index);
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
 	public final <T extends SystemObject> T getSystem(int id, int index) {
-		synchronized (systems) {
-			return (T) systems.get(id, index);
-		}
+		return getSystem(scene.getSystem(id), index);
 	}
 
 	@Nullable
-	public final <T extends SystemObject> T getSystem(EngineSystem system, int index) {
-		return getSystem(system.getId(), index);
+	public final <T extends SystemObject> T getSystem(EngineSystem<?, ?> system, int index) {
+		return getSystem(scene.getSystem(system), index);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
 	public final <T extends SystemObject> T getSystem(SystemScene<?, T> systemScene, int index) {
-		return getSystem(systemScene.system.getId(), index);
+		int id = systems.get(systemScene.id, index);
+		if (id < 0)
+			return (T) systems.getCache(systemScene.id, index);
+		return systemScene.get(id);
 	}
 
-	public final SystemObject[] getSystems(String name) {
-		return getSystems(SystemManager.get(name).getId());
+	public final <T extends SystemObject> List<T> getSystems(int id) {
+		return getSystems(scene.getSystem(id));
 	}
 
-	public final SystemObject[] getSystems(Class<? extends EngineSystem> clazz) {
-		return getSystems(SystemManager.get(clazz).getId());
+	public final <T extends SystemObject> List<T> getSystems(EngineSystem<?, ?> system) {
+		return getSystems(scene.getSystem(system));
 	}
 
-	public final SystemObject[] getSystems(int id) {
-		synchronized (systems) {
-			return systems.get(id);
-		}
+	public final <T extends SystemObject> List<T> getSystems(SystemScene<?, T> systemScene) {
+		List<T> result = new ArrayList<T>(systems.size(systemScene.id));
+		systems.forEach(systemScene.id, (index) -> result.add(systemScene.get(index)));
+		return result;
 	}
 
-	public final SystemObject[] getSystems(EngineSystem system) {
-		return getSystems(system.getId());
+	public final <T extends SystemObject> void forSystems(int id, Consumer<T> func) {
+		forSystems(scene.getSystem(id), func);
 	}
 
-	public final SystemObject[] getSystems(SystemScene<?, ?> systemScene) {
-		return getSystems(systemScene.system.getId());
+	public final <T extends SystemObject> void forSystems(EngineSystem<?, ?> system, Consumer<T> func) {
+		forSystems(scene.getSystem(system), func);
 	}
 
-	public SystemMap getSystemMap() {
-		return systems;
+	public final <T extends SystemObject> void forSystems(SystemScene<?, T> systemScene, Consumer<T> func) {
+		systems.forEach(systemScene.id, (index) -> func.accept(systemScene.get(index)));
+		systems.<T>forCache(systemScene.id, func::accept);
 	}
 
-	public final Iterator<SystemObject> getSystemIterator() {
-		return systems.getSystemIterator();
+	public final void forSystems(String name, IntConsumer func) {
+		forSystems(EngineSystem.get(name).id, func);
 	}
 
-	public final Iterator<Integer> getIdIterator() {
-		return systems.getIdIterator();
+	public final void forSystems(int id, IntConsumer func) {
+		systems.forEach(id, func);
 	}
 
-	public final Iterator<Entry<SystemScene<?, ?>, SystemObject>> getSystemEntryIterator() {
-		return systems.getSystemEntryIterator(scene);
+	public final void forSystems(EngineSystem<?, ?> system, IntConsumer func) {
+		forSystems(system.id, func);
 	}
 
-	public final Iterator<Entry<SystemScene<?, ?>, Integer>> getIdEntryIterator() {
-		return systems.getIdEntryIterator(scene);
+	public final void forSystems(SystemScene<?, ?> systemScene, IntConsumer func) {
+		forSystems(systemScene.id, func);
+	}
+
+	public final void forSystems(IntConsumer func) {
+		systems.forEach(func);
+	}
+
+	public final void forSystems(SystemMapConsumer func) {
+		systems.forEach(scene, func);
 	}
 
 	final void setPrefab(Prefab prefab) {
@@ -548,19 +494,19 @@ public class Entity {
 		return prefab.getTag(ids);
 	}
 
-	@SuppressWarnings("unchecked")
+	public final String getName() {
+		if (prefab == null)
+			return "unnamed";
+		return prefab.name;
+	}
+
 	public void load(DataInput in) throws IOException {
 		int prefabId = in.readInt();
 		if (prefabId != -1)
 			prefab = Prefab.get(prefabId);
+		flag = in.readInt();
 		transform.load(in);
-
-		int systemSize = in.readInt();
-		for (int i = 0; i < systemSize; i++) {
-			@SuppressWarnings("rawtypes")
-			SystemScene systemScene = scene.getSystem(in.readInt());
-			addSystem(systemScene, systemScene.load(in));
-		}
+		systems.load(in, this);
 
 		int childSize = in.readInt();
 		for (int i = 0; i < childSize; i++) {
@@ -575,18 +521,9 @@ public class Entity {
 			out.writeInt(prefab.id);
 		else
 			out.writeInt(-1);
+		out.writeInt(flag);
 		transform.save(out);
-
-		synchronized (systems) {
-			out.writeInt(systems.size());
-			Iterator<Entry<SystemScene<?, ?>, SystemObject>> entryIterator = getSystemEntryIterator();
-			while (entryIterator.hasNext()) {
-				Entry<SystemScene<?, ?>, SystemObject> entry = entryIterator.next();
-				SystemScene<?, ?> systemScene = entry.getKey();
-				out.writeInt(systemScene.system.getId());
-				systemScene.save_(entry.getValue(), out);
-			}
-		}
+		systems.save(out);
 
 		out.writeInt(childs.size());
 		for (Entity child : childs)
@@ -596,5 +533,24 @@ public class Entity {
 	@Nullable
 	public static Entity getById(int id) {
 		return ID_MAP[IdGenerator.index(id)];
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[id=" + id + ", prefab=" + (prefab == null ? "none" : prefab.name) + ", scene="
+				+ scene.name + ", pos=" + transform.getPosition() + ", systems=" + systemsToString() + "]";
+	}
+
+	public String systemsToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		systems.forEach(scene, (systemScene, i) -> {
+			sb.append(systemScene.name);
+			sb.append(',');
+			sb.append(' ');
+		});
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append(']');
+		return sb.toString();
 	}
 }

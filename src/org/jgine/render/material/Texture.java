@@ -77,12 +77,9 @@ import static org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE;
 import static org.lwjgl.opengl.GL32.glTexImage2DMultisample;
 import static org.lwjgl.opengl.GL42.glBindImageTexture;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImageResize.STBIR_ALPHA_CHANNEL_NONE;
-import static org.lwjgl.stb.STBImageResize.STBIR_COLORSPACE_SRGB;
-import static org.lwjgl.stb.STBImageResize.STBIR_EDGE_CLAMP;
-import static org.lwjgl.stb.STBImageResize.STBIR_FILTER_MITCHELL;
-import static org.lwjgl.stb.STBImageResize.STBIR_FLAG_ALPHA_PREMULTIPLIED;
-import static org.lwjgl.stb.STBImageResize.stbir_resize_uint8_generic;
+import static org.lwjgl.stb.STBImageResize.STBIR_RGB;
+import static org.lwjgl.stb.STBImageResize.STBIR_RGBA_PM;
+import static org.lwjgl.stb.STBImageResize.stbir_resize_uint8_srgb;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.lwjgl.system.MemoryUtil.memFree;
 
@@ -395,10 +392,8 @@ public class Texture implements ITexture, AutoCloseable {
 			int output_h = Math.max(1, input_h >> 1);
 
 			ByteBuffer output_pixels = memAlloc(output_w * output_h * image.components);
-			stbir_resize_uint8_generic(input_pixels, input_w, input_h, input_w * image.components, output_pixels,
-					output_w, output_h, output_w * image.components, image.components,
-					image.components == 4 ? 3 : STBIR_ALPHA_CHANNEL_NONE, STBIR_FLAG_ALPHA_PREMULTIPLIED,
-					STBIR_EDGE_CLAMP, STBIR_FILTER_MITCHELL, STBIR_COLORSPACE_SRGB);
+			stbir_resize_uint8_srgb(input_pixels, input_w, input_h, input_w * image.components, output_pixels, output_w,
+					output_h, output_w * image.components, image.components == 4 ? STBIR_RGBA_PM : STBIR_RGB);
 
 			if (mipmapLevel == 0) {
 				stbi_image_free(image.data);

@@ -42,14 +42,14 @@ public class FrustumCulling {
 		float ratio = camera.getAspectRatio();
 		float angle = camera.getFov();
 		float nearD = camera.getZNear();
-		float farD = camera.getZFar();
+//		float farD = camera.getZFar();
 
 		// compute width and height of the near and far plane sections
 		float tang = (float) Math.tan(ANG2RAD * angle * 0.5);
 		float nh = nearD * tang;
 		float nw = nh * ratio;
-		float fh = farD * tang;
-		float fw = fh * ratio;
+//		float fh = farD * tang;
+//		float fw = fh * ratio;
 
 		// compute the Z axis of camera
 		// this axis points in the opposite direction from
@@ -120,7 +120,7 @@ public class FrustumCulling {
 
 		public void render() {
 			Renderer.renderQuad(Transform.calculateMatrix(new Matrix(), pos, normal, new Vector3f(Float.MAX_VALUE)),
-					UIRenderer.BASIC_SHADER, new Material());
+					new Material());
 		}
 	}
 }

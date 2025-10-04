@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
-import org.jgine.core.Engine;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.systems.collision.Collider;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.math.FastMath;
 
 /**

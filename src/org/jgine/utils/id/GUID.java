@@ -5,8 +5,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import org.jgine.utils.math.FastMath;
-
 /**
  * An immutable globally unique identifier (GUID). A GUID represents a 128-bit
  * value.
@@ -33,7 +31,7 @@ public class GUID implements Serializable, Comparable<GUID> {
 
 	public GUID() {
 		timeStamp = System.currentTimeMillis();
-		id = HOST_ID << 32 | FastMath.random(Integer.MAX_VALUE);
+		id = HOST_ID << 32 | random(Integer.MAX_VALUE);
 	}
 
 	public GUID(long timeStamp, long id) {
@@ -81,5 +79,9 @@ public class GUID implements Serializable, Comparable<GUID> {
 
 	public final long getId() {
 		return id;
+	}
+
+	private static int random(int max) {
+		return (int) Math.round(Math.random() * max);
 	}
 }

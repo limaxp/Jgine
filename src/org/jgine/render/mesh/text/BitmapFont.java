@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.material.Texture;
+import org.jgine.utils.loader.ResourceManager;
 import org.lwjgl.system.MemoryStack;
 
 public class BitmapFont implements Font {

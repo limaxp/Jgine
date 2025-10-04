@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.input.Input;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -15,6 +14,7 @@ import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
 import org.jgine.system.systems.ui.UIWindow;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector2i;
@@ -69,9 +69,9 @@ public class UIScrollBar extends UICompound {
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
-		super.render(depth);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), background);
+		super.render();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,7 +176,7 @@ public class UIScrollBar extends UICompound {
 
 		protected float calculateY() {
 			Vector2f cursorPos = Input.getCursorPos();
-			Vector2i windowSize = Input.getWindow().getSize();
+			Vector2i windowSize = Input.getWindowSize();
 			float mouseY = 1 - cursorPos.y / windowSize.y;
 			float windowY = (mouseY - window.getY()) / window.getHeight();
 			return (windowY - label.getParent().getY()) / label.getParent().getHeight();

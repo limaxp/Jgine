@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
-public class UISystem extends EngineSystem {
+public class UISystem extends EngineSystem<UISystem, UIWindow> {
 
 	public UISystem() {
 		super("ui");
@@ -17,16 +17,8 @@ public class UISystem extends EngineSystem {
 	}
 
 	@Override
-	public UIObject load(Map<String, Object> data) {
-		UIObjectType<?> uiObjectType;
-		Object type = data.get("type");
-		if (type instanceof String) {
-			uiObjectType = UIObjectTypes.get((String) type);
-			if (uiObjectType == null)
-				uiObjectType = UIObjectTypes.WINDOW;
-		} else
-			uiObjectType = UIObjectTypes.WINDOW;
-		UIObject object = uiObjectType.get();
+	public UIWindow load(Map<String, Object> data) {
+		UIWindow object = new UIWindow();
 		object.load(data);
 		return object;
 	}

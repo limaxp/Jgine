@@ -53,6 +53,7 @@ import java.nio.IntBuffer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Material;
+import org.jgine.system.systems.camera.Camera;
 import org.jgine.utils.Color;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.Matrix;
@@ -150,6 +151,9 @@ public class Shader {
 
 	public void unbind() {
 		glUseProgram(0);
+	}
+
+	public void setCamera(Camera camera) {
 	}
 
 	public void setTransform(Matrix matrix, Matrix projectionMatrix) {

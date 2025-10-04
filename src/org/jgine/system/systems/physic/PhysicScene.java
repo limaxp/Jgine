@@ -4,30 +4,20 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.jgine.core.Engine;
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
-import org.jgine.core.Transform;
-import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.UpdateManager;
-import org.jgine.system.data.EntityListSystemScene;
-import org.jgine.utils.scheduler.TaskHelper;
+import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
+import org.jgine.utils.math.FastMath;
+import org.jgine.utils.scheduler.Job;
 
-public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObject> {
-
-	static {
-		UpdateManager.addTransformPosition((entity, dx, dy, dz) -> {
-			PhysicObject physic = entity.getSystem(Engine.PHYSIC_SYSTEM);
-			if (physic != null)
-				physic.movePosition(dx, dy, dz);
-		});
-	}
+public class PhysicScene extends EntitySystemScene<PhysicSystem, PhysicObject> {
 
 	private float gravity;
 	private float airResistanceFactor;
 	private float dt;
 
 	public PhysicScene(PhysicSystem system, Scene scene) {
-		super(system, scene, PhysicObject.class);
+		super(system, scene, PhysicObject.class, 100000);
 		this.gravity = system.getGravity();
 		this.airResistanceFactor = system.getAirResistanceFactor();
 	}
@@ -37,31 +27,21 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 	}
 
 	@Override
-	public void initObject(Entity entity, PhysicObject object) {
-		Transform transform = entity.transform;
-		object.initPosition(transform.getX(), transform.getY(), transform.getZ());
+	public void update(UpdateTask update) {
+		this.dt = update.dt;
+		Job.region(size(), this::updatePosition, () -> update.finish(system));
 	}
 
 	@Override
-	public void update(float dt) {
-		this.dt = dt;
-		TaskHelper.execute(size, this::updatePositions);
+	protected void saveData(PhysicObject object, DataOutput out) throws IOException {
+		object.save(out);
 	}
 
 	@Override
-	public void render(float dt) {
-	}
-
-	@Override
-	public PhysicObject load(DataInput in) throws IOException {
+	protected PhysicObject loadData(DataInput in) throws IOException {
 		PhysicObject object = new PhysicObject();
 		object.load(in);
 		return object;
-	}
-
-	@Override
-	public void save(PhysicObject object, DataOutput out) throws IOException {
-		object.save(out);
 	}
 
 	public void setGravity(float gravity) {
@@ -80,17 +60,24 @@ public class PhysicScene extends EntityListSystemScene<PhysicSystem, PhysicObjec
 		return airResistanceFactor;
 	}
 
-	private void updatePositions(int index, int size) {
-		size = index + size;
-		for (; index < size; index++) {
-			PhysicObject object = objects[index];
-			if (object.updatePosition(dt, gravity, airResistanceFactor)) {
-				Entity entity = entities[index];
-				Transform transform = entity.transform;
-				transform.setPositionIntern(object.x, object.y, object.z);
-				UpdateManager.getPhysicPosition().accept(entity, transform.getX() - object.getOldX(),
-						transform.getY() - object.getOldY(), transform.getZ() - object.getOldZ());
-			}
-		}
+	private void updatePosition(int index) {
+		PhysicObject object = get(index);
+		object.velX = object.velX + object.motX * dt * dt;
+		object.velY = object.velY + (object.motY + object.getGravity() * gravity) * dt * dt;
+		object.velZ = object.velZ + object.motZ * dt * dt;
+
+		object.velX *= airResistanceFactor;
+		object.velY *= airResistanceFactor;
+		object.velZ *= airResistanceFactor;
+
+		object.motX = 0;
+		object.motY = 0;
+		object.motZ = 0;
+
+		if (FastMath.abs(object.velX) + FastMath.abs(object.velY) + FastMath.abs(object.velZ) > 0.001f) {
+			getEntity(index).transform.movePosition(object.velX, object.velY, object.velZ);
+			object.setMoving(true);
+		} else
+			object.setMoving(false);
 	}
 }

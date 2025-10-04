@@ -58,7 +58,6 @@ import com.sun.media.sound.WaveFileReader;
  * @author Brian Matzon <brian@matzon.dk>
  * @version $Revision$ $Id$
  */
-@SuppressWarnings("restriction")
 public class WaveData {
 
 	/** actual wave data */

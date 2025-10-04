@@ -10,20 +10,23 @@ import static org.lwjgl.glfw.GLFW.glfwUpdateGamepadMappings;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.IntList;
 import org.jgine.core.input.device.Gamepad;
 import org.jgine.core.input.device.Joystick;
 import org.jgine.core.input.device.Keyboard;
 import org.jgine.core.input.device.Mouse;
 import org.jgine.core.window.Window;
 import org.jgine.utils.FileUtils;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
+import org.jgine.utils.scheduler.Scheduler;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Manager that handles input and stores {@link InputDevice}<code>s</code>. Has
@@ -39,12 +42,12 @@ public class Input {
 	private static final Joystick[] JOYSTICKS;
 
 	static {
-		INPUT_DEVICES = new ArrayList<InputDevice>();
+		INPUT_DEVICES = new IdentityArrayList<InputDevice>(Joystick.Slot.GAMEPAD_SIZE + 2);
 		INPUT_DEVICES.add(MOUSE = new Mouse());
 		INPUT_DEVICES.add(KEYBOARD = new Keyboard());
 
-		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_LAST];
-		for (int i = 0; i < Gamepad.Slot.GAMEPAD_LAST; i++)
+		JOYSTICKS = new Joystick[Joystick.Slot.GAMEPAD_SIZE];
+		for (int i = 0; i < Joystick.Slot.GAMEPAD_SIZE; i++)
 			if (hasJoystick(i))
 				registerJoystick(i);
 
@@ -97,10 +100,16 @@ public class Input {
 	public static void update() {
 		for (InputDevice device : INPUT_DEVICES) {
 			IntList pressedKeys = device.getPressedKeys();
+			IntList releasedKeys = device.getReleasedKeys();
+			releasedKeys.clear();
+
 			for (int i = pressedKeys.size() - 1; i >= 0; i--) {
-				int pressedKey = pressedKeys.getInt(i);
-				if (!device.isPressedIntern(pressedKey))
-					pressedKeys.remove(pressedKeys.indexOf(pressedKey));
+				int key = pressedKeys.getInt(i);
+				if (!device.isPressedIntern(key)) {
+					pressedKeys.removeInt(i);
+					releasedKeys.add(key);
+				} else
+					device.tick(key);
 			}
 		}
 		MOUSE.setScroll(0);
@@ -155,16 +164,24 @@ public class Input {
 		setScrollCallback((win, x, y) -> MOUSE.scroll(y));
 	}
 
-	public static Window getWindow() {
-		return window;
+	public static Vector2i getWindowSize() {
+		return window.getSize();
+	}
+
+	public static int getKey(int key) {
+		return window.getKey(key);
+	}
+
+	public static int getMouseButton(int key) {
+		return window.getMouseButton(key);
 	}
 
 	public static void setCursorPos(double x, double y) {
-		window.setCursorPos(x, y);
+		Scheduler.runTaskSynchron(() -> window.setCursorPos(x, y));
 	}
 
 	public static void setCursorPos(Vector2f vector) {
-		window.setCursorPos(vector);
+		Scheduler.runTaskSynchron(() -> window.setCursorPos(vector));
 	}
 
 	public static Vector2f getCursorPos() {
@@ -172,63 +189,63 @@ public class Input {
 	}
 
 	public static void hideCursor() {
-		window.hideCursor();
+		Scheduler.runTaskSynchron(window::hideCursor);
 	}
 
 	public static void showCursor() {
-		window.showCursor();
+		Scheduler.runTaskSynchron(window::showCursor);
 	}
 
 	public static void disableCursor() {
-		window.disableCursor();
+		Scheduler.runTaskSynchron(window::disableCursor);
 	}
 
 	public static void enableRawMouseMotion() {
-		window.enableRawMouseMotion();
+		Scheduler.runTaskSynchron(window::enableRawMouseMotion);
 	}
 
 	public static void disableRawMouseMotion() {
-		window.disableRawMouseMotion();
+		Scheduler.runTaskSynchron(window::disableRawMouseMotion);
 	}
 
 	public static void toggleRawMouseMotion() {
-		window.toggleRawMouseMotion();
+		Scheduler.runTaskSynchron(window::toggleRawMouseMotion);
 	}
 
 	public static void enableStickyKeys() {
-		window.enableStickyKeys();
+		Scheduler.runTaskSynchron(window::enableStickyKeys);
 	}
 
 	public static void disableStickyKeys() {
-		window.disableStickyKeys();
+		Scheduler.runTaskSynchron(window::disableStickyKeys);
 	}
 
 	public static void toggleStickyKeys() {
-		window.toggleStickyKeys();
+		Scheduler.runTaskSynchron(window::toggleStickyKeys);
 	}
 
 	public static void enableStickyMouseButtons() {
-		window.enableStickyMouseButtons();
+		Scheduler.runTaskSynchron(window::enableStickyMouseButtons);
 	}
 
 	public static void disableStickyMouseButtons() {
-		window.disableStickyMouseButtons();
+		Scheduler.runTaskSynchron(window::disableStickyMouseButtons);
 	}
 
 	public static void toggleStickyMouseButtons() {
-		window.toggleStickyMouseButtons();
+		Scheduler.runTaskSynchron(window::toggleStickyMouseButtons);
 	}
 
 	public static void enableLockKeyMods() {
-		window.enableLockKeyMods();
+		Scheduler.runTaskSynchron(window::enableLockKeyMods);
 	}
 
 	public static void disableLockKeyMods() {
-		window.disableLockKeyMods();
+		Scheduler.runTaskSynchron(window::disableLockKeyMods);
 	}
 
 	public static void toggleLockKeyMods() {
-		window.toggleLockKeyMods();
+		Scheduler.runTaskSynchron(window::toggleLockKeyMods);
 	}
 
 	public static boolean hasJoystick(int slot) {
@@ -244,64 +261,78 @@ public class Input {
 	}
 
 	public static void setCursor(Cursor cursor) {
-		window.setCursor(cursor);
+		Scheduler.runTaskSynchron(() -> window.setCursor(cursor));
 	}
 
 	public static void setCursor(long cursor) {
-		window.setCursor(cursor);
+		Scheduler.runTaskSynchron(() -> window.setCursor(cursor));
 	}
 
 	public static void setDefaultCursor() {
-		window.setDefaultCursor();
+		Scheduler.runTaskSynchron(window::setDefaultCursor);
 	}
 
 	public static void setKeyCallback(@Nullable KeyCallback callback) {
-		if (callback == null)
-			window.setKeyCallback(null);
-		else
-			window.setKeyCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setKeyCallback(null);
+			else
+				window.setKeyCallback(callback::invoke);
+		});
 	}
 
 	public static void setCharCallback(@Nullable CharCallback callback) {
-		if (callback == null)
-			window.setCharCallback(null);
-		else
-			window.setCharCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setCharCallback(null);
+			else
+				window.setCharCallback(callback::invoke);
+		});
 	}
 
 	public static void setCursorPosCallback(@Nullable CursorPosCallback callback) {
-		if (callback == null)
-			window.setCursorPosCallback(null);
-		else
-			window.setCursorPosCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setCursorPosCallback(null);
+			else
+				window.setCursorPosCallback(callback::invoke);
+		});
 	}
 
 	public static void setMouseButtonCallback(@Nullable MouseButtonCallback callback) {
-		if (callback == null)
-			window.setMouseButtonCallback(null);
-		else
-			window.setMouseButtonCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setMouseButtonCallback(null);
+			else
+				window.setMouseButtonCallback(callback::invoke);
+		});
 	}
 
 	public static void setCursorEnterCallback(@Nullable CursorEnterCallback callback) {
-		if (callback == null)
-			window.setCursorEnterCallback(null);
-		else
-			window.setCursorEnterCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setCursorEnterCallback(null);
+			else
+				window.setCursorEnterCallback(callback::invoke);
+		});
 	}
 
 	public static void setScrollCallback(@Nullable ScrollCallback callback) {
-		if (callback == null)
-			window.setScrollCallback(null);
-		else
-			window.setScrollCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				window.setScrollCallback(null);
+			else
+				window.setScrollCallback(callback::invoke);
+		});
 	}
 
 	public static void setJoystickCallback(@Nullable JoystickCallback callback) {
-		if (callback == null)
-			glfwSetJoystickCallback(null);
-		else
-			glfwSetJoystickCallback(callback::invoke);
+		Scheduler.runTaskSynchron(() -> {
+			if (callback == null)
+				glfwSetJoystickCallback(null);
+			else
+				glfwSetJoystickCallback(callback::invoke);
+		});
 	}
 
 	@FunctionalInterface

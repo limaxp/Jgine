@@ -1,11 +1,6 @@
 package org.jgine.render;
 
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
-import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -13,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.render.material.Material;
-import org.jgine.render.mesh.Mesh;
 import org.jgine.render.shader.Shader;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.math.Matrix;
 
 /**
@@ -40,19 +33,10 @@ public class RenderQueue {
 
 	private static Map<RenderTarget, TargetData> data = new IdentityHashMap<RenderTarget, TargetData>();
 	private static Map<RenderTarget, TargetData> usedData = new IdentityHashMap<RenderTarget, TargetData>();
-	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
-	private static int drawCallAmount;
 
 	private static class TargetData {
 
-		protected Map<Shader, Map<Material, RenderData>> data = new IdentityHashMap<Shader, Map<Material, RenderData>>();
-	}
-
-	private static class RenderData {
-
-		protected List<RenderCommand> commands = Collections.synchronizedList(new IdentityArrayList<RenderCommand>());
-		protected List<RenderInstancedCommand> commandsInstanced = Collections
-				.synchronizedList(new IdentityArrayList<RenderInstancedCommand>());
+		protected Map<Shader, Map<Material, List<RenderCommand>>> data = new IdentityHashMap<Shader, Map<Material, List<RenderCommand>>>();
 	}
 
 	public static void clear() {
@@ -61,16 +45,12 @@ public class RenderQueue {
 			usedData = data;
 			data = tmp;
 			data.clear();
-
-			for (Mesh mesh : TEMP_MESHES)
-				mesh.close();
-			TEMP_MESHES.clear();
 		}
 	}
 
 	public static void render(int vao, int mode, int numVertices, int numIndices, Matrix model, Matrix viewProjection,
 			Material material, RenderTarget renderTarget, Shader shader) {
-		getData(renderTarget, shader, material).commands.add(
+		getData(renderTarget, shader, material).add(
 				new RenderCommand(vao, mode, numVertices, numIndices, model, new Matrix(model).mult(viewProjection)));
 	}
 
@@ -78,14 +58,13 @@ public class RenderQueue {
 			Material material, RenderTarget renderTarget, Shader shader, float depth) {
 		Matrix mvp = new Matrix(model).mult(viewProjection);
 		mvp.m23 = depth;
-		getData(renderTarget, shader, material).commands
-				.add(new RenderCommand(vao, mode, numVertices, numIndices, model, mvp));
+		getData(renderTarget, shader, material).add(new RenderCommand(vao, mode, numVertices, numIndices, model, mvp));
 	}
 
 	public static void renderInstanced(int vao, int mode, int numVertices, int numIndices, Matrix model,
 			Matrix viewProjection, Material material, RenderTarget renderTarget, Shader shader, int amount) {
-		getData(renderTarget, shader, material).commandsInstanced.add(new RenderInstancedCommand(vao, mode, numVertices,
-				numIndices, model, new Matrix(model).mult(viewProjection), amount));
+		getData(renderTarget, shader, material).add(new RenderCommand(vao, mode, numVertices, numIndices, model,
+				new Matrix(model).mult(viewProjection), amount));
 	}
 
 	public static void renderInstanced(int vao, int mode, int numVertices, int numIndices, Matrix model,
@@ -93,34 +72,33 @@ public class RenderQueue {
 			float depth) {
 		Matrix mvp = new Matrix(model).mult(viewProjection);
 		mvp.m23 = depth;
-		getData(renderTarget, shader, material).commandsInstanced
-				.add(new RenderInstancedCommand(vao, mode, numVertices, numIndices, model, mvp, amount));
+		getData(renderTarget, shader, material)
+				.add(new RenderCommand(vao, mode, numVertices, numIndices, model, mvp, amount));
 	}
 
-	private static RenderData getData(RenderTarget renderTarget, Shader shader, Material material) {
+	private static List<RenderCommand> getData(RenderTarget renderTarget, Shader shader, Material material) {
 		synchronized (LOCK) {
 			TargetData a = data.get(renderTarget);
 			if (a == null) {
 				a = new TargetData();
 				data.put(renderTarget, a);
 			}
-			Map<Material, RenderData> b = a.data.get(shader);
+			Map<Material, List<RenderCommand>> b = a.data.get(shader);
 			if (b == null) {
-				b = new IdentityHashMap<Material, RenderData>();
+				b = new IdentityHashMap<Material, List<RenderCommand>>();
 				a.data.put(shader, b);
 			}
-			RenderData data = b.get(material);
+			List<RenderCommand> data = b.get(material);
 			if (data == null) {
-				data = new RenderData();
+				data = Collections.synchronizedList(new IdentityArrayList<RenderCommand>());
 				b.put(material, data);
 			}
 			return data;
 		}
 	}
 
-	public static void draw() {
+	static void draw() {
 		synchronized (LOCK) {
-			drawCallAmount = 0;
 			Renderer.enableDepthTest();
 
 			for (Entry<RenderTarget, TargetData> a : usedData.entrySet()) {
@@ -128,27 +106,19 @@ public class RenderQueue {
 				if (renderTarget.isClosed())
 					continue;
 				renderTarget.bindViewport(RenderTarget.COLOR_ATTACHMENT0);
-				renderTarget.clear();
 
-				for (Entry<Shader, Map<Material, RenderData>> b : a.getValue().data.entrySet()) {
+				for (Entry<Shader, Map<Material, List<RenderCommand>>> b : a.getValue().data.entrySet()) {
 					Shader shader = b.getKey();
 					shader.bind();
 
-					for (Entry<Material, RenderData> c : b.getValue().entrySet()) {
+					for (Entry<Material, List<RenderCommand>> c : b.getValue().entrySet()) {
 						Material material = c.getKey();
 						material.bind(shader);
 
-						RenderData data = c.getValue();
-						drawCallAmount += data.commands.size() + data.commandsInstanced.size();
-						for (RenderCommand command : data.commands) {
+						List<RenderCommand> data = c.getValue();
+						for (RenderCommand command : data) {
 							shader.setTransform(command.transform, command.transformProjected);
-							render(command.vao, command.mode, command.numVertices, command.numIndices);
-						}
-
-						for (RenderInstancedCommand command : data.commandsInstanced) {
-							shader.setTransform(command.transform, command.transformProjected);
-							renderInstanced(command.vao, command.mode, command.numVertices, command.numIndices,
-									command.amount);
+							draw(command);
 						}
 					}
 
@@ -162,57 +132,43 @@ public class RenderQueue {
 		}
 	}
 
-	public static void render(int vao, int mode, int numVertices, int numIndices) {
-		glBindVertexArray(vao);
-		if (numIndices == 0)
-			glDrawArrays(mode, 0, numVertices);
-		else
-			glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
-	}
-
-	public static void renderInstanced(int vao, int mode, int numVertices, int numIndices, int amount) {
-		glBindVertexArray(vao);
-		if (numIndices == 0)
-			glDrawArraysInstanced(mode, 0, numVertices, amount);
-		else
-			glDrawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
-	}
-
-	public static void deleteTempMesh(Mesh mesh) {
-		TEMP_MESHES.add(mesh);
-	}
-
-	public static int getDrawCallAmount() {
-		return drawCallAmount;
+	private static void draw(RenderCommand command) {
+		if (command.amount == 0) {
+			if (command.numIndices == 0)
+				Renderer.draw(command.vao, command.mode, command.numVertices);
+			else
+				Renderer.drawIndexed(command.vao, command.mode, command.numIndices);
+		} else {
+			if (command.numIndices == 0)
+				Renderer.drawInstanced(command.vao, command.mode, command.numVertices, command.amount);
+			else
+				Renderer.drawInstancedIndexed(command.vao, command.mode, command.numIndices, command.amount);
+		}
 	}
 
 	private static class RenderCommand {
 
-		protected int vao;
+		private int vao;
 		protected int mode;
 		protected int numVertices;
 		protected int numIndices;
 		protected Matrix transform;
 		protected Matrix transformProjected;
+		protected int amount;
 
-		protected RenderCommand(int vao, int mode, int numVertices, int numIndices, Matrix transform,
+		public RenderCommand(int vao, int mode, int numVertices, int numIndices, Matrix transform,
 				Matrix transformProjected) {
 			this.vao = vao;
 			this.mode = mode;
 			this.numVertices = numVertices;
 			this.numIndices = numIndices;
-			this.transform = transform;
-			this.transformProjected = transformProjected;
+			this.transform = new Matrix(transform);
+			this.transformProjected = new Matrix(transformProjected);
 		}
-	}
 
-	private static class RenderInstancedCommand extends RenderCommand {
-
-		protected int amount;
-
-		protected RenderInstancedCommand(int vao, int mode, int numVertices, int numIndices, Matrix transform,
+		public RenderCommand(int vao, int mode, int numVertices, int numIndices, Matrix transform,
 				Matrix transformProjected, int amount) {
-			super(vao, mode, numVertices, numIndices, transform, transformProjected);
+			this(vao, mode, numVertices, numIndices, transform, transformProjected);
 			this.amount = amount;
 		}
 	}

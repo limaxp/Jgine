@@ -8,61 +8,49 @@ import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.render.Renderer;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObject> {
+public class ParticleScene extends ObjectSystemScene<ParticleSystem, Particle> {
 
 	public ParticleScene(ParticleSystem system, Scene scene) {
-		super(system, scene, ParticleObject.class);
+		super(system, scene, Particle.class, 10000);
 	}
 
 	@Override
 	public void free() {
-		for (int i = 0; i < size; i++)
-			objects[i].close();
+		forEach(Particle::close);
 	}
 
 	@Override
-	public void initObject(Entity entity, ParticleObject object) {
+	public void onInit(Entity entity, Particle object) {
 		object.transform = entity.transform;
 	}
 
 	@Override
-	public ParticleObject removeObject(int index) {
-		ParticleObject object = super.removeObject(index);
+	public void onRemove(Entity entity, Particle object) {
 		object.close();
-		return object;
 	}
 
 	@Override
-	public void update(float dt) {
+	public void onRender(float dt) {
+		Renderer.PARTICLE_CALC_SHADER.bind();
+		for (int i = 0; i < size(); i++) {
+			Particle object = get(i);
+			Renderer.PARTICLE_CALC_SHADER.setParticle(object, dt);
+			object.getMesh().update();
+		}
+		Renderer.PARTICLE_CALC_SHADER.unbind();
 	}
 
 	@Override
 	public void render(float dt) {
-		Renderer.PARTICLE_CALC_SHADER.bind();
-		for (int i = 0; i < size; i++) {
-			Renderer.PARTICLE_CALC_SHADER.setParticle(objects[i], dt);
-			objects[i].update();
+		Renderer.enableDepthTest();
+		Renderer.setShader(Renderer.PARTICLE_DRAW_SHADER);
+		for (int i = 0; i < size(); i++) {
+			Particle object = get(i);
+			Renderer.render(object.transform.getMatrix(), object.getMesh(), object.material);
 		}
-		Renderer.PARTICLE_CALC_SHADER.unbind();
-
-		for (int i = 0; i < size; i++) {
-			ParticleObject object = objects[i];
-			Renderer.render(object.transform.getMatrix(), object, Renderer.PARTICLE_DRAW_SHADER, object.material);
-		}
-	}
-
-	@Override
-	public ParticleObject load(DataInput in) throws IOException {
-		ParticleObject object = new ParticleObject();
-		object.load(in);
-		return object;
-	}
-
-	@Override
-	public void save(ParticleObject object, DataOutput out) throws IOException {
-		object.save(out);
+		Renderer.disableDepthTest();
 	}
 
 	@Override
@@ -72,6 +60,18 @@ public class ParticleScene extends ListSystemScene<ParticleSystem, ParticleObjec
 
 	@Override
 	public Transform getTransform(int index) {
-		return objects[index].transform;
+		return get(index).transform;
+	}
+
+	@Override
+	protected void saveData(Particle object, DataOutput out) throws IOException {
+		object.save(out);
+	}
+
+	@Override
+	protected Particle loadData(DataInput in) throws IOException {
+		Particle object = new Particle();
+		object.load(in);
+		return object;
 	}
 }

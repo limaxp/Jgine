@@ -16,7 +16,7 @@ import org.jgine.net.game.packet.packets.PlayerListPacket;
 import org.jgine.net.game.packet.packets.PositionPacket;
 import org.jgine.net.game.packet.packets.EntitySpawnPacket;
 import org.jgine.net.game.packet.packets.PrefabSpawnPacket;
-import org.jgine.utils.function.TriConsumer;
+import org.jgine.utils.collection.function.TriConsumer;
 
 public class PacketManager {
 

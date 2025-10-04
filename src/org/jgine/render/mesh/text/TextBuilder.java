@@ -23,7 +23,7 @@ public class TextBuilder {
 	public static BitmapText createText(String text, BitmapFont font, int size, int width, int height) {
 		size = calculateSize(text, font, size, width, height);
 		text = formatString(text, font, size, width);
-		float scale = (float) size / 64;
+//		float scale = (float) size / 64;
 //		return new BitmapText(font, size, text, 0, height * scale + font.getStringHeight(size));
 		return new BitmapText(font, size, text, 0, 0);
 	}

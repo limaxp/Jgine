@@ -2,19 +2,20 @@ package org.jgine.system.systems.camera;
 
 import java.util.Map;
 
-import org.jgine.core.Scene;
-import org.jgine.core.manager.ServiceManager;
-import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
-import org.jgine.utils.Property;
+import javax.annotation.Nullable;
 
-public class CameraSystem extends EngineSystem {
+import org.jgine.core.Scene;
+import org.jgine.system.EngineSystem;
+import org.jgine.utils.Service;
+import org.jgine.utils.collection.function.Property;
+
+public class CameraSystem extends EngineSystem<CameraSystem, Camera> {
 
 	private Camera mainCamera;
 
 	public CameraSystem() {
 		super("camera");
-		ServiceManager.register("camera", new Property<Camera>() {
+		Service.register("camera", new Property<Camera>() {
 
 			@Override
 			public void setValue(Camera obj) {
@@ -29,7 +30,7 @@ public class CameraSystem extends EngineSystem {
 	}
 
 	@Override
-	public SystemScene<?, ?> createScene(Scene scene) {
+	public CameraScene createScene(Scene scene) {
 		return new CameraScene(this, scene);
 	}
 
@@ -40,14 +41,17 @@ public class CameraSystem extends EngineSystem {
 		return camera;
 	}
 
-	protected void addCamera(Camera camera) {
+	void registerCamera(Camera camera) {
 		if (mainCamera == null)
 			mainCamera = camera;
 	}
 
-	protected void removeCamera(Camera camera) {
+	void unregisterCamera(Camera camera) {
+		if (mainCamera == camera)
+			mainCamera = null;
 	}
 
+	@Nullable
 	public Camera getMainCamera() {
 		return mainCamera;
 	}

@@ -1,10 +1,10 @@
 package org.jgine.core.entity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.bitSet.LongBitSet;
+import org.jgine.utils.collection.bitSet.LongBitSet;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * Tags that can be attached to an {@link Prefab} to mark it with identifiers.
@@ -16,14 +16,14 @@ import org.jgine.collection.bitSet.LongBitSet;
  */
 public class EntityTag {
 
-	public static final int MAX_SIZE = LongBitSet.MAX_SIZE;
-	private static final String[] TAGS = new String[MAX_SIZE];
-	private static final Map<String, Integer> NAME_MAP = new HashMap<String, Integer>();
-	private static int size = 1;
+	private static final String[] TAGS = new String[LongBitSet.MAX_SIZE];
+	private static final Object2IntMap<String> NAME_MAP = new Object2IntOpenHashMap<String>(64);
+	private static int size;
 
 	public static int register(String name) {
-		if (size >= MAX_SIZE - 1)
-			throw new IllegalArgumentException("Maximum tag size reached! Only up to " + MAX_SIZE + " allowed!");
+		if (size >= LongBitSet.MAX_SIZE - 1)
+			throw new ArrayIndexOutOfBoundsException(
+					"Maximum tag size reached! Only up to " + LongBitSet.MAX_SIZE + " allowed!");
 		int index = size++;
 		TAGS[index] = name;
 		NAME_MAP.put(name, index);
@@ -36,7 +36,7 @@ public class EntityTag {
 	}
 
 	public static int get(String name) {
-		return NAME_MAP.getOrDefault(name, 0);
+		return NAME_MAP.getOrDefault(name, -1);
 	}
 
 	public static int size() {

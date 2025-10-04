@@ -2,11 +2,6 @@ package org.jgine.utils;
 
 import java.nio.FloatBuffer;
 
-import org.jgine.utils.math.vector.Vector3f;
-import org.jgine.utils.math.vector.Vector3i;
-import org.jgine.utils.math.vector.Vector4f;
-import org.jgine.utils.math.vector.Vector4i;
-
 /**
  * Helper class for color handling. Colors are represented as <code>int</code>.
  */
@@ -44,32 +39,16 @@ public class Color {
 		return 0xff000000 | r << 16 | g << 8 | b;
 	}
 
-	public static int rgb(Vector3i vec) {
-		return rgb(vec.x, vec.y, vec.z);
-	}
-
 	public static int rgba(int r, int g, int b, int a) {
 		return 0x00000000 | a << 24 | r << 16 | g << 8 | b;
-	}
-
-	public static int rgba(Vector4i vec) {
-		return rgba(vec.x, vec.y, vec.z, vec.w);
 	}
 
 	public static int rgb(float r, float g, float b) {
 		return 0xff000000 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255);
 	}
 
-	public static int rgb(Vector3f vec) {
-		return rgb(vec.x, vec.y, vec.z);
-	}
-
 	public static int rgba(float r, float g, float b, float a) {
 		return 0x00000000 | (int) (a * 255) << 24 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255);
-	}
-
-	public static int rgba(Vector4f vec) {
-		return rgba(vec.x, vec.y, vec.z, vec.w);
 	}
 
 	public static int decode(String s) {
@@ -96,14 +75,9 @@ public class Color {
 	}
 
 	public static String toString(int color) {
-		return color + " [" + red(color) + "," + green(color) + "," + blue(color) + "," + alpha(color) + "]";
+		return color + "(" + red(color) + "," + green(color) + "," + blue(color) + "," + alpha(color) + ")";
 	}
 
-	public static Vector4f toVector(int color) {
-		return new Vector4f((float) red(color) / 255, (float) green(color) / 255, (float) blue(color) / 255,
-				(float) alpha(color) / 255);
-	}
-	
 	public static FloatBuffer toRGBBuffer(FloatBuffer buffer, int color) {
 		buffer.put((float) red(color) / 255);
 		buffer.put((float) green(color) / 255);

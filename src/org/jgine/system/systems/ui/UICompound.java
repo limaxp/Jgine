@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.math.Matrix;
 
 public class UICompound extends UIObject {
@@ -23,16 +23,14 @@ public class UICompound extends UIObject {
 
 	@Override
 	protected void free() {
+		for (UIObject child : childs)
+			child.free();
 	}
 
 	@Override
-	public void render(int depth) {
-		renderChilds(depth + 1);
-	}
-
-	protected void renderChilds(int depth) {
+	public void render() {
 		for (UIObject child : getVisibleChilds())
-			child.render(depth);
+			child.render();
 	}
 
 	@Override
@@ -132,9 +130,7 @@ public class UICompound extends UIObject {
 
 	public int removeChild(UIObject child) {
 		int index = childs.indexOf(child);
-		childs.remove(index);
-		child.onDisable();
-		child.free();
+		removeChild(index);
 		return index;
 	}
 

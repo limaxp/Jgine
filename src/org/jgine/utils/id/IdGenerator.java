@@ -3,8 +3,6 @@ package org.jgine.utils.id;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import org.jgine.utils.math.FastMath;
-
 /**
  * A generator for 32-bit identifiers. Identifiers consist of index and
  * generation. Index is a 24-bit value while generation uses the other 8-bit. So
@@ -40,7 +38,7 @@ public class IdGenerator {
 	public IdGenerator(int startId, int maxId) {
 		generation = new byte[maxId];
 		size = startId;
-		minimumFreeIndices = FastMath.min(maxId - 2 - startId, MINIMUM_FREE_INDICES);
+		minimumFreeIndices = Math.min(maxId - 2 - startId, MINIMUM_FREE_INDICES);
 		freeIndices = new ArrayDeque<Integer>(minimumFreeIndices + 1000);
 	}
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.light.PointLight;
 import org.jgine.render.material.Material;
-import org.jgine.utils.Color;
 import org.jgine.utils.math.FastMath;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector4f;
@@ -47,7 +46,7 @@ public class TileMapShader extends Shader {
 	}
 
 	public void setAmbientLight(int color) {
-		setAmbientLight(Color.toVector(color));
+		setAmbientLight(Vector4f.fromColor(color));
 	}
 
 	public void setAmbientLight(Vector4f color) {
@@ -60,7 +59,7 @@ public class TileMapShader extends Shader {
 		for (int i = 0; i < pointLightSize; i++) {
 			PointLight pointLight = pointLights.get(i);
 			int[] pointLightUniforms = uniforms_pointLights[i];
-			Vector4f color2 = Color.toVector(pointLight.getColor());
+			Vector4f color2 = Vector4f.fromColor(pointLight.getColor());
 			setUniform3f(pointLightUniforms[0], color2.x, color2.y, color2.z);
 			setUniformf(pointLightUniforms[1], pointLight.getIntensity());
 			setUniformf(pointLightUniforms[2], pointLight.getAttenuation().constant);

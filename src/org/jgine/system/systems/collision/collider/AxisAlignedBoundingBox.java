@@ -13,7 +13,7 @@ import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -47,6 +47,13 @@ public class AxisAlignedBoundingBox extends Collider {
 		this.w = w;
 		this.h = h;
 		this.d = d;
+	}
+	
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof AxisAlignedBoundingBox) {
 			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
 			return CollisionChecks.resolveCubevsCube(x, y, z, w, h, d, o.x, o.y, o.z, o.w, o.h, o.d);
@@ -166,8 +173,7 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Override
 	public void render() {
-		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), Renderer.BASIC_SHADER,
-				new Material());
+		Renderer.renderCube(Transform.calculateMatrix(new Matrix(), x, y, z, w, h, d), new Material());
 	}
 
 	@Override

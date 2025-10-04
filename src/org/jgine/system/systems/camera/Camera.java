@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.render.RenderTarget;
 import org.jgine.system.SystemObject;
+import org.jgine.utils.Service;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector3f;
@@ -16,10 +16,8 @@ import org.jgine.utils.options.Options;
 
 /**
  * Represents a 3D Camera
- * 
- * @author Maximilian Paar
  */
-public class Camera implements SystemObject, Cloneable {
+public class Camera implements SystemObject {
 
 	public static final byte PERSPECTIVE_MODE = 1;
 	public static final byte ORTHOGRAPHIC_MODE = 2;
@@ -39,7 +37,9 @@ public class Camera implements SystemObject, Cloneable {
 	private Matrix perspectiveMatrix;
 	private Matrix orthographicMatrix;
 	private Matrix usedMatrix;
+	private Matrix projectionMatrix;
 	private RenderTarget renderTarget;
+	private boolean dirty;
 
 	public static Camera create() {
 		return create(PERSPECTIVE_MODE, Options.RESOLUTION_X.getInt(), Options.RESOLUTION_Y.getInt(), DEFAULT_Z_NEAR,
@@ -118,10 +118,15 @@ public class Camera implements SystemObject, Cloneable {
 			setPerspective();
 		else if (mode == ORTHOGRAPHIC_MODE)
 			setOrthographic();
+		projectionMatrix = new Matrix();
+		markDirty();
 	}
 
 	public final void setPerspective() {
-		usedMatrix = perspectiveMatrix;
+		if (usedMatrix != perspectiveMatrix) {
+			usedMatrix = perspectiveMatrix;
+			markDirty();
+		}
 	}
 
 	public final boolean isPerspective() {
@@ -129,7 +134,10 @@ public class Camera implements SystemObject, Cloneable {
 	}
 
 	public final void setOrthographic() {
-		usedMatrix = orthographicMatrix;
+		if (usedMatrix != orthographicMatrix) {
+			usedMatrix = orthographicMatrix;
+			markDirty();
+		}
 	}
 
 	public final boolean isOrthographic() {
@@ -148,27 +156,28 @@ public class Camera implements SystemObject, Cloneable {
 		Vector3f hAxis = Vector3f.normalize(Vector3f.cross(Vector3f.Y_AXIS, forward));
 		forward = Vector3f.normalize(Vector3f.rotate(forward, angle, hAxis));
 		up = Vector3f.normalize(Vector3f.cross(forward, hAxis));
+		markDirty();
 	}
 
 	public final void rotateY(float angle) {
 		Vector3f hAxis = Vector3f.normalize(Vector3f.cross(Vector3f.Y_AXIS, forward));
 		forward = Vector3f.normalize(Vector3f.rotate(forward, angle, Vector3f.Y_AXIS));
 		up = Vector3f.normalize(Vector3f.cross(forward, hAxis));
+		markDirty();
 	}
 
 	public final Matrix getMatrix() {
-		Vector3f pos = transform.getPosition();
-		Matrix matrix = new Matrix();
-		matrix.setPosition(-pos.x, -pos.y, -pos.z);
-		matrix.mult(Matrix.asCameraRotation(forward, up));
-		matrix.mult(usedMatrix);
-		return matrix;
+		if (isDirty())
+			calculateMatrix();
+		return projectionMatrix;
+	}
 
-		// return new Matrix()
-		// .perspective((float) Math.toRadians(perspective.fov),
-		// perspective.getAspectRatio(), perspective.zNear,
-		// perspective.zFar)
-		// .lookAt(pos, forward, up);
+	private final void calculateMatrix() {
+		projectionMatrix.clear();
+		Vector3f pos = transform.getPosition();
+		projectionMatrix.setPosition(-pos.x, -pos.y, -pos.z);
+		projectionMatrix.mult(Matrix.asCameraRotation(forward, up));
+		projectionMatrix.mult(usedMatrix);
 	}
 
 	public final Matrix getPerspectiveMatrix() {
@@ -177,6 +186,14 @@ public class Camera implements SystemObject, Cloneable {
 
 	public final Matrix getOrthographicMatrix() {
 		return orthographicMatrix;
+	}
+
+	private final void markDirty() {
+		this.dirty = true;
+	}
+
+	public final boolean isDirty() {
+		return dirty;
 	}
 
 	public final Transform getTransform() {
@@ -248,10 +265,10 @@ public class Camera implements SystemObject, Cloneable {
 	}
 
 	public final void setMainCamera() {
-		ServiceManager.set("camera", this);
+		Service.set("camera", this);
 	}
 
-	public void load(Map<String, Object> data) {
+	public final void load(Map<String, Object> data) {
 		byte modeValue = PERSPECTIVE_MODE;
 		Object mode = data.get("mode");
 		if (mode instanceof Number)
@@ -286,7 +303,7 @@ public class Camera implements SystemObject, Cloneable {
 		init(modeValue);
 	}
 
-	public void load(DataInput in) throws IOException {
+	public final void load(DataInput in) throws IOException {
 		byte modeValue = in.readByte();
 		width = in.readInt();
 		height = in.readInt();
@@ -298,7 +315,7 @@ public class Camera implements SystemObject, Cloneable {
 		init(modeValue);
 	}
 
-	public void save(DataOutput out) throws IOException {
+	public final void save(DataOutput out) throws IOException {
 		out.write(getMode());
 		out.writeInt(width);
 		out.writeInt(height);
@@ -313,19 +330,20 @@ public class Camera implements SystemObject, Cloneable {
 		out.writeFloat(up.z);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
-	@Override
-	public Camera clone() {
+	public final Camera clone() {
 		try {
 			return (Camera) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + " [width: " + width + " | height: " + height + " | zNear: " + zNear + " | zFar: "
+				+ zFar + " | fov: " + fov + " | forward: " + forward.x + "," + forward.y + "," + forward.z + " | up: "
+				+ up.x + "," + up.y + "," + up.z + " | renderTarget: " + renderTarget + "]";
 	}
 }

@@ -2,7 +2,6 @@ package org.jgine.utils.registry;
 
 import org.jgine.system.systems.ai.goal.AiGoalType;
 import org.jgine.system.systems.collision.ColliderType;
-import org.jgine.system.systems.input.InputHandlerType;
 import org.jgine.system.systems.light.LightType;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioningType;
@@ -20,9 +19,6 @@ public abstract class Registry<T> implements Iterable<T> {
 			"space_partitioning", 1000);
 
 	public static final Registry<ColliderType<?>> COLLIDER_TYPES = new GenIdRegistry<ColliderType<?>>("collider", 1000);
-
-	public static final Registry<InputHandlerType<?>> INPUT_HANDLER_TYPES = new GenIdRegistry<InputHandlerType<?>>(
-			"input_handler", 1000);
 
 	public static final Registry<UIObjectType<?>> UI_OBJECTS_TYPES = new GenIdRegistry<UIObjectType<?>>("ui_objects",
 			1000);

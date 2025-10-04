@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.sound.SoundBuffer;
 import org.jgine.core.sound.SoundStream;
@@ -31,6 +30,7 @@ import org.jgine.render.material.Texture;
 import org.jgine.render.mesh.Model;
 import org.jgine.render.shader.Shader;
 import org.jgine.utils.FileUtils;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.script.ScriptManager;
 

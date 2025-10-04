@@ -5,12 +5,8 @@ import org.jgine.core.entity.Entity;
 import org.jgine.core.input.Input;
 import org.jgine.core.input.Key;
 import org.jgine.system.systems.camera.Camera;
-import org.jgine.system.systems.camera.CameraSystem;
 import org.jgine.system.systems.input.InputHandler;
-import org.jgine.system.systems.input.InputHandlerType;
-import org.jgine.system.systems.input.InputHandlerTypes;
 import org.jgine.system.systems.physic.PhysicObject;
-import org.jgine.system.systems.physic.PhysicSystem;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.scheduler.Scheduler;
@@ -31,7 +27,7 @@ public class CameraInputHandler extends InputHandler {
 			Key.GAMEPAD_BUTTON_BACK);
 
 	public static final float ROTATION_SPEED = 0.005f;
-	public static final float MOVEMENT_SPEED = 1000.0f;
+	public static final float MOVEMENT_SPEED = 200.0f;
 	public static final float GAMEPAD_LEWAY = 0.3f;
 
 	private PhysicObject physicObject;
@@ -40,10 +36,9 @@ public class CameraInputHandler extends InputHandler {
 	private long cooldown;
 
 	@Override
-	protected void setEntity(Entity entity) {
-		super.setEntity(entity);
-		physicObject = entity.getSystem(PhysicSystem.class);
-		camera = entity.getSystem(CameraSystem.class);
+	protected void init(Entity entity) {
+		physicObject = entity.getSystem(Engine.PHYSIC_SYSTEM);
+		camera = entity.getSystem(Engine.CAMERA_SYSTEM);
 		lastCursorPosition = Input.getCursorPos();
 
 		setMouseMove((cursorPosition) -> {
@@ -54,12 +49,12 @@ public class CameraInputHandler extends InputHandler {
 			lastCursorPosition = cursorPosition;
 		});
 
-		setGamepadRightStickMove((pos) -> {
+		setRightStickMove((pos) -> {
 			camera.rotateY(pos.x * ROTATION_SPEED * 10);
 			camera.rotateX(pos.y * ROTATION_SPEED * 10);
 		});
 
-		setGamepadLeftStickMove((pos) -> {
+		setLeftStickMove((pos) -> {
 			if (pos.x < -GAMEPAD_LEWAY)
 				physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED));
 			else if (pos.x > GAMEPAD_LEWAY)
@@ -70,26 +65,22 @@ public class CameraInputHandler extends InputHandler {
 				physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED));
 		});
 
-		setKey(KEY_MOVE_FORWARD,
-				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_BACK,
-				() -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_LEFT, () -> physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_RIGHT,
-				() -> physicObject.accelerate(Vector3f.mult(camera.getRightDirection(), MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_UP, () -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
-		setKey(KEY_MOVE_DOWN, () -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
-		setKey(KEY_CLOSE_GAME, Engine.getInstance()::shutdown);
-		setKey(KEY_FULLSCREEN, () -> {
+		press(KEY_MOVE_FORWARD,
+				(time) -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), MOVEMENT_SPEED)));
+		press(KEY_MOVE_BACK,
+				(time) -> physicObject.accelerate(Vector3f.mult(camera.getForwardDirection(), -MOVEMENT_SPEED)));
+		press(KEY_MOVE_LEFT,
+				(time) -> physicObject.accelerate(Vector3f.mult(camera.getLeftDirection(), MOVEMENT_SPEED)));
+		press(KEY_MOVE_RIGHT,
+				(time) -> physicObject.accelerate(Vector3f.mult(camera.getRightDirection(), MOVEMENT_SPEED)));
+		press(KEY_MOVE_UP, (time) -> physicObject.accelerate(Vector3f.mult(Vector3f.UP, MOVEMENT_SPEED)));
+		press(KEY_MOVE_DOWN, (time) -> physicObject.accelerate(Vector3f.mult(Vector3f.DOWN, MOVEMENT_SPEED)));
+		press(KEY_CLOSE_GAME, (time) -> Engine.getInstance().shutdown());
+		press(KEY_FULLSCREEN, (time) -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
 				Scheduler.runTaskSynchron(Engine.getInstance().getWindow()::toggleBorderless);
 			}
 		});
-	}
-
-	@Override
-	public InputHandlerType<CameraInputHandler> getType() {
-		return InputHandlerTypes.CAMERA;
 	}
 }

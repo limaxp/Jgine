@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.input.Input;
-import org.jgine.core.manager.ResourceManager;
+import org.jgine.render.Renderer;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
@@ -22,6 +22,7 @@ import org.jgine.render.mesh.text.TrueTypeText;
 import org.jgine.system.systems.ui.UIObject;
 import org.jgine.system.systems.ui.UIObjectType;
 import org.jgine.system.systems.ui.UIObjectTypes;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2i;
@@ -64,14 +65,17 @@ public class UILabel extends UIObject {
 	@Override
 	protected void free() {
 		if (text != null)
-			text.close();
+			Scheduler.runTaskSynchron(text::close);
 	}
 
 	@Override
-	public void render(int depth) {
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, usedBackground, depth);
-		if (text != null)
-			UIRenderer.render(textTransform, text.getMesh(), UIRenderer.TEXT_SHADER, text.getMaterial(), depth + 2);
+	public void render() {
+		UIRenderer.renderQuad(getTransform(), usedBackground);
+		if (text != null) {
+			Renderer.setShader(Renderer.TEXT_SHADER);
+			UIRenderer.render(textTransform, text.getMesh(), text.getMaterial());
+			Renderer.setShader(Renderer.TEXTURE_SHADER);
+		}
 	}
 
 	@Override
@@ -108,7 +112,7 @@ public class UILabel extends UIObject {
 	public void buildText(String text, Font font, int size) {
 		Vector3f scale = getTransform().getScaling();
 		Vector3f windowScale = getWindow().getTransform().getScaling();
-		Vector2i windowSize = Input.getWindow().getSize();
+		Vector2i windowSize = Input.getWindowSize();
 		int width = (int) (windowSize.x * scale.x * windowScale.x);
 		int height = (int) (windowSize.y * scale.y * windowScale.y);
 		setText(TextBuilder.createText(text, font, size, width, height));

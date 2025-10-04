@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.system.EngineSystem;
 
-public class ParticleSystem extends EngineSystem {
+public class ParticleSystem extends EngineSystem<ParticleSystem, Particle> {
 
 	public ParticleSystem() {
 		super("particle");
@@ -17,8 +17,8 @@ public class ParticleSystem extends EngineSystem {
 	}
 
 	@Override
-	public ParticleObject load(Map<String, Object> data) {
-		ParticleObject object = new ParticleObject();
+	public Particle load(Map<String, Object> data) {
+		Particle object = new Particle();
 		object.load(data);
 		return object;
 	}

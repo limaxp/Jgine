@@ -37,8 +37,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.utils.BufferHelper;
 import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIAABB;
 import org.lwjgl.assimp.AIFace;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIVector3D;
@@ -134,29 +132,29 @@ public class Mesh implements AutoCloseable {
 		}
 		indices.flip();
 
-		PointerBuffer aiColors = mesh.mColors();
-		while (aiColors.remaining() > 0) {
-			long aiColor = aiColors.get();
-			// TODO use colors!
-		}
+//		PointerBuffer aiColors = mesh.mColors();
+//		while (aiColors.remaining() > 0) {
+//			long aiColor = aiColors.get();
+//			// TODO use colors!
+//		}
 
-		PointerBuffer aiBones = mesh.mBones();
-		if (aiBones != null) {
-			while (aiBones.remaining() > 0) {
-				long aiBone = aiBones.get();
-				// TODO use bones!
-			}
-		}
+//		PointerBuffer aiBones = mesh.mBones();
+//		if (aiBones != null) {
+//			while (aiBones.remaining() > 0) {
+//				long aiBone = aiBones.get();
+//				// TODO use bones!
+//			}
+//		}
 
-		PointerBuffer aiAnimMeshes = mesh.mAnimMeshes();
-		if (aiAnimMeshes != null) {
-			while (aiAnimMeshes.remaining() > 0) {
-				long aiAnimMesh = aiAnimMeshes.get();
-				// TODO use animation meshes!
-			}
-		}
+//		PointerBuffer aiAnimMeshes = mesh.mAnimMeshes();
+//		if (aiAnimMeshes != null) {
+//			while (aiAnimMeshes.remaining() > 0) {
+//				long aiAnimMesh = aiAnimMeshes.get();
+//				// TODO use animation meshes!
+//			}
+//		}
 
-		AIAABB aiAABB = mesh.mAABB();
+//		AIAABB aiAABB = mesh.mAABB();
 		// TODO use Axial Aligned Bounding Box!
 
 		loadData(mesh.mVertices(), indices, mesh.mTextureCoords(0), mesh.mNormals());

@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -40,6 +40,13 @@ public class SphereCollider extends Collider {
 		this.y = y;
 		this.z = z;
 		this.r = r;
+	}
+
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
@@ -85,7 +92,7 @@ public class SphereCollider extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof SphereCollider) {
 			SphereCollider o = (SphereCollider) other;
 			return CollisionChecks.resolveSpherevsSphere(x, y, z, r, o.x, o.y, o.z, o.r);
@@ -147,8 +154,7 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"),
-				Renderer.BASIC_SHADER);
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, r, r), ResourceManager.getModel("ball"));
 	}
 
 	@Override

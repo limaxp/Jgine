@@ -1,74 +1,174 @@
 package org.jgine.system.data;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Collection;
+import java.util.function.Consumer;
+import java.util.function.LongConsumer;
+import java.util.function.LongFunction;
 
 import org.jgine.core.Scene;
+import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemObject;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.memory.NativeResource;
+import org.jgine.utils.memory.Struct;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-public abstract class ByteBufferSystemScene<T1 extends EngineSystem, T2 extends SystemObject>
-		extends SystemScene<T1, T2> implements AutoCloseable {
+public abstract class ByteBufferSystemScene<S extends EngineSystem<S, O>, O extends Struct & SystemObject>
+		extends SystemScene<S, O> implements NativeResource {
 
-	protected int objectSize;
-	protected ByteBuffer buffer;
-	protected int bufferSize;
-	protected int size;
+	private int objectSize; // in bytes
+	private int maxSize;
+	private int size;
+	private final ByteBuffer buffer;
+	private long bufferAddress;
+	private final Entity[] entities;
+	private LongFunction<O> factory;
+	private final O pointer;
 
-	public ByteBufferSystemScene(T1 system, Scene scene, Class<T2> clazz) {
+	public ByteBufferSystemScene(S system, Scene scene, LongFunction<O> factory, int bytes, int size) {
 		super(system, scene);
-//		objectSize = (int) MemoryHelper.sizeOf(Reflection.newInstance(clazz));
-		bufferSize = ListSystemScene.INITAL_SIZE;
-		buffer = MemoryUtil.memAlloc(objectSize * bufferSize);
+		objectSize = bytes;
+		maxSize = size;
+		buffer = MemoryUtil.memAlloc(bytes * size);
+		bufferAddress = MemoryUtil.memAddress0(buffer);
+		entities = new Entity[size];
+		this.factory = factory;
+		pointer = factory.apply(0);
 	}
 
 	@Override
-	public final void close() {
+	public final void free() {
 		MemoryUtil.memFree(buffer);
 	}
 
 	@Override
-	public int addObject(Entity entity, T2 object) {
-		if (size == bufferSize)
-			ensureCapacity(size + 1);
+	public final int add(Entity entity, O object) {
+		int id = add(entity, object.address);
+		onAdd(entity, object);
+		return id;
+	}
+
+	private final int add(Entity entity, long address) {
+		if (size == maxSize)
+			return -1;
 		int index = size++;
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-//		MemoryHelper.copyArray(object, address, objectSize);
-//		entity.system = new SystemObjectPointer<T2>(object);
+		MemoryUtil.memCopy(address, address(index), objectSize);
+		relink(index, entity);
 		return index;
 	}
 
-	@Override
-	public T2 removeObject(int index) {
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-		MemoryUtil.memSet(address, 0, objectSize);
-		// TODO rearange list
-		return null;
+	public final void remove(O object) {
+		remove(object.address);
+	}
+
+	private final void remove(long address) {
+		remove(index(address));
 	}
 
 	@Override
-	public Collection<T2> getObjects() {
-		return null;
+	public final void remove(int index) {
+		long address = address(index);
+		pointer.address = address;
+		onRemove(getEntity(index), pointer);
+		if (index != --size) {
+			MemoryUtil.memCopy(address(size), address, objectSize);
+			Entity lastEntity = getEntity(size);
+			relink(index, lastEntity);
+			lastEntity.setSystemId(this, size, index);
+		}
 	}
 
 	@Override
-	public T2 getObject(int index) {
-		long address = MemoryUtil.memAddress(buffer) + (index * objectSize);
-//		return new Pointer<T2>().address(address).data;
-		return null;
+	public final void forEach(Consumer<O> func) {
+		O o = factory.apply(0);
+		for (int i = 0; i < size; i++) {
+			o.address = address(i);
+			func.accept(o);
+		}
 	}
 
-	protected void ensureCapacity(int minCapacity) {
-		if (minCapacity > bufferSize)
-			resize(Math.max(bufferSize * 2, minCapacity));
+	public final void forEach(LongConsumer func) {
+		for (int i = 0; i < size; i++)
+			func.accept(address(i));
 	}
 
-	protected void resize(int size) {
-		ByteBuffer newBuffer = MemoryUtil.memAlloc(objectSize * size);
-		buffer = newBuffer.put(0, buffer, 0, objectSize * bufferSize);
-		bufferSize = size;
+	@Override
+	public final O get(int index) {
+		return factory.apply(address(index));
 	}
+
+	public final O get(int index, O target) {
+		target.address = address(index);
+		return target;
+	}
+
+	public final long address(int index) {
+		return bufferAddress + (index * objectSize);
+	}
+
+	public final int index(long address) {
+		return (int) ((address - bufferAddress) / objectSize);
+	}
+
+	@Override
+	public final Entity getEntity(int index) {
+		return entities[index];
+	}
+
+	@Override
+	public final Transform getTransform(int index) {
+		return entities[index].transform;
+	}
+
+	@Override
+	public final void relink(int index, Entity entity) {
+		entities[index] = entity;
+	}
+
+	@Override
+	public final int size() {
+		return size;
+	}
+
+	protected final void swap(int index1, int index2) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			long tmp = stack.nmalloc(objectSize);
+			long address1 = address(index1);
+			long address2 = address(index2);
+			MemoryUtil.memCopy(address1, tmp, objectSize);
+			MemoryUtil.memCopy(address2, address1, objectSize);
+			MemoryUtil.memCopy(tmp, address2, objectSize);
+		}
+
+		Entity first = getEntity(index1);
+		Entity second = getEntity(index2);
+		relink(index1, second);
+		relink(index2, first);
+		first.setSystemId(this, index1, index2);
+		second.setSystemId(this, index2, index1);
+	}
+
+	@Override
+	public final void save(DataOutput out) throws IOException {
+		out.writeInt(size);
+		for (int i = 0; i < size; i++)
+			saveData(address(i), out);
+	}
+
+	@Override
+	public final void load(DataInput in) throws IOException {
+		size = in.readInt();
+		for (int i = 0; i < size; i++)
+			loadData(address(i), in);
+	}
+
+	protected abstract void saveData(long address, DataOutput out) throws IOException;
+
+	protected abstract void loadData(long address, DataInput in) throws IOException;
 }

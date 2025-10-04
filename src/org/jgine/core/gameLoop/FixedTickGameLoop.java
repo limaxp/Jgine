@@ -1,14 +1,11 @@
 package org.jgine.core.gameLoop;
 
 /**
- * {@link GameLoop} implementation that updates at given time interval in
+ * {@link GameLoop} implementation that updates on a given time interval in
  * milliseconds and renders as often as possible.
  */
 public class FixedTickGameLoop extends GameLoop {
 
-	/**
-	 * in millisecond (ms)
-	 */
 	protected int tickTime;
 	protected double previousTime;
 	protected double lag;
@@ -31,7 +28,7 @@ public class FixedTickGameLoop extends GameLoop {
 
 		while (lag >= tickTime) {
 			lag -= tickTime;
-			update(tickTime * 0.001f);
+			update((float) tickTime * 0.001f);
 
 			if (frameTime >= 1000) {
 				fps = frames;
@@ -39,7 +36,7 @@ public class FixedTickGameLoop extends GameLoop {
 				frames = 0;
 			}
 		}
-		render();
+		render((float) passedtime * 0.001f);
 		frames++;
 	}
 
@@ -48,10 +45,16 @@ public class FixedTickGameLoop extends GameLoop {
 		return fps;
 	}
 
+	/**
+	 * @param tickTime in ms (milliseconds)
+	 */
 	public void setTickTime(int tickTime) {
 		this.tickTime = tickTime;
 	}
 
+	/**
+	 * @return tickTime in ms (milliseconds)
+	 */
 	public int getTickTime() {
 		return tickTime;
 	}

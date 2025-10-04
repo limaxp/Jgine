@@ -3,17 +3,17 @@ package org.jgine.system.systems.collision;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.ServiceManager;
 import org.jgine.system.EngineSystem;
-import org.jgine.utils.Property;
+import org.jgine.utils.Service;
+import org.jgine.utils.collection.function.Property;
 
-public class CollisionSystem extends EngineSystem {
+public class CollisionSystem extends EngineSystem<CollisionSystem, Collider> {
 
 	private boolean showHitBox = false;
 
 	public CollisionSystem() {
 		super("collider");
-		ServiceManager.register("showHitBox", new Property<Boolean>() {
+		Service.register("showHitBox", new Property<Boolean>() {
 
 			@Override
 			public void setValue(Boolean obj) {

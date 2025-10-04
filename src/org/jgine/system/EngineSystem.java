@@ -1,43 +1,49 @@
 package org.jgine.system;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.jgine.core.Scene;
-import org.jgine.core.manager.SystemManager;
 
 /**
- * The base engine system class. All systems must override this class and must
- * be registered with the {@link SystemManager} before use.
+ * The base engine system class. All systems must override this class and will
+ * get registered in the {@link SystemManager} automatically.
  * <p>
  * A system consists of an {@link EngineSystem} and a {@link SystemScene}
  * implementation.
  */
-public abstract class EngineSystem {
+public abstract class EngineSystem<S extends EngineSystem<S, O>, O extends SystemObject> {
 
 	public final String name;
-	private int id;
+	public final int id;
 
 	public EngineSystem(String name) {
-		this.id = -1;
 		this.name = name;
+		this.id = SystemManager.register(this);
 	}
 
-	public abstract SystemScene<?, ?> createScene(Scene scene);
+	public abstract SystemScene<S, O> createScene(Scene scene);
 
-	public abstract SystemObject load(Map<String, Object> data);
-
-	public void init(int id) {
-		if (this.id != -1)
-			return;
-		this.id = id;
-	}
+	public abstract O load(Map<String, Object> data);
 
 	@Override
 	public boolean equals(Object obj) {
 		return this == obj;
 	}
 
-	public int getId() {
-		return id;
+	public static <T extends EngineSystem<?, ?>> T get(String name) {
+		return SystemManager.get(name);
+	}
+
+	public static <T extends EngineSystem<?, ?>> T get(int id) {
+		return SystemManager.get(id);
+	}
+
+	public static Collection<EngineSystem<?, ?>> values() {
+		return SystemManager.values();
+	}
+
+	public static int size() {
+		return SystemManager.size();
 	}
 }

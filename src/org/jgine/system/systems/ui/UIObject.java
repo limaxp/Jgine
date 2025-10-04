@@ -11,13 +11,13 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.system.SystemObject;
-import org.jgine.system.systems.script.Script;
+import org.jgine.system.systems.script.ScriptBase;
 import org.jgine.utils.Color;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.script.ScriptManager;
 
-public abstract class UIObject implements SystemObject, Cloneable {
+public abstract class UIObject implements SystemObject {
 
 	public static final int BACKGROUND_COLOR = Color.rgb(0.15f, 0.15f, 0.15f);
 	public static final int BORDER_COLOR = Color.rgb(0.3f, 0.3f, 0.3f);
@@ -44,7 +44,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 	private float width;
 	private float height;
 	private Matrix transform;
-	boolean isFocused;
+	public boolean isFocused;
 	public Consumer<UIObject> enableFunction;
 	public Consumer<UIObject> disableFunction;
 	public Consumer<UIObject> focusFunction;
@@ -66,12 +66,6 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		scrollFunction = NULL_VALUE_FUNCTION;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T extends SystemObject> T copy() {
-		return (T) clone();
-	}
-
 	@Override
 	public UIObject clone() {
 		try {
@@ -86,7 +80,7 @@ public abstract class UIObject implements SystemObject, Cloneable {
 
 	protected abstract void free();
 
-	public abstract void render(int depth);
+	public abstract void render();
 
 	public abstract UIObjectType<?> getType();
 
@@ -469,8 +463,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		@Override
 		public void accept(UIObject object) {
 			Object scriptEngine = object.getScriptEngine();
-			if (scriptEngine instanceof Script)
-				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, object);
+			if (scriptEngine instanceof ScriptBase)
+				((ScriptBase) scriptEngine).invokeFunction(functionName, UIObject.class, object);
 			else
 				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object);
 		}
@@ -488,8 +482,8 @@ public abstract class UIObject implements SystemObject, Cloneable {
 		@Override
 		public void accept(UIObject object, E value) {
 			Object scriptEngine = object.getScriptEngine();
-			if (scriptEngine instanceof Script)
-				((Script) scriptEngine).invokeFunction(functionName, UIObject.class, clazz, object, value);
+			if (scriptEngine instanceof ScriptBase)
+				((ScriptBase) scriptEngine).invokeFunction(functionName, UIObject.class, clazz, object, value);
 			else
 				ScriptManager.invoke((ScriptEngine) scriptEngine, functionName, object, value);
 		}

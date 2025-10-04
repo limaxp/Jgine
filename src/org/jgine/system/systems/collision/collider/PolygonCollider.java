@@ -8,14 +8,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
@@ -72,6 +71,12 @@ public class PolygonCollider extends Collider {
 	}
 
 	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+	}
+
+	@Override
 	public void move(float x, float y, float z) {
 		this.x += x;
 		this.y += y;
@@ -101,7 +106,7 @@ public class PolygonCollider extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof PolygonCollider) {
 			PolygonCollider o = (PolygonCollider) other;
 			return CollisionChecks.resolvePolygonvsPolygon(x, y, this, o.x, o.y, o);
@@ -166,8 +171,7 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, 1, 1), Renderer.BASIC_SHADER,
-				new Material(), true, points);
+		Renderer2D.renderLine2d(Transform.calculateMatrix2d(new Matrix(), x, y, 1, 1), new Material(), true, points);
 	}
 
 	@Override

@@ -2,26 +2,21 @@ package org.jgine.core;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.IdentityArrayList;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 import org.jgine.utils.math.spacePartitioning.SceneSpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.scheduler.Scheduler;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * A scene or world identified with id and name. Use this class to create a
@@ -38,13 +33,12 @@ public class Scene {
 	public final Engine engine;
 	public final int id;
 	public final String name;
-	private final Map<EngineSystem, SystemScene<?, ?>> systemMap;
-	private final Map<Class<? extends EngineSystem>, SystemScene<?, ?>> systemClassMap;
+	private final SystemScene<?, ?>[] systemMap;
 	private final List<SystemScene<?, ?>> systemList;
 	private final List<Entity> entities;
 	private final List<Entity> topEntities;
 	private UpdateOrder updateOrder;
-	private UpdateOrder renderOrder;
+	private List<EngineSystem<?, ?>> renderOrder;
 	private SpacePartitioning spacePartitioning;
 	private boolean paused;
 
@@ -52,9 +46,8 @@ public class Scene {
 		this.engine = engine;
 		this.id = name.hashCode();
 		this.name = name;
-		systemMap = new ConcurrentHashMap<EngineSystem, SystemScene<?, ?>>();
-		systemClassMap = new ConcurrentHashMap<Class<? extends EngineSystem>, SystemScene<?, ?>>();
-		systemList = new IdentityArrayList<SystemScene<?, ?>>();
+		systemMap = new SystemScene<?, ?>[EngineSystem.size()];
+		systemList = new UnorderedIdentityArrayList<SystemScene<?, ?>>();
 		entities = new UnorderedIdentityArrayList<Entity>();
 		topEntities = Collections.synchronizedList(new UnorderedIdentityArrayList<Entity>());
 		spacePartitioning = new SceneSpacePartitioning(this);
@@ -66,10 +59,10 @@ public class Scene {
 			Entity.freeId(entity.id);
 		entities.clear();
 		topEntities.clear();
-		for (SystemScene<?, ?> systemScene : systemList)
+		for (SystemScene<?, ?> systemScene : systemList) {
+			systemMap[systemScene.system.id] = null;
 			systemScene.free();
-		systemMap.clear();
-		systemClassMap.clear();
+		}
 		systemList.clear();
 	}
 
@@ -77,44 +70,30 @@ public class Scene {
 		engine.deleteScene(this);
 	}
 
-	public final <T extends SystemScene<?, ?>> T addSystem(String name) {
-		return addSystem(SystemManager.get(name));
-	}
-
-	public final <T extends SystemScene<?, ?>> T addSystem(Class<? extends EngineSystem> clazz) {
-		return addSystem(SystemManager.get(clazz));
-	}
-
-	public final <T extends SystemScene<?, ?>> T addSystem(int id) {
-		return addSystem(SystemManager.get(id));
-	}
-
+	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T addSystem(EngineSystem system) {
+	public final <T extends SystemScene<?, ?>> T setSystem(EngineSystem<?, ?> system) {
+		int id = system.id;
+		removeSystem(id);
 		SystemScene<?, ?> systemScene = system.createScene(this);
-		systemMap.put(system, systemScene);
-		systemClassMap.put(system.getClass(), systemScene);
+		systemMap[id] = systemScene;
 		Scheduler.runTaskSynchron(() -> systemList.add(systemScene));
 		return (T) systemScene;
 	}
 
-	public final <T extends SystemScene<?, ?>> T removeSystem(String name) {
-		return removeSystem(SystemManager.get(name));
-	}
-
-	public final <T extends SystemScene<?, ?>> T removeSystem(Class<? extends EngineSystem> clazz) {
-		return removeSystem(SystemManager.get(clazz));
-	}
-
-	public final <T extends SystemScene<?, ?>> T removeSystem(int id) {
-		return removeSystem(SystemManager.get(id));
+	@Nullable
+	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem<?, ?> system) {
+		return removeSystem(system.id);
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T removeSystem(EngineSystem system) {
-		SystemScene<?, ?> systemScene = systemMap.remove(system);
-		systemClassMap.remove(system.getClass());
+	public final <T extends SystemScene<?, ?>> T removeSystem(int id) {
+		SystemScene<?, ?> systemScene = systemMap[id];
+		if (systemScene == null)
+			return null;
+
+		systemMap[id] = null;
 		Scheduler.runTaskSynchron(() -> {
 			systemList.remove(systemScene);
 			systemScene.free();
@@ -122,108 +101,58 @@ public class Scene {
 		return (T) systemScene;
 	}
 
-	public final void addSystems(String... names) {
-		for (String name : names)
-			addSystem(SystemManager.get(name));
+	public final void setSystems(EngineSystem<?, ?>... systems) {
+		for (EngineSystem<?, ?> system : systems)
+			setSystem(system);
 	}
 
-	@SafeVarargs
-	public final void addSystems(Class<? extends EngineSystem>... classes) {
-		for (Class<? extends EngineSystem> clazz : classes)
-			addSystem(SystemManager.get(clazz));
+	public final void setSystems(Collection<EngineSystem<?, ?>> systems) {
+		for (EngineSystem<?, ?> system : systems)
+			setSystem(system);
 	}
 
-	public final void addSystems(int... ids) {
-		for (int id : ids)
-			addSystem(SystemManager.get(id));
-	}
-
-	public final void addSystems(EngineSystem... systems) {
-		for (EngineSystem system : systems)
-			addSystem(system);
-	}
-
-	public final void removeSystems(String... names) {
-		for (String name : names)
-			removeSystem(SystemManager.get(name));
-	}
-
-	@SafeVarargs
-	public final void removeSystems(Class<? extends EngineSystem>... classes) {
-		for (Class<? extends EngineSystem> clazz : classes)
-			removeSystem(SystemManager.get(clazz));
-	}
-
-	public final void removeSystems(int... ids) {
-		for (int id : ids)
-			removeSystem(SystemManager.get(id));
-	}
-
-	public final void removeSystems(EngineSystem... systems) {
-		for (EngineSystem system : systems)
+	public final void removeSystems(EngineSystem<?, ?>... systems) {
+		for (EngineSystem<?, ?> system : systems)
 			removeSystem(system);
 	}
 
-	public final void addSystems(Collection<EngineSystem> systems) {
-		for (EngineSystem system : systems)
-			addSystem(system);
-	}
-
-	public final void removeSystems(Collection<EngineSystem> systems) {
-		for (EngineSystem system : systems)
+	public final void removeSystems(int... systems) {
+		for (int system : systems)
 			removeSystem(system);
 	}
 
-	public final Collection<EngineSystem> getEngineSystems() {
-		return systemMap.keySet();
+	public final void removeSystems(Collection<EngineSystem<?, ?>> systems) {
+		for (EngineSystem<?, ?> system : systems)
+			removeSystem(system);
+	}
+
+	public final void removeSystems(IntCollection systems) {
+		for (int system : systems)
+			removeSystem(system);
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
+	public final <T extends SystemScene<?, ?>> T getSystem(EngineSystem<?, ?> system) {
+		return (T) systemMap[system.id];
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
+	public final <T extends SystemScene<?, ?>> T getSystem(int id) {
+		return (T) systemMap[id];
 	}
 
 	public final Collection<SystemScene<?, ?>> getSystems() {
 		return systemList;
 	}
 
-	public final Set<Entry<EngineSystem, SystemScene<?, ?>>> getSystemEntries() {
-		return systemMap.entrySet();
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(String name) {
-		return (T) systemMap.get(SystemManager.get(name));
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(Class<? extends EngineSystem> clazz) {
-		return (T) systemClassMap.get(clazz);
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(int id) {
-		return (T) systemMap.get(SystemManager.get(id));
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public final <T extends SystemScene<?, ?>> T getSystem(EngineSystem system) {
-		return (T) systemMap.get(system);
-	}
-
-	public final boolean hasSystem(String name) {
-		return systemMap.containsKey(SystemManager.get(name));
-	}
-
-	public final boolean hasSystem(Class<? extends EngineSystem> clazz) {
-		return systemMap.containsKey(SystemManager.get(clazz));
+	public final boolean hasSystem(EngineSystem<?, ?> system) {
+		return systemMap[system.id] != null;
 	}
 
 	public final boolean hasSystem(int id) {
-		return systemMap.containsKey(SystemManager.get(id));
-	}
-
-	public final boolean hasSystem(EngineSystem system) {
-		return systemMap.containsKey(system);
+		return systemMap[id] != null;
 	}
 
 	public final void addEntity(Entity entity) {
@@ -255,11 +184,7 @@ public class Scene {
 
 	private final void removeChildIntern(Entity entity) {
 		entities.remove(entity);
-		Iterator<Entry<SystemScene<?, ?>, Integer>> entryIterator = entity.getIdEntryIterator();
-		while (entryIterator.hasNext()) {
-			Entry<SystemScene<?, ?>, Integer> entry = entryIterator.next();
-			entry.getKey().removeObject(entry.getValue());
-		}
+		entity.forSystems(SystemScene::remove);
 
 		for (Entity child : entity.getChilds()) {
 			removeChildIntern(child);
@@ -437,12 +362,12 @@ public class Scene {
 		return updateOrder != null;
 	}
 
-	public void setRenderOrder(@Nullable UpdateOrder renderOrder) {
+	public void setRenderOrder(@Nullable List<EngineSystem<?, ?>> renderOrder) {
 		this.renderOrder = renderOrder;
 	}
 
 	@Nullable
-	public UpdateOrder getRenderOrder() {
+	public List<EngineSystem<?, ?>> getRenderOrder() {
 		return renderOrder;
 	}
 

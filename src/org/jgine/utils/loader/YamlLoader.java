@@ -1,6 +1,7 @@
 package org.jgine.utils.loader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +11,6 @@ import java.io.Writer;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.utils.FileUtils;
 import org.jgine.utils.logger.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -32,14 +32,12 @@ public class YamlLoader {
 
 	@Nullable
 	public static Map<String, Object> load(File file) {
-		String string;
-		try {
-			string = FileUtils.readString(file);
+		try (InputStream is = new FileInputStream(file)) {
+			return load(is);
 		} catch (IOException e) {
 			Logger.err("YamlLoader: Could not load file '" + file.getPath() + "'", e);
 			return null;
 		}
-		return YAML.load(string);
 	}
 
 	@Nullable

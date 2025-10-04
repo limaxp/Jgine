@@ -8,11 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.entity.Prefab;
 import org.jgine.core.entity.PrefabManager;
-import org.jgine.core.manager.SystemManager;
 import org.jgine.system.EngineSystem;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
 
 /**
  * Helper class for loading {@link Prefab} files.
@@ -85,12 +84,12 @@ public class PrefabLoader {
 		if (systemData instanceof Map) {
 			for (Entry<String, Object> entry : ((Map<String, Object>) systemData).entrySet()) {
 				String name = entry.getKey();
-				EngineSystem system = SystemManager.get(name);
+				EngineSystem<?, ?> system = EngineSystem.get(name);
 				Object entryData = entry.getValue();
 				if (entryData instanceof Map) {
 					Map<String, Object> entryMap = (Map<String, Object>) entryData;
 					if (system == null)
-						system = SystemManager.get(YamlHelper.toString(entryMap.get("system")));
+						system = EngineSystem.get(YamlHelper.toString(entryMap.get("system")));
 					if (system != null)
 						prefab.set(system, name, system.load(entryMap));
 				} else if (system != null)

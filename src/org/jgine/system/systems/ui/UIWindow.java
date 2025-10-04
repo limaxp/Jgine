@@ -11,16 +11,19 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.ResourceManager;
+import org.jgine.core.input.Input;
 import org.jgine.render.RenderTarget;
 import org.jgine.render.UIRenderer;
 import org.jgine.render.material.Material;
 import org.jgine.render.material.Texture;
-import org.jgine.system.systems.script.Script;
+import org.jgine.system.systems.script.ScriptBase;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.vector.Vector2f;
+import org.jgine.utils.math.vector.Vector2i;
 import org.jgine.utils.options.Options;
+import org.jgine.utils.scheduler.Scheduler;
 import org.jgine.utils.scheduler.Task;
 import org.jgine.utils.script.ScriptManager;
 
@@ -33,9 +36,10 @@ public class UIWindow extends UICompound {
 	private boolean floating;
 	private Material background;
 	private Material border;
+	private float borderSize;
 	private Object scriptEngine;
 	private RenderTarget renderTarget;
-	private Material renderTargetMaterial;
+	Material renderTargetMaterial;
 
 	public UIWindow() {
 		this(0.5f, false);
@@ -60,15 +64,17 @@ public class UIWindow extends UICompound {
 		setScale(width, height);
 		background = new Material(BACKGROUND_COLOR);
 		border = new Material(BORDER_COLOR);
+		borderSize = 0.005f;
 		scriptEngine = ScriptManager.NULL_SCRIPT_ENGINE;
-		renderTarget = createRenderTarget();
-		renderTargetMaterial = new Material(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		renderTargetMaterial = new Material();
 		renderTargetMaterial.flipY();
 	}
 
 	@Override
 	protected void free() {
-		renderTarget.close();
+		super.free();
+		if (renderTarget != null)
+			Scheduler.runTaskSynchron(renderTarget::close);
 	}
 
 	@Override
@@ -76,33 +82,42 @@ public class UIWindow extends UICompound {
 		UIWindow obj = (UIWindow) super.clone();
 		obj.background = background.clone();
 		obj.border = border.clone();
-		obj.renderTarget = createRenderTarget();
 		obj.renderTargetMaterial = renderTargetMaterial.clone();
-		obj.renderTargetMaterial.setTexture(obj.renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
 		return obj;
 	}
 
-	@Override
-	public void render(int depth) {
+	void preRender() {
 		if (this.scriptEngine instanceof UIScript)
 			((UIScript) this.scriptEngine).onUpdate(this);
 		if (hide)
 			return;
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, background, depth);
-		renderChilds(depth + 1);
-		UIRenderer.renderLine2d(getTransform(), UIRenderer.TEXTURE_SHADER, border, true,
-				new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f }, depth + 2);
+		renderChilds();
 	}
 
 	@Override
-	protected void renderChilds(int depth) {
+	public void render() {
+		preRender();
+		UIRenderer.renderQuad(getTransform(), renderTargetMaterial);
+	}
+
+	private void renderChilds() {
 		RenderTarget tmp = UIRenderer.getRenderTarget();
-		UIRenderer.setRenderTarget_UNSAFE(renderTarget);
+		RenderTarget renderTarget = getRenderTarget();
+		UIRenderer.setRenderTarget(renderTarget);
 		renderTarget.clear();
+		UIRenderer.renderQuad(new Matrix(), border);
+		UIRenderer.renderQuad(new Matrix().scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize), background);
 		for (UIObject child : getVisibleChilds())
-			child.render(0);
-		UIRenderer.setRenderTarget_UNSAFE(tmp);
-		UIRenderer.renderQuad(getTransform(), UIRenderer.TEXTURE_SHADER, renderTargetMaterial, depth);
+			child.render();
+		UIRenderer.setRenderTarget(tmp);
+	}
+
+	private RenderTarget getRenderTarget() {
+		if (renderTarget == null) {
+			renderTarget = createRenderTarget();
+			renderTargetMaterial.setTexture(renderTarget.getTexture(RenderTarget.COLOR_ATTACHMENT0));
+		}
+		return renderTarget;
 	}
 
 	@Override
@@ -112,6 +127,7 @@ public class UIWindow extends UICompound {
 
 	@Override
 	public void updateTransform(Matrix matrix) {
+		matrix.scale(1.0f - borderSize, 1.0f - borderSize, 1.0f - borderSize);
 	}
 
 	@Override
@@ -249,9 +265,13 @@ public class UIWindow extends UICompound {
 		} else if (borderData instanceof Map)
 			border.load((Map<String, Object>) borderData);
 
+		Object borderSizeData = data.get("borderSize");
+		if (borderSizeData != null)
+			borderSize = YamlHelper.toFloat(borderSizeData);
+
 		Object scriptName = data.get("script");
 		if (scriptName instanceof String) {
-			Script script = Script.get((String) scriptName);
+			ScriptBase script = ScriptBase.get((String) scriptName);
 			if (script != null)
 				this.scriptEngine = script;
 			else
@@ -267,8 +287,9 @@ public class UIWindow extends UICompound {
 		floating = in.readBoolean();
 		background.load(in);
 		border.load(in);
+		borderSize = in.readFloat();
 		String scriptName = in.readUTF();
-		Script script = Script.get(scriptName);
+		ScriptBase script = ScriptBase.get(scriptName);
 		if (script != null)
 			scriptEngine = script;
 		else
@@ -283,8 +304,9 @@ public class UIWindow extends UICompound {
 		out.writeBoolean(floating);
 		background.save(out);
 		border.save(out);
+		out.writeFloat(borderSize);
 		if (scriptEngine != null) {
-			if (scriptEngine instanceof Script)
+			if (scriptEngine instanceof ScriptBase)
 				out.writeUTF(scriptEngine.getClass().getSimpleName());
 			else
 				out.writeUTF(ResourceManager.getScriptName((ScriptEngine) scriptEngine));
@@ -359,6 +381,14 @@ public class UIWindow extends UICompound {
 		return border;
 	}
 
+	public void setBorderSize(float borderSize) {
+		this.borderSize = borderSize;
+	}
+
+	public float getBorderSize() {
+		return borderSize;
+	}
+
 	public Entity getEntity() {
 		return entity;
 	}
@@ -371,7 +401,7 @@ public class UIWindow extends UICompound {
 		this.scriptEngine = script;
 	}
 
-	public void setScript(Script script) {
+	public void setScript(ScriptBase script) {
 		this.scriptEngine = script;
 	}
 
@@ -399,14 +429,19 @@ public class UIWindow extends UICompound {
 
 		public DragTask(UIWindow window) {
 			this.window = window;
-			this.dragX = window.scene.mouseX;
-			this.dragY = window.scene.mouseY;
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindowSize();
+			dragX = cursorPos.x / windowSize.x;
+			dragY = 1 - cursorPos.y / windowSize.y;
 		}
 
 		@Override
 		public void run() {
-			float mouseX = window.scene.mouseX;
-			float mouseY = window.scene.mouseY;
+			Vector2f cursorPos = Input.getCursorPos();
+			Vector2i windowSize = Input.getWindowSize();
+			float mouseX = cursorPos.x / windowSize.x;
+			float mouseY = 1 - cursorPos.y / windowSize.y;
+
 			float distance = Vector2f.distance(mouseX, mouseY, dragX, dragY);
 			if (distance > 0.01f) {
 				float newX = window.getX() + (mouseX - dragX);

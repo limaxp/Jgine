@@ -4,15 +4,16 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.jgine.core.Engine.UpdateTask;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
+public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
 
 	public InputScene(InputSystem system, Scene scene) {
-		super(system, scene, InputHandler.class);
+		super(system, scene, InputHandler.class, 10000);
 	}
 
 	@Override
@@ -20,23 +21,19 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
-	public void initObject(Entity entity, InputHandler object) {
+	public void onInit(Entity entity, InputHandler object) {
 		object.setEntity(entity);
 	}
 
 	@Override
-	public void update(float dt) {
-		for (int i = 0; i < size; i++)
-			objects[i].checkInput();
-	}
-
-	@Override
-	public void render(float dt) {
+	public void update(UpdateTask update) {
+		forEach(InputHandler::checkInput);
+		update.finish(system);
 	}
 
 	@Override
 	public Entity getEntity(int index) {
-		return objects[index].getEntity();
+		return get(index).getEntity();
 	}
 
 	@Override
@@ -45,13 +42,15 @@ public class InputScene extends ListSystemScene<InputSystem, InputHandler> {
 	}
 
 	@Override
-	public InputHandler load(DataInput in) throws IOException {
-		InputHandler object = InputHandlerTypes.get(in.readInt()).get();
-		return object;
+	protected void saveData(InputHandler object, DataOutput out) throws IOException {
+		out.writeUTF(object.getClass().getSimpleName());
+		object.save(out);
 	}
 
 	@Override
-	public void save(InputHandler object, DataOutput out) throws IOException {
-		out.writeInt(object.getType().getId());
+	protected InputHandler loadData(DataInput in) throws IOException {
+		InputHandler object = InputHandler.get(in.readUTF());
+		object.load(in);
+		return object;
 	}
 }

@@ -18,7 +18,9 @@ import org.jgine.core.Engine;
 import org.jgine.core.Scene;
 import org.jgine.core.UpdateOrder;
 import org.jgine.core.entity.Entity;
+import org.jgine.system.EngineSystem;
 import org.jgine.system.SystemScene;
+import org.jgine.utils.collection.list.IdentityArrayList;
 import org.jgine.utils.logger.Logger;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioningTypes;
@@ -59,8 +61,10 @@ public class SceneLoader {
 		scene.setSpacePartitioning(spacePartitioning);
 
 		int systemSize = in.readInt();
-		for (int i = 0; i < systemSize; i++)
-			scene.addSystem(in.readInt());
+		for (int i = 0; i < systemSize; i++) {
+			SystemScene<?, ?> systemScene = scene.setSystem(EngineSystem.get(in.readInt()));
+			systemScene.load(in);
+		}
 
 		int entitySize = in.readInt();
 		for (int i = 0; i < entitySize; i++)
@@ -72,23 +76,17 @@ public class SceneLoader {
 			updateOrder.load(in);
 			scene.setUpdateOrder(updateOrder);
 		}
-		boolean hasRenderOrder = in.readBoolean();
-		if (hasRenderOrder) {
-			UpdateOrder renderOrder = new UpdateOrder();
-			renderOrder.load(in);
+
+		int renderOrderSize = in.readInt();
+		if (renderOrderSize > 0) {
+			List<EngineSystem<?, ?>> renderOrder = new IdentityArrayList<EngineSystem<?, ?>>();
+			for (int i = 0; i < renderOrderSize; i++)
+				renderOrder.add(EngineSystem.get(in.readInt()));
 			scene.setRenderOrder(renderOrder);
 		}
 		return scene;
 	}
 
-	/**
-	 * Should be called synchronized (Scheduler.runTaskSynchron()) otherwise might
-	 * interfere with updating!
-	 * 
-	 * @param scene
-	 * @param out
-	 * @throws FileNotFoundException
-	 */
 	public static void write(Scene scene, DataOutput out) throws IOException {
 		out.writeUTF(scene.name);
 
@@ -98,8 +96,10 @@ public class SceneLoader {
 
 		Collection<SystemScene<?, ?>> systems = scene.getSystems();
 		out.writeInt(systems.size());
-		for (SystemScene<?, ?> systemScene : systems)
-			out.writeInt(systemScene.system.getId());
+		for (SystemScene<?, ?> systemScene : systems) {
+			out.writeInt(systemScene.id);
+			systemScene.save(out);
+		}
 
 		List<Entity> entities = scene.getTopEntities();
 		out.writeInt(entities.size());
@@ -112,11 +112,14 @@ public class SceneLoader {
 			updateOrder.save(out);
 		} else
 			out.writeBoolean(false);
-		UpdateOrder renderOrder = scene.getRenderOrder();
+
+		List<EngineSystem<?, ?>> renderOrder = scene.getRenderOrder();
 		if (renderOrder != null) {
-			out.writeBoolean(true);
-			renderOrder.save(out);
+			int renderOrderSize = renderOrder.size();
+			out.writeInt(renderOrderSize);
+			for (int i = 0; i < renderOrderSize; i++)
+				out.writeInt(renderOrder.get(i).id);
 		} else
-			out.writeBoolean(false);
+			out.writeInt(0);
 	}
 }

@@ -7,39 +7,30 @@ import java.io.IOException;
 import org.jgine.core.Scene;
 import org.jgine.core.Transform;
 import org.jgine.core.entity.Entity;
-import org.jgine.system.data.ListSystemScene;
+import org.jgine.system.data.ObjectSystemScene;
 
-public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
+public class CameraScene extends ObjectSystemScene<CameraSystem, Camera> {
 
 	public CameraScene(CameraSystem system, Scene scene) {
-		super(system, scene, Camera.class);
+		super(system, scene, Camera.class, 32);
 	}
 
 	@Override
 	public void free() {
+		forEach(system::unregisterCamera);
 	}
 
 	@Override
-	public void initObject(Entity entity, Camera object) {
+	public void onInit(Entity entity, Camera object) {
 		object.transform = entity.transform;
 		if (object.getRenderTarget() == null)
 			object.setRenderTarget(scene.engine.getRenderConfig().getRenderTarget());
-		system.addCamera(object);
+		system.registerCamera(object);
 	}
 
 	@Override
-	public Camera removeObject(int index) {
-		Camera object = super.removeObject(index);
-		system.removeCamera(object);
-		return object;
-	}
-
-	@Override
-	public void update(float dt) {
-	}
-
-	@Override
-	public void render(float dt) {
+	public void onRemove(Entity entity, Camera object) {
+		system.unregisterCamera(object);
 	}
 
 	@Override
@@ -49,18 +40,18 @@ public class CameraScene extends ListSystemScene<CameraSystem, Camera> {
 
 	@Override
 	public Transform getTransform(int index) {
-		return objects[index].transform;
+		return get(index).transform;
 	}
 
 	@Override
-	public Camera load(DataInput in) throws IOException {
+	protected void saveData(Camera object, DataOutput out) throws IOException {
+		object.save(out);
+	}
+
+	@Override
+	protected Camera loadData(DataInput in) throws IOException {
 		Camera object = new Camera();
 		object.load(in);
 		return object;
-	}
-
-	@Override
-	public void save(Camera object, DataOutput out) throws IOException {
-		object.save(out);
 	}
 }

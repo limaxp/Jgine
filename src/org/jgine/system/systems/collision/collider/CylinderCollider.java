@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.render.Renderer;
 import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -43,6 +43,13 @@ public class CylinderCollider extends Collider {
 		this.z = z;
 		this.r = r;
 		this.h = h;
+	}
+
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
@@ -89,7 +96,7 @@ public class CylinderCollider extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		return null;
 	}
 
@@ -142,8 +149,7 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"),
-				Renderer.BASIC_SHADER);
+		Renderer.render(Transform.calculateMatrix(new Matrix(), x, y, z, r, h, r), ResourceManager.getModel("ball"));
 	}
 
 	@Override

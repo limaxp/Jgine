@@ -7,7 +7,6 @@ import java.io.InputStream;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.render.material.Image;
 import org.jgine.render.material.Texture;
-import org.jgine.utils.FileUtils;
 import org.jgine.utils.logger.Logger;
 
 /**
@@ -67,21 +66,11 @@ public class TextureLoader {
 
 	@Nullable
 	public static Image loadImage(File file) {
-		try {
-			return FileUtils.readImage(file);
-		} catch (IOException e) {
-			Logger.err("ResourceLoader: Image '" + file.getPath() + "' could not be loaded!", e);
-			return null;
-		}
+		return Image.read(file); // ImageIO.read(is);
 	}
 
 	@Nullable
 	public static Image loadImage(InputStream is) {
-		try {
-			return FileUtils.readImage(is);
-		} catch (IOException e) {
-			Logger.err("ResourceLoader: Image input stream could not be loaded!", e);
-			return null;
-		}
+		return Image.read(is); // ImageIO.read(is);
 	}
 }

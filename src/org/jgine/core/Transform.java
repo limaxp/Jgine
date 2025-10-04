@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jgine.core.entity.Entity;
-import org.jgine.core.manager.UpdateManager;
+import org.jgine.system.UpdateManager;
 import org.jgine.utils.math.Matrix;
 import org.jgine.utils.math.rotation.AxisAngle4f;
 import org.jgine.utils.math.spacePartitioning.SpacePartitioning;
@@ -36,7 +36,6 @@ public class Transform implements Cloneable {
 	public Transform(Entity entity, float posX, float posY, float posZ, float rotX, float rotY, float rotZ,
 			float scaleX, float scaleY, float scaleZ) {
 		this.entity = entity;
-		this.matrix = new Matrix();
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
@@ -46,12 +45,13 @@ public class Transform implements Cloneable {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
+		this.matrix = new Matrix();
 		calculateMatrix();
 		spacePartitioning = SpacePartitioning.NULL;
 	}
 
 	public final void calculateMatrix() {
-		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ); // TODO 2d rotation bug!
+		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 		if (entity.hasParent())
 			matrix.mult(entity.getParent().transform.getMatrix());
 		for (Entity child : entity.getChilds())
@@ -78,23 +78,28 @@ public class Transform implements Cloneable {
 		float oldX = getX();
 		float oldY = getY();
 		float oldZ = getZ();
-		setPositionIntern(x, y, z);
-		UpdateManager.getTransformPosition().accept(entity, getX() - oldX, getY() - oldY, getZ() - oldZ);
-	}
-
-	public final void setPositionIntern(float x, float y, float z) {
-		float oldX = getX();
-		float oldY = getY();
-		float oldZ = getZ();
 		posX = x;
 		posY = y;
 		posZ = z;
 		calculateMatrix();
 		spacePartitioning.move(entity, oldX, oldY, oldZ, getX(), getY(), getZ());
+		UpdateManager.getTransformPosition().accept(entity, getX(), getY(), getZ());
+	}
+
+	public final void movePosition(float dx, float dy, float dz) {
+		float oldX = getX();
+		float oldY = getY();
+		float oldZ = getZ();
+		posX = oldX + dx;
+		posY = oldY + dy;
+		posZ = oldZ + dz;
+		calculateMatrix();
+		spacePartitioning.move(entity, oldX, oldY, oldZ, getX(), getY(), getZ());
+		UpdateManager.getTransformPosition().accept(entity, getX(), getY(), getZ());
 	}
 
 	public final Vector3f getPosition() {
-		return matrix.getPosition();
+		return new Vector3f(matrix.m03, matrix.m13, matrix.m23);
 	}
 
 	public final float getX() {
@@ -123,6 +128,66 @@ public class Transform implements Cloneable {
 
 	public final float getLocalZ() {
 		return posZ;
+	}
+
+	public final void setScale(float scale) {
+		setScale(scale, scale, scale);
+	}
+
+	public final void setScale(Vector2f scale) {
+		setScale(scale.x, scale.y, 0.0f);
+	}
+
+	public final void setScale(float x, float y) {
+		setScale(x, y, 0.0f);
+	}
+
+	public final void setScale(Vector3f scale) {
+		setScale(scale.x, scale.y, scale.z);
+	}
+
+	public final void setScale(float x, float y, float z) {
+		float oldX = getScaleX();
+		float oldY = getScaleY();
+		float oldZ = getScaleZ();
+		scaleX = x;
+		scaleY = y;
+		scaleZ = z;
+		calculateMatrix();
+		UpdateManager.getTransformScale().accept(entity, 1.0f + getScaleX() - oldX, 1.0f + getScaleY() - oldY,
+				1.0f + getScaleZ() - oldZ);
+	}
+
+	public final Vector3f getScale() {
+		return new Vector3f(matrix.m00, matrix.m11, matrix.m22);
+	}
+
+	public final float getScaleX() {
+		return matrix.m00;
+	}
+
+	public final float getScaleY() {
+		return matrix.m11;
+	}
+
+	public final float getScaleZ() {
+		return matrix.m22;
+	}
+
+	public final Vector3f getLocalScale() {
+		return new Vector3f(scaleX, scaleY, scaleZ);
+	}
+
+	public final float getLocalScaleX() {
+		return scaleX;
+	}
+
+	public final float getLocalScaleY() {
+		return scaleY;
+	}
+
+	public final float getLocalScaleZ() {
+		return scaleZ;
 	}
 
 	public final void setRotation(Vector2f rotation) {
@@ -166,79 +231,17 @@ public class Transform implements Cloneable {
 		return rotZ;
 	}
 
-	public final void setScale(Vector2f scale) {
-		setScale(scale.x, scale.y, 0.0f);
-	}
-
-	public final void setScale(float x, float y) {
-		setScale(x, y, 0.0f);
-	}
-
-	public final void setScale(Vector3f scale) {
-		setScale(scale.x, scale.y, scale.z);
-	}
-
-	public final void setScale(float scale) {
-		setScale(scale, scale, scale);
-	}
-
-	public final void setScale(float x, float y, float z) {
-		float oldX = getScaleX();
-		float oldY = getScaleY();
-		float oldZ = getScaleZ();
-		setScaleIntern(x, y, z);
-		UpdateManager.getTransformScale().accept(entity, 1.0f + getScaleX() - oldX, 1.0f + getScaleY() - oldY,
-				1.0f + getScaleZ() - oldZ);
-	}
-
-	public final void setScaleIntern(float x, float y, float z) {
-		scaleX = x;
-		scaleY = y;
-		scaleZ = z;
-		calculateMatrix();
-	}
-
-	public final Vector3f getScale() {
-		return matrix.getScale();
-	}
-
-	public final float getScaleX() {
-		return matrix.getScaleX();
-	}
-
-	public final float getScaleY() {
-		return matrix.getScaleY();
-	}
-
-	public final float getScaleZ() {
-		return matrix.getScaleZ();
-	}
-
-	public final Vector3f getLocalScale() {
-		return new Vector3f(scaleX, scaleY, scaleZ);
-	}
-
-	public final float getLocalScaleX() {
-		return scaleX;
-	}
-
-	public final float getLocalScaleY() {
-		return scaleY;
-	}
-
-	public final float getLocalScaleZ() {
-		return scaleZ;
-	}
-
 	public final void rotateX(float angle) {
 		Vector3f rotation = getLocalRotation();
 		Vector3f hAxis = Vector3f.normalize(Vector3f.cross(Vector3f.Y_AXIS, rotation));
-		setRotation(Vector3f.normalize(Vector3f.rotate(rotation, angle, hAxis)));
+		Vector3f result = Vector3f.normalize(Vector3f.rotate(rotation, angle, hAxis));
+		setRotation(result.x, result.y, result.z);
 	}
 
 	public final void rotateY(float angle) {
 		Vector3f rotation = getLocalRotation();
-		setRotation(Vector3f.normalize(Vector3f.rotate(rotation, angle, Vector3f.Y_AXIS)));
+		Vector3f result = Vector3f.normalize(Vector3f.rotate(rotation, angle, Vector3f.Y_AXIS));
+		setRotation(result.x, result.y, result.z);
 	}
 
 	final void cleanupEntity() {
@@ -251,12 +254,6 @@ public class Transform implements Cloneable {
 
 	public final SpacePartitioning getSpacePartitioning() {
 		return spacePartitioning;
-	}
-
-	@Override
-	public final String toString() {
-		return super.toString() + "[pos: " + posX + "," + posY + "," + posZ + " rot: " + rotX + "," + rotY + "," + rotZ
-				+ " scale: " + scaleX + "," + scaleY + "," + scaleZ + "]";
 	}
 
 	@Override
@@ -294,6 +291,12 @@ public class Transform implements Cloneable {
 		out.writeFloat(scaleX);
 		out.writeFloat(scaleY);
 		out.writeFloat(scaleZ);
+	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + "[pos: " + posX + "," + posY + "," + posZ + " | rot: " + rotX + "," + rotY + ","
+				+ rotZ + " | scale: " + scaleX + "," + scaleY + "," + scaleZ + "]";
 	}
 
 	public static Matrix calculateMatrix2d(Matrix matrix, Vector2f position, Vector2f rotation, Vector2f scale) {

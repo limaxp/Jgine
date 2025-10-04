@@ -5,16 +5,15 @@ import java.util.Map;
 import org.jgine.core.Scene;
 import org.jgine.render.light.Light;
 import org.jgine.system.EngineSystem;
-import org.jgine.system.SystemScene;
 
-public class LightSystem extends EngineSystem {
+public class LightSystem extends EngineSystem<LightSystem, Light> {
 
 	public LightSystem() {
 		super("light");
 	}
 
 	@Override
-	public SystemScene<?, ?> createScene(Scene scene) {
+	public LightScene createScene(Scene scene) {
 		return new LightScene(this, scene);
 	}
 

@@ -27,9 +27,9 @@ import static org.lwjgl.openal.SOFTHRTF.alcResetDeviceSOFT;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.jgine.collection.list.arrayList.FastArrayList;
 import org.jgine.utils.logger.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
@@ -146,7 +146,7 @@ public class SoundDevice {
 	}
 
 	public List<String> getHRTFs() {
-		List<String> list = new FastArrayList<String>();
+		List<String> list = new ArrayList<String>();
 		int num_hrtf = getInt(ALC_NUM_HRTF_SPECIFIERS_SOFT);
 		for (int i = 0; i < num_hrtf; i++)
 			list.add(getStringSoft(ALC_HRTF_SPECIFIER_SOFT, i));

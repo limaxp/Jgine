@@ -46,15 +46,15 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import org.jgine.collection.list.arrayList.unordered.UnorderedIdentityArrayList;
 import org.jgine.core.Engine;
 import org.jgine.core.Transform;
-import org.jgine.core.manager.ResourceManager;
 import org.jgine.core.sound.effect.EFXUtil;
 import org.jgine.core.sound.effect.SoundEffect;
 import org.jgine.core.sound.effect.SoundFilter;
 import org.jgine.system.systems.camera.Camera;
 import org.jgine.system.systems.physic.PhysicObject;
+import org.jgine.utils.collection.list.UnorderedIdentityArrayList;
+import org.jgine.utils.loader.ResourceManager;
 import org.jgine.utils.math.vector.Vector2f;
 import org.jgine.utils.math.vector.Vector3f;
 import org.lwjgl.openal.ALUtil;
@@ -80,7 +80,7 @@ import org.lwjgl.system.MemoryUtil;
 public class SoundManager {
 
 	private static SoundDevice device;
-	static final List<SoundSource> SOURCES = new UnorderedIdentityArrayList<SoundSource>();
+	static final List<SoundSource> SOURCES = new UnorderedIdentityArrayList<SoundSource>(1024);
 	private static final SoundListener listener = new SoundListener();
 
 	public static void init() {
@@ -100,6 +100,11 @@ public class SoundManager {
 
 	private static void updateListener() {
 		Camera camera = Engine.CAMERA_SYSTEM.getMainCamera();
+		if (camera == null) {
+			listener.init(Vector3f.NULL);
+			return;
+		}
+
 		Transform transform = camera.getTransform();
 		listener.setPosition(transform.getPosition());
 		PhysicObject physicObject = transform.getEntity().getSystem(Engine.PHYSIC_SYSTEM);

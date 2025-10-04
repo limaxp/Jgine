@@ -23,6 +23,80 @@ import org.lwjgl.system.MemoryStack;
 
 public class MeshGenerator {
 
+	public static void addVertice(FloatBuffer vertices, float x, float y) {
+		addVertice(vertices, x, y, 0.0f, 0.0f);
+	}
+
+	public static void addVertice(FloatBuffer vertices, float x, float y, float s, float t) {
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(s);
+		vertices.put(t);
+	}
+
+	public static void addVertice(FloatBuffer vertices, float x, float y, float z) {
+		addVertice(vertices, x, y, z, 0.0f, 0.0f, 0.0f);
+	}
+
+	public static void addVertice(FloatBuffer vertices, float x, float y, float z, float s, float t, float v) {
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(z);
+		vertices.put(s);
+		vertices.put(t);
+		vertices.put(v);
+	}
+
+	public static float scale(float center, float offset, float factor) {
+		return (offset - center) * factor + center;
+	}
+
+	public static void addTriangleStrip(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0,
+			float s1, float t0, float t1) {
+		addVertice(vertices, x0, y0, s0, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x1, y1, s1, t0);
+	}
+
+	public static void addQuad(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0, float s1,
+			float t0, float t1) {
+		addVertice(vertices, x0, y0, s0, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x1, y0, s1, t1);
+		addVertice(vertices, x0, y1, s0, t0);
+		addVertice(vertices, x1, y1, s1, t0);
+	}
+
+	public static void addCircle(FloatBuffer vertices, float radius, int steps) {
+		addCircle(vertices, 0.0f, 0.0f, radius, steps);
+	}
+
+	public static void addCircle(FloatBuffer vertices, float x, float y, float radius, int steps) {
+		float angle = (float) FastMath.PI2 / steps;
+		addCirclePoint(vertices, radius, 0);
+		for (float phi = angle; phi < FastMath.PI2; phi += angle)
+			addCirclePoint(vertices, x, y, radius, phi);
+	}
+
+	public static void addCircleSegment(FloatBuffer vertices, float x, float y, float radius, int steps, float start,
+			float stop) {
+		float angle = (float) FastMath.PI2 / steps;
+		float first = angle * steps * start;
+		float last = (float) FastMath.PI2 * stop;
+		for (float phi = first; phi <= last; phi += angle)
+			addCirclePoint(vertices, x, y, radius, phi);
+	}
+
+	public static void addCirclePoint(FloatBuffer vertices, float radius, float angle) {
+		addCirclePoint(vertices, 0.0f, 0.0f, radius, angle);
+	}
+
+	public static void addCirclePoint(FloatBuffer vertices, float x, float y, float radius, float angle) {
+		addVertice(vertices, x + radius * FastMath.sin(angle), y + radius * FastMath.cos(angle));
+	}
+
 	public static BaseMesh quad(float size) {
 		BaseMesh mesh = new BaseMesh(2, false);
 		mesh.loadVertices(new float[] { -size, size, size, size, -size, -size, size, -size },
@@ -61,8 +135,8 @@ public class MeshGenerator {
 		addVertice(vertices, -radiusHalf, -radius); // left bottom
 		addVertice(vertices, -radius, 0.0f); // left
 		addVertice(vertices, -radiusHalf, radius); // left top
-		vertices.flip();
 
+		vertices.flip();
 		BaseMesh mesh = new BaseMesh(2, false);
 		mesh.loadVertices(vertices);
 		mesh.mode = Mesh.TRIANGLE_FAN;
@@ -70,15 +144,10 @@ public class MeshGenerator {
 	}
 
 	public static BaseMesh circle(float radius, int steps) {
-		FloatBuffer vertices = BufferUtils.createFloatBuffer((steps + 3) * 4);
-		addVertice(vertices, 0.0f, 0.0f);
-		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
-		float angle = (float) FastMath.PI2 / steps;
-		for (float phi = angle; phi < FastMath.PI2; phi += angle)
-			addVertice(vertices, radius * FastMath.sin(phi), radius * FastMath.cos(phi));
-		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
-		vertices.flip();
+		FloatBuffer vertices = BufferUtils.createFloatBuffer(steps * 4);
+		addCircle(vertices, radius, steps);
 
+		vertices.flip();
 		BaseMesh mesh = new BaseMesh(2, false);
 		mesh.loadVertices(vertices);
 		mesh.mode = Mesh.TRIANGLE_FAN;
@@ -86,16 +155,22 @@ public class MeshGenerator {
 	}
 
 	public static BaseMesh circleHollow(float radius, int steps) {
-		FloatBuffer vertices = BufferUtils.createFloatBuffer(steps * 4);
-		addVertice(vertices, radius * FastMath.sin(0), radius * FastMath.cos(0));
-		float angle = (float) FastMath.PI2 / steps;
-		for (float phi = angle; phi < FastMath.PI2; phi += angle)
-			addVertice(vertices, radius * FastMath.sin(phi), radius * FastMath.cos(phi));
-		vertices.flip();
+		BaseMesh mesh = circle(radius, steps);
+		mesh.mode = Mesh.LINE_LOOP;
+		return mesh;
+	}
 
+	public static BaseMesh roundedRectangle(float width, float height, float radius, int steps) {
+		FloatBuffer vertices = BufferUtils.createFloatBuffer((steps + 3) * 4);
+		addCircleSegment(vertices, width - radius, height - radius, radius, steps, 0.0f, 0.25f);
+		addCircleSegment(vertices, width - radius, -height + radius, radius, steps, 0.25f, 0.5f);
+		addCircleSegment(vertices, -width + radius, -height + radius, radius, steps, 0.5f, 0.75f);
+		addCircleSegment(vertices, -width + radius, height - radius, radius, steps, 0.75f, 1.0f);
+
+		vertices.flip();
 		BaseMesh mesh = new BaseMesh(2, false);
 		mesh.loadVertices(vertices);
-		mesh.mode = Mesh.LINE_LOOP;
+		mesh.mode = Mesh.TRIANGLE_FAN;
 		return mesh;
 	}
 
@@ -188,7 +263,7 @@ public class MeshGenerator {
 			IntBuffer pCodePoint = stack.mallocInt(1);
 			FloatBuffer x = stack.floats(0.0f);
 			FloatBuffer y = stack.floats(0.0f);
-			STBTTAlignedQuad q = STBTTAlignedQuad.mallocStack(stack);
+			STBTTAlignedQuad q = STBTTAlignedQuad.malloc(stack);
 
 			Vector2f contentScale = DisplayManager.getDisplay(Options.MONITOR.getInt()).getContentScale();
 			float factorX = 1.0f / contentScale.x;
@@ -229,51 +304,5 @@ public class MeshGenerator {
 			mesh.loadVertices(vertices);
 			return mesh;
 		}
-	}
-
-	public static void addTriangleStrip(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0,
-			float s1, float t0, float t1) {
-		addVertice(vertices, x0, y0, s0, t1);
-		addVertice(vertices, x0, y1, s0, t0);
-		addVertice(vertices, x1, y0, s1, t1);
-		addVertice(vertices, x1, y1, s1, t0);
-	}
-
-	public static void addQuad(FloatBuffer vertices, float x0, float x1, float y0, float y1, float s0, float s1,
-			float t0, float t1) {
-		addVertice(vertices, x0, y0, s0, t1);
-		addVertice(vertices, x0, y1, s0, t0);
-		addVertice(vertices, x1, y0, s1, t1);
-		addVertice(vertices, x1, y0, s1, t1);
-		addVertice(vertices, x0, y1, s0, t0);
-		addVertice(vertices, x1, y1, s1, t0);
-	}
-
-	public static void addVertice(FloatBuffer vertices, float x, float y) {
-		addVertice(vertices, x, y, 0.0f, 0.0f);
-	}
-
-	public static void addVertice(FloatBuffer vertices, float x, float y, float s, float t) {
-		vertices.put(x);
-		vertices.put(y);
-		vertices.put(s);
-		vertices.put(t);
-	}
-
-	public static void addVertice(FloatBuffer vertices, float x, float y, float z) {
-		addVertice(vertices, x, y, z, 0.0f, 0.0f, 0.0f);
-	}
-
-	public static void addVertice(FloatBuffer vertices, float x, float y, float z, float s, float t, float v) {
-		vertices.put(x);
-		vertices.put(y);
-		vertices.put(z);
-		vertices.put(s);
-		vertices.put(t);
-		vertices.put(v);
-	}
-
-	public static float scale(float center, float offset, float factor) {
-		return (offset - center) * factor + center;
 	}
 }

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.jgine.core.Transform;
-import org.jgine.render.Renderer;
 import org.jgine.render.Renderer2D;
 import org.jgine.render.material.Material;
 import org.jgine.render.mesh.BaseMesh;
@@ -16,7 +15,7 @@ import org.jgine.system.systems.collision.Collider;
 import org.jgine.system.systems.collision.ColliderType;
 import org.jgine.system.systems.collision.ColliderTypes;
 import org.jgine.system.systems.collision.CollisionChecks;
-import org.jgine.system.systems.collision.CollisionData;
+import org.jgine.system.systems.collision.Collision;
 import org.jgine.utils.loader.YamlHelper;
 import org.jgine.utils.math.Matrix;
 
@@ -43,6 +42,12 @@ public class CircleCollider extends Collider {
 		this.x = x;
 		this.y = y;
 		this.r = r;
+	}
+
+	@Override
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
@@ -82,7 +87,7 @@ public class CircleCollider extends Collider {
 
 	@Nullable
 	@Override
-	public CollisionData resolveCollision(Collider other) {
+	public Collision resolveCollision(Collider other) {
 		if (other instanceof CircleCollider) {
 			CircleCollider o = (CircleCollider) other;
 			return CollisionChecks.resolveCirclevsCircle(x, y, r, o.x, o.y, o.r);
@@ -139,8 +144,7 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public void render() {
-		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, Renderer.BASIC_SHADER,
-				new Material());
+		Renderer2D.render(Transform.calculateMatrix2d(new Matrix(), x, y, r, r), COLLIDER_MESH, new Material());
 	}
 
 	@Override
