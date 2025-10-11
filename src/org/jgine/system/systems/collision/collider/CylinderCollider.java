@@ -72,25 +72,14 @@ public class CylinderCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof CylinderCollider) {
-			CylinderCollider o = (CylinderCollider) other;
+		if (other instanceof CylinderCollider o)
 			return CollisionChecks.cylindervsCylinder(x, y, z, r, h, o.x, o.y, o.z, o.r, o.h);
-		}
-
-		else if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		else if (other instanceof SphereCollider o)
 			return CollisionChecks.cylindervsSphere(x, y, z, r, h, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		else if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.cylindervsCube(x, y, z, r, h, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		else if (other instanceof PlaneCollider o)
 			return CollisionChecks.cylindervsPlane(x, y, z, r, h, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
-		}
 		return false;
 	}
 

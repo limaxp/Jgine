@@ -48,7 +48,7 @@ public class PlaneCollider extends Collider {
 		this.yNorm = yNorm;
 		this.zNorm = zNorm;
 	}
-	
+
 	@Override
 	public void set(float x, float y, float z) {
 		this.x = x;
@@ -74,46 +74,27 @@ public class PlaneCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		if (other instanceof PlaneCollider o)
 			return CollisionChecks.planevsPlane(xNorm, yNorm, zNorm, o.xNorm, o.yNorm, o.zNorm);
-		}
-
-		else if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		else if (other instanceof SphereCollider o)
 			return CollisionChecks.planevsSphere(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		else if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.planevsCube(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof CylinderCollider) {
-			CylinderCollider o = (CylinderCollider) other;
+		else if (other instanceof CylinderCollider o)
 			return CollisionChecks.planevsCylinder(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r, o.h);
-		}
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public Collision resolveCollision(Collider other) {
-		if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		if (other instanceof PlaneCollider o)
 			return CollisionChecks.resolvePlanevsPlane(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.xNorm, o.yNorm,
 					o.zNorm);
-		}
-
-		else if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		else if (other instanceof SphereCollider o)
 			return CollisionChecks.resolvePlanevsSphere(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		else if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.resolvePlanevsCube(x, y, z, xNorm, yNorm, zNorm, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
 		return null;
 	}
 

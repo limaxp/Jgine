@@ -68,45 +68,26 @@ public class SphereCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		if (other instanceof SphereCollider o)
 			return CollisionChecks.spherevsSphere(x, y, z, r, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		else if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.spherevsCube(x, y, z, r, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		else if (other instanceof PlaneCollider o)
 			return CollisionChecks.spherevsPlane(x, y, z, r, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
-		}
-
-		else if (other instanceof CylinderCollider) {
-			CylinderCollider o = (CylinderCollider) other;
+		else if (other instanceof CylinderCollider o)
 			return CollisionChecks.spherevsCylinder(x, y, z, r, o.x, o.y, o.z, o.r, o.h);
-		}
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public Collision resolveCollision(Collider other) {
-		if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		if (other instanceof SphereCollider o)
 			return CollisionChecks.resolveSpherevsSphere(x, y, z, r, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		else if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.resolveSpherevsCube(x, y, z, r, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		else if (other instanceof PlaneCollider o)
 			return CollisionChecks.resolveSpherevsPlane(x, y, z, r, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
-		}
 		return null;
 	}
 

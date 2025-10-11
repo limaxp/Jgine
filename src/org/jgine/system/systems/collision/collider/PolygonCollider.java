@@ -97,20 +97,16 @@ public class PolygonCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof PolygonCollider) {
-			PolygonCollider o = (PolygonCollider) other;
+		if (other instanceof PolygonCollider o)
 			return CollisionChecks.polygonvsPolygon(x, y, this, o.x, o.y, o);
-		}
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public Collision resolveCollision(Collider other) {
-		if (other instanceof PolygonCollider) {
-			PolygonCollider o = (PolygonCollider) other;
+		if (other instanceof PolygonCollider o)
 			return CollisionChecks.resolvePolygonvsPolygon(x, y, this, o.x, o.y, o);
-		}
 		return null;
 	}
 

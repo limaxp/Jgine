@@ -68,40 +68,24 @@ public class CircleCollider extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof CircleCollider) {
-			CircleCollider o = (CircleCollider) other;
+		if (other instanceof CircleCollider o)
 			return CollisionChecks.circlevsCircle(x, y, r, o.x, o.y, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingQuad) {
-			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+		else if (other instanceof AxisAlignedBoundingQuad o)
 			return CollisionChecks.circlevsQuad(x, y, r, o.x, o.y, o.w, o.h);
-		}
-
-		else if (other instanceof LineCollider) {
-			LineCollider o = (LineCollider) other;
+		else if (other instanceof LineCollider o)
 			return CollisionChecks.circlevsLine(x, y, r, o.x, o.y, o.xNorm, o.yNorm);
-		}
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public Collision resolveCollision(Collider other) {
-		if (other instanceof CircleCollider) {
-			CircleCollider o = (CircleCollider) other;
+		if (other instanceof CircleCollider o)
 			return CollisionChecks.resolveCirclevsCircle(x, y, r, o.x, o.y, o.r);
-		}
-
-		else if (other instanceof AxisAlignedBoundingQuad) {
-			AxisAlignedBoundingQuad o = (AxisAlignedBoundingQuad) other;
+		else if (other instanceof AxisAlignedBoundingQuad o)
 			return CollisionChecks.resolveCirclevsQuad(x, y, r, o.x, o.y, o.w, o.h);
-		}
-
-		else if (other instanceof LineCollider) {
-			LineCollider o = (LineCollider) other;
+		else if (other instanceof LineCollider o)
 			return CollisionChecks.resolveCirclevsLine(x, y, r, o.x, o.y, o.xNorm, o.yNorm);
-		}
 		return null;
 	}
 

@@ -48,7 +48,7 @@ public class AxisAlignedBoundingBox extends Collider {
 		this.h = h;
 		this.d = d;
 	}
-	
+
 	@Override
 	public void set(float x, float y, float z) {
 		this.x = x;
@@ -77,45 +77,26 @@ public class AxisAlignedBoundingBox extends Collider {
 
 	@Override
 	public boolean checkCollision(Collider other) {
-		if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.cubevsCube(x, y, z, w, h, d, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		else if (other instanceof SphereCollider o)
 			return CollisionChecks.cubevsSphere(x, y, z, w, h, d, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		else if (other instanceof PlaneCollider o)
 			return CollisionChecks.cubevsPlane(x, y, z, w, h, d, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
-		}
-
-		else if (other instanceof CylinderCollider) {
-			CylinderCollider o = (CylinderCollider) other;
+		else if (other instanceof CylinderCollider o)
 			return CollisionChecks.cubevsCylinder(x, y, z, w, h, d, o.x, o.y, o.z, o.r, o.h);
-		}
 		return false;
 	}
 
 	@Nullable
 	@Override
 	public Collision resolveCollision(Collider other) {
-		if (other instanceof AxisAlignedBoundingBox) {
-			AxisAlignedBoundingBox o = (AxisAlignedBoundingBox) other;
+		if (other instanceof AxisAlignedBoundingBox o)
 			return CollisionChecks.resolveCubevsCube(x, y, z, w, h, d, o.x, o.y, o.z, o.w, o.h, o.d);
-		}
-
-		else if (other instanceof SphereCollider) {
-			SphereCollider o = (SphereCollider) other;
+		else if (other instanceof SphereCollider o)
 			return CollisionChecks.resolveCubevsSphere(x, y, z, w, h, d, o.x, o.y, o.z, o.r);
-		}
-
-		else if (other instanceof PlaneCollider) {
-			PlaneCollider o = (PlaneCollider) other;
+		else if (other instanceof PlaneCollider o)
 			return CollisionChecks.resolveCubevsPlane(x, y, z, w, h, d, o.x, o.y, o.z, o.xNorm, o.yNorm, o.zNorm);
-		}
 		return null;
 	}
 
