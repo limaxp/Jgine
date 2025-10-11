@@ -50,8 +50,6 @@ import javax.sound.sampled.AudioSystem;
 import org.jgine.utils.logger.Logger;
 import org.lwjgl.openal.AL10;
 
-import com.sun.media.sound.WaveFileReader;
-
 /**
  * Utitlity class for loading wavefiles.
  *
@@ -91,11 +89,7 @@ public class WaveData {
 
 	public static WaveData create(File file) {
 		try {
-			// due to an issue with AudioSystem.getAudioInputStream
-			// and mixing unsigned and signed code
-			// we will use the reader directly
-			WaveFileReader wfr = new WaveFileReader();
-			return create(wfr.getAudioInputStream(new FileInputStream(file)));
+			return create(AudioSystem.getAudioInputStream(new BufferedInputStream(new FileInputStream(file))));
 		} catch (Exception e) {
 			Logger.err("WaveData: Unable to create from file '" + file.getPath() + "'", e);
 			return null;
@@ -110,11 +104,7 @@ public class WaveData {
 	 */
 	public static WaveData create(URL path) {
 		try {
-			// due to an issue with AudioSystem.getAudioInputStream
-			// and mixing unsigned and signed code
-			// we will use the reader directly
-			WaveFileReader wfr = new WaveFileReader();
-			return create(wfr.getAudioInputStream(new BufferedInputStream(path.openStream())));
+			return create(AudioSystem.getAudioInputStream(new BufferedInputStream(path.openStream())));
 		} catch (Exception e) {
 			Logger.err("WaveData: Unable to create from path '" + path + "'", e);
 			return null;

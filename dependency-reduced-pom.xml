@@ -14,20 +14,14 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
-      <resource>
-        <directory>assets</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
     </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>22</source>
+          <target>22</target>
         </configuration>
       </plugin>
       <plugin>
@@ -50,6 +44,8 @@
                   <include>com.fasterxml.jackson.core</include>
                   <include>org.apache-extras.beanshell</include>
                   <include>org.luaj</include>
+                  <include>mysql</include>
+                  <include>it.unimi.dsi</include>
                   <include>org.lwjgl</include>
                 </includes>
               </artifactSet>
@@ -86,6 +82,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.33</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <dependencyManagement>
     <dependencies>
@@ -100,7 +102,7 @@
   </dependencyManagement>
   <properties>
     <lwjgl.natives>natives-windows</lwjgl.natives>
-    <lwjgl.version>3.2.3</lwjgl.version>
+    <lwjgl.version>3.3.5</lwjgl.version>
   </properties>
 </project>
 

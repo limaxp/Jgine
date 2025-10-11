@@ -285,7 +285,7 @@ public abstract class ResourceLoader {
 			else
 				return new SoundBuffer(fis);
 		} catch (IOException e) {
-			Logger.err("ResourceLoader: Sound '" + file.getPath() + "' could not be loaded!", e);
+			Logger.err("ResourceLoader: Ogg Sound file '" + file.getPath() + "' could not be loaded!", e);
 			return null;
 		}
 	}
