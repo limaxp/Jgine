@@ -55,13 +55,13 @@ public class Options {
 	 * The x resolution used.
 	 */
 	public static final Option<Integer> RESOLUTION_X = a("jgine.graphic.resolution.x",
-			DisplayManager.getPrimaryDisplay().getWidth());
+			(DisplayManager.getPrimaryDisplay() != null) ? DisplayManager.getPrimaryDisplay().getWidth() : 1280);
 
 	/**
 	 * The y resolution used.
 	 */
 	public static final Option<Integer> RESOLUTION_Y = a("jgine.graphic.resolution.y",
-			DisplayManager.getPrimaryDisplay().getHeight());
+			(DisplayManager.getPrimaryDisplay() != null) ? DisplayManager.getPrimaryDisplay().getHeight() : 1024);
 
 	/**
 	 * The monitor used.
