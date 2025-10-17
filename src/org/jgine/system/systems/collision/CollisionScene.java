@@ -113,9 +113,9 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 			Collision collision) {
 		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
-		float dx = collision.overlapX * collision.getAxisX();
-		float dy = collision.overlapY * collision.getAxisY();
-		float dz = collision.overlapZ * collision.getAxisZ();
+		float dx = collision.getAxisX() * collision.deltaX;
+		float dy = collision.getAxisY() * collision.deltaY;
+		float dz = collision.getAxisZ() * collision.deltaZ;
 
 		float dx1 = physic1.getStiffness() * dx;
 		float dy1 = physic1.getStiffness() * dy;
