@@ -14,25 +14,22 @@ public class Collision {
 	public final float overlapX;
 	public final float overlapY;
 	public final float overlapZ;
-	public final boolean strictResolve;
 
-	public Collision(Vector2f collisionAxis, Vector2f collisionPosition, Vector2f overlap, boolean strictResolve) {
-		this(collisionAxis.x, collisionAxis.y, 0, collisionPosition.x, collisionPosition.y, 0, overlap.x, overlap.y, 0,
-				strictResolve);
+	public Collision(Vector2f collisionAxis, Vector2f collisionPosition, Vector2f overlap) {
+		this(collisionAxis.x, collisionAxis.y, 0, collisionPosition.x, collisionPosition.y, 0, overlap.x, overlap.y, 0);
 	}
 
-	public Collision(Vector3f collisionAxis, Vector3f collisionPosition, Vector3f overlap, boolean strictResolve) {
+	public Collision(Vector3f collisionAxis, Vector3f collisionPosition, Vector3f overlap) {
 		this(collisionAxis.x, collisionAxis.y, collisionAxis.z, collisionPosition.x, collisionPosition.y,
-				collisionPosition.z, overlap.x, overlap.y, overlap.z, strictResolve);
+				collisionPosition.z, overlap.x, overlap.y, overlap.z);
 	}
 
-	public Collision(float axisX, float axisY, float positionX, float positionY, float overlapX, float overlapY,
-			boolean strictResolve) {
-		this(axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0, strictResolve);
+	public Collision(float axisX, float axisY, float positionX, float positionY, float overlapX, float overlapY) {
+		this(axisX, axisY, 0, positionX, positionY, 0, overlapX, overlapY, 0);
 	}
 
 	public Collision(float axisX, float axisY, float axisZ, float positionX, float positionY, float positionZ,
-			float overlapX, float overlapY, float overlapZ, boolean strictResolve) {
+			float overlapX, float overlapY, float overlapZ) {
 		this.axisX = axisX;
 		this.axisY = axisY;
 		this.axisZ = axisZ;
@@ -42,7 +39,6 @@ public class Collision {
 		this.overlapX = overlapX;
 		this.overlapY = overlapY;
 		this.overlapZ = overlapZ;
-		this.strictResolve = strictResolve;
 	}
 
 	Collision reverse() {
@@ -62,29 +58,5 @@ public class Collision {
 
 	public float getAxisZ() {
 		return axisZ;
-	}
-
-	public final Vector3f getCollisionAxis3d() {
-		return new Vector3f(axisX, axisY, axisZ);
-	}
-
-	public final Vector3f getCollisionPosition3d() {
-		return new Vector3f(positionX, positionY, positionZ);
-	}
-
-	public final Vector3f getOverlap3d() {
-		return new Vector3f(overlapX, overlapY, overlapZ);
-	}
-
-	public final Vector2f getCollisionAxis2d() {
-		return new Vector2f(axisX, axisY);
-	}
-
-	public final Vector2f getCollisionPosition2d() {
-		return new Vector2f(positionX, positionY);
-	}
-
-	public final Vector2f getOverlap2d() {
-		return new Vector2f(overlapX, overlapY);
 	}
 }

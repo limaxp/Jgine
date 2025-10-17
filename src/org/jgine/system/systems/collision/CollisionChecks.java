@@ -207,15 +207,16 @@ public class CollisionChecks {
 
 		if (xPow + yPow < minDist * minDist) {
 			float dist = FastMath.sqrt(xPow + yPow);
+			float invDist = 1 / dist;
 			float delta = minDist - dist;
-			return new Collision(axisX, axisY, x1 + delta, y1 + delta, delta, delta, false);
+			return new Collision(axisX * invDist, axisY * invDist, x1 + delta, y1 + delta, delta, delta);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveSpherevsSphere(float x1, float y1, float z1, float r1, float x2, float y2,
-			float z2, float r2) {
+	public static Collision resolveSpherevsSphere(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
+			float r2) {
 		float axisX = x1 - x2;
 		float axisY = y1 - y2;
 		float axisZ = z1 - z2;
@@ -226,9 +227,10 @@ public class CollisionChecks {
 
 		if (xPow + yPow + zPow < minDist * minDist) {
 			float dist = FastMath.sqrt(xPow + yPow + zPow);
+			float invDist = 1 / dist;
 			float delta = minDist - dist;
-			return new Collision(axisX, axisY, axisZ, x1 + delta, y1 + delta, z1 + delta, delta, delta, delta,
-					false);
+			return new Collision(axisX * invDist, axisY * invDist, axisZ * invDist, x1 + delta, y1 + delta, z1 + delta,
+					delta, delta, delta);
 		}
 		return null;
 	}
@@ -246,7 +248,14 @@ public class CollisionChecks {
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
+			if (deltaX < deltaY) {
+				axisX = Math.signum(axisX);
+				axisY = 0.0f;
+			} else {
+				axisX = 0.0f;
+				axisY = Math.signum(axisY);
+			}
+			return new Collision(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY);
 		}
 		return null;
 	}
@@ -268,8 +277,26 @@ public class CollisionChecks {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
 			float deltaZ = minDistZ - distZ;
-			return new Collision(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ,
-					true);
+			if (deltaX < deltaY) {
+				axisY = 0.0f;
+				if (deltaX < deltaZ) {
+					axisX = Math.signum(axisX);
+					axisZ = 0.0f;
+				} else {
+					axisX = 0.0f;
+					axisZ = Math.signum(axisZ);
+				}
+			} else {
+				axisX = 0.0f;
+				if (axisY < deltaZ) {
+					axisY = Math.signum(axisY);
+					axisZ = 0.0f;
+				} else {
+					axisY = 0.0f;
+					axisZ = Math.signum(axisZ);
+				}
+			}
+			return new Collision(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ);
 		}
 		return null;
 	}
@@ -294,7 +321,14 @@ public class CollisionChecks {
 		if (distX < minDistX && distY < minDistY) {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
-			return new Collision(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY, true);
+			if (deltaX < deltaY) {
+				axisX = Math.signum(axisX);
+				axisY = 0.0f;
+			} else {
+				axisX = 0.0f;
+				axisY = Math.signum(axisY);
+			}
+			return new Collision(axisX, axisY, x1 + deltaX, y1 + deltaY, deltaX, deltaY);
 		}
 		return null;
 	}
@@ -325,8 +359,26 @@ public class CollisionChecks {
 			float deltaX = minDistX - distX;
 			float deltaY = minDistY - distY;
 			float deltaZ = minDistZ - distZ;
-			return new Collision(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ,
-					true);
+			if (deltaX < deltaY) {
+				axisY = 0.0f;
+				if (deltaX < deltaZ) {
+					axisX = Math.signum(axisX);
+					axisZ = 0.0f;
+				} else {
+					axisX = 0.0f;
+					axisZ = Math.signum(axisZ);
+				}
+			} else {
+				axisX = 0.0f;
+				if (axisY < deltaZ) {
+					axisY = Math.signum(axisY);
+					axisZ = 0.0f;
+				} else {
+					axisY = 0.0f;
+					axisZ = Math.signum(axisZ);
+				}
+			}
+			return new Collision(axisX, axisY, axisZ, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ);
 		}
 		return null;
 	}
@@ -339,21 +391,21 @@ public class CollisionChecks {
 			float axisX = xNorm1 - xNorm2;
 			float axisY = yNorm1 - yNorm2;
 			// TODO pos
-			return new Collision(axisX, axisY, x1, y1, dist, dist, false);
+			return new Collision(axisX, axisY, x1, y1, dist, dist);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsPlane(float x1, float y1, float z1, float xNorm1, float yNorm1,
-			float zNorm1, float x2, float y2, float z2, float xNorm2, float yNorm2, float zNorm2) {
+	public static Collision resolvePlanevsPlane(float x1, float y1, float z1, float xNorm1, float yNorm1, float zNorm1,
+			float x2, float y2, float z2, float xNorm2, float yNorm2, float zNorm2) {
 		Vector3f dist = Vector3f.cross(xNorm1, yNorm1, zNorm1, xNorm2, yNorm2, zNorm2);
 		if (dist.x != 0 && dist.y != 0 && dist.z != 0) {
 			float axisX = xNorm1 - xNorm2;
 			float axisY = yNorm1 - yNorm2;
 			float axisZ = zNorm1 - zNorm2;
 			// TODO pos
-			return new Collision(axisX, axisY, axisZ, x1, y1, z1, dist.x, dist.y, dist.z, false);
+			return new Collision(axisX, axisY, axisZ, x1, y1, z1, dist.x, dist.y, dist.z);
 		}
 		return null;
 	}
@@ -368,14 +420,14 @@ public class CollisionChecks {
 	}
 
 	@Nullable
-	public static Collision resolveLinevsQuad(float x1, float y1, float xNorm, float yNorm, float x2, float y2,
-			float w, float h) {
+	public static Collision resolveLinevsQuad(float x1, float y1, float xNorm, float yNorm, float x2, float y2, float w,
+			float h) {
 		float distX = (x2 - x1) * xNorm;
 		float distY = (y2 - y1) * yNorm;
 		if (distX < w && distY < h) {
 			float deltaX = w - distX;
 			float deltaY = h - distY;
-			return new Collision(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
+			return new Collision(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY);
 		}
 		return null;
 	}
@@ -399,8 +451,7 @@ public class CollisionChecks {
 			float deltaX = w - distX;
 			float deltaY = h - distY;
 			float deltaZ = d - distZ;
-			return new Collision(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
-					deltaZ, false);
+			return new Collision(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ);
 		}
 		return null;
 	}
@@ -422,14 +473,14 @@ public class CollisionChecks {
 		if (distX + distY < r) {
 			float deltaX = r - distX;
 			float deltaY = r - distY;
-			return new Collision(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY, false);
+			return new Collision(-xNorm, -yNorm, x1 + deltaX, y1 + deltaY, deltaX, deltaY);
 		}
 		return null;
 	}
 
 	@Nullable
-	public static Collision resolveSpherevsPlane(float x1, float y1, float z1, float r, float x2, float y2,
-			float z2, float xNorm, float yNorm, float zNorm) {
+	public static Collision resolveSpherevsPlane(float x1, float y1, float z1, float r, float x2, float y2, float z2,
+			float xNorm, float yNorm, float zNorm) {
 		Collision collision = resolvePlanevsSphere(x2, y2, z2, xNorm, yNorm, zNorm, x1, y1, z1, r);
 		if (collision != null)
 			return collision.reverse();
@@ -437,8 +488,8 @@ public class CollisionChecks {
 	}
 
 	@Nullable
-	public static Collision resolvePlanevsSphere(float x1, float y1, float z1, float xNorm, float yNorm,
-			float zNorm, float x2, float y2, float z2, float r) {
+	public static Collision resolvePlanevsSphere(float x1, float y1, float z1, float xNorm, float yNorm, float zNorm,
+			float x2, float y2, float z2, float r) {
 		float distX = (x2 - x1) * xNorm;
 		float distY = (y2 - y1) * yNorm;
 		float distZ = (z2 - z1) * zNorm;
@@ -446,8 +497,7 @@ public class CollisionChecks {
 			float deltaX = r - distX;
 			float deltaY = r - distY;
 			float deltaZ = r - distZ;
-			return new Collision(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY,
-					deltaZ, false);
+			return new Collision(-xNorm, -yNorm, -zNorm, x1 + deltaX, y1 + deltaY, z1 + deltaZ, deltaX, deltaY, deltaZ);
 		}
 		return null;
 	}
@@ -561,6 +611,6 @@ public class CollisionChecks {
 			}
 		}
 		// TODO pos
-		return new Collision(collisionAxisX, collisionAxisY, x1, y1, collisionOverlap, collisionOverlap, false);
+		return new Collision(collisionAxisX, collisionAxisY, x1, y1, collisionOverlap, collisionOverlap);
 	}
 }

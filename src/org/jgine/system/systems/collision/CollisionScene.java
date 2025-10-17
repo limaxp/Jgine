@@ -15,8 +15,6 @@ import org.jgine.system.data.ObjectSystemScene.EntitySystemScene;
 import org.jgine.system.systems.physic.PhysicObject;
 import org.jgine.system.systems.script.IScript;
 import org.jgine.system.systems.script.ScriptSystem;
-import org.jgine.utils.math.FastMath;
-import org.jgine.utils.math.vector.Vector3f;
 import org.jgine.utils.scheduler.Job;
 
 public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider> {
@@ -104,29 +102,20 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 		Collision collision = collider1.resolveCollision(collider2);
 		if (collision == null)
 			return;
-		if (!collider1.noResolve && !collider2.noResolve) {
-			if (collision.strictResolve)
-				resolveStrict(entity1, collider1, entity2, collider2, collision);
-			else
-				resolveDefault(entity1, collider1, entity2, collider2, collision);
-		}
+		if (collider1.noResolve || collider2.noResolve)
+			return;
+
+		resolve(entity1, collider1, entity2, collider2, collision);
 		callCollisionEvent(entity1, entity2, collider1, collider2, collision);
 	}
 
-	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
-			Collider targetCollider, Collision collision) {
-		ScriptSystem.callEvent(object, collision, target, objectCollider, targetCollider, IScript::onCollision);
-		ScriptSystem.callEvent(target, collision, object, targetCollider, objectCollider, IScript::onCollision);
-	}
-
-	private static void resolveDefault(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
+	private static void resolve(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
 			Collision collision) {
 		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
 		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
-		Vector3f axisNormal = Vector3f.normalize(collision.getAxisX(), collision.getAxisY(), collision.getAxisZ());
-		float dx = collision.overlapX * axisNormal.x + 0.00001f;
-		float dy = collision.overlapY * axisNormal.y + 0.00001f;
-		float dz = collision.overlapZ * axisNormal.z + 0.00001f;
+		float dx = collision.overlapX * collision.getAxisX();
+		float dy = collision.overlapY * collision.getAxisY();
+		float dz = collision.overlapZ * collision.getAxisZ();
 
 		float dx1 = physic1.getStiffness() * dx;
 		float dy1 = physic1.getStiffness() * dy;
@@ -145,49 +134,9 @@ public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider>
 		collider2.move(dx2, dy2, dz2);
 	}
 
-	public static float calculateVelocity(float v1, float m1, float v2, float m2) {
-		return (v1 * (m1 - m2) + (2 * m2 * v2)) / (m1 + m2);
-	}
-
-	private static void resolveStrict(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
-			Collision collision) {
-		PhysicObject physic1 = entity1.getSystem(Engine.PHYSIC_SYSTEM);
-		PhysicObject physic2 = entity2.getSystem(Engine.PHYSIC_SYSTEM);
-		Vector3f axisNormal = Vector3f.normalize(collision.getAxisX(), collision.getAxisY(), collision.getAxisZ());
-
-		float ox = collision.overlapX == 0 ? Float.MAX_VALUE : collision.overlapX;
-		float oy = collision.overlapY == 0 ? Float.MAX_VALUE : collision.overlapY;
-		float oz = collision.overlapZ == 0 ? Float.MAX_VALUE : collision.overlapZ;
-		float smallest = FastMath.min(ox, FastMath.min(oy, oz));
-		if (collision.overlapX == smallest) {
-			float dx = collision.overlapX * axisNormal.x + 0.00001f;
-			float dx1 = physic1.getStiffness() * dx;
-			physic1.velX += dx1;
-			collider1.move(dx1, 0.0f, 0.0f);
-
-			float dx2 = -physic2.getStiffness() * dx;
-			physic2.velX += dx2;
-			collider2.move(dx2, 0.0f, 0.0f);
-
-		} else if (collision.overlapY == smallest) {
-			float dy = collision.overlapY * axisNormal.y + 0.00001f;
-			float dy1 = physic1.getStiffness() * dy;
-			physic1.velY += dy1;
-			collider1.move(0.0f, dy1, 0.0f);
-
-			float dy2 = -physic2.getStiffness() * dy;
-			physic2.velY += dy2;
-			collider2.move(0.0f, dy2, 0.0f);
-
-		} else {
-			float dz = collision.overlapZ * axisNormal.z + 0.00001f;
-			float dz1 = physic1.getStiffness() * dz;
-			physic1.velZ += dz1;
-			collider1.move(0.0f, 0.0f, dz1);
-
-			float dz2 = -physic2.getStiffness() * dz;
-			physic2.velZ += dz2;
-			collider2.move(0.0f, 0.0f, dz2);
-		}
+	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
+			Collider targetCollider, Collision collision) {
+		ScriptSystem.callEvent(object, collision, target, objectCollider, targetCollider, IScript::onCollision);
+		ScriptSystem.callEvent(target, collision, object, targetCollider, objectCollider, IScript::onCollision);
 	}
 }
