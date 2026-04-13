@@ -1,0 +1,82 @@
+package jgine.core.input;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import jgine.utils.math.FastMath;
+
+/**
+ * Base input device class. Has methods to check for {@link Key} press and
+ * release and for getting the time the {@link Key} is pressed. Also has methods
+ * to check for device type.
+ */
+public abstract class InputDevice {
+
+	public static class Type {
+
+		public static final int MOUSE = 0;
+		public static final int KEYBOARD = 1;
+		public static final int JOYSTICK = 2;
+
+	}
+
+	private IntList pressedKeys;
+	private IntList releasedKeys;
+	private int[] keytimes;
+
+	public InputDevice(int maxKeys) {
+		pressedKeys = new IntArrayList(maxKeys);
+		releasedKeys = new IntArrayList(maxKeys);
+		keytimes = new int[maxKeys];
+	}
+
+	public abstract void poll();
+
+	public abstract boolean isKeyPressed(Key key);
+
+	public abstract boolean isKeyPressed(int key);
+
+	public abstract boolean isKeyReleased(Key key);
+
+	public abstract boolean isKeyReleased(int key);
+
+	public abstract String getName();
+
+	public abstract int getType();
+
+	protected final void press(int key) {
+		pressedKeys.add(key);
+		keytimes[key] = 1;
+	}
+
+	protected final void release(int key) {
+		keytimes[key] = -keytimes[key];
+	}
+
+	final void tick(int key) {
+		keytimes[key]++;
+	}
+
+	public final IntList getPressedKeys() {
+		return pressedKeys;
+	}
+
+	public final IntList getReleasedKeys() {
+		return releasedKeys;
+	}
+
+	public final boolean isPressedIntern(int key) {
+		return keytimes[key] > 0;
+	}
+
+	public final int getTimePressed(int key) {
+		return FastMath.abs(keytimes[key]);
+	}
+
+	public boolean isJoystick() {
+		return false;
+	}
+
+	public boolean isGamepad() {
+		return false;
+	}
+}

@@ -1,0 +1,56 @@
+package jgine.system.input;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import jgine.core.Entity;
+import jgine.core.Scene;
+import jgine.core.Engine.UpdateTask;
+import jgine.system.ObjectSystemScene;
+import jgine.system.transform.Transform;
+
+public class InputScene extends ObjectSystemScene<InputSystem, InputHandler> {
+
+	public InputScene(InputSystem system, Scene scene) {
+		super(system, scene, InputHandler.class, 10000);
+	}
+
+	@Override
+	public void free() {
+	}
+
+	@Override
+	public void onInit(Entity entity, InputHandler object) {
+		object.setEntity(entity);
+	}
+
+	@Override
+	public void update(UpdateTask update) {
+		forEach(InputHandler::checkInput);
+		update.finish(id);
+	}
+
+	@Override
+	public Entity getEntity(int index) {
+		return get(index).getEntity();
+	}
+
+	@Override
+	public Transform getTransform(int index) {
+		return getEntity(index).getTransform();
+	}
+
+	@Override
+	protected void saveData(InputHandler object, DataOutput out) throws IOException {
+		out.writeUTF(object.getClass().getSimpleName());
+		object.save(out);
+	}
+
+	@Override
+	protected InputHandler loadData(DataInput in) throws IOException {
+		InputHandler object = InputHandler.get(in.readUTF());
+		object.load(in);
+		return object;
+	}
+}

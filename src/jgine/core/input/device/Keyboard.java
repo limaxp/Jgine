@@ -1,0 +1,51 @@
+package jgine.core.input.device;
+
+import jgine.core.input.Input;
+import jgine.core.input.InputDevice;
+import jgine.core.input.Key;
+
+/**
+ * A keyboard {@link InputDevice}.
+ */
+public class Keyboard extends InputDevice {
+
+	public Keyboard() {
+		super(Key.KEY_LAST + 1);
+	}
+
+	@Override
+	public void poll() {
+	}
+
+	@Override
+	public boolean isKeyPressed(Key key) {
+		return (key.getKeyboardKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getKeyboardKey()))
+				|| (key.getKeyboardAltKey() != Key.KEY_UNKNOWN && isKeyPressed(key.getKeyboardAltKey()));
+	}
+
+	@Override
+	public boolean isKeyPressed(int key) {
+		return Input.getKey(key) == Key.PRESS;
+	}
+
+	@Override
+	public boolean isKeyReleased(Key key) {
+		return (key.getKeyboardKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getKeyboardKey()))
+				|| (key.getKeyboardAltKey() != Key.KEY_UNKNOWN && isKeyReleased(key.getKeyboardAltKey()));
+	}
+
+	@Override
+	public boolean isKeyReleased(int key) {
+		return Input.getKey(key) == Key.RELEASE;
+	}
+
+	@Override
+	public String getName() {
+		return "keyboard";
+	}
+
+	@Override
+	public int getType() {
+		return Type.KEYBOARD;
+	}
+}

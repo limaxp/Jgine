@@ -20,8 +20,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>22</source>
-          <target>22</target>
+          <source>25</source>
+          <target>25</target>
         </configuration>
       </plugin>
       <plugin>
@@ -81,6 +81,25 @@
           <groupId>org.apiguardian</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>js</artifactId>
+      <version>25.0.0</version>
+      <type>pom</type>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>js</artifactId>
+          <groupId>org.graalvm.js</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>25.0.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>

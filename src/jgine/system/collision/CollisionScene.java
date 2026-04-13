@@ -1,0 +1,152 @@
+package jgine.system.collision;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import jgine.core.Engine;
+import jgine.core.Entity;
+import jgine.core.Scene;
+import jgine.core.Engine.UpdateTask;
+import jgine.render.Renderer;
+import jgine.system.UpdateManager;
+import jgine.system.ObjectSystemScene.EntitySystemScene;
+import jgine.system.physic.PhysicObject;
+import jgine.system.script.IScript;
+import jgine.system.script.ScriptSystem;
+import jgine.system.transform.Transform;
+import jgine.utils.registry.Registry;
+import jgine.utils.scheduler.Job;
+
+public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider> {
+
+	static {
+		UpdateManager.addTransformPosition((entity, x, y, z) -> {
+			entity.forEach(Engine.COLLISION, (Collider collider) -> collider.set(x, y, z));
+		});
+		UpdateManager.addTransformScale((entity, x, y, z) -> {
+			entity.forEach(Engine.COLLISION, (Collider collider) -> collider.scale(x, y, z));
+		});
+	}
+
+	private int steps;
+
+	public CollisionScene(CollisionSystem system, Scene scene) {
+		super(system, scene, Collider.class, 100000);
+		this.steps = system.steps;
+	}
+
+	@Override
+	public void free() {
+	}
+
+	@Override
+	public void onInit(Entity entity, Collider object) {
+		Transform transform = entity.getTransform();
+		object.set(transform.getX(), transform.getY(), transform.getZ());
+		object.scale(transform.getScaleX(), transform.getScaleY(), transform.getScaleZ());
+	}
+
+	@Override
+	public void update(UpdateTask update) {
+		updateStep(update, 1);
+	}
+
+	private void updateStep(UpdateTask update, int subStep) {
+		Job.region(size(), this::solveCollision, () -> {
+			if (subStep < steps)
+				updateStep(update, subStep + 1);
+			else
+				update.finish(id);
+		});
+	}
+
+	@Override
+	public void render(float dt) {
+		if (!system.showHitBox)
+			return;
+
+		Renderer.enableDepthTest();
+		Renderer.setShader(Renderer.BASIC_SHADER);
+		for (int i = 0; i < size(); i++)
+			get(i).render();
+		Renderer.disableDepthTest();
+	}
+
+	@Override
+	protected void saveData(Collider object, DataOutput out) throws IOException {
+		out.writeInt(object.getType().id());
+		object.save(out);
+	}
+
+	@Override
+	protected Collider loadData(DataInput in) throws IOException {
+		Collider object = Registry.COLLIDER.get(in.readInt()).get();
+		object.load(in);
+		return object;
+	}
+
+	private void solveCollision(int index) {
+		Collider object = get(index);
+		Entity entity = getEntity(index);
+		scene.getSpacePartitioning().forEach(object.getX() - object.getWidth(), object.getY() - object.getHeight(),
+				object.getZ() - object.getDepth(), object.getX() + object.getWidth(),
+				object.getY() + object.getHeight(), object.getZ() + object.getDepth(), (targetEntity) -> {
+					if (targetEntity == entity)
+						return;
+					Collider targetObject = targetEntity.get(Engine.COLLISION);
+					if (targetObject != null)
+						resolveCollision(entity, object, targetEntity, targetObject);
+				});
+	}
+
+	private void resolveCollision(Entity entity1, Collider collider1, Entity entity2, Collider collider2) {
+		Collision collision = collider1.resolveCollision(collider2);
+		if (collision == null)
+			return;
+		if (collider1.noResolve || collider2.noResolve)
+			return;
+
+		resolve(entity1, collider1, entity2, collider2, collision);
+		callCollisionEvent(entity1, entity2, collider1, collider2, collision);
+	}
+
+	private static void resolve(Entity entity1, Collider collider1, Entity entity2, Collider collider2,
+			Collision collision) {
+		PhysicObject physic1 = entity1.get(Engine.PHYSIC);
+		PhysicObject physic2 = entity2.get(Engine.PHYSIC);
+		float dx = collision.getNormalX() * collision.deltaX * 1.001f;
+		float dy = collision.getNormalY() * collision.deltaY * 1.001f;
+		float dz = collision.getNormalZ() * collision.deltaZ * 1.001f;
+
+		float dx1 = physic1.getStiffness() * dx;
+		float dy1 = physic1.getStiffness() * dy;
+		float dz1 = physic1.getStiffness() * dz;
+		physic1.velX += dx1;
+		physic1.velY += dy1;
+		physic1.velZ += dz1;
+		collider1.move(dx1, dy1, dz1);
+
+		float dx2 = -physic2.getStiffness() * dx;
+		float dy2 = -physic2.getStiffness() * dy;
+		float dz2 = -physic2.getStiffness() * dz;
+		physic2.velX += dx2;
+		physic2.velY += dy2;
+		physic2.velZ += dz2;
+		collider2.move(dx2, dy2, dz2);
+	}
+
+	private static void callCollisionEvent(Entity object, Entity target, Collider objectCollider,
+			Collider targetCollider, Collision collision) {
+		ScriptSystem.callEvent(object, collision, target, objectCollider, targetCollider, IScript::onCollision);
+		ScriptSystem.callEvent(target, collision, object, targetCollider, objectCollider, IScript::onCollision);
+	}
+
+	public void setSteps(int steps) {
+		this.steps = steps;
+	}
+
+	public int getSteps() {
+		return steps;
+	}
+}

@@ -19,18 +19,18 @@ Features:
  - A lot of other helper classes and systems for game development
  
  Systems:
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/ai/AiSystem.java/">Ai</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/camera/CameraSystem.java/">Camera</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/collision/CollisionSystem.java/">Collision</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/graphic/Graphic2DSystem.java/">Graphic2d</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/graphic/GraphicSystem.java/">Graphic3d</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/input/InputSystem.java/">Input</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/light/LightSystem.java/">Light</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/particle/ParticleSystem.java/">Particle</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/physic/PhysicSystem.java/">Physic</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/script/ScriptSystem.java/">Script</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/tileMap/TileMapSystem.java/">Tilemap</a>
-- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/systems/ui/UISystem.java/">UI</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/ai/AiSystem.java/">Ai</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/camera/CameraSystem.java/">Camera</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/collision/CollisionSystem.java/">Collision</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/graphic/Graphic2DSystem.java/">Graphic2d</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/graphic/GraphicSystem.java/">Graphic3d</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/input/InputSystem.java/">Input</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/light/LightSystem.java/">Light</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/particle/ParticleSystem.java/">Particle</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/physic/PhysicSystem.java/">Physic</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/script/ScriptSystem.java/">Script</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/tileMap/TileMapSystem.java/">Tilemap</a>
+- <a href="https://github.com/limaxp/Jgine/blob/main/src/org/jgine/system/ui/UISystem.java/">UI</a>
 
 Not implemented yet:
  - 3d animation system
@@ -47,16 +47,16 @@ Not implemented yet:
 - After creating the instance all internal systems are initialized and ready to use!
 - You can also extend Engine class to override some engine behaviour.
 
-<h3>Create a scene and pass the systems to use:</h3> 
-<pre>Scene scene = engine.createScene("sceneName", system1, system2, system3, ...);
+<h3>Create a scene:</h3> 
+<pre>Scene scene = Scene.create("sceneName");
 </pre>
 
-- Use references in engine class to access built in systems. (e.g. <code>Engine.PHYSIC_SYSTEM</code>)
+- Use references in engine class to access built in systems. (e.g. <code>Engine.PHYSIC</code>)
 - Or make you own by extending EngineSystem, SystemScene and SystemObject classes!
 
 <h3>Use scene to build entities and add systems to them:</h3>
 <pre>Entity entity = new Entity(scene);
-PhysicObject object = entity.addSystem(Engine.PHYSIC_SYSTEM, new PhysicObject());
+PhysicObject object = entity.addSystem(Engine.PHYSIC, new PhysicObject());
 </pre>
 
 - You can even add the same system multiple times! (e.g. multiple Colliders) 

@@ -1,0 +1,101 @@
+package jgine.net.http;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import jgine.net.http.controller.HttpController;
+import jgine.utils.Logger;
+
+public class HttpServer implements Runnable {
+
+	protected ServerSocket socket;
+	protected boolean isRunning;
+	private boolean isLogging;
+	private final Map<String, HttpController> controllerMap;
+
+	public HttpServer() {
+		controllerMap = new HashMap<String, HttpController>();
+	}
+
+	public void createSocket(int port) {
+		try {
+			this.socket = new ServerSocket(port);
+			this.socket.setSoTimeout(1000);
+		} catch (IOException e) {
+			Logger.err("HttpServer: Error creating ServerSocket!", e);
+		}
+	}
+
+	public void stop() {
+		isRunning = false;
+	}
+
+	@Override
+	public void run() {
+		isRunning = true;
+		while (isRunning) {
+			Socket socket = null;
+			try {
+				socket = this.socket.accept();
+			} catch (SocketTimeoutException e) {
+				// ignore
+			} catch (IOException e) {
+				Logger.err("HttpServer: Error listening for packets!", e);
+			}
+			if (socket != null)
+				handleConnection(socket);
+		}
+
+		try {
+			socket.close();
+		} catch (IOException e) {
+			Logger.err("HttpServer: Error closing socket!", e);
+		}
+	}
+
+	protected void handleConnection(Socket socket) {
+		if (isLogging)
+			Logger.log("HttpServer: Connection(" + new Date() + ")" + socket.getInetAddress() + ":"
+					+ socket.getLocalPort());
+		HttpSession session = new HttpSession(this, socket);
+		new Thread(session).start();
+	}
+
+	public void registerController(HttpController controller) {
+		controllerMap.put(controller.getClass().getSimpleName().replace("Controller", "").toLowerCase(), controller);
+	}
+
+	public void unregisterController(HttpController controller) {
+		controllerMap.remove(controller.getClass().getSimpleName().replace("Controller", "").toLowerCase());
+	}
+
+	public HttpController getController(String name) {
+		return controllerMap.get(name);
+	}
+
+	public InetAddress getIp() {
+		return socket.getInetAddress();
+	}
+
+	public int getPort() {
+		return socket.getLocalPort();
+	}
+
+	public void setLogging(boolean log) {
+		isLogging = log;
+	}
+
+	public boolean isLogging() {
+		return isLogging;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+}
