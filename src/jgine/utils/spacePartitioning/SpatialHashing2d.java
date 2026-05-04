@@ -15,74 +15,71 @@ import jgine.utils.math.FastMath;
  * Basic spatial hashing implementation for 2d. Spatial hashing divides space
  * into a grid of cells. Cell size might severely impact performance since cell
  * object count should be generally low.
+ * <p>
+ * numCells must be a power of 2!
  */
 public class SpatialHashing2d<T> implements SpacePartitioning<T> {
 
-	private int xMin;
-	private int yMin;
-	private int xMax;
-	private int yMax;
-	private int cols;
-	private int rows;
+	private int numCells;
+	private int sizeCells;
+	private double invSizeCells;
 	private List<T>[] tiles;
 
 	public SpatialHashing2d() {
 	}
 
-	public SpatialHashing2d(int xMin, int yMin, int xMax, int yMax, int tileWidth, int tileHeight) {
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.xMax = xMax;
-		this.yMax = yMax;
-		this.cols = (xMax - xMin) / tileWidth;
-		this.rows = (yMax - yMin) / tileHeight;
+	public SpatialHashing2d(int numCells, int sizeCells) {
+		this.numCells = numCells;
+		this.sizeCells = sizeCells;
+		if (numCells % 2 != 0)
+			throw new IllegalArgumentException("numCells must be a power of 2!");
 		init();
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void init() {
-		int size = cols * rows;
-		tiles = new List[size];
-		for (int i = 0; i < size; i++)
+		this.invSizeCells = 1 / (double) sizeCells;
+		tiles = new List[numCells];
+		for (int i = 0; i < numCells; i++)
 			tiles[i] = new UnorderedIdentityArrayList<>();
 	}
 
 	@Override
 	public void add(T object, double x, double y, double z) {
-		tiles[getTilePos(x, y)].add(object);
+		tiles[hash(cell(x), cell(y))].add(object);
 	}
 
 	@Override
 	public void add(T object, double x, double y, double z, double r) {
-		int firstX = getTileX(x - r);
-		int firstY = getTileY(y - r);
-		int lastX = getTileX(x + r);
-		int lastY = getTileY(y + r);
+		int firstX = cell(x - r);
+		int firstY = cell(y - r);
+		int lastX = cell(x + r);
+		int lastY = cell(y + r);
 		for (int xTile = firstX; xTile <= lastX; xTile++)
 			for (int yTile = firstY; yTile <= lastY; yTile++)
-				tiles[xTile + yTile * cols].add(object);
+				tiles[hash(xTile, yTile)].add(object);
 	}
 
 	@Override
 	public void remove(T object, double x, double y, double z) {
-		tiles[getTilePos(x, y)].remove(object);
+		tiles[hash(cell(x), cell(y))].remove(object);
 	}
 
 	@Override
 	public void remove(T object, double x, double y, double z, double r) {
-		int firstX = getTileX(x - r);
-		int firstY = getTileY(y - r);
-		int lastX = getTileX(x + r);
-		int lastY = getTileY(y + r);
+		int firstX = cell(x - r);
+		int firstY = cell(y - r);
+		int lastX = cell(x + r);
+		int lastY = cell(y + r);
 		for (int xTile = firstX; xTile <= lastX; xTile++)
 			for (int yTile = firstY; yTile <= lastY; yTile++)
-				tiles[xTile + yTile * cols].remove(object);
+				tiles[hash(xTile, yTile)].remove(object);
 	}
 
 	@Override
 	public void move(T object, double xOld, double yOld, double zOld, double xNew, double yNew, double zNew) {
-		int oldPos = getTilePos(xOld, yOld);
-		int newPos = getTilePos(xNew, yNew);
+		int oldPos = hash(cell(xOld), cell(yOld));
+		int newPos = hash(cell(xNew), cell(yNew));
 		if (oldPos != newPos) {
 			tiles[oldPos].remove(object);
 			tiles[newPos].add(object);
@@ -92,21 +89,21 @@ public class SpatialHashing2d<T> implements SpacePartitioning<T> {
 	@Override
 	public void move(T object, double xOld, double yOld, double zOld, double rOld, double xNew, double yNew,
 			double zNew, double rNew) {
-		int firstX = getTileX(xOld - rOld);
-		int firstY = getTileY(yOld - rOld);
-		int lastX = getTileX(xOld + rOld);
-		int lastY = getTileY(yOld + rOld);
+		int firstX = cell(xOld - rOld);
+		int firstY = cell(yOld - rOld);
+		int lastX = cell(xOld + rOld);
+		int lastY = cell(yOld + rOld);
 		for (int xTile = firstX; xTile <= lastX; xTile++)
 			for (int yTile = firstY; yTile <= lastY; yTile++)
-				tiles[xTile + yTile * cols].remove(object);
+				tiles[hash(xTile, yTile)].remove(object);
 
-		firstX = getTileX(xNew - rNew);
-		firstY = getTileY(yNew - rNew);
-		lastX = getTileX(xNew + rNew);
-		lastY = getTileY(yNew + rNew);
+		firstX = cell(xNew - rNew);
+		firstY = cell(yNew - rNew);
+		lastX = cell(xNew + rNew);
+		lastY = cell(yNew + rNew);
 		for (int xTile = firstX; xTile <= lastX; xTile++)
 			for (int yTile = firstY; yTile <= lastY; yTile++)
-				tiles[xTile + yTile * cols].add(object);
+				tiles[hash(xTile, yTile)].add(object);
 	}
 
 	@Override
@@ -117,13 +114,13 @@ public class SpatialHashing2d<T> implements SpacePartitioning<T> {
 
 	@Override
 	public Set<T> get(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax, Set<T> target) {
-		int firstX = getTileX(xMin);
-		int firstY = getTileY(yMin);
-		int lastX = getTileX(xMax);
-		int lastY = getTileY(yMax);
+		int firstX = cell(xMin);
+		int firstY = cell(yMin);
+		int lastX = cell(xMax);
+		int lastY = cell(yMax);
 		for (int x = firstX; x <= lastX; x++)
 			for (int y = firstY; y <= lastY; y++)
-				for (T object : tiles[x + y * cols])
+				for (T object : tiles[hash(x, y)])
 					target.add(object);
 		return target;
 	}
@@ -136,36 +133,35 @@ public class SpatialHashing2d<T> implements SpacePartitioning<T> {
 
 	@Override
 	public void load(DataInput in) throws IOException {
-		this.xMin = in.readInt();
-		this.yMin = in.readInt();
-		this.xMax = in.readInt();
-		this.yMax = in.readInt();
-		this.cols = in.readInt();
-		this.rows = in.readInt();
+		this.numCells = in.readInt();
+		this.sizeCells = in.readInt();
 		init();
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
-		out.writeInt(xMin);
-		out.writeInt(yMin);
-		out.writeInt(xMax);
-		out.writeInt(yMax);
-		out.writeInt(cols);
-		out.writeInt(rows);
+		out.writeInt(numCells);
+		out.writeInt(sizeCells);
 	}
 
-	public int getTileX(double x) {
-		double xClamp = FastMath.clamp(0.0, 1.0, (x - xMin) / (xMax - xMin));
-		return (int) FastMath.floor(xClamp * (cols - 1));
+	public int cell(double v) {
+		return (int) FastMath.floor(v * invSizeCells);
 	}
 
-	public int getTileY(double y) {
-		double yClamp = FastMath.clamp(0.0, 1.0, (y - yMin) / (yMax - yMin));
-		return (int) FastMath.floor(yClamp * (rows - 1));
+	public int hash(int x, int y) {
+		int h = (x * 73856093) ^ (y * 19349663);
+		return Math.abs(h) & (this.numCells - 1);
 	}
 
-	public int getTilePos(double x, double y) {
-		return getTileX(x) + getTileY(y) * cols;
+	public int getNumCells() {
+		return numCells;
+	}
+
+	public int getSizeCells() {
+		return sizeCells;
+	}
+
+	public double getInvSizeCells() {
+		return invSizeCells;
 	}
 }

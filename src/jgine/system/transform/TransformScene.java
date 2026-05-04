@@ -17,7 +17,7 @@ public class TransformScene extends ObjectSystemScene<TransformSystem, Transform
 
 	public TransformScene(TransformSystem system, Scene scene) {
 		super(system, scene, Transform.class, 100000);
-		spacePartitioning = new SpatialHashing2d<Entity>(-10000, -10000, 10000, 10000, 100, 100);
+		spacePartitioning = new SpatialHashing2d<Entity>(100000, 100);
 	}
 
 	@Override
