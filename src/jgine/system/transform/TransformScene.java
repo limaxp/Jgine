@@ -3,11 +3,13 @@ package jgine.system.transform;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.List;
 
 import jgine.core.Entity;
 import jgine.core.Scene;
 import jgine.core.Engine.UpdateTask;
 import jgine.system.UpdateManager;
+import jgine.utils.math.Matrix;
 import jgine.utils.spacePartitioning.SpatialHashing2d;
 import jgine.system.ObjectSystemScene;
 
@@ -46,28 +48,40 @@ public class TransformScene extends ObjectSystemScene<TransformSystem, Transform
 	public void update(UpdateTask update) {
 		int size = size();
 		for (int i = 0; i < size; i++) {
-			Transform transform = get(i);
-			if (!transform.isDirty())
+			Transform object = get(i);
+			if (!object.isDirty())
 				continue;
-
-			float oldX = transform.getX();
-			float oldY = transform.getY();
-			float oldZ = transform.getZ();
-			float oldScaleX = transform.getScaleX();
-			float oldScaleY = transform.getScaleY();
-			float oldScaleZ = transform.getScaleZ();
-
-			transform.calculateMatrix();
-			float newX = transform.getX();
-			float newY = transform.getY();
-			float newZ = transform.getZ();
-			Entity entity = getEntity(i);
-			spacePartitioning.move(entity, oldX, oldY, oldZ, newX, newY, newZ);
-			UpdateManager.getTransformPosition().accept(entity, newX, newY, newZ);
-			UpdateManager.getTransformScale().accept(entity, 1.0f + transform.getScaleX() - oldScaleX,
-					1.0f + transform.getScaleY() - oldScaleY, 1.0f + transform.getScaleZ() - oldScaleZ);
+			update(object);
 		}
 		update.finish(id);
+	}
+
+	private void update(Transform object) {
+		update(object, null);
+	}
+
+	private void update(Transform object, Matrix parent) {
+		float oldX = object.getX();
+		float oldY = object.getY();
+		float oldZ = object.getZ();
+		float oldScaleX = object.getScaleX();
+		float oldScaleY = object.getScaleY();
+		float oldScaleZ = object.getScaleZ();
+
+		Matrix matrix = object.calculateMatrix();
+		if (parent != null)
+			matrix.mult(parent);
+		float x = object.getX();
+		float y = object.getY();
+		float z = object.getZ();
+
+		Entity entity = object.getEntity();
+		spacePartitioning.move(entity, oldX, oldY, oldZ, x, y, z);
+		UpdateManager.getTransformPosition().accept(entity, x, y, z);
+		UpdateManager.getTransformScale().accept(entity, 1.0f + object.getScaleX() - oldScaleX,
+				1.0f + object.getScaleY() - oldScaleY, 1.0f + object.getScaleZ() - oldScaleZ);
+		for (Transform child : object.getChilds())
+			update(child, matrix);
 	}
 
 	@Override
@@ -94,13 +108,28 @@ public class TransformScene extends ObjectSystemScene<TransformSystem, Transform
 
 	@Override
 	protected void saveData(Transform object, DataOutput out) throws IOException {
+		if (object.hasParent())
+			return;
+		saveSubData(object, out);
+	}
+
+	protected void saveSubData(Transform object, DataOutput out) throws IOException {
 		object.save(out);
+		List<Transform> childs = object.getChilds();
+		int childSize = childs.size();
+		out.writeInt(childSize);
+		for (int j = 0; j < childSize; j++)
+			saveSubData(childs.get(j), out);
 	}
 
 	@Override
 	protected Transform loadData(DataInput in) throws IOException {
+		// TODO childs need to set index to set in data array!
 		Transform object = new Transform();
 		object.load(in);
+		int childSize = in.readInt();
+		for (int i = 0; i < childSize; i++)
+			object.addChild(loadData(in));
 		return object;
 	}
 

@@ -20,13 +20,11 @@ import jgine.utils.math.Matrix;
 import jgine.utils.math.rotation.AxisAngle4f;
 import jgine.utils.math.vector.Vector2f;
 import jgine.utils.math.vector.Vector3f;
-import jgine.utils.spacePartitioning.SpacePartitioning;
 
 /**
  * A transform with float precision. Uses {@link Matrix} class internally. This
- * is your primary way to change entity position, rotation and scale. Also
- * stores a reference to its {@link Entity} and the scenes
- * {@link SpacePartitioning}.
+ * is the primary way to change entity position, rotation and scale. Also stores
+ * a reference to its {@link Entity}.
  */
 public class Transform implements SystemObject {
 
@@ -76,181 +74,177 @@ public class Transform implements SystemObject {
 		return isDirty;
 	}
 
-	public final void calculateMatrix() {
+	public Matrix calculateMatrix() {
 		isDirty = false;
-		calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		if (hasParent())
-			matrix.mult(getParent().getMatrix());
-		for (Transform child : getChilds())
-			child.calculateMatrix();
+		return calculateMatrix(matrix, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
 	}
 
-	public final Matrix getMatrix() {
+	public Matrix getMatrix() {
 		return matrix;
 	}
 
-	public final void setPosition(Vector2f position) {
+	public void setPosition(Vector2f position) {
 		setPosition(position.x, position.y, 0.0f);
 	}
 
-	public final void setPosition(float x, float y) {
+	public void setPosition(float x, float y) {
 		setPosition(x, y, 0.0f);
 	}
 
-	public final void setPosition(Vector3f position) {
+	public void setPosition(Vector3f position) {
 		setPosition(position.x, position.y, position.z);
 	}
 
-	public final void setPosition(float x, float y, float z) {
+	public void setPosition(float x, float y, float z) {
 		posX = x;
 		posY = y;
 		posZ = z;
 		markDirty();
 	}
 
-	public final void movePosition(float dx, float dy, float dz) {
+	public void movePosition(float dx, float dy, float dz) {
 		posX += dx;
 		posY += dy;
 		posZ += dz;
 		markDirty();
 	}
 
-	public final Vector3f getPosition() {
+	public Vector3f getPosition() {
 		return new Vector3f(matrix.m03, matrix.m13, matrix.m23);
 	}
 
-	public final float getX() {
+	public float getX() {
 		return matrix.m03;
 	}
 
-	public final float getY() {
+	public float getY() {
 		return matrix.m13;
 	}
 
-	public final float getZ() {
+	public float getZ() {
 		return matrix.m23;
 	}
 
-	public final Vector3f getLocalPosition() {
+	public Vector3f getLocalPosition() {
 		return new Vector3f(posX, posY, posZ);
 	}
 
-	public final float getLocalX() {
+	public float getLocalX() {
 		return posX;
 	}
 
-	public final float getLocalY() {
+	public float getLocalY() {
 		return posY;
 	}
 
-	public final float getLocalZ() {
+	public float getLocalZ() {
 		return posZ;
 	}
 
-	public final void setScale(float scale) {
+	public void setScale(float scale) {
 		setScale(scale, scale, scale);
 	}
 
-	public final void setScale(Vector2f scale) {
+	public void setScale(Vector2f scale) {
 		setScale(scale.x, scale.y, 0.0f);
 	}
 
-	public final void setScale(float x, float y) {
+	public void setScale(float x, float y) {
 		setScale(x, y, 0.0f);
 	}
 
-	public final void setScale(Vector3f scale) {
+	public void setScale(Vector3f scale) {
 		setScale(scale.x, scale.y, scale.z);
 	}
 
-	public final void setScale(float x, float y, float z) {
+	public void setScale(float x, float y, float z) {
 		scaleX = x;
 		scaleY = y;
 		scaleZ = z;
 		markDirty();
 	}
 
-	public final Vector3f getScale() {
+	public Vector3f getScale() {
 		return new Vector3f(matrix.m00, matrix.m11, matrix.m22);
 	}
 
-	public final float getScaleX() {
+	public float getScaleX() {
 		return matrix.m00;
 	}
 
-	public final float getScaleY() {
+	public float getScaleY() {
 		return matrix.m11;
 	}
 
-	public final float getScaleZ() {
+	public float getScaleZ() {
 		return matrix.m22;
 	}
 
-	public final Vector3f getLocalScale() {
+	public Vector3f getLocalScale() {
 		return new Vector3f(scaleX, scaleY, scaleZ);
 	}
 
-	public final float getLocalScaleX() {
+	public float getLocalScaleX() {
 		return scaleX;
 	}
 
-	public final float getLocalScaleY() {
+	public float getLocalScaleY() {
 		return scaleY;
 	}
 
-	public final float getLocalScaleZ() {
+	public float getLocalScaleZ() {
 		return scaleZ;
 	}
 
-	public final void setRotation(Vector2f rotation) {
+	public void setRotation(Vector2f rotation) {
 		setRotation(rotation.x, rotation.y);
 	}
 
-	public final void setRotation(float x, float y) {
+	public void setRotation(float x, float y) {
 		rotX = x;
 		rotY = y;
 		markDirty();
 	}
 
-	public final void setRotation(Vector3f rotation) {
+	public void setRotation(Vector3f rotation) {
 		setRotation(rotation.x, rotation.y, rotation.z);
 	}
 
-	public final void setRotation(float x, float y, float z) {
+	public void setRotation(float x, float y, float z) {
 		rotX = x;
 		rotY = y;
 		rotZ = z;
 		markDirty();
 	}
 
-	public final AxisAngle4f getRotation() {
+	public AxisAngle4f getRotation() {
 		return matrix.getRotation(new AxisAngle4f());
 	}
 
-	public final Vector3f getLocalRotation() {
+	public Vector3f getLocalRotation() {
 		return new Vector3f(rotX, rotY, rotZ);
 	}
 
-	public final float getLocalRotationX() {
+	public float getLocalRotationX() {
 		return rotX;
 	}
 
-	public final float getLocalRotationY() {
+	public float getLocalRotationY() {
 		return rotY;
 	}
 
-	public final float getLocalRotationZ() {
+	public float getLocalRotationZ() {
 		return rotZ;
 	}
 
-	public final void rotateX(float angle) {
+	public void rotateX(float angle) {
 		Vector3f rotation = getLocalRotation();
 		Vector3f hAxis = Vector3f.normalize(Vector3f.cross(Vector3f.Y_AXIS, rotation));
 		Vector3f result = Vector3f.normalize(Vector3f.rotate(rotation, angle, hAxis));
 		setRotation(result.x, result.y, result.z);
 	}
 
-	public final void rotateY(float angle) {
+	public void rotateY(float angle) {
 		Vector3f rotation = getLocalRotation();
 		Vector3f result = Vector3f.normalize(Vector3f.rotate(rotation, angle, Vector3f.Y_AXIS));
 		setRotation(result.x, result.y, result.z);
@@ -260,11 +254,11 @@ public class Transform implements SystemObject {
 		this.entity = entity;
 	}
 
-	public final Entity getEntity() {
+	public Entity getEntity() {
 		return entity;
 	}
 
-	public final void load(DataInput in) throws IOException {
+	public void load(DataInput in) throws IOException {
 		posX = in.readFloat();
 		posY = in.readFloat();
 		posZ = in.readFloat();
@@ -275,17 +269,9 @@ public class Transform implements SystemObject {
 		scaleY = in.readFloat();
 		scaleZ = in.readFloat();
 		markDirty();
-
-		// TODO rebuild graph
-//		int childSize = in.readInt();
-//		for (int i = 0; i < childSize; i++) {
-//			Transform child = new Transform();
-//			child.load(in);
-//			addChild(child);
-//		}
 	}
 
-	public final void save(DataOutput out) throws IOException {
+	public void save(DataOutput out) throws IOException {
 		out.writeFloat(posX);
 		out.writeFloat(posY);
 		out.writeFloat(posZ);
@@ -295,12 +281,6 @@ public class Transform implements SystemObject {
 		out.writeFloat(scaleX);
 		out.writeFloat(scaleY);
 		out.writeFloat(scaleZ);
-
-		// TODO rebuild graph
-//		int childSize = childs.size();
-//		out.writeInt(childSize);
-//		for (int i = 0; i < childSize; i++)
-//			childs.get(i).save(out);
 	}
 
 	@Override
@@ -364,7 +344,7 @@ public class Transform implements SystemObject {
 				+ scaleX + "," + scaleY + "," + scaleZ + "]";
 	}
 
-	public final void setParent(@Nullable Transform parent) {
+	public void setParent(@Nullable Transform parent) {
 		if (this.parent != null)
 			this.parent.childs.remove(this);
 		if (parent != null)
@@ -374,15 +354,15 @@ public class Transform implements SystemObject {
 	}
 
 	@Nullable
-	public final Transform getParent() {
+	public Transform getParent() {
 		return parent;
 	}
 
-	public final boolean hasParent() {
+	public boolean hasParent() {
 		return parent != null;
 	}
 
-	public final void addChild(Transform child) {
+	public void addChild(Transform child) {
 		if (child.parent != null)
 			child.parent.childs.remove(child);
 		child.parent = this;
@@ -390,7 +370,7 @@ public class Transform implements SystemObject {
 		child.markDirty();
 	}
 
-	public final void removeChild(Transform child) {
+	public void removeChild(Transform child) {
 		if (child.parent != this)
 			return;
 		childs.remove(child);
@@ -398,11 +378,11 @@ public class Transform implements SystemObject {
 		child.markDirty();
 	}
 
-	public final void isChild(Transform child) {
+	public void isChild(Transform child) {
 		childs.contains(child);
 	}
 
-	public final void clearChilds() {
+	public void clearChilds() {
 		for (Transform child : childs) {
 			child.parent = null;
 			child.markDirty();
@@ -410,13 +390,13 @@ public class Transform implements SystemObject {
 		childs.clear();
 	}
 
-	public final void forChilds(Consumer<Transform> consumer) {
+	public void forChilds(Consumer<Transform> consumer) {
 		int n = childs.size();
 		for (int i = 0; i < n; i++)
 			consumer.accept(childs.get(i));
 	}
 
-	public final List<Transform> getChilds() {
+	public List<Transform> getChilds() {
 		return Collections.unmodifiableList(childs);
 	}
 
