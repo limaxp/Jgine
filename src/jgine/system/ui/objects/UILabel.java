@@ -236,7 +236,7 @@ public class UILabel extends UIObject {
 
 	public void setText(@Nullable Text text) {
 		if (this.text != null)
-			Scheduler.runTask(this.text.getMesh()::close);
+			Scheduler.runTask(text::close);
 		this.text = text;
 	}
 

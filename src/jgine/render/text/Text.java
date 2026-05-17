@@ -35,7 +35,8 @@ public abstract class Text implements AutoCloseable {
 
 	@Override
 	public void close() {
-		mesh.close();
+		if (mesh != null)
+			mesh.close();
 	}
 
 	protected abstract void buildMesh();
