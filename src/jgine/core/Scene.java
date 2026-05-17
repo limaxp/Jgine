@@ -111,11 +111,11 @@ public final class Scene {
 		return systemList;
 	}
 
-	public final boolean hasSystem(EngineSystem<?, ?> system) {
+	public boolean hasSystem(EngineSystem<?, ?> system) {
 		return systemMap[system.id] != null;
 	}
 
-	public final boolean hasSystem(int id) {
+	public boolean hasSystem(int id) {
 		return systemMap[id] != null;
 	}
 

@@ -60,7 +60,7 @@ systems:
   ...:
  * </pre>
  */
-public class Prefab {
+public final class Prefab {
 
 	private static final List<Prefab> LIST = new UnorderedIdentityArrayList<Prefab>();
 	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>(10000);

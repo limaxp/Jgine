@@ -116,24 +116,30 @@ public class Engine {
 	private Window window;
 	private final List<RenderConfiguration> renderConfigs;
 	private long tick;
+	private long drawCalls;
 
 	public Engine(String name, boolean window) {
+		this(name, window, new FixedTickGameLoop(20));
+	}
+
+	public Engine(String name, boolean window, GameLoop gameLoop) {
 		instance = this;
 		this.name = name;
 		sceneMap = new ConcurrentHashMap<String, Scene>();
 		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
 		scenes = new IdentityArrayList<Scene>();
 		renderConfigs = new IdentityArrayList<RenderConfiguration>();
-		SoundManager.init();
-		gameLoop = createGameLoop();
+		this.gameLoop = gameLoop;
 		gameLoop.setUpdateFunction(this::update);
+		SoundManager.init();
+		DisplayManager.init();
+		Registry.init();
 		if (window)
 			createWindow();
-		Registry.init();
 		ResourceManager.loadResource("assets");
 	}
 
-	private final void terminate() {
+	private void terminate() {
 		ConnectionManager.terminate();
 		ThreadPool.shutdown();
 		for (Scene scene : scenes)
@@ -141,40 +147,33 @@ public class Engine {
 		ResourceManager.terminate();
 		if (hasWindow())
 			deleteWindow();
+		DisplayManager.terminate();
 		SoundManager.terminate();
 		OptionFile.save();
 		gameLoop = null;
 	}
 
-	private final void createWindow() {
-		DisplayManager.init();
+	private void createWindow() {
 		window = new Window(name);
-		window.setWindowPosCallback((_, _, _) -> gameLoop.run());
-		window.setWindowSizeCallback((_, _, _) -> gameLoop.run());
 		Input.setWindow(window);
 		OpenGL.init();
 		renderConfigs.add(RenderConfiguration.create(0, 0, 1, 1));
 		gameLoop.setRenderFunction(this::render);
 	}
 
-	private final void deleteWindow() {
+	private void deleteWindow() {
 		Renderer.terminate();
 		for (RenderConfiguration renderConfig : renderConfigs)
 			renderConfig.close();
 		OpenGL.terminate();
 		window.delete();
-		DisplayManager.terminate();
 	}
 
-	protected GameLoop createGameLoop() {
-		return new FixedTickGameLoop(20);
-	}
-
-	public final GameLoop getGameLoop() {
+	public GameLoop getGameLoop() {
 		return gameLoop;
 	}
 
-	public final void start() {
+	public void start() {
 		isRunning = true;
 		while (checkStatus()) {
 			gameLoop.run();
@@ -184,13 +183,13 @@ public class Engine {
 		terminate();
 	}
 
-	private final boolean checkStatus() {
+	private boolean checkStatus() {
 		if (window != null && window.shouldClose())
 			shutdown();
 		return isRunning;
 	}
 
-	private final void update(float dt) {
+	private void update(float dt) {
 		tick++;
 		ConnectionManager.update();
 		Benchmark.start("update");
@@ -201,28 +200,25 @@ public class Engine {
 		Scheduler.update();
 		Input.update();
 		SoundManager.update();
-		onUpdate();
 	}
 
-	protected void onUpdate() {
-	}
-
-	private final void render(float dt) {
+	private void render(float dt) {
 		Renderer.update(dt);
 		Benchmark.start("render");
 		for (Scene scene : scenes)
 			if (!scene.isPaused())
 				renderScene(scene, dt);
 		Renderer.draw(renderConfigs);
+		drawCalls = Renderer.getDrawCalls();
 		Benchmark.stop("render");
 		window.swapBuffers();
 	}
 
-	private final void updateScene(Scene scene, float dt) {
+	private void updateScene(Scene scene, float dt) {
 		new UpdateTask(scene, scene.updateOrder, dt).start();
 	}
 
-	private final void renderScene(Scene scene, float dt) {
+	private void renderScene(Scene scene, float dt) {
 		LightScene lightScene = scene.getSystem(LIGHT);
 		if (lightScene != null)
 			Renderer.setLights(lightScene);
@@ -240,22 +236,22 @@ public class Engine {
 		Renderer.setRenderTarget(null);
 	}
 
-	public final @Nullable Window getWindow() {
+	public @Nullable Window getWindow() {
 		return window;
 	}
 
-	public final boolean hasWindow() {
+	public boolean hasWindow() {
 		return window != null;
 	}
 
-	final Scene addScene(Scene scene) {
+	Scene addScene(Scene scene) {
 		sceneMap.put(scene.name, scene);
 		sceneIdMap.put(scene.id, scene);
 		Scheduler.runTask(() -> scenes.add(scene));
 		return scene;
 	}
 
-	final boolean deleteScene(Scene scene) {
+	boolean deleteScene(Scene scene) {
 		sceneMap.remove(scene.name);
 		sceneIdMap.remove(scene.id);
 		Scheduler.runTask(() -> {
@@ -265,31 +261,31 @@ public class Engine {
 		return true;
 	}
 
-	public final Collection<Scene> getScenes() {
+	public Collection<Scene> getScenes() {
 		return scenes;
 	}
 
-	public final Scene getScene(String name) {
+	public Scene getScene(String name) {
 		return sceneMap.get(name);
 	}
 
-	public final Scene getScene(int id) {
+	public Scene getScene(int id) {
 		return sceneIdMap.get(id);
 	}
 
-	public final Scene getScenePerIndex(int index) {
+	public Scene getScenePerIndex(int index) {
 		return scenes.get(index);
 	}
 
-	public final int getFps() {
+	public int getFps() {
 		return gameLoop.getFps();
 	}
 
-	public final boolean isRunning() {
+	public boolean isRunning() {
 		return isRunning;
 	}
 
-	public final void shutdown() {
+	public void shutdown() {
 		isRunning = false;
 	}
 
@@ -306,20 +302,24 @@ public class Engine {
 		renderConfigs.remove(index).close();
 	}
 
-	public final RenderConfiguration getRenderConfig() {
+	public RenderConfiguration getRenderConfig() {
 		return renderConfigs.get(0);
 	}
 
-	public final RenderConfiguration getRenderConfig(int index) {
+	public RenderConfiguration getRenderConfig(int index) {
 		return renderConfigs.get(index);
 	}
 
-	public final int getRenderConfigSize() {
+	public int getRenderConfigSize() {
 		return renderConfigs.size();
 	}
 
-	public final long getTick() {
+	public long getTick() {
 		return tick;
+	}
+
+	public long getDrawCalls() {
+		return drawCalls;
 	}
 
 	public static class UpdateTask {

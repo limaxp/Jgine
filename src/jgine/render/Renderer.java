@@ -62,7 +62,7 @@ public class Renderer {
 	protected static Matrix projectionMatrix;
 	protected static Shader shader;
 	private static final List<Mesh> TEMP_MESHES = Collections.synchronizedList(new UnorderedIdentityArrayList<Mesh>());
-	private static int drawCallSize;
+	private static int drawCalls;
 
 	static {
 		BASIC_SHADER = new BasicShader(ResourceManager.getShader("BasicVertex"), null,
@@ -109,7 +109,7 @@ public class Renderer {
 		for (Mesh mesh : TEMP_MESHES)
 			mesh.close();
 		TEMP_MESHES.clear();
-		drawCallSize = 0;
+		drawCalls = 0;
 		POST_PROCESS_SHADER.update(dt);
 	}
 
@@ -231,33 +231,33 @@ public class Renderer {
 	public static void draw(int vao, int mode, int numVertices) {
 		OpenGL.bindVertexArray(vao);
 		OpenGL.drawArrays(mode, 0, numVertices);
-		drawCallSize++;
+		drawCalls++;
 	}
 
 	public static void drawIndexed(int vao, int mode, int numIndices) {
 		OpenGL.bindVertexArray(vao);
 		OpenGL.drawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
-		drawCallSize++;
+		drawCalls++;
 	}
 
 	public static void drawInstanced(int vao, int mode, int numVertices, int amount) {
 		OpenGL.bindVertexArray(vao);
 		OpenGL.drawArraysInstanced(mode, 0, numVertices, amount);
-		drawCallSize++;
+		drawCalls++;
 	}
 
 	public static void drawInstancedIndexed(int vao, int mode, int numIndices, int amount) {
 		OpenGL.bindVertexArray(vao);
 		OpenGL.drawElementsInstanced(mode, numIndices, GL_UNSIGNED_INT, 0, amount);
-		drawCallSize++;
+		drawCalls++;
 	}
 
 	protected static void deleteTempMesh(Mesh mesh) {
 		TEMP_MESHES.add(mesh);
 	}
 
-	public static int getDrawCallSize() {
-		return drawCallSize;
+	public static int getDrawCalls() {
+		return drawCalls;
 	}
 
 	public static void setCamera(Camera camera) {

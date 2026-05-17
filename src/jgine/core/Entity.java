@@ -28,7 +28,7 @@ Currently used flags:
 	0 - dead
  * </pre>
  */
-public class Entity extends SystemMap {
+public final class Entity extends SystemMap {
 
 	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
 
@@ -70,7 +70,7 @@ public class Entity extends SystemMap {
 		Scheduler.runTask(() -> scene.addEntity(this));
 	}
 
-	final void free() {
+	void free() {
 		int index = IdGenerator.index(id);
 		if (index <= MAX_ENTITIES + 1)
 			ID_GENERATOR.free(id);
@@ -100,58 +100,58 @@ public class Entity extends SystemMap {
 		entity.free();
 	}
 
-	public final boolean isLocal() {
+	public boolean isLocal() {
 		return isLocal(id);
 	}
 
-	public final boolean isRemote() {
+	public boolean isRemote() {
 		return isRemote(id);
 	}
 
-	public final boolean isAlive() {
+	public boolean isAlive() {
 		return !getFlag(DEATH_FLAG);
 	}
 
-	public final boolean isDeath() {
+	public boolean isDeath() {
 		return getFlag(DEATH_FLAG);
 	}
 
-	public final void markDeath() {
+	public void markDeath() {
 		setFlag(DEATH_FLAG, true);
 	}
 
-	public final void setFlag(int flag) {
+	public void setFlag(int flag) {
 		this.flag = flag;
 	}
 
-	public final int getFlag() {
+	public int getFlag() {
 		return flag;
 	}
 
-	public final void setFlag(int index, boolean value) {
+	public void setFlag(int index, boolean value) {
 		flag = IntBitSet.set(flag, index, value);
 	}
 
-	public final boolean getFlag(int index) {
+	public boolean getFlag(int index) {
 		return IntBitSet.get(flag, index);
 	}
 
-	public final <T extends SystemObject> T add(int system, T object) {
+	public <T extends SystemObject> T add(int system, T object) {
 		return add(scene.getSystem(system), object);
 	}
 
-	public final <T extends SystemObject> T add(SystemScene<?, T> system, T object) {
+	public <T extends SystemObject> T add(SystemScene<?, T> system, T object) {
 		system.onInit(this, object);
 		int index = map(system.id, object);
 		Scheduler.runTask(() -> intId(index, system.add(this, object)));
 		return object;
 	}
 
-	public final <T extends SystemObject> void remove(int system, T object) {
+	public <T extends SystemObject> void remove(int system, T object) {
 		remove(scene.getSystem(system), object);
 	}
 
-	public final <T extends SystemObject> void remove(SystemScene<?, T> system, T object) {
+	public <T extends SystemObject> void remove(SystemScene<?, T> system, T object) {
 		Scheduler.runTask(() -> {
 			int id = unmap(object);
 			if (id != -1)
@@ -159,22 +159,22 @@ public class Entity extends SystemMap {
 		});
 	}
 
-	public final <T extends SystemObject> void remove(int system, int id) {
+	public <T extends SystemObject> void remove(int system, int id) {
 		remove(scene.getSystem(system), id);
 	}
 
-	public final <T extends SystemObject> void remove(SystemScene<?, T> system, int id) {
+	public <T extends SystemObject> void remove(SystemScene<?, T> system, int id) {
 		Scheduler.runTask(() -> {
 			if (unmap(id))
 				system.remove(id);
 		});
 	}
 
-	public final <T extends SystemObject> void remove(int system) {
+	public <T extends SystemObject> void remove(int system) {
 		remove(scene.getSystem(system));
 	}
 
-	public final <T extends SystemObject> void remove(SystemScene<?, T> system) {
+	public <T extends SystemObject> void remove(SystemScene<?, T> system) {
 		Scheduler.runTask(() -> unmap(system.id, system::remove));
 	}
 
@@ -192,11 +192,11 @@ public class Entity extends SystemMap {
 		return transform;
 	}
 
-	final void setPrefab(Prefab prefab) {
+	void setPrefab(Prefab prefab) {
 		this.prefab = prefab;
 	}
 
-	public final Prefab getPrefab() {
+	public Prefab getPrefab() {
 		return prefab;
 	}
 
@@ -225,7 +225,7 @@ public class Entity extends SystemMap {
 	public void saveMap(DataOutput out) throws IOException {
 		super.save(out);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[id=" + id + ", prefab=" + prefab.name + ", scene=" + scene.name + ", systems=" + super.toString()
