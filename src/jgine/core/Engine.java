@@ -11,7 +11,6 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import jgine.core.GameLoop.FixedTickGameLoop;
 import jgine.core.input.Input;
 import jgine.core.sound.SoundManager;
@@ -220,7 +219,7 @@ public class Engine {
 	}
 
 	private final void updateScene(Scene scene, float dt) {
-		new UpdateTask(scene, scene.getUpdateOrder(), dt).start();
+		new UpdateTask(scene, scene.updateOrder, dt).start();
 	}
 
 	private final void renderScene(Scene scene, float dt) {
@@ -231,12 +230,12 @@ public class Engine {
 		((CameraScene) scene.getSystem(CAMERA)).forEach((camera) -> {
 			Renderer.setCamera(camera);
 			camera.getRenderTarget().clear();
-			for (int system : scene.getRenderOrder())
+			for (int system : scene.renderOrder)
 				scene.getSystem(system).render(dt);
 		});
 
 		Renderer.setRenderTarget(getRenderConfig().getRenderTarget());
-		for (int system : scene.getRenderOrder())
+		for (int system : scene.renderOrder)
 			scene.getSystem(system).onRender(dt);
 		Renderer.setRenderTarget(null);
 	}
@@ -342,8 +341,7 @@ public class Engine {
 		}
 
 		public void start() {
-			IntSet start = order.getStart();
-			for (int i : start)
+			for (int i : order.getStart())
 				update(i);
 
 			while (amount.get() > 0) {
