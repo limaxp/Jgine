@@ -18,6 +18,7 @@ public class Scheduler {
 	private static final TaskBuffer TASK_BUFFER = new TaskBuffer(4096);
 	private static final TaskBuffer TASK_BUFFER_ASYNC = new TaskBuffer(4096);
 	private static volatile Queue<Runnable> TASKS = new ConcurrentLinkedQueue<>();
+	private static volatile Queue<Runnable> TASKS_PROC = new ConcurrentLinkedQueue<>();
 	private static final VarHandle TASKS_HANDLE;
 
 	static {
@@ -30,7 +31,8 @@ public class Scheduler {
 
 	public static void update() {
 		Service.update();
-		Queue<Runnable> toRun = (Queue<Runnable>) TASKS_HANDLE.getAndSet(new ConcurrentLinkedQueue<>());
+		TASKS_PROC.clear();
+		Queue<Runnable> toRun = TASKS_PROC = (Queue<Runnable>) TASKS_HANDLE.getAndSet(TASKS_PROC);
 		Runnable r;
 		while ((r = toRun.poll()) != null) {
 			r.run();
@@ -42,14 +44,12 @@ public class Scheduler {
 		synchronized (TASK_BUFFER) {
 			TASK_BUFFER.update(System.currentTimeMillis(), Runnable::run);
 		}
-		ThreadPool.execute(() -> {
-			synchronized (TIME_BUFFER_ASYNC) {
-				TIME_BUFFER_ASYNC.update(System.currentTimeMillis(), ThreadPool::execute);
-			}
-			synchronized (TASK_BUFFER_ASYNC) {
-				TASK_BUFFER_ASYNC.update(System.currentTimeMillis(), ThreadPool::execute);
-			}
-		});
+		synchronized (TIME_BUFFER_ASYNC) {
+			TIME_BUFFER_ASYNC.update(System.currentTimeMillis(), ThreadPool::execute);
+		}
+		synchronized (TASK_BUFFER_ASYNC) {
+			TASK_BUFFER_ASYNC.update(System.currentTimeMillis(), ThreadPool::execute);
+		}
 	}
 
 	public static void runTask(Runnable task) {
