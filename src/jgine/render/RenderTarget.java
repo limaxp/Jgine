@@ -256,7 +256,7 @@ public class RenderTarget implements AutoCloseable {
 
 	public static void unbindViewport() {
 		unbind();
-		Vector2i windowSize = Engine.getInstance().getWindow().getSize();
+		Vector2i windowSize = Engine.getInstance().window.getSize();
 		glViewport(0, 0, windowSize.x, windowSize.y);
 	}
 

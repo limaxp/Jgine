@@ -25,7 +25,7 @@ public class IdGenerator {
 	private final byte[] generation;
 	private int size;
 	private final Queue<Integer> freeIndices;
-	private int minimumFreeIndices;
+	private final int minimumFreeIndices;
 
 	public IdGenerator() {
 		this(0, MAX_ID);

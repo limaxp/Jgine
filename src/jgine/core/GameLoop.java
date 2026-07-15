@@ -46,13 +46,19 @@ public abstract class GameLoop implements Runnable {
 	 */
 	public static class FixedTickGameLoop extends GameLoop {
 
-		protected int tickTime;
+		/**
+		 * tickTime in ms (milliseconds)
+		 */
+		public final int tickTime;
 		protected double previousTime;
 		protected double lag;
 		protected double frameTime;
 		protected int frames;
 		protected int fps;
 
+		/**
+		 * @param tickTime in ms (milliseconds)
+		 */
 		public FixedTickGameLoop(int tickTime) {
 			this.tickTime = tickTime;
 			previousTime = System.nanoTime() * 0.000001;
@@ -83,20 +89,6 @@ public abstract class GameLoop implements Runnable {
 		@Override
 		public int getFps() {
 			return fps;
-		}
-
-		/**
-		 * @param tickTime in ms (milliseconds)
-		 */
-		public void setTickTime(int tickTime) {
-			this.tickTime = tickTime;
-		}
-
-		/**
-		 * @return tickTime in ms (milliseconds)
-		 */
-		public int getTickTime() {
-			return tickTime;
 		}
 	}
 }

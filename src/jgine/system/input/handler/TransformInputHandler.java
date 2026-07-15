@@ -79,7 +79,7 @@ public class TransformInputHandler extends InputHandler {
 		press(KEY_FULLSCREEN, (_) -> {
 			if (System.currentTimeMillis() - cooldown > 1000) {
 				cooldown = System.currentTimeMillis();
-				Scheduler.runTask(Engine.getInstance().getWindow()::toggleBorderless);
+				Scheduler.runTask(Engine.getInstance().window::toggleBorderless);
 			}
 		});
 	}

@@ -2,7 +2,6 @@ package jgine.net.game.packet.packets;
 
 import java.nio.ByteBuffer;
 
-import jgine.core.Engine;
 import jgine.core.Prefab;
 import jgine.core.Scene;
 import jgine.net.game.packet.Packet;
@@ -27,7 +26,7 @@ public class PrefabSpawnPacket extends Packet {
 	public void read(ByteBuffer buffer) {
 		id = buffer.getInt();
 		prefab = Prefab.get(buffer.getInt());
-		scene = Engine.getInstance().getScene(buffer.getInt());
+		scene = Scene.get(buffer.getInt());
 	}
 
 	@Override

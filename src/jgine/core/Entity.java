@@ -12,8 +12,8 @@ import jgine.system.SystemMap;
 import jgine.system.SystemObject;
 import jgine.system.SystemScene;
 import jgine.system.transform.Transform;
+import jgine.utils.Flag;
 import jgine.utils.IdGenerator;
-import jgine.utils.collection.bitSet.IntBitSet;
 import jgine.utils.scheduler.Scheduler;
 
 /**
@@ -34,8 +34,6 @@ public final class Entity extends SystemMap {
 
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
-
-	public static final byte DEATH_FLAG = 0;
 
 	public static boolean isAlive(int id) {
 		return ID_GENERATOR.isAlive(id);
@@ -84,7 +82,7 @@ public final class Entity extends SystemMap {
 
 	public void delete() {
 		if (isAlive()) {
-			markDeath();
+			setFlag(Flag.DELETE, true);
 			Scheduler.runTask(() -> {
 				if (Entity.isAlive(id))
 					subDelete(this);
@@ -109,15 +107,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public boolean isAlive() {
-		return !getFlag(DEATH_FLAG);
-	}
-
-	public boolean isDeath() {
-		return getFlag(DEATH_FLAG);
-	}
-
-	public void markDeath() {
-		setFlag(DEATH_FLAG, true);
+		return !getFlag(Flag.DELETE);
 	}
 
 	public void setFlag(int flag) {
@@ -129,11 +119,11 @@ public final class Entity extends SystemMap {
 	}
 
 	public void setFlag(int index, boolean value) {
-		flag = IntBitSet.set(flag, index, value);
+		flag = Flag.set(flag, index, value);
 	}
 
 	public boolean getFlag(int index) {
-		return IntBitSet.get(flag, index);
+		return Flag.get(flag, index);
 	}
 
 	public <T extends SystemObject> T add(int system, T object) {

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import jgine.core.Engine;
 import jgine.core.Scene;
 import jgine.utils.registry.Registry;
 
@@ -32,13 +31,13 @@ public abstract class EngineSystem<S extends EngineSystem<S, O>, O extends Syste
 
 	public <T extends SystemScene<?, ?>> List<T> getScenes() {
 		List<T> result = new ArrayList<>();
-		for (Scene scene : Engine.getInstance().getScenes())
+		for (Scene scene : Scene.values())
 			result.add(scene.getSystem(id));
 		return result;
 	}
 
 	public <T extends SystemScene<?, ?>> void forScenes(Consumer<T> func) {
-		for (Scene scene : Engine.getInstance().getScenes())
+		for (Scene scene : Scene.values())
 			func.accept(scene.getSystem(id));
 	}
 }

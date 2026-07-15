@@ -3,6 +3,8 @@ package jgine.core;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +16,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import jgine.system.EngineSystem;
 import jgine.system.SystemScene;
 import jgine.system.transform.TransformScene;
+import jgine.utils.Flag;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
 import jgine.utils.registry.Registry;
-import jgine.utils.scheduler.Scheduler;
 import jgine.utils.spacePartitioning.SpatialHashing2d;
 
 /**
@@ -30,93 +32,82 @@ import jgine.utils.spacePartitioning.SpatialHashing2d;
  */
 public final class Scene {
 
+	private static final VarHandle FLAG_HANDLE;
+
+	static {
+		try {
+			FLAG_HANDLE = MethodHandles.lookup().findVarHandle(Scene.class, "flag", int.class);
+		} catch (Exception e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	private static final UpdateOrder EMPTY_UPDATE_ORDER = new UpdateOrder();
+	private static final IntList EMPTY_RENDER_ORDER = new IntArrayList(0);
+
 	public final int id;
 	public final String name;
-	UpdateOrder updateOrder;
-	IntList renderOrder;
-	private SystemScene<?, ?>[] systemMap;
-	private List<SystemScene<?, ?>> systemList;
-	private List<Entity> entities;
-	private boolean paused;
+	volatile UpdateOrder updateOrder;
+	volatile IntList renderOrder;
+	private final SystemScene<?, ?>[] systems;
+	private final SystemScene<?, ?>[] systemMap;
+	private final List<Entity> entities;
+	private volatile int flag;
 
 	public Scene(String name) {
-		this.id = name.hashCode();
+		this(name, Registry.SYSTEM.values());
+		setUpdateOrder(Engine.UPDATE_ORDER);
+		setRenderOrder(Engine.RENDER_ORDER);
+	}
+
+	public Scene(DataInput in) throws IOException {
+		this(in, Registry.SYSTEM.values());
+	}
+
+	public Scene(DataInput in, Collection<EngineSystem<?, ?>> systems) throws IOException {
+		this(in.readUTF(), systems);
+		load(in);
+	}
+
+	public Scene(String name, Collection<EngineSystem<?, ?>> systems) {
 		this.name = name;
-		systemMap = new SystemScene<?, ?>[Registry.SYSTEM.size()];
-		systemList = new UnorderedIdentityArrayList<SystemScene<?, ?>>();
-		entities = new UnorderedIdentityArrayList<Entity>();
-		paused = false;
-		Engine.getInstance().addScene(this);
+		this.updateOrder = EMPTY_UPDATE_ORDER;
+		this.renderOrder = EMPTY_RENDER_ORDER;
+		this.entities = new UnorderedIdentityArrayList<Entity>();
+		this.systems = new SystemScene[systems.size()];
+		this.systemMap = new SystemScene<?, ?>[Registry.SYSTEM.size()];
+		int i = 0;
+		for (EngineSystem<?, ?> system : systems) {
+			SystemScene<?, ?> systemScene = system.createScene(this);
+			this.systems[i++] = systemScene;
+			this.systemMap[systemScene.id] = systemScene;
+		}
+		this.id = SceneMap.add(this);
 	}
 
 	void free() {
 		for (Entity entity : entities)
 			entity.free();
-		for (SystemScene<?, ?> systemScene : systemList)
+		for (SystemScene<?, ?> systemScene : systems)
 			systemScene.free();
-
-		entities = null;
-		systemMap = null;
-		systemList = null;
 	}
 
 	public void delete() {
-		Engine.getInstance().deleteScene(this);
+		if (setFlag(Flag.DELETE, true))
+			SceneMap.remove(this);
 	}
 
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public <T extends SystemScene<?, ?>> T setSystem(EngineSystem<?, ?> system) {
-		int id = system.id;
-		removeSystem(id);
-		SystemScene<?, ?> systemScene = system.createScene(this);
-		systemMap[id] = systemScene;
-		Scheduler.runTask(() -> systemList.add(systemScene));
-		return (T) systemScene;
-	}
-
-	@Nullable
-	public <T extends SystemScene<?, ?>> T removeSystem(EngineSystem<?, ?> system) {
-		return removeSystem(system.id);
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public <T extends SystemScene<?, ?>> T removeSystem(int id) {
-		SystemScene<?, ?> systemScene = systemMap[id];
-		if (systemScene == null)
-			return null;
-
-		systemMap[id] = null;
-		Scheduler.runTask(() -> {
-			systemList.remove(systemScene);
-			systemScene.free();
-		});
-		return (T) systemScene;
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public <T extends SystemScene<?, ?>> T getSystem(EngineSystem<?, ?> system) {
-		return (T) systemMap[system.id];
+	/**
+	 * <b>Never Modify!</b> Returns internal data!
+	 */
+	public SystemScene<?, ?>[] getSystems() {
+		return systems;
 	}
 
 	@Nullable
 	@SuppressWarnings("unchecked")
 	public <T extends SystemScene<?, ?>> T getSystem(int id) {
 		return (T) systemMap[id];
-	}
-
-	public Collection<SystemScene<?, ?>> getSystems() {
-		return systemList;
-	}
-
-	public boolean hasSystem(EngineSystem<?, ?> system) {
-		return systemMap[system.id] != null;
-	}
-
-	public boolean hasSystem(int id) {
-		return systemMap[id] != null;
 	}
 
 	void addEntity(Entity entity) {
@@ -152,19 +143,37 @@ public final class Scene {
 		return transformScene.getSpacePartitioning();
 	}
 
+	public boolean isDeleted() {
+		return getFlag(Flag.DELETE);
+	}
+
 	public void pause(boolean pause) {
-		this.paused = pause;
+		setFlag(Flag.PAUSE, pause);
 	}
 
 	public boolean isPaused() {
-		return paused;
+		return getFlag(Flag.PAUSE);
+	}
+
+	public boolean setFlag(int index, boolean value) {
+		for (;;) {
+			int flag = this.flag;
+			if (Flag.get(flag, index) == value)
+				return false;
+			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, index, value)))
+				return true;
+		}
+	}
+
+	public boolean getFlag(int index) {
+		return Flag.get(flag, index);
 	}
 
 	public void save(DataOutput out) throws IOException {
 		out.writeUTF(name);
+		out.writeInt(flag);
 
-		Collection<SystemScene<?, ?>> systems = systemList;
-		out.writeInt(systems.size());
+		out.writeInt(systems.length);
 		for (SystemScene<?, ?> systemScene : systems) {
 			out.writeInt(systemScene.id);
 			systemScene.save(out);
@@ -187,11 +196,10 @@ public final class Scene {
 	}
 
 	private void load(DataInput in) throws IOException {
+		flag = in.readInt();
 		int systemSize = in.readInt();
-		for (int i = 0; i < systemSize; i++) {
-			SystemScene<?, ?> systemScene = setSystem(Registry.SYSTEM.get(in.readInt()));
-			systemScene.load(in);
-		}
+		for (int i = 0; i < systemSize; i++)
+			getSystem(in.readInt()).load(in);
 
 		int entitySize = in.readInt();
 		for (int i = 0; i < entitySize; i++) {
@@ -209,25 +217,40 @@ public final class Scene {
 			renderOrder.add(in.readInt());
 	}
 
-	public static Scene create(String name) {
-		Collection<EngineSystem<?, ?>> systems = Registry.SYSTEM.values();
-		return create(name, Engine.UPDATE_ORDER, Engine.RENDER_ORDER,
-				systems.toArray(new EngineSystem[systems.size()]));
+	@Override
+	public String toString() {
+		return "[id=" + id + ", name=" + name + ", entities=" + entities.size() + ", pause="
+				+ (isPaused() ? "true" : "false") + ", systems=" + systemsToString() + "]";
 	}
 
-	public static Scene create(String name, UpdateOrder updateOrder, IntList renderOrder,
-			EngineSystem<?, ?>... systems) {
-		Scene scene = new Scene(name);
-		for (EngineSystem<?, ?> system : systems)
-			scene.setSystem(system);
-		scene.setUpdateOrder(updateOrder);
-		scene.setRenderOrder(renderOrder);
-		return scene;
+	public String systemsToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		int size = systems.length;
+		if (size != 0) {
+			for (int i = 0; i < size; i++) {
+				sb.append(systems[i].name);
+				sb.append(',');
+				sb.append(' ');
+			}
+			sb.delete(sb.length() - 2, sb.length());
+		}
+		sb.append(']');
+		return sb.toString();
 	}
 
-	public static Scene create(DataInput in) throws IOException {
-		Scene scene = new Scene(in.readUTF());
-		scene.load(in);
-		return scene;
+	/**
+	 * <b>Never Modify!</b> Returns internal data!
+	 */
+	public static List<Scene> values() {
+		return SceneMap.values();
+	}
+
+	public static Scene get(int id) {
+		return SceneMap.get(id);
+	}
+
+	public static Scene get(String name) {
+		return SceneMap.get(name);
 	}
 }

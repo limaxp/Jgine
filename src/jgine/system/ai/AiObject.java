@@ -69,7 +69,7 @@ public class AiObject implements SystemObject {
 	}
 
 	protected boolean chooseGoal() {
-		if (target != null && target.isDeath())
+		if (target != null && !target.isAlive())
 			target = null;
 
 		int goalSize = goalSelector.size();

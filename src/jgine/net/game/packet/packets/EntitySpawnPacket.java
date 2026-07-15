@@ -10,7 +10,6 @@ import org.lwjgl.BufferUtils;
 import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
 import com.fasterxml.jackson.databind.util.ByteBufferBackedOutputStream;
 
-import jgine.core.Engine;
 import jgine.core.Entity;
 import jgine.core.Scene;
 import jgine.net.game.packet.Packet;
@@ -34,7 +33,7 @@ public class EntitySpawnPacket extends Packet {
 	@Override
 	public void read(ByteBuffer buffer) {
 		id = buffer.getInt();
-		scene = Engine.getInstance().getScene(buffer.getInt());
+		scene = Scene.get(buffer.getInt());
 		int dataSize = buffer.getInt();
 		data = BufferUtils.createByteBuffer(dataSize);
 		for (int i = 0; i < dataSize; i++)

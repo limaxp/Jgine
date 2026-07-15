@@ -1,13 +1,8 @@
 package jgine.core;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-
-import org.eclipse.jdt.annotation.Nullable;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -47,9 +42,8 @@ import jgine.utils.scheduler.ThreadPool;
 /**
  * The Base Engine class. You can extend this class to override some methods.
  * After calling the constructor all internal systems are initialized and ready
- * to use. Call the start() method to start the game loop created by
- * createGameLoop(). Use shutdown() method to stop game loop and free engine
- * systems.
+ * to use. Call the start() method to start the game loop. Use shutdown() method
+ * to stop game loop and free engine systems.
  */
 public class Engine {
 
@@ -108,13 +102,10 @@ public class Engine {
 	}
 
 	public final String name;
-	private boolean isRunning;
-	private GameLoop gameLoop;
-	private final Map<String, Scene> sceneMap;
-	private final Map<Integer, Scene> sceneIdMap;
-	private final List<Scene> scenes;
-	private Window window;
-	private final List<RenderConfiguration> renderConfigs;
+	public final Window window;
+	private final GameLoop gameLoop;
+	private final List<RenderConfiguration> renderConfigs; // TODO Rework this!
+	private volatile boolean isRunning;
 	private long tick;
 	private long drawCalls;
 
@@ -125,40 +116,36 @@ public class Engine {
 	public Engine(String name, boolean window, GameLoop gameLoop) {
 		instance = this;
 		this.name = name;
-		sceneMap = new ConcurrentHashMap<String, Scene>();
-		sceneIdMap = new ConcurrentHashMap<Integer, Scene>();
-		scenes = new IdentityArrayList<Scene>();
-		renderConfigs = new IdentityArrayList<RenderConfiguration>();
+		this.renderConfigs = new IdentityArrayList<>();
 		this.gameLoop = gameLoop;
 		gameLoop.setUpdateFunction(this::update);
 		SoundManager.init();
 		DisplayManager.init();
 		Registry.init();
-		if (window)
-			createWindow();
+		this.window = window ? createWindow() : null;
 		ResourceManager.loadResource("assets");
 	}
 
 	private void terminate() {
 		ConnectionManager.terminate();
 		ThreadPool.shutdown();
-		for (Scene scene : scenes)
+		for (Scene scene : Scene.values())
 			scene.free();
 		ResourceManager.terminate();
-		if (hasWindow())
+		if (window != null)
 			deleteWindow();
 		DisplayManager.terminate();
 		SoundManager.terminate();
 		OptionFile.save();
-		gameLoop = null;
 	}
 
-	private void createWindow() {
-		window = new Window(name);
+	private Window createWindow() {
+		Window window = new Window(name);
 		Input.setWindow(window);
 		OpenGL.init();
 		renderConfigs.add(RenderConfiguration.create(0, 0, 1, 1));
 		gameLoop.setRenderFunction(this::render);
+		return window;
 	}
 
 	private void deleteWindow() {
@@ -167,10 +154,6 @@ public class Engine {
 			renderConfig.close();
 		OpenGL.terminate();
 		window.delete();
-	}
-
-	public GameLoop getGameLoop() {
-		return gameLoop;
 	}
 
 	public void start() {
@@ -191,9 +174,10 @@ public class Engine {
 
 	private void update(float dt) {
 		tick++;
+		SceneMap.update();
 		ConnectionManager.update();
 		Benchmark.start("update");
-		for (Scene scene : scenes)
+		for (Scene scene : Scene.values())
 			if (!scene.isPaused())
 				updateScene(scene, dt);
 		Benchmark.stop("update");
@@ -205,7 +189,7 @@ public class Engine {
 	private void render(float dt) {
 		Renderer.update(dt);
 		Benchmark.start("render");
-		for (Scene scene : scenes)
+		for (Scene scene : Scene.values())
 			if (!scene.isPaused())
 				renderScene(scene, dt);
 		Renderer.draw(renderConfigs);
@@ -234,47 +218,6 @@ public class Engine {
 		for (int system : scene.renderOrder)
 			scene.getSystem(system).onRender(dt);
 		Renderer.setRenderTarget(null);
-	}
-
-	public @Nullable Window getWindow() {
-		return window;
-	}
-
-	public boolean hasWindow() {
-		return window != null;
-	}
-
-	Scene addScene(Scene scene) {
-		sceneMap.put(scene.name, scene);
-		sceneIdMap.put(scene.id, scene);
-		Scheduler.runTask(() -> scenes.add(scene));
-		return scene;
-	}
-
-	boolean deleteScene(Scene scene) {
-		sceneMap.remove(scene.name);
-		sceneIdMap.remove(scene.id);
-		Scheduler.runTask(() -> {
-			scenes.remove(scene);
-			scene.free();
-		});
-		return true;
-	}
-
-	public Collection<Scene> getScenes() {
-		return scenes;
-	}
-
-	public Scene getScene(String name) {
-		return sceneMap.get(name);
-	}
-
-	public Scene getScene(int id) {
-		return sceneIdMap.get(id);
-	}
-
-	public Scene getScenePerIndex(int index) {
-		return scenes.get(index);
 	}
 
 	public int getFps() {
