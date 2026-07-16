@@ -13,11 +13,13 @@ import jgine.utils.IdGenerator;
 import jgine.utils.collection.list.UnorderedArrayList;
 
 /**
- * get(id) and get(name) reflect additions/removals immediately.
- * <p>
- * values()/view() are updated during the next update() call.
- * <p>
- * Iteration observes a stable snapshot.
+ * Storage for {@link Scene}<code>s</code> with the following specification:
+ * 
+ * <pre>
+ *- get(id) and get(name) reflect additions/removals immediately.
+ *- values()/view() are updated during the next update() call.
+ *- Iteration observes a stable snapshot.
+ * </pre>
  */
 public final class SceneStorage {
 
@@ -60,16 +62,25 @@ public final class SceneStorage {
 		Queue<Scene> queue = REMOVE_QUEUE;
 		Scene scene;
 		while ((scene = queue.poll()) != null) {
-			newScenes.remove(scene);
+			Scene last = newScenes.getLast();
+			newScenes.remove(scene.index);
+			if (scene != last)
+				last.index = scene.index;
+			scene.index = -1;
 			scene.free();
 		}
 
 		queue = ADD_QUEUE;
 		while ((scene = queue.poll()) != null) {
+			scene.index = newScenes.size();
 			newScenes.add(scene);
 		}
 		LIST = newScenes;
 		VIEW = Collections.unmodifiableList(newScenes);
+	}
+
+	public static boolean isAlive(int id) {
+		return ID_GENERATOR.isAlive(id);
 	}
 
 	/**

@@ -22,13 +22,18 @@ import jgine.utils.registry.Registry;
 import jgine.utils.spacePartitioning.SpatialHashing2d;
 
 /**
- * A scene or world identified with id and name. Use this class to create a
- * {@link Entity}. Scenes store a list of entities and the
- * {@link EngineSystem}<code>s</code> they use. They also provide a pause
- * capability.
- * <p>
- * Change the update order of the given systems by setting the
- * {@link UpdateOrder} instance. Same can be done with the render order List.
+ * A scene or world identified with id and name.
+ * 
+ * <pre>
+ * Stores:
+ * - int id 
+ * - String name
+ * - {@link Entity} list
+ * - {@link EngineSystem}<code>s</code>
+ * - {@link UpdateOrder}
+ * - RenderOrder
+ * - {@link Flag}
+ * </pre>
  */
 public final class Scene {
 
@@ -53,6 +58,7 @@ public final class Scene {
 	private final SystemScene<?, ?>[] systemMap;
 	private final List<Entity> entities;
 	private volatile int flag;
+	int index = -1; // main thread only
 
 	public Scene(String name) {
 		this(name, Registry.SYSTEM.values());
