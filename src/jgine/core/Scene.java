@@ -27,7 +27,7 @@ import jgine.utils.spacePartitioning.SpatialHashing2d;
  * {@link EngineSystem}<code>s</code> they use. They also provide a pause
  * capability.
  * <p>
- * Change the update order of the given systems by setting or modifying the
+ * Change the update order of the given systems by setting the
  * {@link UpdateOrder} instance. Same can be done with the render order List.
  */
 public final class Scene {
@@ -239,11 +239,8 @@ public final class Scene {
 		return sb.toString();
 	}
 
-	/**
-	 * <b>Never Modify!</b> Returns internal data!
-	 */
 	public static List<Scene> values() {
-		return SceneMap.values();
+		return SceneMap.view();
 	}
 
 	public static Scene get(int id) {
