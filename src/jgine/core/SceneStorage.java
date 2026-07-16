@@ -19,7 +19,7 @@ import jgine.utils.collection.list.UnorderedArrayList;
  * <p>
  * Iteration observes a stable snapshot.
  */
-public final class SceneMap {
+public final class SceneStorage {
 
 	public static final int MAX_SCENES = 65535;
 	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_SCENES + 2);

@@ -82,7 +82,7 @@ public final class Scene {
 			this.systems[i++] = systemScene;
 			this.systemMap[systemScene.id] = systemScene;
 		}
-		this.id = SceneMap.add(this);
+		this.id = SceneStorage.add(this);
 	}
 
 	void free() {
@@ -94,7 +94,7 @@ public final class Scene {
 
 	public void delete() {
 		if (setFlag(Flag.DELETE, true))
-			SceneMap.remove(this);
+			SceneStorage.remove(this);
 	}
 
 	/**
@@ -240,14 +240,14 @@ public final class Scene {
 	}
 
 	public static List<Scene> values() {
-		return SceneMap.view();
+		return SceneStorage.view();
 	}
 
 	public static Scene get(int id) {
-		return SceneMap.get(id);
+		return SceneStorage.get(id);
 	}
 
 	public static Scene get(String name) {
-		return SceneMap.get(name);
+		return SceneStorage.get(name);
 	}
 }

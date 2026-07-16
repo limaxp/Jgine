@@ -129,7 +129,7 @@ public class Engine {
 	private void terminate() {
 		ConnectionManager.terminate();
 		ThreadPool.shutdown();
-		for (Scene scene : SceneMap.values())
+		for (Scene scene : SceneStorage.values())
 			scene.free();
 		ResourceManager.terminate();
 		if (window != null)
@@ -174,10 +174,10 @@ public class Engine {
 
 	private void update(float dt) {
 		tick++;
-		SceneMap.update();
+		SceneStorage.update();
 		ConnectionManager.update();
 		Benchmark.start("update");
-		for (Scene scene : SceneMap.values())
+		for (Scene scene : SceneStorage.values())
 			if (!scene.isPaused())
 				updateScene(scene, dt);
 		Benchmark.stop("update");
@@ -189,7 +189,7 @@ public class Engine {
 	private void render(float dt) {
 		Renderer.update(dt);
 		Benchmark.start("render");
-		for (Scene scene : SceneMap.values())
+		for (Scene scene : SceneStorage.values())
 			if (!scene.isPaused())
 				renderScene(scene, dt);
 		Renderer.draw(renderConfigs);
