@@ -22,12 +22,11 @@ import jgine.utils.collection.list.UnorderedArrayList;
  * </pre>
  */
 public final class SceneStorage {
-
-	public static final int MAX_SCENES = 65535;
-	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_SCENES + 2);
-	private static final Scene[] ID_MAP = new Scene[MAX_SCENES + 1];
+	public static final int MAX_SCENES = 65536;
 	private static final VarHandle ID_MAP_HANDLE = MethodHandles.arrayElementVarHandle(Scene[].class);
-	private static final Object ID_LOCK = new Object();
+
+	private static final IdGenerator ID_GENERATOR = new IdGenerator(MAX_SCENES);
+	private static final Scene[] ID_MAP = new Scene[MAX_SCENES];
 	private static final Map<String, Scene> NAME_MAP = new ConcurrentHashMap<>();
 	private static volatile List<Scene> LIST = new UnorderedArrayList<>();
 	private static volatile List<Scene> VIEW = Collections.unmodifiableList(LIST);
@@ -35,21 +34,16 @@ public final class SceneStorage {
 	private static final Queue<Scene> REMOVE_QUEUE = new ConcurrentLinkedQueue<>();
 
 	static int add(Scene scene) {
-		int id;
-		synchronized (ID_LOCK) {
-			id = ID_GENERATOR.generate();
-			ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(id), scene);
-		}
+		int id = ID_GENERATOR.generate();
+		ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(id), scene);
 		NAME_MAP.put(scene.name, scene);
 		ADD_QUEUE.add(scene);
 		return id;
 	}
 
 	static void remove(Scene scene) {
-		synchronized (ID_LOCK) {
-			ID_GENERATOR.free(scene.id);
-			ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(scene.id), null);
-		}
+		ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(scene.id), null);
+		ID_GENERATOR.free(scene.id);
 		NAME_MAP.remove(scene.name);
 		REMOVE_QUEUE.add(scene);
 	}

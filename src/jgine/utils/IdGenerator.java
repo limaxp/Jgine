@@ -1,75 +1,91 @@
 package jgine.utils;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+
+import jgine.utils.concurrent.ConcurrentIntRingBuffer;
 
 /**
- * A generator for 32-bit identifiers. Identifiers consist of index and
- * generation. Index is a 24-bit value while generation uses the other 8-bit. So
- * there are up to 16777215 identifiers possible but you can also specify a
- * lower maximum. Generation is used to check if id is still in use (alive).
- * Will recycle freed identifiers!
- * <p>
- * <strong>Identifiers must be freed after use!</strong>
+ * Lock-free Generator for 32-bit identifiers (0 - 16777215)
+ * 
+ * <pre>
+ * index 24-bit
+ * generation 8-bit
+ * 
+ *<strong>Alive until slot reuse!</strong>
+ *<strong>Must be freed after use!</strong>
+ * </pre>
+ * 
+ * Uses a {@link ConcurrentIntRingBuffer} for free IDs.
  */
 public class IdGenerator {
 
-	public static final int MAX_ID = 16777215;
-	private static final short MINIMUM_FREE_INDICES = 1024;
-
+	public static final int MAX_CAPACITY = 16777216;
 	public final static byte INDEX_BITS = 24;
 	public final static int INDEX_MASK = (1 << INDEX_BITS) - 1;
 	public final static byte GENERATION_BITS = 8;
 	public final static int GENERATION_MASK = (1 << GENERATION_BITS) - 1;
 
-	private final byte[] generation;
+	private static final VarHandle SIZE_HANDLE;
+
+	static {
+		try {
+			Lookup lookUp = MethodHandles.privateLookupIn(IdGenerator.class, MethodHandles.lookup());
+			SIZE_HANDLE = lookUp.findVarHandle(IdGenerator.class, "size", int.class);
+		} catch (Exception e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	@SuppressWarnings("unused")
 	private int size;
-	private final Queue<Integer> freeIndices;
-	private final int minimumFreeIndices;
+	private final ConcurrentIntRingBuffer freeIndices;
+	private final byte[] generation;
 
-	public IdGenerator() {
-		this(0, MAX_ID);
+	public IdGenerator(int capacity) {
+		this(0, capacity);
 	}
 
-	public IdGenerator(int maxId) {
-		this(0, maxId);
-	}
-
-	public IdGenerator(int startId, int maxId) {
-		generation = new byte[maxId];
-		size = startId;
-		minimumFreeIndices = Math.min(maxId - 2 - startId, MINIMUM_FREE_INDICES);
-		freeIndices = new ArrayDeque<Integer>(minimumFreeIndices + 1000);
+	public IdGenerator(int startId, int capacity) {
+		this.size = startId;
+		this.freeIndices = new ConcurrentIntRingBuffer(capacity);
+		this.generation = new byte[capacity];
 	}
 
 	public int generate() {
-		int index;
-		if (freeIndices.size() > minimumFreeIndices) {
-			index = freeIndices.poll();
-			return id(index, generation[index]);
-		} else {
-			generation[index = size++] = (byte) 0;
-			return index;
+		int index = freeIndices.poll();
+		if (index != ConcurrentIntRingBuffer.EMPTY)
+			return id(index, ++generation[index]);
+
+		int s = (int) SIZE_HANDLE.getOpaque(this);
+		for (;;) {
+			if (s >= freeIndices.getCapacity())
+				throw new IndexOutOfBoundsException(s);
+			if (SIZE_HANDLE.weakCompareAndSetPlain(this, s, s + 1))
+				break;
+			else
+				s = (int) SIZE_HANDLE.getOpaque(this);
 		}
+		return s; // == id(s, 0);
 	}
 
 	public int free(int id) {
 		int index = index(id);
 		freeIndices.add(index);
-		generation[index] = (byte) (generation[index] + 1);
 		return index;
 	}
 
-	public boolean isAlive(int id) {
-		return generation[index(id)] == generation(id);
+	public int getCapacity() {
+		return freeIndices.getCapacity();
 	}
 
-	public int getMaxId() {
-		return generation.length;
+	public boolean isAlive(int id) {
+		return (generation[index(id)] & GENERATION_MASK) == generation(id);
 	}
 
 	public static int id(int index, int generation) {
-		return 0x00000000 | generation << INDEX_BITS | index;
+		return generation << INDEX_BITS | index;
 	}
 
 	public static int index(int id) {

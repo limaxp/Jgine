@@ -67,6 +67,7 @@ module jgine {
 	exports jgine.utils.collection.pool;
 	exports jgine.utils.collection.queue;
 	exports jgine.utils.collection.tree;
+	exports jgine.utils.concurrent;
 	exports jgine.utils.loader;
 	exports jgine.utils.math;
 	exports jgine.utils.math.rotation;
