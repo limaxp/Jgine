@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,8 @@ import jgine.system.EngineSystem;
 import jgine.system.SystemScene;
 import jgine.system.transform.TransformScene;
 import jgine.utils.Flag;
-import jgine.utils.collection.list.UnorderedIdentityArrayList;
+import jgine.utils.collection.list.UnorderedArrayList;
+import jgine.utils.concurrent.ConcurrentRingBuffer;
 import jgine.utils.registry.Registry;
 import jgine.utils.spacePartitioning.SpatialHashing2d;
 
@@ -52,13 +54,16 @@ public final class Scene {
 
 	public final int id;
 	public final String name;
+	int index = -1; // main thread only
 	volatile UpdateOrder updateOrder;
 	volatile IntList renderOrder;
 	private final SystemScene<?, ?>[] systems;
+	private final List<SystemScene<?, ?>> systems_view;
 	private final SystemScene<?, ?>[] systemMap;
 	private final List<Entity> entities;
+	private final List<Entity> entities_view;
+	private final ConcurrentRingBuffer<Runnable> commandQueue;
 	private volatile int flag;
-	int index = -1; // main thread only
 
 	public Scene(String name) {
 		this(name, Registry.SYSTEM.values());
@@ -79,8 +84,11 @@ public final class Scene {
 		this.name = name;
 		this.updateOrder = EMPTY_UPDATE_ORDER;
 		this.renderOrder = EMPTY_RENDER_ORDER;
-		this.entities = new UnorderedIdentityArrayList<Entity>();
+		this.entities = new UnorderedArrayList<>();
+		this.entities_view = Collections.unmodifiableList(entities);
+		this.commandQueue = new ConcurrentRingBuffer<>(1048576);
 		this.systems = new SystemScene[systems.size()];
+		this.systems_view = Collections.unmodifiableList(Arrays.asList(this.systems));
 		this.systemMap = new SystemScene<?, ?>[Registry.SYSTEM.size()];
 		int i = 0;
 		for (EngineSystem<?, ?> system : systems) {
@@ -103,11 +111,37 @@ public final class Scene {
 			SceneStorage.remove(this);
 	}
 
-	/**
-	 * <b>Never Modify!</b> Returns internal data!
-	 */
-	public SystemScene<?, ?>[] getSystems() {
-		return systems;
+	void pollCommands() {
+		ConcurrentRingBuffer<Runnable> queue = commandQueue;
+		Runnable cmd;
+		while ((cmd = queue.poll()) != null) {
+			cmd.run();
+		}
+	}
+
+	void addEntity(Entity entity) {
+		commandQueue.add(() -> {
+			entity.index = entities.size();
+			entities.add(entity);
+		});
+	}
+
+	void removeEntity(Entity entity) {
+		commandQueue.add(() -> {
+			Entity last = entities.getLast();
+			entities.remove(entity.index);
+			if (entity != last)
+				last.index = entity.index;
+			entity.index = -1;
+		});
+	}
+
+	public List<Entity> getEntities() {
+		return entities_view;
+	}
+
+	ConcurrentRingBuffer<Runnable> getCommandQueue() {
+		return commandQueue;
 	}
 
 	@Nullable
@@ -116,16 +150,8 @@ public final class Scene {
 		return (T) systemMap[id];
 	}
 
-	void addEntity(Entity entity) {
-		entities.add(entity);
-	}
-
-	void removeEntity(Entity entity) {
-		entities.remove(entity);
-	}
-
-	public List<Entity> getEntities() {
-		return Collections.unmodifiableList(entities);
+	public List<SystemScene<?, ?>> getSystems() {
+		return systems_view;
 	}
 
 	public void setUpdateOrder(UpdateOrder updateOrder) {
@@ -153,8 +179,8 @@ public final class Scene {
 		return getFlag(Flag.DELETE);
 	}
 
-	public void pause(boolean pause) {
-		setFlag(Flag.PAUSE, pause);
+	public boolean pause(boolean pause) {
+		return setFlag(Flag.PAUSE, pause);
 	}
 
 	public boolean isPaused() {

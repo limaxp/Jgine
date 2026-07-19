@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 
 import jgine.core.Entity;
+import jgine.core.EntityStorage;
 import jgine.net.game.packet.Packet;
 import jgine.net.game.packet.PacketManager;
 import jgine.net.game.packet.ServerPacketListener;
@@ -31,7 +32,7 @@ import jgine.utils.collection.list.IdentityArrayList;
 
 public class GameServer implements Runnable {
 
-	public static final int MAX_ENTITIES = 10000;
+	public static final int MAX_ENTITIES = 65536;
 
 	private DatagramSocket socket;
 	private boolean isRunning;
@@ -56,12 +57,12 @@ public class GameServer implements Runnable {
 		playerList = new IdentityArrayList<PlayerConnection>(maxConnections);
 		clientList = new IdentityArrayList<PlayerConnection>(maxConnections - 1);
 		nameMap = new HashMap<String, PlayerConnection>(maxConnections);
-		idGenerator = new IdGenerator(1, maxConnections + 1);
-		idMap = new PlayerConnection[maxConnections + 1];
+		idGenerator = new IdGenerator(1, maxConnections); // TODO new IdGenerator(maxConnections);
+		idMap = new PlayerConnection[maxConnections];
 		player = new PlayerConnection(idGenerator.generate(), name, getIp(), port);
 		registerConnection(player);
 		trackedEntities = new IdentityArrayList<Entity>(MAX_ENTITIES);
-		entityIdGenerator = new IdGenerator(0, MAX_ENTITIES);
+		entityIdGenerator = new IdGenerator(MAX_ENTITIES);
 	}
 
 	public void stop() {
@@ -248,11 +249,11 @@ public class GameServer implements Runnable {
 		synchronized (entityIdGenerator) {
 			id = entityIdGenerator.generate();
 		}
-		return IdGenerator.id(IdGenerator.index(id) + Entity.MAX_ENTITIES + 2, IdGenerator.generation(id));
+		return IdGenerator.id(IdGenerator.index(id) + EntityStorage.MAX_ENTITIES + 2, IdGenerator.generation(id));
 	}
 
 	public void freeEntityId(int id) {
-		int realId = IdGenerator.id(IdGenerator.index(id) - Entity.MAX_ENTITIES - 2, IdGenerator.generation(id));
+		int realId = IdGenerator.id(IdGenerator.index(id) - EntityStorage.MAX_ENTITIES - 2, IdGenerator.generation(id));
 		entityIdGenerator.free(realId);
 	}
 }

@@ -33,9 +33,9 @@ public final class ConcurrentRingBuffer<E> {
 
 	static {
 		try {
-			Lookup lookUp = MethodHandles.privateLookupIn(ConcurrentIntRingBuffer.class, MethodHandles.lookup());
-			WRITE_HANDLE = lookUp.findVarHandle(ConcurrentIntRingBuffer.class, "write", long.class);
-			READ_HANDLE = lookUp.findVarHandle(ConcurrentIntRingBuffer.class, "read", long.class);
+			Lookup lookUp = MethodHandles.privateLookupIn(ConcurrentRingBuffer.class, MethodHandles.lookup());
+			WRITE_HANDLE = lookUp.findVarHandle(ConcurrentRingBuffer.class, "write", long.class);
+			READ_HANDLE = lookUp.findVarHandle(ConcurrentRingBuffer.class, "read", long.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}

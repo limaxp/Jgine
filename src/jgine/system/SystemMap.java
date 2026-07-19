@@ -13,6 +13,7 @@ import java.util.function.IntConsumer;
 
 import jgine.core.Entity;
 import jgine.core.Scene;
+import jgine.utils.scheduler.Scheduler;
 
 /**
  * Data structure used internally by {@link Entity} class to store their
@@ -25,17 +26,31 @@ public class SystemMap {
 	public static final int MAX_TOMBSTONES = 8;
 	private static final SystemObject[] NULL_OBJECTS = new SystemObject[0];
 	private static final int[] NULL_DATA = new int[0];
-	private static final VarHandle SYSTEMS_HANDLE;
 	private static final VarHandle SIZE_HANDLE;
+//	public final static byte ID_BITS = 24;
+//	public final static int ID_MASK = (1 << ID_BITS) - 1;
+//	public final static byte SYSTEM_BITS = 8;
+//	public final static int SYSTEM_MASK = (1 << SYSTEM_BITS) - 1;
 
 	static {
 		try {
-			SYSTEMS_HANDLE = MethodHandles.lookup().findVarHandle(SystemMap.class, "systems", SystemObject[].class);
 			SIZE_HANDLE = MethodHandles.lookup().findVarHandle(SystemMap.class, "size", int.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
+
+//	public static int toData(int system, int id) {
+//		return 0x00000000 | system << ID_BITS | id;
+//	}
+//
+//	public static int toSystem(int data) {
+//		return data & ID_MASK;
+//	}
+//
+//	public static int toId(int data) {
+//		return (data >> ID_BITS) & SYSTEM_MASK;
+//	}
 
 	public final Scene scene;
 	private volatile SystemObject[] systems;
@@ -44,109 +59,96 @@ public class SystemMap {
 	private volatile long typeMask;
 	private volatile int size;
 	private int tombstones;
+	private final Object growLock = new Object();
 
 	public SystemMap(Scene scene) {
 		this.scene = scene;
-		clearMap();
-	}
-
-	/**
-	 * MUST be called only when there are no concurrent readers or writers.
-	 * Violating this invariant breaks snapshot consistency.
-	 */
-	public void clearMap() {
 		this.systems = NULL_OBJECTS;
 		this.types = NULL_DATA;
 		this.ids = NULL_DATA;
 	}
 
+	private void grow() {
+		synchronized (growLock) {
+			if (size < systems.length)
+				return;
+
+			int newSize = Math.max(INITAL_SIZE, systems.length * 2);
+			types = Arrays.copyOf(types, newSize);
+			ids = Arrays.copyOf(ids, newSize);
+			systems = Arrays.copyOf(systems, newSize);
+		}
+	}
+
+	private void tombstone(int index) {
+		synchronized (growLock) {
+			if (systems[index] == null)
+				return;
+
+			types[index] = -1;
+			ids[index] = -1;
+			systems[index] = null;
+			tombstones++;
+			if (tombstones == MAX_TOMBSTONES)
+				Scheduler.runTask(this::compact); // TODO don't use Scheduler!
+		}
+	}
+
 	public int map(int system, SystemObject value) {
 		for (;;) {
 			int n = size;
-			SystemObject[] arr = systems;
-			if (n < arr.length) {
-				if (SIZE_HANDLE.compareAndSet(this, n, n + 1)) {
-					SystemObject[] cur = systems; // re-read
-					cur[n] = value;
-					types[n] = system;
-					typeMask |= (1L << system);
-					return n;
-				}
+			if (n >= systems.length) {
+				grow();
+				continue;
+			}
 
-			} else {
-				int newSize = Math.max(INITAL_SIZE, arr.length * 2);
-				Object[] newSystems = Arrays.copyOf(arr, newSize);
-				int[] newTypes = Arrays.copyOf(types, newSize);
-				int[] newIds = Arrays.copyOf(ids, newSize);
-
-				types = newTypes;
-				ids = newIds;
-				SYSTEMS_HANDLE.compareAndSet(this, arr, newSystems);
+			if (SIZE_HANDLE.compareAndSet(this, n, n + 1)) {
+				types[n] = system;
+				typeMask |= (1L << system);
+				systems[n] = value;
+				return n;
 			}
 		}
 	}
 
-	/**
-	 * MUST be called only when there are no concurrent readers or writers.
-	 * Violating this invariant breaks snapshot consistency.
-	 */
 	public int unmap(SystemObject value) {
-		SystemObject[] arr = systems;
 		int n = size;
+		SystemObject[] arr = systems;
 		for (int i = 0; i < n; i++) {
 			if (arr[i] == value) {
-				arr[i] = null;
-				tombstones++;
-				if (tombstones >= MAX_TOMBSTONES)
-					compact();
+				tombstone(i);
 				return ids[i];
 			}
 		}
 		return -1;
 	}
 
-	/**
-	 * MUST be called only when there are no concurrent readers or writers.
-	 * Violating this invariant breaks snapshot consistency.
-	 */
 	public boolean unmap(int id) {
-		SystemObject[] arr = systems;
-		int[] idsArr = ids;
 		int n = size;
+		int[] idsArr = ids;
 		for (int i = 0; i < n; i++) {
-			if (idsArr[i] == id && arr[i] != null) {
-				arr[i] = null;
-				tombstones++;
-				if (tombstones >= MAX_TOMBSTONES)
-					compact();
+			if (idsArr[i] == id) {
+				tombstone(i);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	/**
-	 * MUST be called only when there are no concurrent readers or writers.
-	 * Violating this invariant breaks snapshot consistency.
-	 */
 	public boolean unmap(int system, IntConsumer consumer) {
 		boolean changed = false;
 		if ((typeMask & (1L << system)) == 0)
 			return changed;
 
-		SystemObject[] arr = systems;
-		int[] typesArr = types;
 		int n = size;
+		int[] typesArr = types;
 		for (int i = 0; i < n; i++) {
-			if (typesArr[i] == system && arr[i] != null) {
-				arr[i] = null;
-				tombstones++;
+			if (typesArr[i] == system) {
+				tombstone(i);
 				changed = true;
 				consumer.accept(ids[i]);
 			}
 		}
-		if (tombstones >= MAX_TOMBSTONES)
-			compact();
 		return changed;
 	}
 
@@ -167,9 +169,9 @@ public class SystemMap {
 	 * Violating this invariant breaks snapshot consistency.
 	 */
 	public boolean setId(int system, int oldValue, int newValue) {
+		int n = size;
 		int[] idsArr = ids;
 		int[] typesArr = types;
-		int n = size;
 		for (int i = 0; i < n; i++) {
 			if (idsArr[i] == oldValue && typesArr[i] == system) {
 				idsArr[i] = newValue;
@@ -223,15 +225,12 @@ public class SystemMap {
 		if ((typeMask & (1L << system)) == 0)
 			return null;
 
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
-		int n = size;
 		for (int i = 0; i < n; i++) {
-			if (typesArr[i] == system) {
-				SystemObject s = arr[i];
-				if (s != null)
-					return (T) s;
-			}
+			if (typesArr[i] == system)
+				return (T) arr[i];
 		}
 		return null;
 	}
@@ -245,15 +244,14 @@ public class SystemMap {
 		if ((typeMask & (1L << system)) == 0)
 			return null;
 
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
-		int n = size;
 		int found = 0;
 		for (int i = 0; i < n; i++) {
 			if (typesArr[i] == system) {
-				SystemObject s = arr[i];
-				if (s != null && found++ == index)
-					return (T) s;
+				if (found++ == index)
+					return (T) arr[i];
 			}
 		}
 		return null;
@@ -270,8 +268,8 @@ public class SystemMap {
 	}
 
 	public void forEach(Consumer<SystemObject> consumer) {
-		SystemObject[] arr = systems;
 		int n = size;
+		SystemObject[] arr = systems;
 		for (int i = 0; i < n; i++) {
 			SystemObject s = arr[i];
 			if (s != null)
@@ -280,10 +278,10 @@ public class SystemMap {
 	}
 
 	public void forEach(SystemMapConsumer consumer) {
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
 		int[] idsArr = ids;
-		int n = size;
 		for (int i = 0; i < n; i++) {
 			SystemObject s = arr[i];
 			if (s != null)
@@ -300,15 +298,12 @@ public class SystemMap {
 		if ((typeMask & (1L << system)) == 0)
 			return;
 
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
-		int n = size;
 		for (int i = 0; i < n; i++) {
-			if (typesArr[i] == system) {
-				SystemObject s = arr[i];
-				if (s != null)
-					consumer.accept((T) s);
-			}
+			if (typesArr[i] == system)
+				consumer.accept((T) arr[i]);
 		}
 	}
 
@@ -320,24 +315,21 @@ public class SystemMap {
 		if ((typeMask & (1L << system)) == 0)
 			return;
 
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
 		int[] idsArr = ids;
-		int n = size;
 		for (int i = 0; i < n; i++) {
-			if (typesArr[i] == system) {
-				SystemObject s = arr[i];
-				if (s != null)
-					consumer.accept(system, idsArr[i], s);
-			}
+			if (typesArr[i] == system)
+				consumer.accept(system, idsArr[i], arr[i]);
 		}
 	}
 
 	public void save(DataOutput out) throws IOException {
+		int n = size;
 		SystemObject[] arr = systems;
 		int[] typesArr = types;
 		int[] idsArr = ids;
-		int n = size;
 
 		out.writeLong(typeMask);
 		out.writeInt(n - tombstones);

@@ -177,9 +177,11 @@ public class Engine {
 		SceneStorage.update();
 		ConnectionManager.update();
 		Benchmark.start("update");
-		for (Scene scene : SceneStorage.values())
+		for (Scene scene : SceneStorage.values()) {
+			scene.pollCommands();
 			if (!scene.isPaused())
 				updateScene(scene, dt);
+		}
 		Benchmark.stop("update");
 		Scheduler.update();
 		Input.update();

@@ -3,123 +3,97 @@ package jgine.core;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import jgine.net.game.ConnectionManager;
-import jgine.net.game.GameServer;
+import jgine.system.EngineSystem;
 import jgine.system.SystemMap;
 import jgine.system.SystemObject;
 import jgine.system.SystemScene;
 import jgine.system.transform.Transform;
 import jgine.utils.Flag;
-import jgine.utils.IdGenerator;
-import jgine.utils.scheduler.Scheduler;
 
 /**
- * A container for game entity data. Stores info about id, {@link Scene},
- * {@link Transform}, {@link Prefab}, used {@link EngineSystem}<code>s</code>,
- * the scene graph and a 32 bit flag. This is supposed to link all together in
- * an easy to use way.
+ * A container for game entity data.
  * 
  * <pre>
-Currently used flags:
-
-	0 - dead
+ * Stores:
+ * - int id 
+ * - {@link Scene}
+ * - {@link Prefab}
+ * - {@link EngineSystem}<code>s</code>
+ * - {@link Transform}
+ * - {@link Flag}
  * </pre>
  */
 public final class Entity extends SystemMap {
 
-	public static final int MAX_ENTITIES = IdGenerator.MAX_ID - GameServer.MAX_ENTITIES - 1;
+	private static final VarHandle FLAG_HANDLE;
 
-	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, MAX_ENTITIES + 1);
-	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_ID];
-
-	public static boolean isAlive(int id) {
-		return ID_GENERATOR.isAlive(id);
-	}
-
-	public static boolean isLocal(int id) {
-		return IdGenerator.index(id) <= MAX_ENTITIES + 1;
-	}
-
-	public static boolean isRemote(int id) {
-		return IdGenerator.index(id) > MAX_ENTITIES + 1;
+	static {
+		try {
+			FLAG_HANDLE = MethodHandles.lookup().findVarHandle(Entity.class, "flag", int.class);
+		} catch (Exception e) {
+			throw new ExceptionInInitializerError(e);
+		}
 	}
 
 	public final int id;
+	int index = -1; // main thread only
 	private Transform transform;
-	private Prefab prefab;
-	private int flag;
+	private Prefab prefab = Prefab.NONE; // effectively final
+	private volatile int flag;
 
 	public Entity(Scene scene) {
-		int id;
-		synchronized (ID_GENERATOR) {
-			id = ID_GENERATOR.generate();
-		}
-		this(id, scene);
+		super(scene);
+		this.id = EntityStorage.add(this);
+		scene.addEntity(this);
 	}
 
 	public Entity(int id, Scene scene) {
 		super(scene);
 		this.id = id;
-		this.prefab = Prefab.NONE;
-		ID_MAP[IdGenerator.index(id)] = this;
-		Scheduler.runTask(() -> scene.addEntity(this));
+		EntityStorage.inject(this);
+		scene.addEntity(this);
 	}
 
 	void free() {
-		int index = IdGenerator.index(id);
-		if (index <= MAX_ENTITIES + 1)
-			ID_GENERATOR.free(id);
-		else
-			ConnectionManager.freeEntityId(id);
-		ID_MAP[index] = null;
-
-		transform = null;
-		clearMap();
+		EntityStorage.remove(this);
 	}
 
 	public void delete() {
-		if (isAlive()) {
-			setFlag(Flag.DELETE, true);
-			Scheduler.runTask(() -> {
-				if (Entity.isAlive(id))
-					subDelete(this);
-			});
-		}
-	}
+		if (!setFlag(Flag.DELETE, true))
+			return;
 
-	private static void subDelete(Entity entity) {
-		if (entity.transform != null)
-			entity.transform.forChilds((transform) -> subDelete(transform.getEntity()));
-		entity.scene.removeEntity(entity);
-		entity.forEach((system, id, _) -> entity.scene.getSystem(system).remove(id));
-		entity.free();
+		free();
+		if (transform != null)
+			transform.forChilds((transform) -> transform.getEntity().delete());
+		scene.removeEntity(this);
+		scene.getCommandQueue().add(() -> forEach((system, id, _) -> scene.getSystem(system).remove(id)));
 	}
 
 	public boolean isLocal() {
-		return isLocal(id);
+		return EntityStorage.isLocal(id);
 	}
 
 	public boolean isRemote() {
-		return isRemote(id);
+		return EntityStorage.isRemote(id);
 	}
 
 	public boolean isAlive() {
 		return !getFlag(Flag.DELETE);
 	}
 
-	public void setFlag(int flag) {
-		this.flag = flag;
-	}
-
-	public int getFlag() {
-		return flag;
-	}
-
-	public void setFlag(int index, boolean value) {
-		flag = Flag.set(flag, index, value);
+	public boolean setFlag(int index, boolean value) {
+		for (;;) {
+			int flag = this.flag;
+			if (Flag.get(flag, index) == value)
+				return false;
+			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, index, value)))
+				return true;
+		}
 	}
 
 	public boolean getFlag(int index) {
@@ -131,9 +105,9 @@ public final class Entity extends SystemMap {
 	}
 
 	public <T extends SystemObject> T add(SystemScene<?, T> system, T object) {
-		system.onInit(this, object);
 		int index = map(system.id, object);
-		Scheduler.runTask(() -> intId(index, system.add(this, object)));
+		system.onInit(this, object);
+		scene.getCommandQueue().add(() -> intId(index, system.add(this, object)));
 		return object;
 	}
 
@@ -142,7 +116,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public <T extends SystemObject> void remove(SystemScene<?, T> system, T object) {
-		Scheduler.runTask(() -> {
+		scene.getCommandQueue().add(() -> {
 			int id = unmap(object);
 			if (id != -1)
 				system.remove(id);
@@ -154,7 +128,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public <T extends SystemObject> void remove(SystemScene<?, T> system, int id) {
-		Scheduler.runTask(() -> {
+		scene.getCommandQueue().add(() -> {
 			if (unmap(id))
 				system.remove(id);
 		});
@@ -165,7 +139,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public <T extends SystemObject> void remove(SystemScene<?, T> system) {
-		Scheduler.runTask(() -> unmap(system.id, system::remove));
+		scene.getCommandQueue().add(() -> unmap(system.id, system::remove));
 	}
 
 	/**
@@ -192,14 +166,14 @@ public final class Entity extends SystemMap {
 
 	@Override
 	public void load(DataInput in) throws IOException {
-		prefab = Prefab.get(in.readInt());
 		flag = in.readInt();
+		prefab = Prefab.get(in.readInt());
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
-		out.writeInt(prefab.id);
 		out.writeInt(flag);
+		out.writeInt(prefab.id);
 	}
 
 	public void loadMap(DataInput in) throws IOException {
@@ -224,6 +198,6 @@ public final class Entity extends SystemMap {
 
 	@Nullable
 	public static Entity getById(int id) {
-		return ID_MAP[IdGenerator.index(id)];
+		return EntityStorage.get(id);
 	}
 }
