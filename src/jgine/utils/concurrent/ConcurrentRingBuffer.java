@@ -1,15 +1,11 @@
 package jgine.utils.concurrent;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-
 import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodHandles.Lookup;
 
 /**
  * Lock-free bounded MPMC ring buffer
- * <p>
- * <strong>EMPTY = Integer.MIN_VALUE so Integer.MIN_VALUE values
- * prohibited!</strong>
  *
  * <pre>
  *Producer:
@@ -28,12 +24,8 @@ import java.lang.invoke.VarHandle;
  *  diff < 0: queue full (producer) / empty (consumer)
  *  diff > 0: stale ticket, retry
  * </pre>
- * 
- * Copy of {@link ConcurrentRingBuffer}
  **/
-public final class ConcurrentIntRingBuffer {
-
-	public static final int EMPTY = Integer.MIN_VALUE;
+public final class ConcurrentRingBuffer<E> {
 
 	private static final VarHandle SEQUENCE_HANDLE = MethodHandles.arrayElementVarHandle(long[].class);
 	private static final VarHandle WRITE_HANDLE;
@@ -50,28 +42,28 @@ public final class ConcurrentIntRingBuffer {
 	}
 
 	private final int mask;
-	private final int[] value;
+	private final Object[] value;
 	private final long[] sequence;
 	@SuppressWarnings("unused")
 	private long write;
 	@SuppressWarnings("unused")
 	private long read;
 
-	public ConcurrentIntRingBuffer(int capacity) {
+	public ConcurrentRingBuffer(int capacity) {
 		if ((capacity & (capacity - 1)) != 0)
 			throw new IllegalArgumentException("Capacity must be a power of 2!");
 		this.mask = capacity - 1;
-		this.value = new int[capacity];
+		this.value = new Object[capacity];
 		this.sequence = new long[capacity];
 		for (int i = 0; i < capacity; i++)
 			sequence[i] = i;
 	}
 
-	public boolean add(int e) {
+	public boolean add(E e) {
 		return offer(e);
 	}
 
-	public boolean offer(int e) {
+	public boolean offer(E e) {
 		long w = (long) WRITE_HANDLE.getOpaque(this);
 		int index;
 		for (;;) {
@@ -91,7 +83,7 @@ public final class ConcurrentIntRingBuffer {
 		return true;
 	}
 
-	public int poll() {
+	public E poll() {
 		long r = (long) READ_HANDLE.getOpaque(this);
 		int index;
 		for (;;) {
@@ -102,11 +94,12 @@ public final class ConcurrentIntRingBuffer {
 				if (READ_HANDLE.weakCompareAndSetPlain(this, r, r + 1))
 					break;
 			} else if (diff < 0)
-				return EMPTY; // empty
+				return null; // empty
 			else
 				r = (long) READ_HANDLE.getOpaque(this);
 		}
-		int result = value[index];
+		@SuppressWarnings("unchecked")
+		E result = (E) value[index];
 		SEQUENCE_HANDLE.setRelease(sequence, index, r + mask + 1);
 		return result;
 	}
