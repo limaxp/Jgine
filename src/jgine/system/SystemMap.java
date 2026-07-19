@@ -13,7 +13,6 @@ import java.util.function.IntConsumer;
 
 import jgine.core.Entity;
 import jgine.core.Scene;
-import jgine.utils.scheduler.Scheduler;
 
 /**
  * Data structure used internally by {@link Entity} class to store their
@@ -22,24 +21,11 @@ import jgine.utils.scheduler.Scheduler;
  */
 public class SystemMap {
 
-	public static final int INITAL_SIZE = 4;
-	public static final int MAX_TOMBSTONES = 8;
-	private static final SystemObject[] NULL_OBJECTS = new SystemObject[0];
-	private static final int[] NULL_DATA = new int[0];
-	private static final VarHandle SIZE_HANDLE;
 //	public final static byte ID_BITS = 24;
 //	public final static int ID_MASK = (1 << ID_BITS) - 1;
 //	public final static byte SYSTEM_BITS = 8;
 //	public final static int SYSTEM_MASK = (1 << SYSTEM_BITS) - 1;
-
-	static {
-		try {
-			SIZE_HANDLE = MethodHandles.lookup().findVarHandle(SystemMap.class, "size", int.class);
-		} catch (Exception e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
+//	
 //	public static int toData(int system, int id) {
 //		return 0x00000000 | system << ID_BITS | id;
 //	}
@@ -51,6 +37,20 @@ public class SystemMap {
 //	public static int toId(int data) {
 //		return (data >> ID_BITS) & SYSTEM_MASK;
 //	}
+
+	public static final int INITAL_SIZE = 4;
+	public static final int MAX_TOMBSTONES = 8;
+	private static final SystemObject[] NULL_OBJECTS = new SystemObject[0];
+	private static final int[] NULL_DATA = new int[0];
+	private static final VarHandle SIZE_HANDLE;
+
+	static {
+		try {
+			SIZE_HANDLE = MethodHandles.lookup().findVarHandle(SystemMap.class, "size", int.class);
+		} catch (Exception e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	public final Scene scene;
 	private volatile SystemObject[] systems;
@@ -90,7 +90,7 @@ public class SystemMap {
 			systems[index] = null;
 			tombstones++;
 			if (tombstones == MAX_TOMBSTONES)
-				Scheduler.runTask(this::compact); // TODO don't use Scheduler!
+				; // compact(); TODO compaction not possible!
 		}
 	}
 
@@ -158,7 +158,7 @@ public class SystemMap {
 	 * MUST be called only when there are no concurrent readers or writers.
 	 * Violating this invariant breaks snapshot consistency.
 	 */
-	public void intId(int index, int newId) {
+	protected void intId(int index, int newId) {
 		this.ids[index] = newId;
 	}
 
@@ -168,7 +168,7 @@ public class SystemMap {
 	 * MUST be called only when there are no concurrent readers or writers.
 	 * Violating this invariant breaks snapshot consistency.
 	 */
-	public boolean setId(int system, int oldValue, int newValue) {
+	protected boolean setId(int system, int oldValue, int newValue) {
 		int n = size;
 		int[] idsArr = ids;
 		int[] typesArr = types;
