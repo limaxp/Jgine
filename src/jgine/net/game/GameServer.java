@@ -249,11 +249,11 @@ public class GameServer implements Runnable {
 		synchronized (entityIdGenerator) {
 			id = entityIdGenerator.generate();
 		}
-		return IdGenerator.id(IdGenerator.index(id) + EntityStorage.MAX_ENTITIES + 2, IdGenerator.generation(id));
+		return IdGenerator.id(IdGenerator.index(id) + EntityStorage.MAX_ENTITIES, IdGenerator.generation(id));
 	}
 
 	public void freeEntityId(int id) {
-		int realId = IdGenerator.id(IdGenerator.index(id) - EntityStorage.MAX_ENTITIES - 2, IdGenerator.generation(id));
-		entityIdGenerator.free(realId);
+		entityIdGenerator
+				.free(IdGenerator.id(IdGenerator.index(id) - EntityStorage.MAX_ENTITIES, IdGenerator.generation(id)));
 	}
 }

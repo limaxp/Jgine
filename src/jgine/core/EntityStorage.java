@@ -11,13 +11,13 @@ import jgine.utils.IdGenerator;
  * Storage for {@link Entity}<code>s</code> with the following specification:
  * 
  * <pre>
- *- get(id) and get(name) reflect additions/removals immediately.
+ *- get(id) reflects additions immediately and will return old data until id index is recycled.
  * </pre>
  */
 public class EntityStorage {
 
-	public static final int MAX_ENTITIES = IdGenerator.MAX_CAPACITY - GameServer.MAX_ENTITIES - 2;
-	private static final IdGenerator ID_GENERATOR = new IdGenerator(1, IdGenerator.MAX_CAPACITY);
+	public static final int MAX_ENTITIES = IdGenerator.MAX_CAPACITY - GameServer.MAX_ENTITIES;
+	private static final IdGenerator ID_GENERATOR = new IdGenerator(IdGenerator.MAX_CAPACITY);
 	private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_CAPACITY];
 	private static final VarHandle ID_MAP_HANDLE = MethodHandles.arrayElementVarHandle(Entity[].class);
 
@@ -32,9 +32,7 @@ public class EntityStorage {
 	}
 
 	static void remove(Entity entity) {
-		int index = IdGenerator.index(entity.id);
-		ID_MAP_HANDLE.setVolatile(ID_MAP, index, null);
-		if (index <= MAX_ENTITIES + 1)
+		if (isLocal(entity.id))
 			ID_GENERATOR.free(entity.id);
 		else
 			ConnectionManager.freeEntityId(entity.id);
@@ -45,11 +43,11 @@ public class EntityStorage {
 	}
 
 	public static boolean isLocal(int id) {
-		return IdGenerator.index(id) <= MAX_ENTITIES + 1;
+		return IdGenerator.index(id) < MAX_ENTITIES;
 	}
 
 	public static boolean isRemote(int id) {
-		return IdGenerator.index(id) > MAX_ENTITIES + 1;
+		return IdGenerator.index(id) >= MAX_ENTITIES;
 	}
 
 	public static Entity get(int id) {

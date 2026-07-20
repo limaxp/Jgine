@@ -16,7 +16,8 @@ import jgine.utils.collection.list.UnorderedArrayList;
  * Storage for {@link Scene}<code>s</code> with the following specification:
  * 
  * <pre>
- *- get(id) and get(name) reflect additions/removals immediately.
+ *- get(id) reflects additions immediately and will return old data until id index is recycled.
+ *- get(name) reflects additions/removals immediately.
  *- values()/view() are updated during the next update() call.
  *- Iteration observes a stable snapshot.
  * </pre>
@@ -42,7 +43,6 @@ public final class SceneStorage {
 	}
 
 	static void remove(Scene scene) {
-		ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(scene.id), null);
 		ID_GENERATOR.free(scene.id);
 		NAME_MAP.remove(scene.name);
 		REMOVE_QUEUE.add(scene);
