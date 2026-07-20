@@ -116,8 +116,9 @@ public class SystemMap {
 		SystemObject[] arr = systems;
 		for (int i = 0; i < n; i++) {
 			if (arr[i] == value) {
+				int result = ids[i];
 				tombstone(i);
-				return ids[i];
+				return result;
 			}
 		}
 		return -1;
@@ -144,9 +145,9 @@ public class SystemMap {
 		int[] typesArr = types;
 		for (int i = 0; i < n; i++) {
 			if (typesArr[i] == system) {
+				consumer.accept(ids[i]);
 				tombstone(i);
 				changed = true;
-				consumer.accept(ids[i]);
 			}
 		}
 		return changed;
