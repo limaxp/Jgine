@@ -20,10 +20,18 @@ import jgine.utils.loader.PrefabLoader;
 import jgine.utils.loader.ResourceManager;
 
 /**
- * A blueprint for a {@link Entity}. Stores info about name, id,
- * {@link EntityTag}, used {@link EngineSystem}<code>s</code> and child prefabs.
- * Also contains a Map<Object, Object> to store any extra data. Use create()
- * methods to build a {@link Entity}. Not thread save!
+ * Blueprint for a {@link Entity}. <strong>Not thread save!</strong>
+ * 
+ * <pre>
+ * Stores:
+ * - int id 
+ * - String name
+ * - {@link EngineSystem}<code>s</code>
+ * - child {@link Prefab}<code>s</code>
+ * - {@link Tag}
+ * </pre>
+ * 
+ * Use create() methods to build a {@link Entity}.
  * <p>
  * Prefabs are usually written as YAML files with the .prefab extension and
  * loaded with the {@link ResourceManager}. The prefab name becomes the file
@@ -44,14 +52,6 @@ tags:
   - tag1
   - tag2
   - ...
-data:
-  dataName1: data
-  dataName2: data
-  ...:
-transform:
-  position: [x, y, z]
-  rotation: [x, y, z]
-  scale: [x, y, z] OR xyzValue
 systems:
   systemName1:
     systemData
@@ -66,13 +66,12 @@ public final class Prefab {
 	private static final Map<String, Prefab> NAME_MAP = new HashMap<String, Prefab>(10000);
 	private static final Map<Integer, Prefab> ID_MAP = new HashMap<Integer, Prefab>(10000);
 
-	public static final Prefab NONE = register(new Prefab("none"));
+	static final Prefab NONE = register(new Prefab("none"));
 
 	public final int id;
 	public final String name;
-	private Map<String, SystemObject> systemMap;
-	private List<SystemObject> systemList;
-	private final Map<Object, Object> data;
+	private final Map<String, SystemObject> systemMap;
+	private final List<SystemObject> systemList;
 	private final List<Prefab> parents;
 	private final List<Prefab> childs;
 	private long tag;
@@ -82,7 +81,6 @@ public final class Prefab {
 		this.name = name;
 		systemMap = new HashMap<>();
 		systemList = new UnorderedIdentityArrayList<>();
-		data = new HashMap<>();
 		parents = new UnorderedIdentityArrayList<>();
 		childs = new UnorderedIdentityArrayList<>();
 	}
@@ -90,7 +88,6 @@ public final class Prefab {
 	public void clear() {
 		systemMap.clear();
 		systemList.clear();
-		data.clear();
 		parents.clear();
 		childs.clear();
 		tag = 0L;
@@ -155,7 +152,6 @@ public final class Prefab {
 		Map<String, Object> map = new HashMap<>();
 		PrefabLoader.saveData(parent, map);
 		PrefabLoader.loadData(this, map);
-		data.putAll(parent.data);
 		tag = LongBitSet.or(tag, parent.tag);
 	}
 
@@ -165,10 +161,6 @@ public final class Prefab {
 
 	public List<Prefab> getChilds() {
 		return childs;
-	}
-
-	public Map<Object, Object> getData() {
-		return data;
 	}
 
 	public void setTag(long tag) {
@@ -198,7 +190,7 @@ public final class Prefab {
 	@Override
 	public String toString() {
 		return "[id=" + id + ", name=" + name + ", parents=" + StringUtils.prefabsToString(parents) + ", childs="
-				+ StringUtils.prefabsToString(childs) + ", systems=" + getSystemNames() + ", data:" + data + "]";
+				+ StringUtils.prefabsToString(childs) + ", systems=" + getSystemNames() + "]";
 	}
 
 	public Entity create(Scene scene) {

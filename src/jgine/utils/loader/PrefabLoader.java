@@ -122,10 +122,6 @@ public class PrefabLoader {
 			}
 		}
 
-		Object prefabData = data.get("data");
-		if (prefabData instanceof Map)
-			prefab.getData().putAll((Map<String, Object>) prefabData);
-
 		Object tagData = data.get("tags");
 		if (tagData instanceof Number)
 			prefab.setTag(((Number) tagData).longValue());
@@ -143,7 +139,6 @@ public class PrefabLoader {
 			entry.getValue().save(system);
 		}
 		data.put("systems", systems);
-		data.put("data", new HashMap<>(prefab.getData()));
 
 		List<String> tags = new ArrayList<>(Prefab.Tag.size());
 		data.put("tags", tags);
