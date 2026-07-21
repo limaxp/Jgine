@@ -3,21 +3,13 @@ package jgine.utils;
 import jgine.utils.collection.bitSet.IntBitSet;
 
 /**
- * A 32 bit Flag.
+ * A 32 bit flag. Uses bit arithmetic. Supports up to 32 unique flags.
  * 
- * <pre>
- * Flags:
- *  0 - DELETE
- *  1 - PAUSE
- * </pre>
  */
-public class Flag extends IntBitSet {
+public final class Flag extends IntBitSet {
 
 	private static final long serialVersionUID = 2689974595690116704L;
 
 	private Flag() {
 	}
-
-	public static final byte DELETE = 0;
-	public static final byte PAUSE = 1;
 }

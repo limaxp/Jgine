@@ -17,6 +17,7 @@ import jgine.system.SystemScene;
 import jgine.system.transform.Transform;
 import jgine.utils.Flag;
 import jgine.utils.IdGenerator;
+import jgine.utils.Tag;
 
 /**
  * A container for game entity data.
@@ -29,6 +30,12 @@ import jgine.utils.IdGenerator;
  * - {@link EngineSystem}<code>s</code>
  * - {@link Transform}
  * - {@link Flag}
+ * - {@link Tag}
+ * </pre>
+ * 
+ * <pre>
+ * Flags:
+ *  0 - DELETED
  * </pre>
  */
 public final class Entity extends SystemMap {
@@ -36,10 +43,12 @@ public final class Entity extends SystemMap {
 	public static final int MAX_ENTITIES = IdGenerator.MAX_CAPACITY - GameServer.MAX_ENTITIES;
 
 	private static final VarHandle FLAG_HANDLE;
+	private static final VarHandle TAG_HANDLE;
 
 	static {
 		try {
 			FLAG_HANDLE = MethodHandles.lookup().findVarHandle(Entity.class, "flag", int.class);
+			TAG_HANDLE = MethodHandles.lookup().findVarHandle(Entity.class, "tag", int.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -50,6 +59,7 @@ public final class Entity extends SystemMap {
 	private Transform transform;
 	private Prefab prefab = Prefab.NONE; // effectively final
 	private volatile int flag;
+	private volatile int tag;
 
 	public Entity(Scene scene) {
 		super(scene);
@@ -69,7 +79,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public void delete() {
-		if (!setFlag(Flag.DELETE, true))
+		if (!setFlag(0, true))
 			return;
 
 		free();
@@ -88,21 +98,35 @@ public final class Entity extends SystemMap {
 	}
 
 	public boolean isAlive() {
-		return !getFlag(Flag.DELETE);
+		return !getFlag(0);
 	}
 
-	public boolean setFlag(int index, boolean value) {
+	public boolean setFlag(int f, boolean value) {
 		for (;;) {
 			int flag = this.flag;
-			if (Flag.get(flag, index) == value)
+			if (Flag.get(flag, f) == value)
 				return false;
-			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, index, value)))
+			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, f, value)))
 				return true;
 		}
 	}
 
-	public boolean getFlag(int index) {
-		return Flag.get(flag, index);
+	public boolean getFlag(int f) {
+		return Flag.get(flag, f);
+	}
+
+	public boolean setTag(int t, boolean value) {
+		for (;;) {
+			int tag = this.tag;
+			if (Tag.get(tag, t) == value)
+				return false;
+			if (TAG_HANDLE.compareAndSet(this, tag, Tag.set(tag, t, value)))
+				return true;
+		}
+	}
+
+	public boolean getTag(int t) {
+		return Tag.get(tag, t);
 	}
 
 	public <T extends SystemObject> T add(int system, T object) {
@@ -180,12 +204,14 @@ public final class Entity extends SystemMap {
 	@Override
 	public void load(DataInput in) throws IOException {
 		flag = in.readInt();
+		tag = in.readInt();
 		prefab = Prefab.get(in.readInt());
 	}
 
 	@Override
 	public void save(DataOutput out) throws IOException {
 		out.writeInt(flag);
+		out.writeInt(tag);
 		out.writeInt(prefab.id);
 	}
 

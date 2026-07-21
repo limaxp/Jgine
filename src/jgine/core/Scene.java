@@ -41,6 +41,12 @@ import jgine.utils.spacePartitioning.SpatialHashing2d;
  * - RenderOrder
  * - {@link Flag}
  * </pre>
+ * 
+ * <pre>
+ * Flags:
+ *  0 - DELETED
+ *  1 - PAUSED
+ * </pre>
  */
 public final class Scene {
 
@@ -114,7 +120,7 @@ public final class Scene {
 	}
 
 	public void delete() {
-		if (setFlag(Flag.DELETE, true))
+		if (setFlag(0, true))
 			SceneStorage.remove(this);
 	}
 
@@ -197,29 +203,29 @@ public final class Scene {
 	}
 
 	public boolean isDeleted() {
-		return getFlag(Flag.DELETE);
+		return getFlag(0);
 	}
 
 	public boolean pause(boolean pause) {
-		return setFlag(Flag.PAUSE, pause);
+		return setFlag(1, pause);
 	}
 
 	public boolean isPaused() {
-		return getFlag(Flag.PAUSE);
+		return getFlag(1);
 	}
 
-	public boolean setFlag(int index, boolean value) {
+	public boolean setFlag(int f, boolean value) {
 		for (;;) {
 			int flag = this.flag;
-			if (Flag.get(flag, index) == value)
+			if (Flag.get(flag, f) == value)
 				return false;
-			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, index, value)))
+			if (FLAG_HANDLE.compareAndSet(this, flag, Flag.set(flag, f, value)))
 				return true;
 		}
 	}
 
-	public boolean getFlag(int index) {
-		return Flag.get(flag, index);
+	public boolean getFlag(int f) {
+		return Flag.get(flag, f);
 	}
 
 	public void save(DataOutput out) throws IOException {
