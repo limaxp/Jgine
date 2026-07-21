@@ -15,6 +15,7 @@ import jgine.system.EngineSystem;
 import jgine.system.SystemObject;
 import jgine.utils.StringUtils;
 import jgine.utils.collection.bitSet.LongBitSet;
+import jgine.utils.collection.list.UnorderedArrayList;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
 import jgine.utils.loader.PrefabLoader;
 import jgine.utils.loader.ResourceManager;
@@ -75,14 +76,16 @@ public final class Prefab {
 	private final List<Prefab> parents;
 	private final List<Prefab> childs;
 	private long tag;
+	private final List<String> tags;
 
 	public Prefab(String name) {
 		id = name.hashCode();
 		this.name = name;
 		systemMap = new HashMap<>();
-		systemList = new UnorderedIdentityArrayList<>();
-		parents = new UnorderedIdentityArrayList<>();
-		childs = new UnorderedIdentityArrayList<>();
+		systemList = new UnorderedArrayList<>();
+		parents = new UnorderedArrayList<>();
+		childs = new UnorderedArrayList<>();
+		tags = new UnorderedArrayList<>();
 	}
 
 	public void clear() {
@@ -163,20 +166,23 @@ public final class Prefab {
 		return childs;
 	}
 
-	public void setTag(long tag) {
-		this.tag = tag;
+	public boolean setTag(String name, boolean value) {
+		return setTag(Tag.get(name), name, value);
 	}
 
-	public long getTag() {
-		return tag;
+	public boolean setTag(int id, boolean value) {
+		return setTag(id, Tag.get(id), value);
 	}
 
-	public void setTag(String name, boolean value) {
-		setTag(Tag.get(name), value);
-	}
-
-	public void setTag(int id, boolean value) {
+	private boolean setTag(int id, String name, boolean value) {
+		if (LongBitSet.get(tag, id) == value)
+			return false;
 		tag = LongBitSet.set(tag, id, value);
+		if (value)
+			tags.add(name);
+		else
+			tags.remove(name);
+		return true;
 	}
 
 	public boolean getTag(String name) {
@@ -185,6 +191,10 @@ public final class Prefab {
 
 	public boolean getTag(int id) {
 		return LongBitSet.get(tag, id);
+	}
+
+	public List<String> getTags() {
+		return Collections.unmodifiableList(tags);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package jgine.utils.loader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import jgine.core.Registry;
 import jgine.system.EngineSystem;
 import jgine.system.SystemObject;
 import jgine.utils.ObjectUtils;
-import jgine.utils.collection.bitSet.LongBitSet;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
 
 /**
@@ -105,6 +103,12 @@ public class PrefabLoader {
 
 	@SuppressWarnings("unchecked")
 	public static void loadData(Prefab prefab, Map<String, Object> data) {
+		Object tagData = data.get("tags");
+		if (tagData instanceof List) {
+			for (String tagName : (List<String>) tagData)
+				prefab.setTag(tagName, true);
+		}
+
 		Object systemData = data.get("systems");
 		if (systemData instanceof Map) {
 			for (Entry<String, Object> entry : ((Map<String, Object>) systemData).entrySet()) {
@@ -121,17 +125,11 @@ public class PrefabLoader {
 					prefab.setSystem(name, system, EMPTY_DATA);
 			}
 		}
-
-		Object tagData = data.get("tags");
-		if (tagData instanceof Number)
-			prefab.setTag(((Number) tagData).longValue());
-		if (tagData instanceof List) {
-			for (String tagName : (List<String>) tagData)
-				prefab.setTag(tagName, true);
-		}
 	}
 
 	public static Map<String, Object> saveData(Prefab prefab, Map<String, Object> data) {
+		data.put("tags", prefab.getTags());
+
 		Map<String, Object> systems = new HashMap<>(prefab.systemSize());
 		for (Entry<String, SystemObject> entry : prefab.getSystemEntries()) {
 			Map<String, Object> system = new HashMap<>();
@@ -139,13 +137,6 @@ public class PrefabLoader {
 			entry.getValue().save(system);
 		}
 		data.put("systems", systems);
-
-		List<String> tags = new ArrayList<>(Prefab.Tag.size());
-		data.put("tags", tags);
-		long tag = prefab.getTag();
-		for (int i = 0; i < Prefab.Tag.size(); i++)
-			if (LongBitSet.get(tag, i))
-				tags.add(Prefab.Tag.get(i));
 		return data;
 	}
 

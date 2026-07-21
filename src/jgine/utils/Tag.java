@@ -1,10 +1,18 @@
 package jgine.utils;
 
 /**
- * A 32 bit flag. Uses prime numbers. Supports all prime numbers up to
- * Integer.MAX_VALUE. But values can only hold a few flags at once before
- * integer overflow.
+ * A 32 bit flag. Uses prime numbers.
+ * <p>
+ * <strong>Values can only hold a few flags before integer overflow!</strong>
  * 
+ * <pre>
+ * multiple Tags -> max unique tags
+ *             1 -> 105.097.565
+ *             2 -> 46.337
+ *             3 -> 210
+ *             4 -> 49
+ *             5 -> 22
+ * </pre>
  */
 public final class Tag {
 
