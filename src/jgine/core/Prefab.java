@@ -199,8 +199,9 @@ public final class Prefab {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", name=" + name + ", parents=" + StringUtils.prefabsToString(parents) + ", childs="
-				+ StringUtils.prefabsToString(childs) + ", systems=" + getSystemNames() + "]";
+		return "[id=" + id + ", name=" + name + ", parents=" + prefabsToString(parents) + ", childs="
+				+ prefabsToString(childs) + ", tags=" + StringUtils.listToString(tags) + ", systems=" + getSystemNames()
+				+ "]";
 	}
 
 	public Entity create(Scene scene) {
@@ -218,6 +219,22 @@ public final class Prefab {
 		for (Prefab child : childs)
 			child.create(scene).getTransform().setParent(entity.getTransform());
 		return entity;
+	}
+
+	private static String prefabsToString(List<Prefab> list) {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		int size = list.size();
+		if (size != 0) {
+			sb.append(list.get(0).name);
+			for (int i = 1; i < size; i++) {
+				sb.append(',');
+				sb.append(' ');
+				sb.append(list.get(i).name);
+			}
+		}
+		sb.append(']');
+		return sb.toString();
 	}
 
 	@Nullable

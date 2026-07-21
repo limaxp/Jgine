@@ -3,8 +3,6 @@ package jgine.utils;
 import java.text.NumberFormat;
 import java.util.List;
 
-import jgine.core.Prefab;
-
 /**
  * Helper class for {@link String} operations.
  */
@@ -103,16 +101,16 @@ public class StringUtils {
 		return sb.append(str).toString();
 	}
 
-	public static String prefabsToString(List<Prefab> list) {
+	public static String listToString(List<String> list) {
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		int size = list.size();
 		if (size != 0) {
-			sb.append(list.get(0).name);
+			sb.append(list.get(0));
 			for (int i = 1; i < size; i++) {
 				sb.append(',');
 				sb.append(' ');
-				sb.append(list.get(i).name);
+				sb.append(list.get(i));
 			}
 		}
 		sb.append(']');
