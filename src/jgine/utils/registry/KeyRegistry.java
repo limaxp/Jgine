@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import jgine.core.Registry;
 import jgine.utils.Logger;
 import jgine.utils.collection.ArrayIterator;
 
@@ -30,7 +31,7 @@ public final class KeyRegistry<T> extends Registry<T> {
 	}
 
 	// for main registry
-	KeyRegistry(int size) {
+	public KeyRegistry(int size) {
 		super();
 		values = new Object[size];
 		keyMap = new HashMap<String, T>(size);

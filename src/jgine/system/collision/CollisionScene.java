@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import jgine.core.Engine;
 import jgine.core.Entity;
+import jgine.core.Registry;
 import jgine.core.Scene;
 import jgine.core.Engine.UpdateTask;
 import jgine.render.Renderer;
@@ -15,7 +16,6 @@ import jgine.system.physic.PhysicObject;
 import jgine.system.script.IScript;
 import jgine.system.script.ScriptSystem;
 import jgine.system.transform.Transform;
-import jgine.utils.registry.Registry;
 import jgine.utils.scheduler.Job;
 
 public class CollisionScene extends EntitySystemScene<CollisionSystem, Collider> {

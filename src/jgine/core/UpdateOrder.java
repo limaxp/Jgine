@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import jgine.system.EngineSystem;
 import jgine.utils.ArrayUtils;
-import jgine.utils.registry.Registry;
 
 /**
  * Defines an update order for a {@link Scene}. Use add() methods to add a

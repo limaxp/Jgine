@@ -36,7 +36,6 @@ import jgine.utils.Options;
 import jgine.utils.Options.OptionFile;
 import jgine.utils.collection.list.IdentityArrayList;
 import jgine.utils.loader.ResourceManager;
-import jgine.utils.registry.Registry;
 import jgine.utils.scheduler.Scheduler;
 import jgine.utils.scheduler.ThreadPool;
 

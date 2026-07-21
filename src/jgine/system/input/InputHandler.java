@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import jgine.core.Engine;
 import jgine.core.Entity;
+import jgine.core.Registry;
 import jgine.core.input.Input;
 import jgine.core.input.InputDevice;
 import jgine.core.input.Key;
@@ -21,7 +22,6 @@ import jgine.system.SystemObject;
 import jgine.utils.Logger;
 import jgine.utils.ObjectUtils;
 import jgine.utils.math.vector.Vector2f;
-import jgine.utils.registry.Registry;
 
 public class InputHandler implements SystemObject {
 

@@ -1,4 +1,4 @@
-package jgine.utils.registry;
+package jgine.core;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -20,6 +20,7 @@ import jgine.system.light.LightType;
 import jgine.system.script.ScriptBase;
 import jgine.system.ui.UIObjectType;
 import jgine.utils.Reflection;
+import jgine.utils.registry.KeyRegistry;
 
 /**
  * A map of types identified by both <code>int</code> id and {@link String} key.
@@ -50,7 +51,7 @@ public abstract class Registry<T> implements Iterable<T> {
 		this.name = name;
 	}
 
-	Registry() { // for main registry
+	protected Registry() { // for main registry
 		this.id = -1;
 		this.name = "registry";
 	}

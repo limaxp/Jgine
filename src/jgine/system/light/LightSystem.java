@@ -2,10 +2,10 @@ package jgine.system.light;
 
 import java.util.Map;
 
+import jgine.core.Registry;
 import jgine.core.Scene;
 import jgine.render.light.Light;
 import jgine.system.EngineSystem;
-import jgine.utils.registry.Registry;
 
 public class LightSystem extends EngineSystem<LightSystem, Light> {
 

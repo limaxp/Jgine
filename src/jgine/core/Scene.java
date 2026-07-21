@@ -25,7 +25,6 @@ import jgine.utils.Flag;
 import jgine.utils.IdGenerator;
 import jgine.utils.collection.list.UnorderedArrayList;
 import jgine.utils.concurrent.ConcurrentRingBuffer;
-import jgine.utils.registry.Registry;
 import jgine.utils.spacePartitioning.SpatialHashing2d;
 
 /**

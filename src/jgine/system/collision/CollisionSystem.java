@@ -2,10 +2,10 @@ package jgine.system.collision;
 
 import java.util.Map;
 
+import jgine.core.Registry;
 import jgine.core.Scene;
 import jgine.system.EngineSystem;
 import jgine.utils.Handle;
-import jgine.utils.registry.Registry;
 import jgine.utils.scheduler.Service;
 
 public class CollisionSystem extends EngineSystem<CollisionSystem, Collider> {

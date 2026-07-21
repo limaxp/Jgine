@@ -12,12 +12,12 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 
 import jgine.core.Prefab;
+import jgine.core.Registry;
 import jgine.system.EngineSystem;
 import jgine.system.SystemObject;
 import jgine.utils.ObjectUtils;
 import jgine.utils.collection.bitSet.LongBitSet;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
-import jgine.utils.registry.Registry;
 
 /**
  * Helper class for loading {@link Prefab} files.

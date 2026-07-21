@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import jgine.core.Registry;
 import jgine.utils.Logger;
 import jgine.utils.collection.ArrayIterator;
 

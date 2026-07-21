@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import jgine.core.Registry;
 import jgine.core.Scene;
-import jgine.utils.registry.Registry;
 
 /**
  * The base engine system class. All systems must override this class and will

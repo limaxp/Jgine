@@ -2,13 +2,13 @@ package jgine.system.ai;
 
 import java.util.function.Supplier;
 
+import jgine.core.Registry;
 import jgine.system.ai.goals.Idle;
 import jgine.system.ai.goals.MeleeAttackTarget;
 import jgine.system.ai.goals.MoveToTarget;
 import jgine.system.ai.goals.RandomWalk;
 import jgine.system.ai.goals.TargetNearFlag;
 import jgine.system.ai.goals.TargetNearTag;
-import jgine.utils.registry.Registry;
 
 public class AiGoalType<T extends AiGoal> implements Supplier<T> {
 

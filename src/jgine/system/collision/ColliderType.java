@@ -2,6 +2,7 @@ package jgine.system.collision;
 
 import java.util.function.Supplier;
 
+import jgine.core.Registry;
 import jgine.system.collision.collider.AxisAlignedBoundingBox;
 import jgine.system.collision.collider.AxisAlignedBoundingQuad;
 import jgine.system.collision.collider.CircleCollider;
@@ -10,7 +11,6 @@ import jgine.system.collision.collider.LineCollider;
 import jgine.system.collision.collider.PlaneCollider;
 import jgine.system.collision.collider.PolygonCollider;
 import jgine.system.collision.collider.SphereCollider;
-import jgine.utils.registry.Registry;
 
 public class ColliderType<T extends Collider> implements Supplier<T> {
 

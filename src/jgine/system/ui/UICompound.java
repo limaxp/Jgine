@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import jgine.core.Entity;
+import jgine.core.Registry;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
 import jgine.utils.math.Matrix;
-import jgine.utils.registry.Registry;
 
 public class UICompound extends UIObject {
 

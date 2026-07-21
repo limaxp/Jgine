@@ -2,6 +2,7 @@ package jgine.system.ui;
 
 import java.util.function.Supplier;
 
+import jgine.core.Registry;
 import jgine.system.ui.objects.UIBar;
 import jgine.system.ui.objects.UIGrid;
 import jgine.system.ui.objects.UIHotbar;
@@ -11,7 +12,6 @@ import jgine.system.ui.objects.UIRadioButton;
 import jgine.system.ui.objects.UIScrollBar;
 import jgine.system.ui.objects.UISlideBar;
 import jgine.system.ui.objects.UITextInput;
-import jgine.utils.registry.Registry;
 
 public class UIObjectType<T extends UIObject> implements Supplier<T> {
 

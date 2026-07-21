@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import jgine.core.Registry;
 import jgine.utils.Reflection;
-import jgine.utils.registry.Registry;
 
 public interface ScriptBase {
 

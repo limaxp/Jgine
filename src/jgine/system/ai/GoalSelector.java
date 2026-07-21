@@ -10,9 +10,9 @@ import java.util.Map;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import jgine.core.Registry;
 import jgine.utils.ObjectUtils;
 import jgine.utils.collection.list.UnorderedIdentityArrayList;
-import jgine.utils.registry.Registry;
 
 public class GoalSelector implements Cloneable {
 

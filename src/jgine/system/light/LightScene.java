@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import jgine.core.Entity;
+import jgine.core.Registry;
 import jgine.core.Scene;
 import jgine.render.light.DirectionalLight;
 import jgine.render.light.Light;
@@ -14,7 +15,6 @@ import jgine.render.shader.PhongShader;
 import jgine.system.ObjectSystemScene.EntitySystemScene;
 import jgine.utils.Color;
 import jgine.utils.collection.list.UnorderedArrayList;
-import jgine.utils.registry.Registry;
 
 public class LightScene extends EntitySystemScene<LightSystem, Light> {
 
