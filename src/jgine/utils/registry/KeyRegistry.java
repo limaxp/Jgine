@@ -8,17 +8,16 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import jgine.core.Registry;
 import jgine.utils.Logger;
 import jgine.utils.collection.ArrayIterator;
 
 /**
- * {@link Registry} implementation that only uses name for registration. Uses
- * entry index as id. Max id = size - 1.
+ * {@link AbstractRegistry} implementation that only uses name for registration.
+ * Uses entry index as id. Max id = size - 1.
  * 
  * @param <T> the type of elements in this registry
  */
-public final class KeyRegistry<T> extends Registry<T> {
+public final class KeyRegistry<T> extends AbstractRegistry<T> {
 
 	protected final Object[] values;
 	protected int size;
@@ -31,7 +30,7 @@ public final class KeyRegistry<T> extends Registry<T> {
 	}
 
 	// for main registry
-	public KeyRegistry(int size) {
+	KeyRegistry(int size) {
 		super();
 		values = new Object[size];
 		keyMap = new HashMap<String, T>(size);

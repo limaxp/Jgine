@@ -8,17 +8,16 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import jgine.core.Registry;
 import jgine.utils.Logger;
 import jgine.utils.collection.ArrayIterator;
 
 /**
- * The default {@link Registry}. Uses given id and name for registration. Max id
+ * The default {@link AbstractRegistry}. Uses given id and name for registration. Max id
  * = size - 1.
  * 
  * @param <T> the type of elements in this registry
  */
-public final class MapRegistry<T> extends Registry<T> {
+public final class MapRegistry<T> extends AbstractRegistry<T> {
 
 	protected final Object[] values;
 	protected int size;
