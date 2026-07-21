@@ -16,7 +16,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 
 import jgine.core.Entity;
-import jgine.core.EntityStorage;
 import jgine.net.game.packet.Packet;
 import jgine.net.game.packet.PacketManager;
 import jgine.net.game.packet.ServerPacketListener;
@@ -249,11 +248,10 @@ public class GameServer implements Runnable {
 		synchronized (entityIdGenerator) {
 			id = entityIdGenerator.generate();
 		}
-		return IdGenerator.id(IdGenerator.index(id) + EntityStorage.MAX_ENTITIES, IdGenerator.generation(id));
+		return IdGenerator.id(IdGenerator.index(id) + Entity.MAX_ENTITIES, IdGenerator.generation(id));
 	}
 
 	public void freeEntityId(int id) {
-		entityIdGenerator
-				.free(IdGenerator.id(IdGenerator.index(id) - EntityStorage.MAX_ENTITIES, IdGenerator.generation(id)));
+		entityIdGenerator.free(IdGenerator.id(IdGenerator.index(id) - Entity.MAX_ENTITIES, IdGenerator.generation(id)));
 	}
 }

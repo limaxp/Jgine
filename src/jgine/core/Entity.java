@@ -8,12 +8,15 @@ import java.lang.invoke.VarHandle;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import jgine.net.game.ConnectionManager;
+import jgine.net.game.GameServer;
 import jgine.system.EngineSystem;
 import jgine.system.SystemMap;
 import jgine.system.SystemObject;
 import jgine.system.SystemScene;
 import jgine.system.transform.Transform;
 import jgine.utils.Flag;
+import jgine.utils.IdGenerator;
 
 /**
  * A container for game entity data.
@@ -30,6 +33,8 @@ import jgine.utils.Flag;
  */
 public final class Entity extends SystemMap {
 
+	public static final int MAX_ENTITIES = IdGenerator.MAX_CAPACITY - GameServer.MAX_ENTITIES;
+
 	private static final VarHandle FLAG_HANDLE;
 
 	static {
@@ -41,7 +46,7 @@ public final class Entity extends SystemMap {
 	}
 
 	public final int id;
-	int index = -1; // main thread only
+	private int index = -1; // main thread only
 	private Transform transform;
 	private Prefab prefab = Prefab.NONE; // effectively final
 	private volatile int flag;
@@ -75,11 +80,11 @@ public final class Entity extends SystemMap {
 	}
 
 	public boolean isLocal() {
-		return EntityStorage.isLocal(id);
+		return isLocal(id);
 	}
 
 	public boolean isRemote() {
-		return EntityStorage.isRemote(id);
+		return isRemote(id);
 	}
 
 	public boolean isAlive() {
@@ -164,6 +169,14 @@ public final class Entity extends SystemMap {
 		return prefab;
 	}
 
+	void setIndex(int index) {
+		this.index = index;
+	}
+
+	int getIndex() {
+		return index;
+	}
+
 	@Override
 	public void load(DataInput in) throws IOException {
 		flag = in.readInt();
@@ -196,8 +209,67 @@ public final class Entity extends SystemMap {
 				+ "]";
 	}
 
+	public static boolean isAlive(int id) {
+		return EntityStorage.isAlive(id);
+	}
+
 	@Nullable
 	public static Entity getById(int id) {
 		return EntityStorage.get(id);
+	}
+
+	public static boolean isLocal(int id) {
+		return EntityStorage.isLocal(id);
+	}
+
+	public static boolean isRemote(int id) {
+		return EntityStorage.isRemote(id);
+	}
+
+	/**
+	 * Storage for {@link Entity}<code>s</code> with the following specification:
+	 * 
+	 * <pre>
+	 *- get(id) reflects additions immediately and will return old data until id index is recycled.
+	 * </pre>
+	 */
+	private static class EntityStorage {
+
+		private static final IdGenerator ID_GENERATOR = new IdGenerator(IdGenerator.MAX_CAPACITY);
+		private static final Entity[] ID_MAP = new Entity[IdGenerator.MAX_CAPACITY];
+		private static final VarHandle ID_MAP_HANDLE = MethodHandles.arrayElementVarHandle(Entity[].class);
+
+		private static int add(Entity entity) {
+			int id = ID_GENERATOR.generate();
+			ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(id), entity);
+			return id;
+		}
+
+		private static void inject(Entity entity) {
+			ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(entity.id), entity);
+		}
+
+		private static void remove(Entity entity) {
+			if (isLocal(entity.id))
+				ID_GENERATOR.free(entity.id);
+			else
+				ConnectionManager.freeEntityId(entity.id);
+		}
+
+		private static boolean isAlive(int id) {
+			return ID_GENERATOR.isAlive(id);
+		}
+
+		private static Entity get(int id) {
+			return ID_MAP[IdGenerator.index(id)];
+		}
+
+		private static boolean isLocal(int id) {
+			return IdGenerator.index(id) < MAX_ENTITIES;
+		}
+
+		private static boolean isRemote(int id) {
+			return IdGenerator.index(id) >= MAX_ENTITIES;
+		}
 	}
 }

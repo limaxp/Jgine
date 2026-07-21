@@ -9,6 +9,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -18,6 +22,7 @@ import jgine.system.EngineSystem;
 import jgine.system.SystemScene;
 import jgine.system.transform.TransformScene;
 import jgine.utils.Flag;
+import jgine.utils.IdGenerator;
 import jgine.utils.collection.list.UnorderedArrayList;
 import jgine.utils.concurrent.ConcurrentRingBuffer;
 import jgine.utils.registry.Registry;
@@ -39,6 +44,8 @@ import jgine.utils.spacePartitioning.SpatialHashing2d;
  */
 public final class Scene {
 
+	public static final int MAX_SCENES = 65536;
+
 	private static final VarHandle FLAG_HANDLE;
 
 	static {
@@ -54,9 +61,9 @@ public final class Scene {
 
 	public final int id;
 	public final String name;
-	int index = -1; // main thread only
-	volatile UpdateOrder updateOrder;
-	volatile IntList renderOrder;
+	private int index = -1; // main thread only
+	private volatile UpdateOrder updateOrder;
+	private volatile IntList renderOrder;
 	private final SystemScene<?, ?>[] systems;
 	private final List<SystemScene<?, ?>> systems_view;
 	private final SystemScene<?, ?>[] systemMap;
@@ -121,7 +128,7 @@ public final class Scene {
 
 	void addEntity(Entity entity) {
 		commandQueue.add(() -> {
-			entity.index = entities.size();
+			entity.setIndex(entities.size());
 			entities.add(entity);
 		});
 	}
@@ -129,10 +136,10 @@ public final class Scene {
 	void removeEntity(Entity entity) {
 		commandQueue.add(() -> {
 			Entity last = entities.getLast();
-			entities.remove(entity.index);
+			entities.remove(entity.getIndex());
 			if (entity != last)
-				last.index = entity.index;
-			entity.index = -1;
+				last.setIndex(entity.getIndex());
+			entity.setIndex(-1);
 		});
 	}
 
@@ -162,12 +169,26 @@ public final class Scene {
 		return updateOrder.clone();
 	}
 
+	/**
+	 * <b>Never Modify!</b> Returns internal data!
+	 */
+	UpdateOrder updateOrder() {
+		return updateOrder;
+	}
+
 	public void setRenderOrder(IntList renderOrder) {
 		this.renderOrder = new IntArrayList(renderOrder);
 	}
 
 	public IntList getRenderOrder() {
 		return new IntArrayList(renderOrder);
+	}
+
+	/**
+	 * <b>Never Modify!</b> Returns internal data!
+	 */
+	IntList renderOrder() {
+		return renderOrder;
 	}
 
 	public SpatialHashing2d<Entity> getSpacePartitioning() {
@@ -271,6 +292,10 @@ public final class Scene {
 		return sb.toString();
 	}
 
+	public static boolean isAlive(int id) {
+		return SceneStorage.isAlive(id);
+	}
+
 	public static List<Scene> values() {
 		return SceneStorage.view();
 	}
@@ -281,5 +306,90 @@ public final class Scene {
 
 	public static Scene get(String name) {
 		return SceneStorage.get(name);
+	}
+
+	/**
+	 * Storage for {@link Scene}<code>s</code> with the following specification:
+	 * 
+	 * <pre>
+	 *- get(id) reflects additions immediately and will return old data until id index is recycled.
+	 *- get(name) reflects additions/removals immediately.
+	 *- values()/view() are updated during the next update() call.
+	 *- Iteration observes a stable snapshot.
+	 * </pre>
+	 */
+	static final class SceneStorage {
+
+		private static final VarHandle ID_MAP_HANDLE = MethodHandles.arrayElementVarHandle(Scene[].class);
+
+		private static final IdGenerator ID_GENERATOR = new IdGenerator(MAX_SCENES);
+		private static final Scene[] ID_MAP = new Scene[MAX_SCENES];
+		private static final Map<String, Scene> NAME_MAP = new ConcurrentHashMap<>();
+		private static volatile List<Scene> LIST = new UnorderedArrayList<>();
+		private static volatile List<Scene> VIEW = Collections.unmodifiableList(LIST);
+		private static final Queue<Scene> ADD_QUEUE = new ConcurrentLinkedQueue<>();
+		private static final Queue<Scene> REMOVE_QUEUE = new ConcurrentLinkedQueue<>();
+
+		private static int add(Scene scene) {
+			int id = ID_GENERATOR.generate();
+			ID_MAP_HANDLE.setVolatile(ID_MAP, IdGenerator.index(id), scene);
+			NAME_MAP.put(scene.name, scene);
+			ADD_QUEUE.add(scene);
+			return id;
+		}
+
+		private static void remove(Scene scene) {
+			ID_GENERATOR.free(scene.id);
+			NAME_MAP.remove(scene.name);
+			REMOVE_QUEUE.add(scene);
+		}
+
+		static void update() {
+			if (ADD_QUEUE.isEmpty() && REMOVE_QUEUE.isEmpty())
+				return;
+
+			List<Scene> newScenes = new UnorderedArrayList<>(LIST);
+			Queue<Scene> queue = REMOVE_QUEUE;
+			Scene scene;
+			while ((scene = queue.poll()) != null) {
+				Scene last = newScenes.getLast();
+				newScenes.remove(scene.index);
+				if (scene != last)
+					last.index = scene.index;
+				scene.index = -1;
+				scene.free();
+			}
+
+			queue = ADD_QUEUE;
+			while ((scene = queue.poll()) != null) {
+				scene.index = newScenes.size();
+				newScenes.add(scene);
+			}
+			LIST = newScenes;
+			VIEW = Collections.unmodifiableList(newScenes);
+		}
+
+		private static boolean isAlive(int id) {
+			return ID_GENERATOR.isAlive(id);
+		}
+
+		/**
+		 * <b>Never Modify!</b> Returns internal data!
+		 */
+		static List<Scene> values() {
+			return LIST;
+		}
+
+		private static List<Scene> view() {
+			return VIEW;
+		}
+
+		private static Scene get(int id) {
+			return (Scene) ID_MAP_HANDLE.getVolatile(ID_MAP, IdGenerator.index(id));
+		}
+
+		private static Scene get(String name) {
+			return NAME_MAP.get(name);
+		}
 	}
 }

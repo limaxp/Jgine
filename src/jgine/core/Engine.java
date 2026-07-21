@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import jgine.core.GameLoop.FixedTickGameLoop;
+import jgine.core.Scene.SceneStorage;
 import jgine.core.input.Input;
 import jgine.core.sound.SoundManager;
 import jgine.core.window.DisplayManager;
@@ -201,7 +202,7 @@ public class Engine {
 	}
 
 	private void updateScene(Scene scene, float dt) {
-		new UpdateTask(scene, scene.updateOrder, dt).start();
+		new UpdateTask(scene, scene.updateOrder(), dt).start();
 	}
 
 	private void renderScene(Scene scene, float dt) {
@@ -212,12 +213,12 @@ public class Engine {
 		((CameraScene) scene.getSystem(CAMERA)).forEach((camera) -> {
 			Renderer.setCamera(camera);
 			camera.getRenderTarget().clear();
-			for (int system : scene.renderOrder)
+			for (int system : scene.renderOrder())
 				scene.getSystem(system).render(dt);
 		});
 
 		Renderer.setRenderTarget(getRenderConfig().getRenderTarget());
-		for (int system : scene.renderOrder)
+		for (int system : scene.renderOrder())
 			scene.getSystem(system).onRender(dt);
 		Renderer.setRenderTarget(null);
 	}
