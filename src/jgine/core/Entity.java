@@ -287,7 +287,7 @@ public final class Entity extends SystemMap {
 		}
 
 		private static Entity get(int id) {
-			return ID_MAP[IdGenerator.index(id)];
+			return (Entity) ID_MAP_HANDLE.getVolatile(ID_MAP, IdGenerator.index(id));
 		}
 
 		private static boolean isLocal(int id) {
